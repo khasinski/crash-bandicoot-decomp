@@ -1,0 +1,37 @@
+// Symbol seed for SCUS_949.00. Format: name = 0xADDR; // type:func
+// Names prefixed SUBSYS_ come from wurlyfox/c1c docs/FUNCTIONS.md (no license;
+// facts only: addresses + descriptive names). Rename freely once evidence exists.
+__SN_ENTRY_POINT = 0x8003E018; // type:func
+
+LIBC_Malloc = 0x80011A58; // type:func
+LIBC_Free = 0x80011C8C; // type:func
+LIBC_Realloc = 0x80011CA0; // type:func
+LIBC_Calloc = 0x80011D30; // type:func
+CORE_Main = 0x80011D88; // type:func
+CORE_Loop = 0x80011FC4; // type:func
+NS_13B30 = 0x80013B30; // type:func
+NS_13B94 = 0x80013B94; // type:func
+GOOL_InitAllocTable = 0x8001AAD8; // type:func
+GOOL_FreeAllocTable = 0x8001AC28; // type:func
+GOOL_TraverseObjectTreePreorder = 0x8001B3F0; // type:func
+GOOL_TraverseObjectTreePostorder = 0x8001B648; // type:func
+GOOL_TestObjectStateFlags = 0x8001BCA4; // type:func
+GOOL_CreateObject = 0x8001C6C8; // type:func
+GOOL_InitObject = 0x8001CB80; // type:func
+GOOL_ChangeObjectState = 0x8001D698; // type:func
+GOOL_CreateObjectStackFrame = 0x8001D914; // type:func
+GOOL_UpdateObject = 0x8001DA0C; // type:func
+GOOL_TranslateGop = 0x8001FB34; // type:func
+GOOL_InterpretObject = 0x800201DC; // type:func
+BIOS_AToI = 0x8003D690; // type:func
+BIOS_StrCat = 0x8003D6A0; // type:func
+BIOS_StrCmp = 0x8003D6B0; // type:func
+BIOS_StrNCmp = 0x8003D6C0; // type:func
+BIOS_StrCpy = 0x8003D6D0; // type:func
+BIOS_StrLen = 0x8003D6E0; // type:func
+BIOS_BCopy = 0x8003D6F0; // type:func
+BIOS_BZero = 0x8003D700; // type:func
+BIOS_MemCpy = 0x8003D710; // type:func
+BIOS_MemSet = 0x8003D720; // type:func
+BIOS_MemChr = 0x8003DF9C; // type:func
+CORE_VSync = 0x8003E4F0; // type:func

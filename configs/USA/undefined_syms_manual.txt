@@ -1,0 +1,2 @@
+/* Hand-maintained linker assignments (e.g. mid-function entry points written
+   relative to their function so they move with it). */

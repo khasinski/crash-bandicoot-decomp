@@ -1,0 +1,15 @@
+#include "common.h"
+
+/* GCC_VERSION: 2.6.3 */
+
+/* Allocate a 64 KiB resource buffer; retain the original signed pointer/error test. */
+
+extern void *LIBC_Malloc(s32);
+
+s32 func_80012BAC(void)
+{
+    s32 ptr = (s32) LIBC_Malloc(0x10000);
+    if (ptr == 0 || ptr >= -0xFE)
+        return -0xF;
+    return ptr;
+}

@@ -1,0 +1,64 @@
+#include "common.h"
+
+/* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
+
+/* Set or clear the clipped rectangle in the 32-row grid. */
+extern s32 *D_800566F4;
+
+void func_8002D7D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 *var_v1;
+    s32 temp_a0;
+    s32 temp_a2;
+    s32 var_a1;
+    s32 var_a3;
+    s32 var_t0;
+
+    temp_a2 = arg2 + 0x10;
+    var_t0 = -1;
+    if (temp_a2 < 0x20) {
+        if (temp_a2 > 0) {
+            var_t0 = -1 << (0x20 - temp_a2);
+            goto block_3;
+        }
+    } else {
+block_3:
+        temp_a0 = arg0 + 0xF;
+        if (temp_a0 < 0x20) {
+            if (temp_a0 >= 0) {
+                var_t0 &= ~((s32)0x80000000 >> temp_a0);
+            }
+            if (var_t0 != 0) {
+                var_a1 = arg1 + 0x10;
+                var_a3 = arg3 + 0x10;
+                if (var_a1 < 0) {
+                    var_a1 = 0;
+                }
+                if (var_a3 >= 0x21) {
+                    var_a3 = 0x20;
+                }
+                if (var_a1 < 0x20) {
+                    var_v1 = D_800566F4 + var_a1;
+                    if (arg4 != 0) {
+                        if (var_a1 < var_a3) {
+                            do {
+                                var_a1 += 1;
+                                *var_v1 |= var_t0;
+                                var_v1++;
+                            } while (var_a1 < var_a3);
+                        }
+                    } else {
+                        var_t0 = ~var_t0;
+                        if (var_a1 < var_a3) {
+                            do {
+                                var_a1 += 1;
+                                *var_v1 &= var_t0;
+                                var_v1++;
+                            } while (var_a1 < var_a3);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

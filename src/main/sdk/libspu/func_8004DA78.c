@@ -1,0 +1,6 @@
+/* GCC_VERSION: 2.6.3 */
+#include "common.h"
+
+void func_80047C84(s32,s32,s32,s32);
+
+void func_8004DA78(s32 a,s32 b) {func_80047C84(a,b,0xca,0xcb);}
