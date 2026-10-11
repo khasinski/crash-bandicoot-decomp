@@ -12,6 +12,9 @@
 SIZE(EngineState, 0x1C);
 SIZE(EngineMode25State, 0x35D8);
 OFFSET(EngineMode25State, word359C, 0x359C);
+OFFSET(EngineMode25State, word3598, 0x3598);
+OFFSET(EngineMode25State, word35A0, 0x35A0);
+OFFSET(EngineMode25State, word35A4, 0x35A4);
 OFFSET(EngineMode25State, word35D0, 0x35D0);
 OFFSET(EngineMode25State, word35D4, 0x35D4);
 SIZE(EngineEventRequest, 12);

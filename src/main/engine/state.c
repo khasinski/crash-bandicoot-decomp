@@ -3,10 +3,26 @@
 #define CRASH_ENGINE_STATE_STORAGE
 #include "engine_state.h"
 #include "resource.h"
+#include "gool.h"
 
 /* GCC_VERSION: 2.6.3 */
 
 
+
+/* Mode request and the eight-byte name/format records at 0x80056500. */
+s32 D_80056500 = 1;
+char D_80056504[8] = "0b_pZ";
+char D_8005650C[8] = "0c_pZ";
+char D_80056514[8] = "0d_pZ";
+char D_8005651C[8] = "0e_pZ";
+char D_80056524[8] = "0f_pZ";
+char D_8005652C[8] = "1e_pZ";
+char D_80056534[8] = "1a_pZ";
+char D_8005653C[8] = "2b_pZ";
+char D_80056544[8] = "3a_pZ";
+char D_8005654C[8] = "0a_pZ";
+char D_80056554[8] = "%cMapP";
+char D_8005655C[8] = "0MapP";
 
 /* Retail initial value at 0x80056564 is zero; preserve its .sdata placement. */
 EngineState *D_80056564 = NULL;
@@ -35,6 +51,29 @@ s32 func_8002F778(s32);
 
 /* GCC_VERSION: 2.6.3 */
 typedef EngineMode25State State;
+/* Real zero-initialized storage at 0x80056678..0x800566C4.
+ * Unidentified words retain address names; the two typed owners are shared
+ * with object_defaults and update_request. */
+asm(".globl D_80056678, D_8005667C, D_80056680, D_80056684, D_80056688, D_8005668C, D_80056690, D_80056694, D_80056698, D_8005669C, D_800566A0, D_800566A4, D_800566A8, D_800566AC, D_800566B0, D_800566B4, D_800566B8, D_800566BC, D_800566C0");
+s32 D_80056678;
+u32 D_8005667C;
+u32 D_80056680;
+u32 D_80056684;
+u32 D_80056688;
+u32 D_8005668C;
+u32 D_80056690;
+u32 D_80056694;
+u32 D_80056698;
+u32 D_8005669C;
+u32 D_800566A0;
+u32 D_800566A4;
+u32 D_800566A8;
+u32 D_800566AC;
+u32 D_800566B0;
+GoolDefaultsObject *D_800566B4;
+u32 D_800566B8, D_800566BC;
+s32 D_800566C0;
+
 /* Real engine globals in retail address order, 0x800566C4..0x800566FC.
  * The state and grid pointers retain their recovered pointer types. */
 asm(".globl D_800566C4, D_800566C8, D_800566CC, D_800566D0, D_800566D4, D_800566D8, D_800566DC, D_800566E0, D_800566E4, D_800566E8, D_800566EC, D_800566F0, D_800566F4, D_800566F8, D_800566FC");
@@ -69,7 +108,61 @@ s32 func_80031BAC(void)
     return 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80031BF8);
+extern u32 D_800618D0;
+extern s32 D_800618D4;
+extern u32 D_8006194C[];
+s32 func_80031EB4(void);
+
+extern s32 D_8006189C[];
+
+/* Apply a pending mode request and initialise the recovered mode-state words. */
+s32 func_80031BF8(void)
+{
+    s32 request;
+    u32 value;
+    EngineMode25State *reset_state, *requested_state;
+    u32 selection;
+    request = D_80056500;
+    D_80056500 = 0;
+    D_80056678 = request;
+    if (D_80056710 == 25) {
+        D_8006189C[0] = (D_8006189C[0] & 0xFFFE3FF0) | 0x20000;
+        if (request == 0) {
+            value = D_800618D0;
+            switch (value) {
+            case 0: case 0x100: case 0x300: case 0x400:
+                (D_800566E0)->word35D0 = (D_800566E0)->word35D4 = D_800618D4;
+                selection = D_8006194C[0];
+                (D_800566E0)->word3598 = 1;
+                (D_800566E0)->word35A4 = selection;
+                (D_800566E0)->word35A0 = selection;
+                break;
+            case 0x600:
+                reset_state = D_800566E0;
+                value = 5;
+                goto set_value;
+            case 0x200:
+                reset_state = D_800566E0;
+                value = 12;
+set_value:
+                D_800618D4 = value;
+                reset_state->word35D4 = value;
+                reset_state->word35D0 = value;
+                value = 1;
+                reset_state->word3598 = value;
+                break;
+            }
+        } else {
+            D_800618D4 = 10;
+            requested_state = D_800566E0;
+            requested_state->word35D4 = 10;
+            requested_state->word35D0 = 10;
+            requested_state->word3598 = 0;
+        }
+        func_80031EB4();
+    }
+    return 0;
+}
 
 s32 func_80015118(s32 *, s32, s32);
 s32 func_80015458(s32 *, s32);

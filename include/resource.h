@@ -110,6 +110,7 @@ extern ResourceHashMetadata *D_8005C540;
 extern ResourcePool D_8005C91C;
 
 s32 func_800126C0(ResourceHandle *handle);
+s32 func_80012660(u8 *name);
 s32 func_8001439C(void);
 s32 func_80014514(s32 index);
 void func_800148C4(ResourceSlot *slot);

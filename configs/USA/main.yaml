@@ -478,15 +478,12 @@ segments:
       - [0x46BFC, sdata, sdata_46BFC]
       - [0x46CD8, .sdata, math/random_state]
       - [0x46CE0, sdata, sdata_46CE0]
-      - [0x46D64, .sdata, engine/state]
+      - [0x46D00, .sdata, engine/state]
       - [0x46D6C, sdata, sdata_46D6C]
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }
       - { start: 0x46D98, type: sbss, vram: 0x8005665C, name: sbss_5665C }
-      - { start: 0x46D98, type: .sbss, vram: 0x800566B4, name: engine/object_defaults }
-      - { start: 0x46D98, type: sbss, vram: 0x800566B8, name: sbss_566B8 }
-      - { start: 0x46D98, type: .sbss, vram: 0x800566C0, name: engine/update_request }
-      - { start: 0x46D98, type: .sbss, vram: 0x800566C4, name: engine/state }
+      - { start: 0x46D98, type: .sbss, vram: 0x80056678, name: engine/state }
       - { start: 0x46D98, type: bss, vram: 0x80056700, name: bss_56700 }
   - [0x46D98]

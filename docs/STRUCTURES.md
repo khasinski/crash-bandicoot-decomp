@@ -35,6 +35,29 @@ of its own globals. With GCC 2.6.3, introducing those declarations ahead of the
 retail-ordered definitions changes tentative storage order and linked `gp`
 offsets. Consumers and m2c still receive the shared declarations.
 
+The setup routine `func_80031BF8` also establishes `word3598` and the paired
+words at `0x35A0`/`0x35A4`. The latter receive the value of `D_8006194C` and
+remain opaque integer words; copying a register does not establish a pointer
+type. The shared layout retains the allocation's verified `0x35D8` size.
+
+The routine now matches all 86 instructions with the stock GCC 2.6.3 profile.
+Its scalar operand first translates the requested mode to 5/12 and then writes
+the activation flag. It calls `func_80031EB4` without invented arguments: that
+callee reads neither incoming argument register, and another caller invokes it
+after a call that may clobber those registers, without preparing arguments.
+
+`engine/state.c` owns the retail storage at `0x80056500..0x8005656C` and
+`0x80056678..0x80056700`. The first range contains the request's initial value
+one, twelve eight-byte name/format records, the lifecycle pointer and flag.
+The second contains the cached request, opaque words, and the state globals.
+Opaque words are storage views, not claims about the original semantic fields
+or translation-unit boundaries. `object_defaults` and `update_request` use the
+shared owners with sized-extern GNU `-G8` addressing; the resource-selection
+alias retains the native absolute load. Fresh splitting, instruction scoring
+of all 46 C functions across these three units, and the complete retail SHA-1
+verify the ownership move. The strings are code-level resource identifiers and
+format records, not extracted resource payloads.
+
 `tests/layout_assertions.c` checks sizes and offsets using stock GCC 2.6.3,
 including pointer fields. Run `make test` after changing shared declarations.
 Host-compiler layout checks would incorrectly use 64-bit pointers on macOS.

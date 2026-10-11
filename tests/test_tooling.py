@@ -40,6 +40,16 @@ class ToolingTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('func_80031D50: Levenshtein=0', result.stdout)
 
+    def test_mode_setup_uses_verified_storage_owners(self):
+        result = subprocess.run(
+            [sys.executable, 'tools/scripts/probe_profiles.py',
+             'src/main/engine/state.c', '--profile', 'source',
+             '--function', 'func_80031BF8'],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('func_80031BF8: Levenshtein=0', result.stdout)
+
     def test_sized_extern_gp_assembler_profile(self):
         source = ROOT / 'src/main/engine/grid_rectangle.c'
         result = self.run_probe(source)
