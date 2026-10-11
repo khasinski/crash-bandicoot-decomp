@@ -3,14 +3,6 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* The second resource pool has 38 slots, each 0x2C bytes long. */
-typedef struct ResourcePool {
-    s32 count;
-    u8 slots[38][0x2C];
-    s32 active_count;
-} ResourcePool;
-
-extern ResourcePool D_8005C91C;
-void func_80014930(ResourceSlot *slot);
 
 void func_800148C4(ResourceSlot *slot)
 {

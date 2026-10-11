@@ -1,7 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
-#include "common.h"
-typedef struct {u32 entry,name;} Request;
-typedef struct {u32 word0,word4; s32 type;} Entry;
+#include "resource.h"
+typedef ResourceHandle Request;
+typedef ResourceEntry Entry;
 s32 func_8003D740(char *,char *,...);
 extern char D_80051728[],D_80056414[],D_80056718[];
 extern u8 D_8005671C;
@@ -13,9 +13,9 @@ s32 func_800126C0(Request *arg0) {
 
     temp_v1 = arg0->entry;
     if (!(temp_v1 & 3)) {
-        return ((Entry *)temp_v1)->type;
+        return ((Entry *)temp_v1)->kind;
     }
-    temp_a2 = arg0->name;
+    temp_a2 = arg0->id;
     var_v1 = 4;
     if (temp_a2 & 1) {
         D_8005671D = 0;

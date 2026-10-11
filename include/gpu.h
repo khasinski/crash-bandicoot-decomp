@@ -41,4 +41,23 @@ typedef struct GpuDisplayEnv {
     u8 interlaced, rgb24, pad12, pad13;
 } GpuDisplayEnv;
 
+/* func_80040834 copies exactly 0x5C bytes, including the command packet. */
+typedef struct GpuDrawing {
+    GpuDrawEnv env;
+    u32 packet[16];
+} GpuDrawing;
+
+typedef struct GpuTile {
+    GpuPacketHeader header;
+    GpuRect rect;
+} GpuTile;
+
+GpuDrawEnv *func_8003F408(GpuDrawEnv *, s16, s16, s16, s32);
+void func_8003F7D8(u32 *packet);
+void func_8003FA14(GpuPacketHeader *packet);
+void func_80040760(GpuPacketHeader *packet);
+void *func_80040834(GpuDrawing *drawing);
+void func_800408F8(s32 tag, GpuDrawing *drawing);
+void func_800410AC(u32 *packet, GpuDrawing *drawing);
+
 #endif

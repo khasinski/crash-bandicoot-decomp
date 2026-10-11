@@ -3,5 +3,11 @@
 
 #include "common.h"
 #include "engine_ticks.h"
+#include "engine_state.h"
+#include "gool.h"
+#include "object_links.h"
+#include "resource.h"
+#include "render.h"
+#include "vector.h"
 
 #endif

@@ -1,13 +1,13 @@
-#include "common.h"
+#include "gool.h"
+#include "resource.h"
 
 /* GCC_VERSION: 2.6.3 */
-typedef struct {u8 bytes[0x2A];u16 field2A,field2C,field2E;} Defaults;
-typedef struct {u8 pad00[0x10];u8 *data;} Entry;
-typedef struct {u8 pad00[0x28];Entry *entry;u32 word2C;Defaults defaults;} Object;
+typedef GoolDefaults Defaults;
+typedef ResourceEntry Entry;
+typedef GoolDefaultsObject Object;
 /* Export the real small-common storage emitted locally by maspsx. */
 asm(".globl D_800566B4");
 Object *D_800566B4;
-extern Entry *D_80057914;
 void func_8001EA00(Object *object,s32 mode) {
     Entry *entry;
     Defaults *defaults;

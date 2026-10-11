@@ -3,23 +3,9 @@
 #include "common.h"
 #include "resource.h"
 
-typedef struct
-{
-    u8 pad00[0x234];
-    s32 count;
-    u32 word238;
-    u32 refs[1];
-} ZoneLoadInfo;
-
-extern ResourceEntry *D_80057914;
-
-extern ResourceSlot D_800580A0[];
-
 extern s16 D_800580A4[];
 
 extern s32 D_800580B8[];
-
-s32 func_80014514(s32);
 
 /* Prefer free or inactive slots; otherwise evict a texture absent from the
  * current zone load list. Odd references are IDs, even references are entries.

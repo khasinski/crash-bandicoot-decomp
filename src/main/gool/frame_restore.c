@@ -1,8 +1,8 @@
-#include "common.h"
+#include "gool.h"
 
 /* GCC_VERSION: 2.6.3 */
 /* Packed frame offsets are measured in bytes from object offset 0x60. */
-typedef struct {u8 pad00[0xDC];u32 *stack;u32 pc;u32 *frame;} Object;
+typedef GoolRuntimeObject Object;
 s32 func_8001D97C(Object *object,s32 *flags) {
     u32 packed;
     u32 frame_offset;

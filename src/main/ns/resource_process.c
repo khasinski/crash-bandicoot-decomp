@@ -13,8 +13,8 @@
 typedef ResourceEntry Entry;
 typedef ResourceHeader Header;
 typedef ResourceSlot Slot;
-typedef struct {Entry *entry;u32 id;} Bucket;
-typedef struct {s32 (*callback)(Entry *);s32 (*release)(Entry *);u32 words[5];} Handler;
+typedef ResourceBucket Bucket;
+typedef ResourceHandler Handler;
 extern Slot D_8005C554[],D_800580A0[];
 extern Slot *D_8005CFAC;
 extern Bucket **D_8005C530;
@@ -22,8 +22,8 @@ extern Slot **D_8005CFBC;
 extern Handler D_800514EC[];
 extern u32 D_8005728C[];
 GpuRect D_80056420={0,0,256,128};
-s32 func_8001439C(void);
-u32 *func_80015978(s32);
+
+
 void func_80040484(GpuRect *,Header *);
 u8 *func_80012F10(s32 index) {
  Slot *request=&D_8005C554[index],*slot;
@@ -46,7 +46,7 @@ u8 *func_80012F10(s32 index) {
 again_zero:
  entry=request->header->entries[i];
  while(*id_pointer!=entry->id) {id_pointer+=2;bucket++;}
- bucket->entry=entry;
+ bucket->entry=(u32)entry;
  request->references++;
  callback=D_800514EC[entry->kind].callback;
  i++;
@@ -72,7 +72,7 @@ again_zero:
  texture_slot->state=20;
  texture_slot->word18=request->header->id;
  texture_slot->id=request->id;
- texture_slot->mapping=func_80015978(texture_slot->word18);
+ texture_slot->mapping=(u32 *)func_80015978(texture_slot->word18);
  *texture_slot->mapping=(u32)texture_slot->base;
 texture_done:
  request->state=1;
@@ -98,7 +98,7 @@ texture_done:
  else
  D_8005728C[slot->word08]=0x6396347F;
  }
- bucket->entry=(Entry *)((((s32)data-(s32)request->header+(s32)slot->base)*4)|0x80000002);
+ bucket->entry=(u32)((((s32)data-(s32)request->header+(s32)slot->base)*4)|0x80000002);
  callback=D_800514EC[entry->kind].callback;
  i++;
  if(callback)callback(entry);

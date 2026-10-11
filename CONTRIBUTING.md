@@ -7,6 +7,8 @@ Keep C under `src/main/<subsystem>/`, shared declarations under `include/`,
 and target symbols, relocations and split boundaries under `configs/USA/`.
 Use names supported by strings, call graphs or other evidence; retain address
 names when the purpose is uncertain. Translation-unit boundaries are provisional.
+Recovered layouts and the stock-profile search tool are described in
+[docs/STRUCTURES.md](docs/STRUCTURES.md).
 
 Score candidates with `make probe FILE=src/main/<subsystem>/<unit>.c`.
 Instruction Levenshtein distance is the matching metric; relocation fields are

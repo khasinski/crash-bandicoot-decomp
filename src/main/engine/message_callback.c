@@ -1,9 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
-#include "common.h"
-typedef struct {s32 word00,type;} Entry;
-typedef struct {u8 pad00[16];Entry *entry;} Resource;
-typedef struct Actor {u8 pad00[8];s32 bounds[6];Resource *resource;u8 pad24[0x5C];s32 position[3];u8 pad8C[0x24];s32 radius[3];} Actor;
-typedef struct {Actor *source;s32 word04,word08,selector,count,word14;} Message;
+#include "gool.h"
+typedef GoolActorView Actor;
+typedef GoolMessage Message;
 void func_80024040(Actor *, Actor *, s32, s32, s32);     /* extern */
 s32 func_80026B80(s32 *, s32 *);                   /* extern */
 s32 func_80026CA8(s32 *, s32 *);                    /* extern */

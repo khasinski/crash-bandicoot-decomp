@@ -10,7 +10,7 @@
 #   /* CC1_FLAGS: -O2 -fno-strength-reduce */  preserve loop address arithmetic
 #   /* ASPSX_VERSION: 2.56 */     maspsx --aspsx-version
 #   /* GNU_AS_G: 8 */            let GNU as address sized externs through gp
-# Environment overrides: CRASH_GCC_VERSION, CRASH_GCC_CPU, CRASH_ASPSX_VERSION, CRASH_G,
+# Environment overrides: CRASH_GCC_VERSION, CRASH_GCC_CPU, CRASH_ASPSX_VERSION, CRASH_G, CRASH_GNU_AS_G,
 # CRASH_CC1_FLAGS (replaces the whole cc1 flag set; for compiler experiments).
 set -euo pipefail
 
@@ -49,7 +49,7 @@ ASPSX_VERSION="${ASPSX_VERSION:-2.34}"
 G="${CRASH_G:-8}"
 # Keep the existing expansion profile by default. GNU as can also use the
 # compiler's .extern SYMBOL,SIZE declarations when the source requests it.
-GNU_AS_G="$(sed -nE 's/.*GNU_AS_G:[[:space:]]*([0-9]+).*/\1/p' "$IN" | head -1)"
+GNU_AS_G="${CRASH_GNU_AS_G:-$(sed -nE 's/.*GNU_AS_G:[[:space:]]*([0-9]+).*/\1/p' "$IN" | head -1)}"
 GNU_AS_G="${GNU_AS_G:-0}"
 case "$GNU_AS_G" in 0|8) ;; *) echo "unsupported GNU_AS_G: $GNU_AS_G" >&2; exit 1 ;; esac
 

@@ -1,12 +1,11 @@
 #include "common.h"
 #include "engine_ticks.h"
+#define CRASH_ENGINE_STATE_STORAGE
+#include "engine_state.h"
 
 /* GCC_VERSION: 2.6.3 */
 
-/* Partial state layout recovered from retail word accesses. */
-typedef struct EngineState {
-    s32 word00, word04, word08, word0C, word10, word14, word18;
-} EngineState;
+
 
 /* Retail initial value at 0x80056564 is zero; preserve its .sdata placement. */
 EngineState *D_80056564 = NULL;
@@ -16,7 +15,7 @@ extern s32 D_80061978;
 
 
 /* Lifecycle requests and their BIOS event state. */
-typedef struct {s32 *resource; s32 *pending; s32 event;} EventRequest;
+typedef EngineEventRequest EventRequest;
 s32 func_8003CEF0(s32);
 s32 func_8003CAD8(s32);
 s32 func_8003CAF8(s32);
@@ -34,7 +33,7 @@ s32 func_8002F778(s32);
 #include "object_links.h"
 
 /* GCC_VERSION: 2.6.3 */
-typedef struct {u8 pad00[0x359C];s32 word359C;u8 pad35A0[0x30];s32 word35D0, word35D4;} State;
+typedef EngineMode25State State;
 /* Real engine globals in retail address order, 0x800566C4..0x800566FC.
  * The state and grid pointers retain their recovered pointer types. */
 asm(".globl D_800566C4, D_800566C8, D_800566CC, D_800566D0, D_800566D4, D_800566D8, D_800566DC, D_800566E0, D_800566E4, D_800566E8, D_800566EC, D_800566F0, D_800566F4, D_800566F8, D_800566FC");
@@ -54,9 +53,6 @@ s32 *D_800566F4;
 s32 D_800566F8;
 s32 D_800566FC;
 
-extern s32 func_8001B92C(Node *, Visitor, void *);
-extern s32 func_8001D1E0(Node *, void *);
-extern void func_8001BA18(s32 (*)(Node *, Visitor, void *), Visitor, void *);
 extern void func_80032FDC(s32, s32, s32);
 extern void *LIBC_Calloc(int, int);
 extern void func_8003D680(s32);
@@ -546,7 +542,7 @@ s32 func_8003CD3C(void) {
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003CD60);
 
 /* Six-byte state copied as an unaligned record in retail. */
-typedef struct { u8 data[6]; } ByteRecord;
+typedef EngineByteRecord ByteRecord;
 extern ByteRecord D_80056590, D_8005703C;
 
 void func_8003CD60(s32);

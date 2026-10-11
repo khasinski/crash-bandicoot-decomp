@@ -2,7 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-typedef s32 (*Traversal)(Node *, Visitor, void *);
 extern u8 D_80060DB8[];
 void func_8001BA18(Traversal traversal, Visitor visitor, void *context)
 {

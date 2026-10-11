@@ -30,6 +30,8 @@ remain provisional; code bytes are the stronger progress measure.
 Candidate functions are scored exclusively by instruction Levenshtein distance,
 with relocation fields masked. Acceptance requires distance zero and a rebuilt
 executable matching the retail SHA-1. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Shared layouts and the automatic stock-profile comparison tool are documented
+in [docs/STRUCTURES.md](docs/STRUCTURES.md).
 
 ## Quick start
 

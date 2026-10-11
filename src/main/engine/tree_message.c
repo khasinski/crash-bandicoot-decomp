@@ -1,6 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
 #include "object_links.h"
-s32 func_8001B92C(Node *, Visitor, void *);
 s32 func_80024CC8(Node *, void *);
 extern u8 D_80060DB8[];
 s32 func_80025134(Node *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)

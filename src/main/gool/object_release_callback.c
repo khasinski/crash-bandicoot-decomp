@@ -1,7 +1,7 @@
-#include "common.h"
+#include "gool.h"
 
 /* GCC_VERSION: 2.6.3 */
-typedef struct {s32 kind;u8 pad04[0x24];s32 entry;u8 pad2C[0xA0];u32 flagsCC;u8 padD0[0x50];u32 flags120;} Object;
+typedef GoolRuntimeObject Object;
 extern s32 D_80057918;
 extern s32 func_8001CDD0(Object *,s32);
 extern void func_80024040(s32,Object *,s32,s32,s32);

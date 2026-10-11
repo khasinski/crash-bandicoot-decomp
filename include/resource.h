@@ -46,4 +46,60 @@ typedef struct ResourceSlot {
     u32 word28;
 } ResourceSlot;
 
+/* Hash lookup advances by eight bytes, not sizeof(ResourceEntry).
+ * entry may contain a tagged/encoded address, so retain an integer word. */
+typedef ResourceHandle ResourceBucket;
+
+typedef struct ResourceHashMetadata {
+    u8 pad00[0x404];
+    s32 count;
+} ResourceHashMetadata;
+
+typedef struct ResourcePool {
+    s32 count;
+    ResourceSlot slots[38];
+    s32 active_count;
+} ResourcePool;
+
+/* View based at slot + 4, used by the D_800580A4 alias in func_80014514.
+ * The array still advances by 0x2C. Do not confuse this base with a full slot. */
+typedef struct ResourceSlotStateView {
+    s16 state;
+    u8 pad02[0xE];
+    s32 id;
+    u8 pad14[8];
+    s32 *id_pointer;
+    u8 pad20[0xC];
+} ResourceSlotStateView;
+
+typedef struct ZoneLoadInfo {
+    u8 pad00[0x234];
+    s32 count;
+    u32 word238;
+    u32 refs[1];
+} ZoneLoadInfo;
+
+typedef struct ResourceHandler {
+    s32 (*callback)(ResourceEntry *);
+    s32 (*release)(ResourceEntry *);
+    u32 words[5];
+} ResourceHandler;
+
+/* Shared owners confirmed by the lookup, allocation and unref units.
+ * Offset aliases and the ambiguously typed D_8005CFBC table stay local. */
+extern ResourceEntry *D_80057914;
+extern ResourceSlot D_800580A0[];
+extern ResourceBucket **D_8005C530;
+extern ResourceBucket *D_8005C534;
+extern ResourceHashMetadata *D_8005C540;
+extern ResourcePool D_8005C91C;
+
+s32 func_800126C0(ResourceHandle *handle);
+s32 func_8001439C(void);
+s32 func_80014514(s32 index);
+void func_800148C4(ResourceSlot *slot);
+void func_80014930(ResourceSlot *slot);
+ResourceBucket *func_80015978(s32 id);
+ResourceBucket *func_800159C4(u32 id);
+
 #endif

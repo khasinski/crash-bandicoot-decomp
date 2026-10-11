@@ -27,8 +27,10 @@ ROOT = Path(__file__).resolve().parents[2]
 GLABEL_RE = re.compile(r"^\s*glabel\s+(\S+)")
 INSN_RE = re.compile(r"/\*\s*([0-9A-F]+)\s+([0-9A-F]{8})\s+([0-9A-F]{8})\s*\*/")
 
-# R_MIPS_26, R_MIPS_HI16, R_MIPS_LO16, R_MIPS_GPREL16
-MASKS = {4: 0x03FFFFFF, 5: 0xFFFF, 6: 0xFFFF, 7: 0xFFFF}
+# R_MIPS_26, R_MIPS_HI16, R_MIPS_LO16, R_MIPS_GPREL16, R_MIPS_PC16.
+# Included assembly can leave local branch targets for the linker to resolve.
+# Mask PC16 only where an actual relocation exists, not ordinary branch offsets.
+MASKS = {4: 0x03FFFFFF, 5: 0xFFFF, 6: 0xFFFF, 7: 0xFFFF, 10: 0xFFFF}
 
 
 def retail_functions(version: str) -> dict[str, list[int]]:
@@ -93,6 +95,10 @@ def disasm(word: int) -> str:
 
 def levenshtein(got, mask, exp):
     """Instruction edit distance; source relocations are ignored when aligning."""
+    if len(got) == len(exp) and all(
+            (word & ~mask[i]) == (exp[i] & ~mask[i])
+            for i, word in enumerate(got)):
+        return 0, []
     from array import array
     rows = [array("I", range(len(exp) + 1))]
     for i, word in enumerate(got):

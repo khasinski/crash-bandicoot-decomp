@@ -1,5 +1,5 @@
-#include "common.h"
-typedef struct {s16 state;u8 pad02[0xE];s32 id;u8 pad14[8];s32 *id_pointer;u8 pad20[0xC];} Slot;
+#include "resource.h"
+typedef ResourceSlotStateView Slot;
 extern Slot D_800580A4[];
 extern s32 *D_8005CFBC;
 s32 func_80014514(s32 arg0) {

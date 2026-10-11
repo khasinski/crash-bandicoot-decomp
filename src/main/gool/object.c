@@ -15,7 +15,6 @@ s32 func_8001D1E0(Node *obj, void *context)
 
 extern u8 D_80060DB8[];
 extern s32 func_8001D11C(Node *, void *);
-extern s32 func_8001B92C(Node *, Visitor, void *);
 
 void func_8001D200(void *object)
 {

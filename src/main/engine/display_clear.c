@@ -1,12 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gpu.h"
-typedef struct {GpuDrawEnv env;u32 packet[16];} Drawing;
-typedef struct {GpuPacketHeader header;GpuRect rect;} Tile;
-GpuDrawEnv *func_8003F408(GpuDrawEnv *,s16,s16,s16,s32);
-void *func_80040834(Drawing *);
-void func_8003F7D8(u32 *);
-void func_8003FA14(GpuPacketHeader *);
-s32 func_80040760(GpuPacketHeader *);
+typedef GpuDrawing Drawing;
+typedef GpuTile Tile;
+
 void func_8001696C(void) {
     Drawing drawing;
     Tile tile;

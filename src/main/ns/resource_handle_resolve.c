@@ -2,7 +2,6 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 #include "resource.h"
-extern ResourceHandle **D_8005C530;
 s32 func_80014C08();
 s32 func_80015A98(u32 *reference) {
     u32 id = *reference;

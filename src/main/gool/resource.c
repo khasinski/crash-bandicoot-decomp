@@ -14,19 +14,19 @@ extern s32 D_80061A64;
 void func_800257B4(ObjectView *object)
 {
     u8 *resource = object->resource;
-    if (!(*(u32 *)(resource + 0x2DC) & 1)) {
+    if (!(*(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) & 1)) {
         D_80061A5C = 0;
         D_80061A64 = 0;
         D_80061A60 = 0x19000;
-        *(u32 *)(resource + 0x2DC) |= 3;
+        *(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) |= 3;
     }
 }
 
 void func_80025804(ObjectView *object)
 {
     u8 *resource = object->resource;
-    if (*(u32 *)(resource + 0x2DC) & 1) {
+    if (*(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) & 1) {
         func_8001D200(object);
-        *(u32 *)(resource + 0x2DC) &= ~3;
+        *(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) &= ~3;
     }
 }
