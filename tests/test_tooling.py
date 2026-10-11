@@ -50,6 +50,12 @@ class ToolingTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('func_80031BF8: Levenshtein=0', result.stdout)
 
+    def test_render_mode_initialization_matches_retail(self):
+        result = self.run_probe(ROOT / 'src/main/render/mode_initialize.c')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('func_80017790', result.stdout)
+        self.assertIn('Levenshtein=0', result.stdout)
+
     def test_sized_extern_gp_assembler_profile(self):
         source = ROOT / 'src/main/engine/grid_rectangle.c'
         result = self.run_probe(source)

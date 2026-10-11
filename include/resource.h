@@ -32,6 +32,20 @@ typedef struct ResourceItemSelection {
     u32 word204;
 } ResourceItemSelection;
 
+/* First item of the map resource consumed by func_80031EB4. */
+typedef struct ResourceMapMetadata {
+    s32 word00, word04;
+    u32 word08;
+    s32 count;
+} ResourceMapMetadata;
+
+/* The native filter loads +0x18 with lh, then compares its sign-extended
+ * value as unsigned. Do not replace this with a word or an unsigned halfword. */
+typedef struct ResourceMapItem {
+    u8 pad00[0x18];
+    s16 word18;
+} ResourceMapItem;
+
 typedef struct ResourceHeader {
     u16 word00;
     u16 kind;

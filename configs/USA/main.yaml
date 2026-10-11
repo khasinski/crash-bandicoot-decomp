@@ -124,6 +124,7 @@ segments:
       - [0x7DC8, c, engine/noop_175C8]
       - [0x7DD0, c, render/value_range]
       - [0x7E10, asm, text_7E10]
+      - [0x7F90, c, render/mode_initialize]
       - [0x8168, c, render/word_transform]
       - [0x8214, asm, text_8214]
       - [0x88A0, c, render/transform]

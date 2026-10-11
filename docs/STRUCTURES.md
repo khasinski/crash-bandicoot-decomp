@@ -58,6 +58,22 @@ of all 46 C functions across these three units, and the complete retail SHA-1
 verify the ownership move. The strings are code-level resource identifiers and
 format records, not extracted resource payloads.
 
+`func_80017790` now matches 118 instructions as `render/mode_initialize.c`.
+It preserves the current distance for unrecognised context modes, maps the
+five recognised modes to their native distances, sets the nine matrix
+halfwords, and resets the camera words. `RenderProjectionState` describes the
+distance and matrix; `RenderCameraPrefix` derives the transform address from
+the verified `0x6C` displacement. The matrix pointer is used for both its
+first store and the GTE call, reproducing the native shared base register.
+
+Further work on `func_80031EB4` established the map metadata count at `+0xC`
+and a signed halfword at map-item offset `+0x18`. The unsigned filter must
+compare the sign-extended halfword, not a word or zero-extended value. Native
+iteration reads item index two before advancing the cursor; the first m2c
+sketch misplaced that advancement. The setup still has a nonzero distance
+and is not promoted; its larger stack frame needs evidence rather than
+artificial padding.
+
 `tests/layout_assertions.c` checks sizes and offsets using stock GCC 2.6.3,
 including pointer fields. Run `make test` after changing shared declarations.
 Host-compiler layout checks would incorrectly use 64-bit pointers on macOS.

@@ -11,7 +11,10 @@ typedef struct EngineState {
 
 /* Separate allocation in func_80031BAC; last observed word is at 0x35D4. */
 typedef struct EngineMode25State {
-    u8 pad00[0x3598];
+    /* Encoded map reference, derived words, and metadata copied by 31EB4. */
+    u32 word00;
+    s32 word04, word08, word0C, word10, word14, word18;
+    u8 pad1C[0x357C];
     s32 word3598, word359C;
     /* func_80031BF8 copies the word at D_8006194C into both fields.
      * The instructions establish word width, not pointer semantics. */

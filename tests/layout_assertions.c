@@ -11,6 +11,9 @@
 
 SIZE(EngineState, 0x1C);
 SIZE(EngineMode25State, 0x35D8);
+OFFSET(EngineMode25State, word00, 0);
+OFFSET(EngineMode25State, word0C, 0xC);
+OFFSET(EngineMode25State, word18, 0x18);
 OFFSET(EngineMode25State, word359C, 0x359C);
 OFFSET(EngineMode25State, word3598, 0x3598);
 OFFSET(EngineMode25State, word35A0, 0x35A0);
@@ -55,6 +58,9 @@ OFFSET(ResourceEntry, kind, 8);
 OFFSET(ResourceEntry, data, 0x10);
 OFFSET(ResourceItemListView, items, 0x10);
 OFFSET(ResourceItemSelection, word204, 0x204);
+SIZE(ResourceMapMetadata, 16);
+OFFSET(ResourceMapMetadata, count, 12);
+OFFSET(ResourceMapItem, word18, 0x18);
 OFFSET(ResourceHeader, entries, 0x10);
 SIZE(ResourceSlot, 0x2C);
 OFFSET(ResourceSlot, state, 4);
@@ -87,3 +93,7 @@ OFFSET(RenderBuffer, word78, 0x78);
 OFFSET(RenderBuffer, ordering_table, 0x88);
 SIZE(RenderBuffer, 0x2088);
 SIZE(RenderTransformWords, 0x12);
+OFFSET(RenderContextView, word114, 0x114);
+SIZE(RenderProjectionState, 0x18);
+OFFSET(RenderProjectionState, matrix, 4);
+OFFSET(RenderCameraPrefix, projection, 0x6C);
