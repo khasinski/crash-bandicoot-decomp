@@ -28,6 +28,18 @@ class ToolingTests(unittest.TestCase):
             line = next(line for line in result.stdout.splitlines() if name in line)
             self.assertIn('MATCH', line)
 
+    def test_mode_transition_uses_shared_resource_layouts(self):
+        # Score the C function independently of retained assembly/data aliases
+        # in the same unit; the retail reference verifies slot stride and order.
+        result = subprocess.run(
+            [sys.executable, 'tools/scripts/probe_profiles.py',
+             'src/main/engine/state.c', '--profile', 'source',
+             '--function', 'func_80031D50'],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('func_80031D50: Levenshtein=0', result.stdout)
+
     def test_sized_extern_gp_assembler_profile(self):
         source = ROOT / 'src/main/engine/grid_rectangle.c'
         result = self.run_probe(source)

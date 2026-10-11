@@ -2,6 +2,7 @@
 #include "engine_ticks.h"
 #define CRASH_ENGINE_STATE_STORAGE
 #include "engine_state.h"
+#include "resource.h"
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -69,7 +70,47 @@ s32 func_80031BAC(void)
 }
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80031BF8);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80031D50);
+
+s32 func_80015118(s32 *, s32, s32);
+s32 func_80015458(s32 *, s32);
+void func_80025A60(ResourceItemListView *, u8 *, s32, s32);
+extern s32 D_80056400, D_8005640C;
+extern s32 D_8006189C[];
+extern ResourceSlotStateView D_800580A4[];
+
+/* Change mode flags, recycle pending texture slots 8..14, and initialise
+ * the item selected by the resource metadata before releasing the reference. */
+void func_80031D50(s32 *reference, s32 mode)
+{
+    s32 index;
+    ResourceItemListView *resource;
+    D_80056400 = 0;
+    D_8005640C = -1;
+    func_8001BA18(func_8001B92C, func_8001D1E0, NULL);
+    switch (mode) {
+    case 0:
+        D_8006189C[0] = (D_8006189C[0] & 0xFFFE3FF0) | 0x20000;
+        D_800566E0->word359C = 1;
+        break;
+    case 1:
+        D_8006189C[0] = 0xFFFF;
+        D_800566E0->word359C = 0;
+        for (index = 8; index < 15; index++) {
+            if (D_800580A4[index].state == 30)
+                D_800580A4[index].state = 1;
+        }
+        break;
+    case 3:
+        D_8006189C[0] = 0x2FFFC;
+        D_800566E0->word359C = 1;
+        break;
+    }
+    resource = (ResourceItemListView *)func_80015118(reference, 1, 1);
+    func_80025A60(resource,
+        resource->items[((ResourceItemSelection *)resource->items[0])->word204], 0, 2);
+    func_80015458(reference, 1);
+}
+
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80031EB4);
 
 void func_80032244(void)

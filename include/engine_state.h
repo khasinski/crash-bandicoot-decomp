@@ -36,5 +36,6 @@ extern EngineMode25State *D_800566E0;
 #endif
 void func_8003AE08(EngineEventRequest *request);
 void func_8003AED8(EngineEventRequest *request);
+void func_80031D50(s32 *reference, s32 mode);
 
 #endif

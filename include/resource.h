@@ -17,6 +17,21 @@ typedef struct ResourceEntry {
     u8 *data;
 } ResourceEntry;
 
+/* Item-pointer view used by func_80031D50 on a resolved resource entry.
+ * The first item is at +0x10; subsequent items follow at four-byte intervals.
+ * Keep separate from ResourceHeader, whose page-header fields differ. */
+typedef struct ResourceItemListView {
+    u8 pad00[0x10];
+    u8 *items[1];
+} ResourceItemListView;
+
+/* The first item's word at +0x204 selects another item in that list.
+ * The remainder of this item's layout and its complete size are unknown. */
+typedef struct ResourceItemSelection {
+    u8 pad00[0x204];
+    u32 word204;
+} ResourceItemSelection;
+
 typedef struct ResourceHeader {
     u16 word00;
     u16 kind;

@@ -39,6 +39,16 @@ offsets. Consumers and m2c still receive the shared declarations.
 including pointer fields. Run `make test` after changing shared declarations.
 Host-compiler layout checks would incorrectly use 64-bit pointers on macOS.
 
+`func_80031D50` is the first new match using these shared layouts. The native
+function uses `EngineMode25State.word359C`, scans texture slot states 8..14
+with the recovered `0x2C` stride, and selects a resource item through the first
+item's word at `+0x204`. The separate `ResourceItemListView` describes that
+item-pointer array at `+0x10`; it must not be mistaken for a page header.
+An indexed loop over `ResourceSlotStateView` matches all 89 native instructions
+under the unit's stock GCC 2.6.3 profile. The initial manual cursor loop had the
+same instruction count but Levenshtein distance four from initialization order.
+The linked executable also passes the retail checksum.
+
 A direct field expression can change register allocation or alias analysis.
 For the resource flag routines, the matching byte-pointer access is retained,
 with `CRASH_OFFSETOF(GoolResourceState, flags2DC)` deriving its offset from the

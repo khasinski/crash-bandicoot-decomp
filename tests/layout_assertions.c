@@ -50,6 +50,8 @@ SIZE(ResourceHandle, 8);
 SIZE(ResourceEntry, 0x14);
 OFFSET(ResourceEntry, kind, 8);
 OFFSET(ResourceEntry, data, 0x10);
+OFFSET(ResourceItemListView, items, 0x10);
+OFFSET(ResourceItemSelection, word204, 0x204);
 OFFSET(ResourceHeader, entries, 0x10);
 SIZE(ResourceSlot, 0x2C);
 OFFSET(ResourceSlot, state, 4);
