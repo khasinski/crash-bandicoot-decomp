@@ -39,6 +39,21 @@ typedef struct ResourceMapMetadata {
     s32 count;
 } ResourceMapMetadata;
 
+/* Partial level-data view used by func_8002E98C. Six words at +0x510
+ * are copied to GoolActorView.bounds. The data beginning at +0x52C
+ * has an unknown length; sizeof this view is not the resource size. */
+typedef struct LevelResourceView {
+    u8 pad00[4];
+    s32 word04;
+    u8 pad08[4];
+    s32 word0C;
+    u8 bytes10[0x4FC];
+    u32 word50C;
+    s32 bounds[6];
+    u8 pad528[4];
+    u8 bytes52C[1];
+} LevelResourceView;
+
 /* The native filter loads +0x18 with lh, then compares its sign-extended
  * value as unsigned. Do not replace this with a word or an unsigned halfword. */
 typedef struct ResourceMapItem {

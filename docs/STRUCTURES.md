@@ -219,3 +219,14 @@ and two share the timeout check without becoming a range comparison. The
 existing word alias for the flag shadow preserves the dispatcher's native
 store/load order. Target assertions check all three named directory fields;
 linked instructions and the complete executable match.
+
+`func_8002E98C` now matches all 76 instructions using `ResourceEntry`,
+`GoolActorView`, and a partial `LevelResourceView`. It resolves the level
+resource, creates an object with a two-word argument array, copies six bounds
+words from resource `+0x510` to actor `+8`, and updates the level globals.
+The cache word is copied from resource `+0x50C` to cache `+0x7C`; keeping that
+copy and the captured actor pointer reproduces the native load order. The
+resource data beginning at `+0x52C` has an unknown length. Target ABI assertions
+cover the recovered offsets without claiming the complete resource size.
+Both object and linked instruction Levenshtein distances are zero, and the
+whole rebuilt executable retains the retail SHA-1.

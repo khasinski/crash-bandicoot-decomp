@@ -72,6 +72,12 @@ OFFSET(Node, children, 0x6C);
 
 SIZE(ResourceHandle, 8);
 SIZE(ResourceEntry, 0x14);
+OFFSET(LevelResourceView, word04, 4);
+OFFSET(LevelResourceView, word0C, 0xC);
+OFFSET(LevelResourceView, bytes10, 0x10);
+OFFSET(LevelResourceView, word50C, 0x50C);
+OFFSET(LevelResourceView, bounds, 0x510);
+OFFSET(LevelResourceView, bytes52C, 0x52C);
 OFFSET(ResourceEntry, kind, 8);
 OFFSET(ResourceEntry, data, 0x10);
 OFFSET(ResourceItemListView, items, 0x10);
