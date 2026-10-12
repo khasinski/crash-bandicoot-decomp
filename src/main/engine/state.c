@@ -323,7 +323,13 @@ INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034270);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034290);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800342B0);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800342D8);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034504);
+/* The following assembly label contains a writable counter word, not an
+ * ABI function. Retain its original address while typing this data access. */
+extern u32 engine_counter_80034520[] __asm__("func_80034520");
+void func_80034504(void)
+{
+    engine_counter_80034520[0]++;
+}
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034520);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034524);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034580);

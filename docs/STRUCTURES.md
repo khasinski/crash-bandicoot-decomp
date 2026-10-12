@@ -186,3 +186,8 @@ accepts `CRASH_GNU_AS_G` for experiments; promote that setting through the
 existing `GNU_AS_G` source comment. Relocation masks cover actual relocation
 fields, including PC-relative branch targets, while ordinary branch offsets
 and instruction opcodes remain part of the Levenshtein comparison.
+
+`func_80034504` increments the word at `0x80034520` with seven matching
+instructions. The retained label `func_80034520` contains that writable
+counter word; it is accessed through a word-array alias rather than called
+as a C function. This does not change the report denominator.
