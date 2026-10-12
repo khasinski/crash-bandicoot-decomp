@@ -127,8 +127,9 @@ This writer also resolves the earlier request-type ambiguity. Its third word
 stores the address of the pathname, which `func_8003AE08` forwards to the BIOS
 cleanup wrapper. `EngineFileRequest` now types that word as `char *path`;
 `EngineEventRequest` remains a compatibility typedef, not a separate layout.
-The shared directory view exposes the native words at `0x1C`, `0x20` and
-`0x24` without assigning semantics to the latter two.
+The directory scan identifies `empty_scan_count` at `0x1C`, `record_count`
+at `0x20` and `record_cursor` at `0x24`. The writer also uses the last
+directory record to select a new filename.
 
 `func_8003C9B8` and `func_8003CA04` each match 19 instructions for directory
 refresh and list reset. The 70-instruction sector check `func_8003CEF0`
@@ -204,3 +205,17 @@ Scalar and array aliases preserve the SDK's distinct accesses to the volatile
 event bytes at `0x8005587C` and `0x8005587D`. The five-entry switch table is
 owned by this C unit at `0x8001156C`; the following retained assembly begins
 at `0x800440EC`. Both linked instructions and the whole executable match.
+
+Three more card routines match 236 instructions in total. The 76-instruction
+dispatcher `func_8003A94C` compares cached flags and mode before choosing
+one of nine mode entries, then publishes the flags and slot count. Its
+cached words at `0x8005656C` and `0x80056570` both start at `0xFFFFFFFF` so
+the first poll registers a change. The 74-instruction `func_8003AA7C` handles
+card operation events and resets the list after completion or failure. The
+86-instruction `func_8003AC2C` enumerates and sorts directory records,
+accepting an empty directory after eleven empty scans. It resets the record
+cursor when the list is ready. Distinct switch entries for event codes one
+and two share the timeout check without becoming a range comparison. The
+existing word alias for the flag shadow preserves the dispatcher's native
+store/load order. Target assertions check all three named directory fields;
+linked instructions and the complete executable match.

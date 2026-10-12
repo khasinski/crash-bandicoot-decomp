@@ -75,6 +75,8 @@ segments:
       - [0x110C, rodata, rodata_110C]
       - [0x14D0, .rodata, engine/audio_initialize]
       - [0x1594, rodata, rodata_1594]
+      - [0x16C0, .rodata, engine/state]
+      - [0x16E4, rodata, rodata_16E4]
       - [0x1D6C, .rodata, sdk/libcd/interrupt_dispatch]
       - [0x1D80, rodata, rodata_1D80]
       - [0x1EA8, .rodata, sdk/libspu/voice_attributes_set]
@@ -483,7 +485,7 @@ segments:
       - [0x46CD8, .sdata, math/random_state]
       - [0x46CE0, sdata, sdata_46CE0]
       - [0x46D00, .sdata, engine/state]
-      - [0x46D6C, sdata, sdata_46D6C]
+      - [0x46D74, sdata, sdata_46D74]
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }

@@ -37,8 +37,9 @@ SIZE(EngineDirectoryRecord, 0x28);
 SIZE(EngineDirectorySlot, 0x4C);
 OFFSET(EngineDirectorySlot, record_index, 8);
 SIZE(EngineDirectoryState, 0x6F4);
-OFFSET(EngineDirectoryState, word1C, 0x1C);
-OFFSET(EngineDirectoryState, word20, 0x20);
+OFFSET(EngineDirectoryState, empty_scan_count, 0x1C);
+OFFSET(EngineDirectoryState, record_count, 0x20);
+OFFSET(EngineDirectoryState, record_cursor, 0x24);
 OFFSET(EngineDirectoryState, slots, 0x28);
 OFFSET(EngineDirectoryState, records, 0x49C);
 

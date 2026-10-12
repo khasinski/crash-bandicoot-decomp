@@ -79,7 +79,7 @@ typedef struct EngineDirectorySlot {
  * this view separate from the independent 0x35D8-byte mode-25 allocation. */
 typedef struct EngineDirectoryState {
     EngineState prefix;
-    s32 word1C, word20, word24;
+    s32 empty_scan_count, record_count, record_cursor;
     EngineDirectorySlot slots[15];
     EngineDirectoryRecord records[15];
 } EngineDirectoryState;

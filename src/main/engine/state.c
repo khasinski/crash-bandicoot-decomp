@@ -28,7 +28,11 @@ char D_8005655C[8] = "0MapP";
 EngineState *D_80056564 = NULL;
 /* Preserved render-state flag, initial retail value 1 at 0x80056568. */
 s32 D_80056568 = 1;
+/* Sentinel values make the first card flags/mode poll register a change. */
+s32 D_8005656C = -1;
+u32 D_80056570 = 0xFFFFFFFF;
 extern s32 D_80061978;
+extern s32 engine_flag_shadow[] __asm__("D_80061978");
 
 
 /* File cleanup requests and lifecycle entry points. */
@@ -357,8 +361,80 @@ INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003913C);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80039BD4);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003A144);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003A76C);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003A94C);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003AA7C);
+/* Both cached words are compared before dispatching the current card mode. */
+s32 func_8003CB88(void), func_8003CB74(void), func_8003AC2C(void), func_8003ABA4(void);
+void func_8003C3D4(void), func_8003C3DC(void), func_8003AA7C(void), func_8003AF24(void);
+void func_8003B8B8(s32), func_8003C358(void);
+s32 func_8003C038(void);
+extern s32 D_80061980;
+
+void func_8003A94C(void)
+{
+    u32 mode;
+
+    if (D_8005656C != func_8003CB88()) {
+        D_8005656C = func_8003CB88();
+        func_8003C3D4();
+    }
+    if (D_80056570 != func_8003CB74()) {
+        D_80056570 = func_8003CB74();
+        func_8003C3DC();
+    }
+    mode = func_8003CB74();
+    switch (mode) {
+    case 0: func_8003AA7C(); break;
+    case 1: func_8003AC2C(); break;
+    case 5: func_8003AF24(); break;
+    case 6: case 7: case 8: func_8003B8B8(func_8003CB74()); break;
+    case 2: func_8003C038(); break;
+    case 3: func_8003C358(); break;
+    case 4: func_8003ABA4(); break;
+    }
+    engine_flag_shadow[0] = func_8003CB88();
+    D_80061980 = D_80056564->word08;
+}
+
+s32 func_8003C420(void), func_8003C608(void), func_8003C3E4(s32);
+void func_8003C69C(void), func_80051424(s32), func_80051494(s32);
+
+void func_8003AA7C(void)
+{
+    s32 result;
+
+    if (D_80056564->word18) {
+        D_80056564->word18 = 0;
+        func_80051424(0);
+    }
+    result = func_8003C420();
+    switch (result) {
+    case 1:
+        func_8003CAF8(0);
+        func_8003CAB0(2);
+        return;
+    case 0:
+        if (!(func_8003CB88() & 4)) {
+            func_8003CAF8(0);
+            return;
+        }
+    case 3:
+        func_8003C69C();
+        func_80051494(0);
+        if (!func_8003C608()) {
+            func_8003CAD8(6);
+            func_8003CAB0(0x38);
+            func_8003CAF8(4);
+            func_8003C3E4(150);
+            goto reset_list;
+        }
+    case 2:
+        func_8003CAF8(0);
+        func_8003CAB0(4);
+        func_8003CAD8(8);
+reset_list:
+        func_8003CA04(0);
+        return;
+    }
+}
 
 s32 func_8003ABA4(void) {
     s32 result;
@@ -382,7 +458,53 @@ s32 func_8003ABA4(void) {
     return result;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003AC2C);
+extern char D_80056574[];
+void func_8003C538(void), func_80051434(s32), func_8003CA50(void);
+void func_8003C7A8(EngineDirectoryRecord *, s32);
+
+s32 func_8003AC2C(void)
+{
+    s32 result, count;
+
+    if (D_80056564->word18) {
+        D_80056564->word18 = 0;
+        func_8003C538();
+        func_80051434(0);
+    }
+    result = func_8003C420();
+    switch (result) {
+    case 0:
+        count = func_8003C714(D_80056574, ((EngineDirectoryState *)D_80056564)->records);
+        func_8003C7A8(((EngineDirectoryState *)D_80056564)->records, count);
+        if (count > 0 || ++((EngineDirectoryState *)D_80056564)->empty_scan_count >= 11) {
+            func_8003CAD8(2);
+            func_8003CA50();
+            func_8003CAF8(5);
+            func_8003C3E4(32);
+            D_80056564->word08 = 0;
+            ((EngineDirectoryState *)D_80056564)->record_count = count;
+            ((EngineDirectoryState *)D_80056564)->record_cursor = 0;
+            return 1;
+        }
+        goto retry;
+    case 1:
+        goto check_card;
+    case 2:
+check_card:
+        if (!func_8003C3FC()) {
+retry:
+            func_8003CAF8(1);
+            return 0;
+        }
+    case 3:
+        func_8003CA04(4);
+        func_8003CAB0(2);
+        func_8003CAF8(0);
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 s32 func_8003AD84(s32 count,s32 limit,void (*callback)(void *),void *arg) {
     s32 result;
@@ -515,7 +637,7 @@ void func_8003B8B8(s32 mode)
         func_8003D740(path, D_8005657C, D_80056574,
             ((EngineDirectoryState *)D_80056564)->records[slot->record_index].bytes);
     } else {
-        counter = ((EngineDirectoryState *)D_80056564)->word20 - 1;
+        counter = ((EngineDirectoryState *)D_80056564)->record_count - 1;
         index = 0;
         if (counter >= 0) {
             counter = counter * sizeof(EngineDirectoryRecord)
@@ -894,7 +1016,7 @@ s32 func_8003C9B8(void)
         state = (EngineDirectoryState *)D_80056564;
         state->prefix.word14 = 0;
         state->prefix.word10 = 64;
-        state->word1C = 0;
+        state->empty_scan_count = 0;
         return 0;
     } else {
         return 1;
@@ -1111,7 +1233,6 @@ s32 func_8003D008(void)
 
 /* Alias view of the shared flag word; retain the native ordering of state
  * writes and their externally visible shadow store. */
-extern s32 engine_flag_shadow[] __asm__("D_80061978");
 
 s32 func_8003D028(s32 value)
 {
