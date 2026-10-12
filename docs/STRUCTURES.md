@@ -9,6 +9,7 @@ original object unless an allocation or copy establishes it.
 | `gool.h` | Runtime object: entry `0x28`, flags `0xCC`/`0x120`, stack/PC/frame `0xDC`/`0xE0`/`0xE4`, value `0x138`; frame restore and release routines |
 | `gool.h` | Separate defaults block (`0x30` bytes) and collision/message actor view: bounds `0x08`, resource `0x20`, position `0x80`, radius `0xB0` |
 | `engine_state.h` | Lifecycle prefix; separate mode-25 allocation ending at `0x35D8`; event request's two pointers and event word |
+| `engine_state.h` | `0x80` save record with checksum `0x7C`; directory slots `0x28`/stride `0x4C` and records `0x49C`/stride `0x28`, ending at `0x6F4` |
 | `resource.h` | Resource entries, handles, `0x2C` slots, eight-byte hash buckets, pool counter at `0x68C`, zone references at `0x23C` |
 | `gpu.h`, `render.h` | `0x5C` drawing snapshot; buffer display `0x04`, drawing `0x18`, cursors `0x74`/`0x78`, ordering table `0x88` |
 
@@ -87,6 +88,30 @@ at `0x800619D4..0x80061A0C` and embeds the mode/flag update also implemented by
 copy and the existing public setter without changing compiler options. The
 linked executable's retail SHA-1 verifies all three new routines and the
 refactored setter together.
+
+`EngineSaveRecord` is used by both the 61-instruction writer
+`func_8003BE40` and the 50-instruction validator/restorer `func_8003BF34`.
+Both process `0x80` bytes with the checksum word at `0x7C` cleared. The writer
+also establishes the word at `0x24`; the remaining payload bytes stay opaque.
+The same public restorer is inline in the 200-instruction memory-card reader
+`func_8003C038`, matching both its separate function and its embedded copy.
+
+The reader establishes selected-file slots at `0x28`, with a `0x4C` stride
+and a directory-record index at slot `+8`. Fifteen slots end at `0x49C`, where
+fifteen `0x28`-byte directory records fill the lifecycle allocation through
+`0x6F4`. The header's directory view preserves the unknown slot fields and
+keeps the mode-25 allocation separate. The reader uses the existing event
+request's resource pointer for its file descriptor and retries each I/O
+operation up to three times. A retry expression retains the operation at its
+call site; passing a precomputed buffer pointer to an inline helper changes
+the native register lifetimes. One counter serves the three-block and
+five-record loops. All 200 instructions and the complete retail SHA-1 match.
+
+The three requests `func_8003D028`, `func_8003D3D8`, and `func_8003D444` match
+27, 27 and 26 instructions respectively. They use the lifecycle prefix and
+a word alias for the shared flag shadow at `0x80061978`. The alias keeps the
+state updates and shadow write in their native order. The new save and
+directory sizes and offsets are checked by the target ABI assertions.
 
 `tests/layout_assertions.c` checks sizes and offsets using stock GCC 2.6.3,
 including pointer fields. Run `make test` after changing shared declarations.

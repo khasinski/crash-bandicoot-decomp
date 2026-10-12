@@ -431,13 +431,146 @@ INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B74C);
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B8B8);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003BE40);
+/* Word views of the runtime values serialised in the save record. */
+extern u32 D_80061944[], D_80061908[], D_8006190C[], D_80061910[];
+extern u32 D_80061914[], D_80061918[], D_80061988[], D_800619AC[];
+extern u32 D_80061948[], D_800618DC[], D_80061A10[], D_80061A14[];
+u32 func_8003BFFC(u8 *, u32);
+void func_80026200(s32);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003BF34);
+void func_8003BE40(EngineSaveRecord *record)
+{
+    s32 index;
+    u32 settings;
+
+    for (index = sizeof(*record) - 1; index >= 0; index--)
+        ((u8 *)record)[index] = 0;
+    record->word00 = D_80061944[0] | (D_80061A10[0] << 5)
+        | (D_80061A14[0] << 10);
+    record->word04 = D_80061944[0];
+    record->word08 = D_80061908[0];
+    record->word0C = D_8006190C[0];
+    record->word10 = D_80061910[0];
+    record->word14 = D_80061914[0];
+    record->word18 = D_80061918[0];
+    record->word1C = D_80061988[0];
+    settings = D_800619AC[0];
+    record->word24 = 0;
+    record->word20 = settings;
+    record->checksum = func_8003BFFC((u8 *)record, sizeof(*record));
+}
+
+inline s32 func_8003BF34(EngineSaveRecord *record)
+{
+    u32 level, settings;
+    u32 checksum = record->checksum;
+
+    record->checksum = 0;
+    if (checksum != func_8003BFFC((u8 *)record, sizeof(*record))) {
+        return 0;
+    } else {
+        func_80026200(1);
+        level = record->word04;
+        D_80061944[0] = level;
+        D_80061908[0] = record->word08;
+        D_8006190C[0] = record->word0C;
+        D_80061910[0] = record->word10;
+        D_80061914[0] = record->word14;
+        D_80061918[0] = record->word18;
+        D_80061988[0] = record->word1C;
+        settings = record->word20;
+        D_800619AC[0] = settings;
+        D_80061948[0] = level;
+        D_800618DC[0] = level;
+        return 1;
+    }
+}
 
 #include "checksum.c"
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003C038);
+extern char D_80056574[], D_8005657C[];
+s32 func_8003D740(char *, char *, ...);
+s32 func_8003E218(char *, s32);
+s32 func_8003E228(s32, void *, s32);
+s32 func_8003CAF8(s32);
+
+static inline EngineDirectorySlot *engine_selected_file(void)
+{
+    s32 count = D_80056564->word08;
+    s32 index = D_80056564->word0C;
+
+    if (count > 0 && index < count)
+        return &((EngineDirectoryState *)D_80056564)->slots[index];
+    return NULL;
+}
+
+/* Retry the I/O expression up to three times and release the event request
+ * on failure. The expression is evaluated anew for each attempt. */
+#define ENGINE_CARD_RETRY(io, request) ({ \
+    s32 retries = 0, failed; \
+    do { \
+        if (io) break; \
+        retries++; \
+    } while (retries < 3); \
+    if (retries >= 3) { \
+        func_8003AED8(request); \
+        failed = 1; \
+    } else { \
+        failed = 0; \
+    } \
+    failed; \
+})
+
+s32 func_8003C038(void)
+{
+    char path[64];
+    u8 blocks[3][0x80];
+    EngineSaveRecord record;
+    EngineEventRequest request;
+    s32 descriptor = -1;
+    EngineDirectorySlot *slot;
+    s32 index;
+
+    slot = engine_selected_file();
+    request.resource = &descriptor;
+    if (slot == NULL || slot->word00 == 0) {
+        func_8003CAB0(2);
+        func_8003CAF8(0);
+        return 0;
+    }
+    func_8003D740(path, D_8005657C, D_80056574,
+        ((EngineDirectoryState *)D_80056564)->records[slot->record_index].bytes);
+    if (ENGINE_CARD_RETRY(
+            (descriptor = func_8003E218(path, 1)) >= 0, &request)) return 0;
+    if (ENGINE_CARD_RETRY(
+            func_8003E228(descriptor, &record, sizeof(record)) == sizeof(record),
+            &request)) return 0;
+    for (index = 0; index < 3; index++) {
+        if (ENGINE_CARD_RETRY(
+                func_8003E228(descriptor, blocks[index], sizeof(blocks[index]))
+                    == sizeof(blocks[index]), &request)) return 0;
+    }
+    index = 0;
+    do {
+        if (ENGINE_CARD_RETRY(
+                func_8003E228(descriptor, &record, sizeof(record)) == sizeof(record),
+                &request)) return 0;
+        if (func_8003BF34(&record)) break;
+        index++;
+    } while (index < 5);
+    if (index == 5) {
+        if (func_8003C3FC()) {
+            func_8003CAF8(0);
+            func_8003CAB0(2);
+        }
+    } else {
+        func_8003CAF8(0);
+    }
+    func_8003C900(&descriptor);
+    return 1;
+}
+
+#undef ENGINE_CARD_RETRY
 
 extern char D_80056574[];
 s32 func_8003E258(const char *);
@@ -549,12 +682,6 @@ extern char D_80010E88[];
 s32 func_8003C6E4(const char *arg0) {
     return BIOS_StrNCmp(D_80010E88, arg0, 0xC) == 0;
 }
-
-/* The directory wrappers advance through 0x28-byte records. Unknown record
- * fields stay opaque; their stride is established by this enumeration loop. */
-typedef struct EngineDirectoryRecord {
-    u8 bytes[0x28];
-} EngineDirectoryRecord;
 
 extern char D_80056584[];
 char *BIOS_StrCpy(char *, const char *);
@@ -785,7 +912,26 @@ s32 func_8003D008(void)
 }
 
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003D028);
+/* Alias view of the shared flag word; retain the native ordering of state
+ * writes and their externally visible shadow store. */
+extern s32 engine_flag_shadow[] __asm__("D_80061978");
+
+s32 func_8003D028(s32 value)
+{
+    EngineState *state = D_80056564;
+
+    if (!(state->word04 & 13)) {
+        state->word00 = 6;
+        engine_flag_shadow[0] = state->word04 |= 1;
+        state->word14 = 0;
+        state->word10 = 32;
+        state->word0C = value;
+        return 0;
+    } else {
+        engine_flag_shadow[0] = state->word04 |= 2;
+        return 1;
+    }
+}
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003D094);
 
 s32 func_8003D1B4(void) {
@@ -883,8 +1029,37 @@ again:
         return result;
     }
 }
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003D3D8);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003D444);
+s32 func_8003D3D8(s32 value)
+{
+    EngineState *state = D_80056564;
+
+    if (!(state->word04 & 13)) {
+        state->word00 = 2;
+        engine_flag_shadow[0] = state->word04 |= 1;
+        state->word14 = 0;
+        state->word10 = 32;
+        state->word0C = value;
+        return 0;
+    } else {
+        engine_flag_shadow[0] = state->word04 |= 2;
+        return 1;
+    }
+}
+s32 func_8003D444(void)
+{
+    EngineState *state = D_80056564;
+
+    if (state->word00 == 0) {
+        state->word00 = 3;
+        engine_flag_shadow[0] = state->word04 |= 1;
+        state->word14 = 0;
+        state->word10 = 3;
+        return 0;
+    } else {
+        engine_flag_shadow[0] = state->word04 |= 2;
+        return 1;
+    }
+}
 
 
 s32 func_8003D4AC(void) {

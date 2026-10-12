@@ -24,6 +24,17 @@ SIZE(EngineEventRequest, 12);
 OFFSET(EngineEventRequest, pending, 4);
 OFFSET(EngineEventRequest, event, 8);
 SIZE(EngineByteRecord, 6);
+SIZE(EngineSaveRecord, 0x80);
+OFFSET(EngineSaveRecord, word04, 4);
+OFFSET(EngineSaveRecord, word20, 0x20);
+OFFSET(EngineSaveRecord, word24, 0x24);
+OFFSET(EngineSaveRecord, checksum, 0x7C);
+SIZE(EngineDirectoryRecord, 0x28);
+SIZE(EngineDirectorySlot, 0x4C);
+OFFSET(EngineDirectorySlot, record_index, 8);
+SIZE(EngineDirectoryState, 0x6F4);
+OFFSET(EngineDirectoryState, slots, 0x28);
+OFFSET(EngineDirectoryState, records, 0x49C);
 
 OFFSET(ObjectView, resource, 0x10);
 OFFSET(GoolRuntimeObject, entry, 0x28);

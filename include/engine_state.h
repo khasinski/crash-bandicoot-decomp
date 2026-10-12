@@ -34,6 +34,38 @@ typedef struct EngineByteRecord {
     u8 data[6];
 } EngineByteRecord;
 
+/* Both save routines process exactly 0x80 bytes. The checksum covers the
+ * whole record with its final word cleared; unknown payload bytes stay opaque. */
+typedef struct EngineSaveRecord {
+    u32 word00, word04, word08, word0C, word10, word14;
+    u32 word18, word1C, word20, word24;
+    u8 pad28[0x54];
+    u32 checksum;
+} EngineSaveRecord;
+
+/* Directory enumeration advances by 0x28. Only the record stride and its
+ * use as the filename passed to the BIOS are currently recovered. */
+typedef struct EngineDirectoryRecord {
+    u8 bytes[0x28];
+} EngineDirectoryRecord;
+
+/* Selected file slots advance by 0x4C; +8 indexes the directory records. */
+typedef struct EngineDirectorySlot {
+    s32 word00;
+    u32 word04;
+    s32 record_index;
+    u8 pad0C[0x40];
+} EngineDirectorySlot;
+
+/* These arrays end at the 0x6F4-byte lifecycle allocation's boundary. Keep
+ * this view separate from the independent 0x35D8-byte mode-25 allocation. */
+typedef struct EngineDirectoryState {
+    EngineState prefix;
+    u8 pad1C[0xC];
+    EngineDirectorySlot slots[15];
+    EngineDirectoryRecord records[15];
+} EngineDirectoryState;
+
 /* GCC 2.6.3 emits tentative storage in declaration order. The owner defines
  * these globals in retail order instead of declaring them ahead of that list. */
 #ifndef CRASH_ENGINE_STATE_STORAGE
@@ -48,5 +80,8 @@ void func_8003AE08(EngineEventRequest *request);
 void func_8003AED8(EngineEventRequest *request);
 void func_80031D50(s32 *reference, s32 mode);
 s32 func_80031BF8(void);
+void func_8003BE40(EngineSaveRecord *record);
+s32 func_8003BF34(EngineSaveRecord *record);
+s32 func_8003C714(const char *path, EngineDirectoryRecord *entries);
 
 #endif
