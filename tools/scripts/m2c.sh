@@ -21,6 +21,17 @@ RODATA=()
 while IFS= read -r path; do
     RODATA+=("$path")
 done < <(find "$ROOT/asm/USA/main" -name '*.rodata.s' | sort)
+# C-owned tables have no working assembly file. The retail reference exports
+# them separately; avoid passing shared data that is already present above.
+EXPECTED_ASM="$ROOT/expected/asm/USA/main"
+if [ -d "$EXPECTED_ASM" ]; then
+    while IFS= read -r path; do
+        relative="${path#"$EXPECTED_ASM"/}"
+        if [ ! -f "$ROOT/asm/USA/main/$relative" ]; then
+            RODATA+=("$path")
+        fi
+    done < <(find "$EXPECTED_ASM" -name '*.rodata.s' | sort)
+fi
 CTX="$(mktemp -t crash-m2c-ctx).c"
 trap 'rm -f "$CTX"' EXIT
 "$ROOT/tools/toolchain/gcc-2.6.3-psx/cpp" -undef -P -DM2CTX -I"$ROOT/include" -I"$ROOT/src/main" \

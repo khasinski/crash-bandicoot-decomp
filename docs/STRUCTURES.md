@@ -191,3 +191,16 @@ and instruction opcodes remain part of the Levenshtein comparison.
 instructions. The retained label `func_80034520` contains that writable
 counter word; it is accessed through a word-array alias rather than called
 as a C function. This does not change the report denominator.
+
+The 337-instruction CD interrupt dispatcher `func_80043BA8` captures an
+eight-byte response packet. It waits for a stable three-bit interrupt code,
+drains up to eight FIFO bytes and zeroes the unread remainder. Response byte
+zero supplies the cached 32-bit status at `D_800555B0`; byte one supplies the
+word at `D_800555B4`. The error test uses status bits `0x1D`. A local status
+mask is initialized before the padding loop and used for the word-cache
+normalization, preserving the native byte-mask instruction with stock GCC
+2.6.3 and ASPSX 2.21. The response publisher copies exactly eight bytes.
+Scalar and array aliases preserve the SDK's distinct accesses to the volatile
+event bytes at `0x8005587C` and `0x8005587D`. The five-entry switch table is
+owned by this C unit at `0x8001156C`; the following retained assembly begins
+at `0x800440EC`. Both linked instructions and the whole executable match.

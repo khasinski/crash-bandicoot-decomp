@@ -140,6 +140,15 @@ class ToolingTests(unittest.TestCase):
         self.assertIn('BIOS_StrNCmp(', result.stdout)
         self.assertNotIn('Decompilation failure', result.stdout)
 
+    def test_m2c_reads_switch_table_owned_by_compiled_function(self):
+        result = subprocess.run(
+            ['tools/scripts/m2c.sh', 'func_80043BA8'],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('switch (', result.stdout)
+        self.assertNotIn('Decompilation failure', result.stdout)
+
     def test_probe_rejects_bad_or_unverifiable_code(self):
         sources = {
             'changed': '#include "common.h"\nvoid LIBC_Free(void *ptr) { ((int *)ptr)[-1] |= 2; }\n',

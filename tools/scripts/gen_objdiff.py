@@ -67,6 +67,10 @@ def main() -> int:
             for sub in seg.get("subsegments", []):
                 if isinstance(sub, list) and len(sub) >= 3 and sub[1] == "c":
                     sub[1] = "asm"
+                elif isinstance(sub, list) and len(sub) >= 3 and sub[1] == ".rodata" and sub[2] in units:
+                    # An asm reference needs a separate raw-data file: splat
+                    # only migrates a .rodata subsegment into a C owner.
+                    sub[1] = "rodata"
 
     shutil.rmtree(ROOT / "expected", ignore_errors=True)
     exp_cfg = ROOT / "build" / ver / "expected.yaml"  # base_path ../.. still resolves to ROOT
