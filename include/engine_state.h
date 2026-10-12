@@ -23,12 +23,14 @@ typedef struct EngineMode25State {
     s32 word35D0, word35D4;
 } EngineMode25State;
 
-/* BIOS event lifecycle, used by func_8003AE08 and func_8003AED8. */
-typedef struct EngineEventRequest {
+/* File I/O cleanup: descriptor address, creation flag, and path to remove
+ * when an operation fails. The writer stores its path in the third word. */
+typedef struct EngineFileRequest {
     s32 *resource;
     s32 *pending;
-    s32 event;
-} EngineEventRequest;
+    char *path;
+} EngineFileRequest;
+typedef EngineFileRequest EngineEventRequest;
 
 typedef struct EngineByteRecord {
     u8 data[6];
@@ -42,6 +44,22 @@ typedef struct EngineSaveRecord {
     u8 pad28[0x54];
     u32 checksum;
 } EngineSaveRecord;
+
+/* The writer emits a 0x80-byte file header, followed by three 0x80-byte
+ * icon images. Its title is converted to 32 two-byte characters. */
+typedef struct EngineCardHeader {
+    u8 magic[2], icons, blocks;
+    char title[64];
+    u8 reserved[0x1C];
+    u16 palette[16];
+} EngineCardHeader;
+
+/* The same working block is reused for the file header and saved state. */
+typedef union EngineCardBlock {
+    EngineCardHeader header;
+    EngineSaveRecord record;
+    u8 bytes[0x80];
+} EngineCardBlock;
 
 /* Directory enumeration advances by 0x28. Only the record stride and its
  * use as the filename passed to the BIOS are currently recovered. */
@@ -61,7 +79,7 @@ typedef struct EngineDirectorySlot {
  * this view separate from the independent 0x35D8-byte mode-25 allocation. */
 typedef struct EngineDirectoryState {
     EngineState prefix;
-    u8 pad1C[0xC];
+    s32 word1C, word20, word24;
     EngineDirectorySlot slots[15];
     EngineDirectoryRecord records[15];
 } EngineDirectoryState;
@@ -76,8 +94,8 @@ extern char D_80056544[8], D_8005654C[8], D_80056554[8], D_8005655C[8];
 extern EngineState *D_80056564;
 extern EngineMode25State *D_800566E0;
 #endif
-void func_8003AE08(EngineEventRequest *request);
-void func_8003AED8(EngineEventRequest *request);
+void func_8003AE08(EngineFileRequest *request);
+void func_8003AED8(EngineFileRequest *request);
 void func_80031D50(s32 *reference, s32 mode);
 s32 func_80031BF8(void);
 void func_8003BE40(EngineSaveRecord *record);

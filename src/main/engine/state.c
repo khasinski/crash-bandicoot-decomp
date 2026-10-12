@@ -31,18 +31,18 @@ s32 D_80056568 = 1;
 extern s32 D_80061978;
 
 
-/* Lifecycle requests and their BIOS event state. */
-typedef EngineEventRequest EventRequest;
+/* File cleanup requests and lifecycle entry points. */
+typedef EngineFileRequest FileRequest;
 s32 func_8003CEF0(s32);
 s32 func_8003CAD8(s32);
 s32 func_8003CAF8(s32);
-void func_8003C9B8(void);
+s32 func_8003C9B8(void);
 s32 func_8003C3FC(void);
-void func_8003CA04(s32);
+s32 func_8003CA04(s32);
 s32 func_8003CAB0(s32);
 void func_8003C900(s32 *);
 s32 CORE_VSync(s32);
-s32 func_8003E288(s32);
+s32 func_8003E288(char *);
 s32 func_8003E1C8(s32);
 s32 func_8002F778(s32);
 
@@ -394,7 +394,7 @@ void func_8003ADB8(s32 **resource) {
     func_8003C900(*resource);
 }
 
-void func_8003AE08(EventRequest *request) {
+void func_8003AE08(FileRequest *request) {
     if (func_8003C3FC()) {
         func_8003CAB0(2);
         func_8003CAF8(0);
@@ -406,7 +406,7 @@ void func_8003AE08(EventRequest *request) {
         CORE_VSync(60);
         retries = 0;
         do {
-            status = func_8003E288(request->event);
+            status = func_8003E288(request->path);
             CORE_VSync(20);
             if (status == 1) break;
             retries++;
@@ -415,7 +415,7 @@ void func_8003AE08(EventRequest *request) {
     }
 }
 
-void func_8003AED8(EventRequest *request) {
+void func_8003AED8(FileRequest *request) {
     if (func_8003C3FC()) {
         func_8003CAB0(2);
         func_8003CAF8(0);
@@ -429,7 +429,150 @@ INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B5E0);
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B74C);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B8B8);
+extern char D_80056574[], D_8005657C[];
+extern char D_80010E78[], D_80010E88[], D_80010E98[], D_80010EB0[];
+extern EngineByteRecord D_8005703C;
+extern s32 D_80061974;
+extern u32 D_800619D0;
+s32 func_8003D740(char *, char *, ...);
+void func_8003D730(char *, s32);
+char *BIOS_StrCpy(char *, const char *);
+s32 func_8003E218(char *, s32), func_8003E238(s32, void *, s32);
+s32 func_8003C6E4(const char *), func_8003CAF8(s32), func_8003CAD8(s32);
+void func_8003B74C(char *, s32);
+void func_8001A850(s32, u32, s32, u16 *, u8 *);
+
+static inline EngineDirectorySlot *engine_selected_file(void)
+{
+    s32 count = D_80056564->word08;
+    s32 index = D_80056564->word0C;
+
+    if (count > 0 && index < count)
+        return &((EngineDirectoryState *)D_80056564)->slots[index];
+    return NULL;
+}
+
+/* This writer reuses its operation counter across filename selection,
+ * buffer clearing and I/O attempts; each failed operation runs full cleanup. */
+#define ENGINE_CARD_WRITE_RETRY(io, request, attempts) ({ \
+    s32 failed; \
+    attempts = 0; \
+    do { \
+        if (io) break; \
+        attempts++; \
+    } while (attempts < 3); \
+    if (attempts >= 3) { \
+        func_8003AE08(request); \
+        failed = 1; \
+    } else { \
+        failed = 0; \
+    } \
+    failed; \
+})
+
+void func_8003B8B8(s32 mode)
+{
+    char path[64];
+    u8 images[3][0x80];
+    EngineCardBlock block;
+    EngineFileRequest request;
+    s32 descriptor = -1;
+    EngineDirectorySlot *slot;
+    s32 index, counter;
+
+    slot = engine_selected_file();
+    if (mode == 6) {
+        D_8005668C = func_8002F778(999999);
+        D_80056690 = 0;
+    }
+    request.resource = &descriptor;
+    request.pending = (s32 *)&D_80056690;
+    request.path = path;
+    if (slot != NULL && slot->word00 == 0) {
+        func_8003D740(path, D_8005657C, D_80056574,
+            ((EngineDirectoryState *)D_80056564)->records[slot->record_index].bytes);
+        if (mode == 6) {
+            CORE_VSync(20);
+            if (!ENGINE_CARD_WRITE_RETRY(({
+                    s32 status = func_8003E288(path);
+                    CORE_VSync(20);
+                    index = status;
+                    index;
+                }) == 1, &request, counter)) func_8003CAF8(7);
+            return;
+        }
+    } else if (mode == 6) {
+        func_8003CAF8(7);
+        mode = 7;
+    }
+    if (slot != NULL && slot->word00 != 0) {
+        func_8003D740(path, D_8005657C, D_80056574,
+            ((EngineDirectoryState *)D_80056564)->records[slot->record_index].bytes);
+    } else {
+        counter = ((EngineDirectoryState *)D_80056564)->word20 - 1;
+        index = 0;
+        if (counter >= 0) {
+            counter = counter * sizeof(EngineDirectoryRecord)
+                + CRASH_OFFSETOF(EngineDirectoryState, records);
+            if (func_8003C6E4((char *)((u8 *)D_80056564 + counter))) {
+                EngineDirectoryRecord *record =
+                    (EngineDirectoryRecord *)((u8 *)D_80056564 + counter);
+                index = (record->bytes[12] - '0') * 10 + record->bytes[13] - '/';
+            }
+        }
+        if (index >= 100) index = 99;
+        func_8003D740(path, D_80010E78, D_80056574, D_80010E88, index, D_8005668C);
+    }
+    if (slot == NULL || slot->word00 == 0) {
+        if (mode == 7) {
+            CORE_VSync(20);
+            if (!ENGINE_CARD_WRITE_RETRY(
+                    (descriptor = func_8003E218(path, 0x10200)) >= 0,
+                    &request, counter)) {
+                func_8003D730(D_80010E98, descriptor);
+                func_8003C900(&descriptor);
+                D_80056690 = 1;
+                func_8003CAF8(8);
+            }
+            return;
+        }
+    } else if (mode == 7) {
+        func_8003CAF8(8);
+    }
+    if (ENGINE_CARD_WRITE_RETRY(
+            (descriptor = func_8003E218(path, 2)) >= 0, &request, counter)) return;
+    for (counter = 127; counter >= 0; counter--) block.bytes[counter] = 0;
+    block.header.magic[0] = 'S';
+    block.header.magic[1] = 'C';
+    block.header.icons = 0x13;
+    block.header.blocks = 1;
+    func_8003D740(block.header.title, D_80010EB0, D_80061974);
+    func_8003B74C(block.header.title, 32);
+    func_8001A850(2, D_800619D0, 0x2D00, block.header.palette, images[0]);
+    func_8001A850(2, D_800619D0, 0x2D00, NULL, images[1]);
+    func_8001A850(2, D_800619D0, 0x2E00, NULL, images[2]);
+    if (ENGINE_CARD_WRITE_RETRY(
+            func_8003E238(descriptor, &block, 128) == 128, &request, counter)) return;
+    for (index = 0; index < 3; index++) {
+        if (ENGINE_CARD_WRITE_RETRY(
+                func_8003E238(descriptor, images[index], 128) == 128,
+                &request, counter)) return;
+    }
+    func_8003BE40(&block.record);
+    for (index = 0; index < 5; index++) {
+        if (ENGINE_CARD_WRITE_RETRY(
+                func_8003E238(descriptor, &block, 128) == 128,
+                &request, counter)) return;
+    }
+    func_8003C900(&descriptor);
+    func_8003CAD8(2);
+    func_8003CAF8(0);
+    func_8003C9B8();
+    BIOS_StrCpy((char *)&D_8005703C, path + 5);
+    func_8003CAD8(16);
+}
+
+#undef ENGINE_CARD_WRITE_RETRY
 
 /* Word views of the runtime values serialised in the save record. */
 extern u32 D_80061944[], D_80061908[], D_8006190C[], D_80061910[];
@@ -494,16 +637,6 @@ s32 func_8003E218(char *, s32);
 s32 func_8003E228(s32, void *, s32);
 s32 func_8003CAF8(s32);
 
-static inline EngineDirectorySlot *engine_selected_file(void)
-{
-    s32 count = D_80056564->word08;
-    s32 index = D_80056564->word0C;
-
-    if (count > 0 && index < count)
-        return &((EngineDirectoryState *)D_80056564)->slots[index];
-    return NULL;
-}
-
 /* Retry the I/O expression up to three times and release the event request
  * on failure. The expression is evaluated anew for each attempt. */
 #define ENGINE_CARD_RETRY(io, request) ({ \
@@ -526,7 +659,7 @@ s32 func_8003C038(void)
     char path[64];
     u8 blocks[3][0x80];
     EngineSaveRecord record;
-    EngineEventRequest request;
+    EngineFileRequest request;
     s32 descriptor = -1;
     EngineDirectorySlot *slot;
     s32 index;
@@ -746,9 +879,33 @@ void func_8003C970(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003C9B8);
+s32 func_8003CB88(void);
+s32 func_8003C9B8(void)
+{
+    if (!(func_8003CB88() & 13)) {
+        EngineDirectoryState *state;
+        func_8003CAF8(1);
+        state = (EngineDirectoryState *)D_80056564;
+        state->prefix.word14 = 0;
+        state->prefix.word10 = 64;
+        state->word1C = 0;
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003CA04);
+extern s32 D_800619D4[15];
+s32 func_8003CA04(s32 flags)
+{
+    s32 index;
+
+    D_80056564->word08 = 0;
+    D_80056564->word14 = 0;
+    for (index = 14; index >= 0; index--) D_800619D4[index] = 0;
+    func_8003CAB0(flags);
+    return 0;
+}
 
 void func_8001A754(s32, s32, void *, s32, s32);
 extern u8 D_80056588[];
@@ -903,7 +1060,41 @@ s32 func_8003CEA8(void)
     return 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003CEF0);
+void BIOS_BZero(void *, s32);
+void func_80051484(void), func_80051474(s32, s32, void *);
+
+/* Each event corresponds to one of the four native completion statuses. */
+static inline s32 engine_card_status(void)
+{
+    if (func_8003E1C8(D_800566EC) == 1) return 0;
+    if (func_8003E1C8(D_800566F0) == 1) return 1;
+    if (func_8003E1C8(D_800566F8) == 1) return 2;
+    if (func_8003E1C8(D_800566FC) == 1) return 3;
+    return -1;
+}
+
+s32 func_8003CEF0(s32 port)
+{
+    u8 sector[0x80];
+    s32 status;
+
+    BIOS_BZero(sector, sizeof(sector));
+    func_8003E1C8(D_800566EC);
+    func_8003E1C8(D_800566F0);
+    func_8003E1C8(D_800566F8);
+    func_8003E1C8(D_800566FC);
+    func_80051484();
+    func_80051474(port, 0, sector);
+    do {
+        func_8002F778(999);
+        status = engine_card_status();
+    } while (status == -1);
+    if (status == 0) {
+        if (sector[0] == 'M' && sector[1] == 'C') return 1;
+        else return 0;
+    }
+    return -1;
+}
 
 s32 func_8003D008(void)
 {

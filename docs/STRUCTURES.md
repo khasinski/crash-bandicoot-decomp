@@ -8,7 +8,7 @@ original object unless an allocation or copy establishes it.
 |---|---|
 | `gool.h` | Runtime object: entry `0x28`, flags `0xCC`/`0x120`, stack/PC/frame `0xDC`/`0xE0`/`0xE4`, value `0x138`; frame restore and release routines |
 | `gool.h` | Separate defaults block (`0x30` bytes) and collision/message actor view: bounds `0x08`, resource `0x20`, position `0x80`, radius `0xB0` |
-| `engine_state.h` | Lifecycle prefix; separate mode-25 allocation ending at `0x35D8`; event request's two pointers and event word |
+| `engine_state.h` | Lifecycle prefix; separate mode-25 allocation ending at `0x35D8`; file cleanup request's descriptor/flag pointers and pathname |
 | `engine_state.h` | `0x80` save record with checksum `0x7C`; directory slots `0x28`/stride `0x4C` and records `0x49C`/stride `0x28`, ending at `0x6F4` |
 | `resource.h` | Resource entries, handles, `0x2C` slots, eight-byte hash buckets, pool counter at `0x68C`, zone references at `0x23C` |
 | `gpu.h`, `render.h` | `0x5C` drawing snapshot; buffer display `0x04`, drawing `0x18`, cursors `0x74`/`0x78`, ordering table `0x88` |
@@ -100,7 +100,7 @@ The reader establishes selected-file slots at `0x28`, with a `0x4C` stride
 and a directory-record index at slot `+8`. Fifteen slots end at `0x49C`, where
 fifteen `0x28`-byte directory records fill the lifecycle allocation through
 `0x6F4`. The header's directory view preserves the unknown slot fields and
-keeps the mode-25 allocation separate. The reader uses the existing event
+keeps the mode-25 allocation separate. The reader uses the file cleanup
 request's resource pointer for its file descriptor and retries each I/O
 operation up to three times. A retry expression retains the operation at its
 call site; passing a precomputed buffer pointer to an inline helper changes
@@ -112,6 +112,32 @@ The three requests `func_8003D028`, `func_8003D3D8`, and `func_8003D444` match
 a word alias for the shared flag shadow at `0x80061978`. The alias keeps the
 state updates and shadow write in their native order. The new save and
 directory sizes and offsets are checked by the target ABI assertions.
+
+The 354-instruction writer `func_8003B8B8` uses `EngineCardHeader`: magic
+bytes, icon flags and block count precede a 64-byte title at `+4`; sixteen
+palette halfwords start at `+0x60`. `EngineCardBlock` reuses the same `0x80`
+bytes for this header and an `EngineSaveRecord`. Three separate `0x80`-byte
+icon images follow the header. The writer's filename selection, buffer
+clearing and retry operations share a working counter, while the I/O result
+is captured across the synchronization call. Its normal retry loop can attempt
+each operation three times; it writes five copies of the final save record.
+All 354 instructions match with the unchanged stock GCC 2.6.3 profile.
+
+This writer also resolves the earlier request-type ambiguity. Its third word
+stores the address of the pathname, which `func_8003AE08` forwards to the BIOS
+cleanup wrapper. `EngineFileRequest` now types that word as `char *path`;
+`EngineEventRequest` remains a compatibility typedef, not a separate layout.
+The shared directory view exposes the native words at `0x1C`, `0x20` and
+`0x24` without assigning semantics to the latter two.
+
+`func_8003C9B8` and `func_8003CA04` each match 19 instructions for directory
+refresh and list reset. The 70-instruction sector check `func_8003CEF0`
+clears a `0x80`-byte sector buffer, initiates sector-zero I/O and polls the four
+completion events. It returns one for an `MC` sector signature, zero for a
+bad signature and minus one for an error status. The explicit return paths
+retain the native result without relying on a missing C return. This sector
+signature is distinct from the writer's `SC` file-header magic. Target ABI
+assertions cover the header, working union and corrected pathname pointer.
 
 `tests/layout_assertions.c` checks sizes and offsets using stock GCC 2.6.3,
 including pointer fields. Run `make test` after changing shared declarations.
