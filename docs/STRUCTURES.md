@@ -230,3 +230,13 @@ resource data beginning at `+0x52C` has an unknown length. Target ABI assertions
 cover the recovered offsets without claiming the complete resource size.
 Both object and linked instruction Levenshtein distances are zero, and the
 whole rebuilt executable retains the retail SHA-1.
+
+The adjacent resource chooser `func_8002EABC` matches all 62 instructions.
+Its eight-byte name buffer copies a six-byte template and clears the last
+two bytes through the BIOS. It selects the third character at random, derives
+the fourth from the resource alphabet, and encodes the first five characters.
+On the empty-list path, the mode is read before writing the sentinel ID, as
+in retail. The mode uses sized-extern gp addressing; unsized views of the
+other storage owners retain their absolute loads and stores. Object and
+linked instruction distances are zero, the full retail SHA-1 is unchanged,
+and all 23 tooling and layout tests pass.
