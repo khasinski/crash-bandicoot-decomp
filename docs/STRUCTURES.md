@@ -74,6 +74,20 @@ sketch misplaced that advancement. The setup still has a nonzero distance
 and is not promoted; its larger stack frame needs evidence rather than
 artificial padding.
 
+Three more routines use these recovered views with the stock GCC 2.6.3
+profile. `func_8003263C` matches 39 instructions while updating the mode-state
+words at `0x3598` and `0x35D4`. `func_8003C714` matches 37 instructions with a
+local opaque directory-record type: the native iterator establishes a `0x28`
+stride, while the individual fields remain unknown. Its `while` loop counts
+successful directory results and caps the count at fifteen.
+
+`func_8003CD60` matches 48 instructions. It clears fifteen consecutive words
+at `0x800619D4..0x80061A0C` and embeds the mode/flag update also implemented by
+`func_8003CAF8`. A shared `static inline` helper reproduces both that embedded
+copy and the existing public setter without changing compiler options. The
+linked executable's retail SHA-1 verifies all three new routines and the
+refactored setter together.
+
 `tests/layout_assertions.c` checks sizes and offsets using stock GCC 2.6.3,
 including pointer fields. Run `make test` after changing shared declarations.
 Host-compiler layout checks would incorrectly use 64-bit pointers on macOS.

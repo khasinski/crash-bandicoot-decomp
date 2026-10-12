@@ -225,7 +225,25 @@ s32 func_80032298(void)
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800322CC);
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800324D4);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003263C);
+extern s32 D_800618BC[], D_80061A34;
+void func_80024040(s32, s32, s32, s32, s32 *);
+
+/* Finish the pending object request before selecting the next mode. */
+void func_8003263C(s32 mode)
+{
+    s32 zero;
+
+    if (D_80056400 && D_800618BC[0]) {
+        zero = 0;
+        func_80024040(0, D_800618BC[0], 0xC00, 1, &zero);
+        D_8005640C = -1;
+        D_80056400 = 0;
+    }
+    D_80061A34 = -256;
+    D_800618D4 = mode;
+    D_800566E0->word35D4 = mode;
+    D_800566E0->word3598 = 5;
+}
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800326D8);
 /* Fill 16 rows by 33 columns of three-word coordinate/page entries. */
 void func_80032AF4(u32 base_address)
@@ -532,7 +550,37 @@ s32 func_8003C6E4(const char *arg0) {
     return BIOS_StrNCmp(D_80010E88, arg0, 0xC) == 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003C714);
+/* The directory wrappers advance through 0x28-byte records. Unknown record
+ * fields stay opaque; their stride is established by this enumeration loop. */
+typedef struct EngineDirectoryRecord {
+    u8 bytes[0x28];
+} EngineDirectoryRecord;
+
+extern char D_80056584[];
+char *BIOS_StrCpy(char *, const char *);
+char *BIOS_StrCat(char *, const char *);
+EngineDirectoryRecord *func_8003E268(char *, EngineDirectoryRecord *);
+EngineDirectoryRecord *func_8003E278(EngineDirectoryRecord *);
+
+/* Append the search suffix, enumerate records, and cap the reported count. */
+s32 func_8003C714(const char *path, EngineDirectoryRecord *entries)
+{
+    char pattern[128];
+    s32 count;
+    EngineDirectoryRecord *found;
+
+    BIOS_StrCpy(pattern, path);
+    BIOS_StrCat(pattern, D_80056584);
+    count = 0;
+    found = func_8003E268(pattern, entries);
+    while (entries == found) {
+        count++;
+        entries++;
+        found = func_8003E278(entries);
+    }
+    if (count >= 16) count = 15;
+    return count;
+}
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003C7A8);
 
@@ -602,26 +650,32 @@ s32 func_8003CAD8(s32 arg0)
     return 0;
 }
 
-s32 func_8003CAF8(s32 arg0) {
-    s32 temp_v0;
+/* The retail reset routine embeds this same mode/flag update. Keep its
+ * inline copy and the public setter derived from one implementation. */
+static inline s32 engine_set_mode(s32 mode)
+{
+    s32 flags;
 
-    D_80056564->word00 = arg0;
-    if (arg0 >= 0) {
-        if ((arg0 < 2) || (arg0 == 4)) {
-            D_80056564->word18 = 1;
-        }
+    D_80056564->word00 = mode;
+    if (mode >= 0) {
+        if (mode < 2 || mode == 4) D_80056564->word18 = 1;
         if (D_80056564->word00 == 0) {
-            D_80056564->word04 = (s32) (D_80056564->word04 & ~1);
+            D_80056564->word04 &= ~1;
         } else {
-            goto block_6;
+            goto activate;
         }
     } else {
-block_6:
-        temp_v0 = D_80056564->word04 | 1;
-        D_80056564->word04 = temp_v0;
-        D_80061978 = temp_v0;
+activate:
+        flags = D_80056564->word04 | 1;
+        D_80056564->word04 = flags;
+        D_80061978 = flags;
     }
     return 0;
+}
+
+s32 func_8003CAF8(s32 mode)
+{
+    return engine_set_mode(mode);
 }
 
 s32 func_8003CB74(void)
@@ -673,7 +727,22 @@ s32 func_8003CD3C(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003CD60);
+/* Fifteen consecutive words ending at 0x80061A0C. */
+extern s32 D_800619D4[15];
+
+void func_8003CD60(s32 flags)
+{
+    s32 index, value;
+
+    D_80056564->word08 = 0;
+    D_80056564->word14 = 0;
+    for (index = 14; index >= 0; index--) D_800619D4[index] = 0;
+    func_8003CAB0(0);
+    engine_set_mode(0);
+    value = flags | (D_80056564->word04 & ~63);
+    D_80056564->word04 = value;
+    D_80061978 = value;
+}
 
 /* Six-byte state copied as an unaligned record in retail. */
 typedef EngineByteRecord ByteRecord;
