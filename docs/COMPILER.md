@@ -82,3 +82,44 @@ entry    0x8003E018 (PsyQ __SN_ENTRY_POINT: clears BSS, sets sp/gp, calls
 
 The executable contains all native code. No code overlays have been found.
 Gameplay logic is mostly GOOL bytecode inside the NSF files.
+
+## gcc 2.6.3 code-generation notes from `NSInit` (`ns/init.c`)
+
+These mechanisms decided the remaining instructions of the 562-instruction
+`func_80015B58`. All of them can be inspected in the stock compiler's
+dumps (`cc1 -dj -ds -dL -dl -dg -dS`).
+
+* **Global register allocation priority** is
+  `floor_log2(refs) * refs / live_length`, where references inside a loop
+  are weighted by the loop depth. A short-lived counter can therefore
+  outrank a function-wide pointer. If two variables are swapped between
+  `s` registers, compare their priorities in the `.greg` and `.lreg` dumps.
+* **The pre-test that `jump` duplicates** for a `for` loop is folded by
+  `cse` and `combine`. `combine` re-emits the initializer of whichever
+  zero-valued register `cse` substituted, right before the branch. `cse`
+  keeps the equivalent register that lives longest as the canonical one.
+  That moved initializer shortens the variable's life and changes both
+  allocation and scheduling.
+* **`sched`** schedules backwards. Before reload it raises insns that "birth"
+  a register set exactly once. Ties are broken by dependence class and then
+  by insn order.
+* **`cse` paths** continue across a conditional jump only when the target
+  label is used once and is either preceded by a barrier or the jump skips
+  a label-free block. A join label ends the path. Index values such as
+  `i * 44` are shared along a path, and a shared index register is only
+  "replaceable" for `loop.c` if it is set on every iteration. Where an
+  array index is computed decides whether a store becomes its own address
+  giv or uses the common one.
+* **`loop.c` combines givs** in reverse insn order. The last address giv
+  with a given offset collects identical ones into one reduced register.
+  A giv with a symbolic offset is absorbed by the plain index giv instead.
+* **Cross-jumping** runs only after reload. It merges a jump's tail with the
+  code before its target label after one matching insn, or with another
+  jump's tail after two.
+* **Tree `fold`** reassociates `a | (b | C)`. Assigning the inner value to a
+  variable keeps the source grouping.
+
+`tools/scripts/permute_import.sh` (also used by `make permute`) copies the
+source file's compiler profile into the permuter's `compile.sh`.
+`import.py` preprocesses the source and loses those comments, so without
+the script every permutation of a gcc 2.6.3 unit was built with 2.5.7.

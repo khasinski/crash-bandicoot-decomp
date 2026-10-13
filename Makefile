@@ -140,7 +140,7 @@ m2c:
 #   tools/toolchain/decomp-permuter/permuter.py nonmatchings/<FUNC> -j8
 permute:
 	@test -n "$(FUNC)" || { echo "usage: make permute FUNC=<symbol>"; exit 2; }
-	$(PY) $(TOOLCHAIN)/decomp-permuter/import.py \
+	PY=$(PY) tools/scripts/permute_import.sh \
 	      $$(grep -rl "$(FUNC)" src --include='*.c' | head -1) \
 	      $$(find $(ASM_DIR)/nonmatchings -name '$(FUNC).s' | head -1)
 
