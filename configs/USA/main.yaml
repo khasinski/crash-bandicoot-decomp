@@ -192,7 +192,8 @@ segments:
       - [0x1A530, c, math/vector_distance]
       - [0x1A610, c, math/angles]
       - [0x1A704, c, math/scaled_sine]
-      - [0x1A76C, asm, text_1A76C]
+      - [0x1A76C, c, cam/camera]
+      - [0x1C68C, asm, text_1C68C]
       - [0x1DE94, c, engine/fixed_result]
       - [0x1DE9C, asm, text_1DE9C]
       - [0x1DFD4, c, engine/grid_rectangle]
@@ -488,13 +489,16 @@ segments:
       - [0x46BFC, .sdata, core/main]
       - [0x46C10, .sdata, ns/init]
       - [0x46C14, sdata, sdata_46C14]
+      - [0x46CA4, .sdata, cam/camera]
+      - [0x46CBC, sdata, sdata_46CBC]
       - [0x46CD8, .sdata, math/random_state]
       - [0x46CE0, sdata, sdata_46CE0]
       - [0x46D00, .sdata, engine/state]
       - [0x46D74, sdata, sdata_46D74]
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
       - { start: 0x46D98, type: .sbss, vram: 0x800565B8, name: core/main }
-      - { start: 0x46D98, type: sbss, vram: 0x800565C0, name: sbss_565C0 }
+      - { start: 0x46D98, type: .sbss, vram: 0x800565C0, name: cam/camera }
+      - { start: 0x46D98, type: sbss, vram: 0x800565C4, name: sbss_565C4 }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }
       - { start: 0x46D98, type: sbss, vram: 0x8005665C, name: sbss_5665C }

@@ -118,6 +118,22 @@ dumps (`cc1 -dj -ds -dL -dl -dg -dS`).
   jump's tail after two.
 * **Tree `fold`** reassociates `a | (b | C)`. Assigning the inner value to a
   variable keeps the source grouping.
+* **Aliasing of globals.** `cse` and `sched` assume that a store to a struct
+  field at a varying address cannot touch a scalar at a fixed address. If
+  retail reloads a global after such a store, the global is itself a struct
+  member. For example, 0x80057914..0x80057920 is one struct (`zone.h`
+  `LevelPosition`). A load that retail places before such stores was written
+  before them in the source.
+* **`abs`.** The builtin gives `bgez; negu`. A `(x) < 0 ? -(x) : (x)` macro
+  gives the same for a plain load, but for `a - b` the fold turns `-(a - b)`
+  into `b - a`, so retail shows a reversed `subu`.
+* **Flags from `&&` chains.** `x = a && b && c` stores the last test with
+  `sltu`/`sltiu`; `x = a || b || c` uses branches for all three tests. To
+  get the inverse of an `&&` chain with the store-flag at the end (default
+  1, then `sltu`), write it as `if (a && b && c) x = 0; else x = 1;`.
+* **A store after an if/else** whose value comes from a variable set in both
+  arms shows up in retail in the `j` delay slot of the first arm and again
+  before the join label. `reorg` copies the join's first insn into the slot.
 
 `tools/scripts/permute_import.sh` (also used by `make permute`) copies the
 source file's compiler profile into the permuter's `compile.sh`.
