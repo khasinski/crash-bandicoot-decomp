@@ -6,9 +6,9 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FUNC="${1:?usage: $0 <function> [m2c flags]}"; shift
 ASM="$(find "$ROOT/asm/USA/main/nonmatchings" -name "$FUNC.s" | head -1)"
 if [ -z "$ASM" ]; then
-    ASM="$(rg -l --glob '*.s' "^[[:space:]]*glabel[[:space:]]+$FUNC([[:space:]]|$)" "$ROOT/asm/USA/main" | head -1 || true)"
+    ASM="$(grep -rlE --include='*.s' "^[[:space:]]*glabel[[:space:]]+$FUNC([[:space:]]|$)" "$ROOT/asm/USA/main" | head -1 || true)"
     if [ -z "$ASM" ] && [ -d "$ROOT/expected/asm/USA/main" ]; then
-        ASM="$(rg -l --glob '*.s' "^[[:space:]]*glabel[[:space:]]+$FUNC([[:space:]]|$)" "$ROOT/expected/asm/USA/main" | head -1 || true)"
+        ASM="$(grep -rlE --include='*.s' "^[[:space:]]*glabel[[:space:]]+$FUNC([[:space:]]|$)" "$ROOT/expected/asm/USA/main" | head -1 || true)"
     fi
     if [ -z "$ASM" ]; then
         echo "m2c: no retail assembly for $FUNC; run make split and make report" >&2

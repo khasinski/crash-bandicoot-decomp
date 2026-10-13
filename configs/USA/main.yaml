@@ -85,7 +85,6 @@ segments:
       - [0x1F64, .rodata, sdk/libspu/sequence_timing]
       - [0x1F7C, c, libc/malloc]
       - [0x2588, c, core/main]
-      - [0x25D0, asm, text_25D0]
       - [0x2D80, c, ns/id_string]
       - [0x2E04, c, ns/name]
       - [0x2EC0, c, ns/resource_type]
@@ -484,12 +483,15 @@ segments:
       - [0x41C94, c, sdk/libapi/bios_service_pair]
       - [0x41CCC, asm, text_41CCC]
       - [0x41CDC, data, data_41CDC]
-      - [0x46BFC, sdata, sdata_46BFC]
+      - [0x46BFC, .sdata, core/main]
+      - [0x46C10, sdata, sdata_46C10]
       - [0x46CD8, .sdata, math/random_state]
       - [0x46CE0, sdata, sdata_46CE0]
       - [0x46D00, .sdata, engine/state]
       - [0x46D74, sdata, sdata_46D74]
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
+      - { start: 0x46D98, type: .sbss, vram: 0x800565B8, name: core/main }
+      - { start: 0x46D98, type: sbss, vram: 0x800565C0, name: sbss_565C0 }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }
       - { start: 0x46D98, type: sbss, vram: 0x8005665C, name: sbss_5665C }

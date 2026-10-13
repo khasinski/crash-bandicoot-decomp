@@ -129,12 +129,12 @@ def levenshtein(got, mask, exp):
     return rows[-1][-1], list(reversed(edits))
 
 
-def compare(name, got, mask, exp, verbose) -> bool:
+def compare(name, got, mask, exp, verbose, max_edits=8) -> bool:
     distance, edits = levenshtein(got, mask, exp)
     status = "MATCH" if distance == 0 else "DIFF"
     print(f"  {name:32s} {len(got):4d}/{len(exp):<4d} {status}  Levenshtein={distance}")
     if distance and verbose:
-        for kind, i, j in edits[:8]:
+        for kind, i, j in edits[:max_edits]:
             a = disasm(got[i]) if kind != "insert" else "-"
             b = disasm(exp[j]) if kind != "delete" else "-"
             print(f"      {kind:7s} ours[{i}]: {a:32s} retail[{j}]: {b}")
@@ -147,6 +147,7 @@ def main() -> int:
     ap.add_argument("--gcc", action="append", help="gcc version(s) to try (default: cc.sh default)")
     ap.add_argument("--version", default="USA")
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument("--edits", type=int, default=8, help="edits to print with -v (default 8)")
     args = ap.parse_args()
 
     # Always regenerate from retail: promoted C functions disappear from the
@@ -174,7 +175,7 @@ def main() -> int:
                 print(f"  {name:32s} ERROR: not in retail asm")
                 all_ok = False
                 continue
-            all_ok &= compare(name, words, mask, retail[name], args.verbose)
+            all_ok &= compare(name, words, mask, retail[name], args.verbose, args.edits)
     return 0 if all_ok else 1
 
 
