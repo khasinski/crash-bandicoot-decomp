@@ -15,6 +15,11 @@ typedef struct ZoneNeighbor {
     u8 goal;
 } ZoneNeighbor;
 
+typedef struct ZonePoint {
+    s16 x, y, z;
+    s16 rot_y, rot_x, rot_z;
+} ZonePoint;
+
 /* Camera path item of a zone entry. Progress along it is length * 256.
  * A nonzero direction component tells which way the path runs. */
 typedef struct ZonePath {
@@ -32,6 +37,8 @@ typedef struct ZonePath {
     s16 direction_x;
     s16 direction_y;
     s16 direction_z;
+    u16 pad32;
+    ZonePoint points[1];
 } ZonePath;
 
 /* First item of a zone entry. */

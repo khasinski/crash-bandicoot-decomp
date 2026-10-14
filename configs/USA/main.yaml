@@ -75,6 +75,8 @@ segments:
       - [0x1050, .rodata, engine/message_callback]
       - [0x1064, .rodata, engine/level_start]
       - [0x110C, rodata, rodata_110C]
+      - [0x1124, .rodata, cam/camera]
+      - [0x1148, rodata, rodata_1148]
       - [0x14D0, .rodata, engine/audio_initialize]
       - [0x1594, rodata, rodata_1594]
       - [0x16C0, .rodata, engine/state]

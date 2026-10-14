@@ -131,6 +131,52 @@ dumps (`cc1 -dj -ds -dL -dl -dg -dS`).
   `sltu`/`sltiu`; `x = a || b || c` uses branches for all three tests. To
   get the inverse of an `&&` chain with the store-flag at the end (default
   1, then `sltu`), write it as `if (a && b && c) x = 0; else x = 1;`.
+* **Loop entry rotation** (`stmt.c` `expand_end_loop`). If a loop does not
+  end with a conditional jump, gcc moves a conditional exit found at the top
+  of the loop (within 30 insns, before any call or label) to the bottom. The
+  top test is then duplicated in front of the loop. A block-scoped
+  declaration at the start of the loop body emits `NOTE_INSN_BLOCK_BEG` and
+  stops this. So when retail keeps `if (x) break;` as the first insn of the
+  loop, the body declares a local.
+* **`loop.c` moves exit blocks out of loops** (`find_and_verify_loops`). A
+  block reached by a conditional jump that ends in a jump out of the loop
+  (`return`, `break` to an outer label) is moved behind the first BARRIER at
+  the target's loop depth. The search goes backward from the jump target,
+  then forward. For `return` the target is the function's return label, so
+  such blocks end up near the end of the function. If retail has the block
+  right after the loop instead, the source jumped to a label there (e.g.
+  `goto` to code after the loop's own `return`).
+* **`cse` skip-blocks and memory.** Skipping a block that stores to a fixed
+  address keeps all other fixed-address values. A reload in retail after
+  such a block means the two loads are different MEM rtxes. An `__asm__`
+  alias declares its symbol as `"*NAME"`, a different SYMBOL_REF from plain
+  `NAME`. So a struct view and a scalar extern of the same address neither
+  share loads nor alias each other.
+* **Loop invariants and `insn_count`.** In `move_movables`, each register
+  that was already moved by an inner loop doubles `insn_count` for the
+  following candidates ("halved since already moved"). The order of
+  invariants inside the inner loop therefore decides which of them leave the
+  outer loop. A constant that does not get moved and ends up without a hard
+  register is rematerialized by reload into a `t` register at its use.
+* **local-alloc with exactly 3 quantities in a block** does not sort them
+  by priority. `block_alloc` hand-sorts 2 or 3 qtys with
+  `qty_compare (0, 1)` / `(1, 2)`, which compares qty *numbers* while
+  swapping *positions*. With 3 qtys the result depends on that bug (for 2,
+  or 4 and more via qsort, it is correct). If `v0`/`v1` come out swapped in
+  a short block, change the number of local qtys in it. For example, an
+  explicit `if (x < 0) x = -x;` on a call result instead of `abs()` adds one.
+  `find_free_reg` can be traced with lldb: cc1 has symbols, and the
+  local-alloc arrays (`qty_first_reg`, `qty_n_refs`, ...) are statics next
+  to `_qty_birth`.
+* **A field read after a pointer variable is reassigned** reuses the address
+  of the old value only if the read comes earlier in the RTL. Read it into a
+  local before the assignment (`goal = p->link[i].goal; p = next;`) and the
+  old base register is reused. A temporary for the new value instead costs
+  a `move`.
+* **Delay slots of unconditional jumps** are filled from the target thread,
+  with the jump redirected past the stolen insn. If a slot stays `nop`,
+  check the case order inside small `switch` statements. The order of the
+  case bodies decides which jump sees which target first.
 * **A store after an if/else** whose value comes from a variable set in both
   arms shows up in retail in the `j` delay slot of the first arm and again
   before the join label. `reorg` copies the join's first insn into the slot.

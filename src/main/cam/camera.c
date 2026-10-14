@@ -49,19 +49,45 @@ s32 D_800564B8 = 0;
 asm(".globl D_800565C0");
 s32 D_800565C0;
 
+/* View of the global state object at D_80060DF0 (camera fields only). */
+typedef struct CamGlobals {
+    u8 pad000[0xAC0];
+    u32 display_flags;      /* 0x800618B0 */
+    s32 death_cam;          /* 0x800618B4 */
+    u8 padAC8[0xAE0 - 0xAC8];
+    s32 game_state;         /* 0x800618D0 */
+    u8 padAE4[0xB9C - 0xAE4];
+    s32 island_rot;         /* 0x8006198C */
+    s32 wordBA0;            /* 0x80061990 */
+    s32 island_state;       /* 0x80061994 */
+} CamGlobals;
+
+extern CamGlobals cam_globals __asm__("D_80060DF0");
+/* Scalar names for the zone state also covered by level_position. CamFollow
+ * reads it through the struct view, CamUpdate mostly through these. */
+extern ZonePath *D_8005791C;
+extern s32 D_80057920;
+extern void *D_800566B4;    /* the player object */
+extern s32 D_8005E71C;      /* pad buttons pressed this frame */
+extern s32 D_80057974;
+extern s32 D_80057874;
 extern CamLevelView *D_8005C53C;
 extern s32 D_8005E720;
 extern u32 D_80060E04, D_80061990;
 
 ZoneEntry *func_80015A98(u32 *);
+s32 func_800245F0(s32, s32);
 s32 func_80024628(s32, s32, s32);
 void func_80025A60(ResourceEntry *, ZonePath *, s32, s32);
+void func_80026460(void *, s32 *, s32);
 void func_80029F6C(s32, CamCandidate *);
 s32 func_8002A0C4(CamVec *, ZonePath *, CamCandidate *, u8, s32);
 s32 func_8002A3EC(CamVec *, ZonePath *, CamCandidate *, u8, s32);
+void func_8002BAB4(s32 *);
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define ABS(x) ((x) < 0 ? -(x) : (x))
+#define SIGN(x) ((x) > 0 ? 1 : -((x) != 0))
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_80029F6C);
 
@@ -83,7 +109,7 @@ static __inline__ ZonePath *cam_neighbor_path(s32 i)
 /* Steer the camera: update the offsets from the pad and the zone flags, then
  * find the progress on the current or a linked path that best follows obj
  * and move towards it. */
-void func_8002A82C(CamObject *obj)
+void func_8002A82C(CamObject *obj, s32 flags)
 {
     CamCandidate cams[4];
     CamVec trans;
@@ -324,6 +350,226 @@ void func_8002A82C(CamObject *obj)
     }
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002B2BC);
+/* Per-frame camera update, chosen by the current path's camera mode:
+ * 0 fixed, 1/3 automatic (advance one step a frame, a pad press skips to the
+ * next non-automatic path), 5/6 follow (func_8002A82C), 7 island map (step
+ * along linked paths towards the stick angle), 8 step one way along the
+ * path. The case 1/3 jump to `advance` keeps that update after the loop,
+ * where retail has it. */
+s32 func_8002B2BC(void)
+{
+    u8 unused[0x48];        /* frame space with no remaining use */
+    ZoneEntry *zone, *neighbor;
+    ZonePath *path, *next_path;
+    ZonePath *target;
+    s32 target_progress, side, j;
+    s32 progress, next_progress, angle, state, skip, index, i;
+
+    if (D_800566B4 == NULL) {
+        return 0;
+    }
+    if (cam_globals.display_flags & 0x10000) {
+        func_8002BAB4(&cam_globals.death_cam);
+        return 0;
+    }
+    if (!(cam_globals.display_flags & 2)) {
+        return 0;
+    }
+    switch (D_8005791C->cam_mode) {
+    case 5:
+    case 6:
+        cam_globals.game_state = 0x100;
+        func_8002A82C((CamObject *)D_800566B4, 0);
+        return 1;
+    case 0:
+        cam_globals.game_state = 0x100;
+        return 1;
+    case 1:
+    case 3:
+        skip = 0;
+        if ((D_8005E71C & 0xF0) && !(((ZoneHeader *)D_80057914->data)->flags & 0x81000)) {
+            skip = 1;
+        }
+        do {
+            if (!(((ZoneHeader *)level_position.zone->data)->flags & 0x1000)) {
+                cam_globals.game_state = 0;
+            }
+            if ((D_80057920 >> 8) + 1 < D_8005791C->length && !skip) {
+                goto advance;
+            }
+            if (D_8005791C->neighbor_count == 0) {
+                return 1;
+            }
+            zone = func_80015A98(&((ZoneHeader *)D_80057914->data)
+                                      ->neighbors[D_8005791C->neighbors[0].zone]);
+            target = zone->items[D_8005791C->neighbors[0].path
+                               + ((ZoneHeader *)zone->items[0])->path_index];
+            if (D_8005791C->neighbors[0].goal & 1) {
+                target_progress = 0;
+            } else {
+                target_progress = (target->length - 1) << 8;
+            }
+            func_80025A60((ResourceEntry *)zone, target, target_progress, 0);
+            if (!(((ZoneHeader *)D_80057914->data)->flags & 0x1000)) {
+                func_80026460(D_800566B4, &D_80057974, 1);
+            }
+            if (!skip) {
+                return 1;
+            }
+        } while (D_8005791C->cam_mode == 1 || D_8005791C->cam_mode == 3);
+        return 1;
+    advance:
+        func_80025A60(D_80057914, D_8005791C, D_80057920 + 0x100, 0);
+        return 1;
+    case 8:
+        side = cam_globals.island_state & 3;
+        index = -1;
+        for (j = 0; j < D_8005791C->neighbor_count; j++) {
+            if ((D_8005791C->neighbors[j].relation & 3) == (side ^ 3)) {
+                index = j;
+                break;
+            }
+        }
+        if (side & 1) {
+            if ((D_80057920 >> 8) + 1 >= D_8005791C->length) {
+                if (index != -1) {
+                    zone = func_80015A98(&((ZoneHeader *)D_80057914->data)
+                                              ->neighbors[D_8005791C->neighbors[index].zone]);
+                    target = zone->items[D_8005791C->neighbors[index].path
+                                         + ((ZoneHeader *)zone->items[0])->path_index];
+                    if (D_8005791C->neighbors[index].goal & 1) {
+                        target_progress = 0;
+                    } else {
+                        target_progress = (target->length - 1) << 8;
+                    }
+                    func_80025A60((ResourceEntry *)zone, target, target_progress, 0);
+                }
+            } else {
+                func_80025A60(D_80057914, D_8005791C, D_80057920 + 0x100, 0);
+            }
+        } else {
+            if ((D_80057920 >> 8) - 1 < 0) {
+                if (index != -1) {
+                    zone = func_80015A98(&((ZoneHeader *)D_80057914->data)
+                                              ->neighbors[D_8005791C->neighbors[index].zone]);
+                    target = zone->items[D_8005791C->neighbors[index].path
+                                         + ((ZoneHeader *)zone->items[0])->path_index];
+                    if (D_8005791C->neighbors[index].goal & 1) {
+                        target_progress = 0;
+                    } else {
+                        target_progress = (target->length - 1) << 8;
+                    }
+                    func_80025A60((ResourceEntry *)zone, target, target_progress, 0);
+                }
+            } else {
+                func_80025A60(D_80057914, D_8005791C, D_80057920 - 0x100, 0);
+            }
+        }
+        if (D_8005791C->cam_mode != 8) {
+            cam_globals.island_state = 1;
+        }
+        return 1;
+    case 7:
+        path = NULL;
+        state = cam_globals.island_state;
+        switch (state) {
+        case 0:
+            return 0;
+        case 5:
+        case 6:
+            angle = 0x22;
+            break;
+        case -1:
+            state = 1;
+            angle = -(cam_globals.island_rot & 0xFFF);
+            break;
+        default:
+            angle = func_800245F0(D_80057874, cam_globals.island_rot);
+            if (ABS(angle) >= 0x17) {
+                angle = SIGN(angle);
+            } else {
+                angle = 0;
+            }
+            break;
+        }
+        next_path = D_8005791C;
+        next_progress = D_80057920;
+        do {
+            ZoneHeader *header;
+            s32 goal;
+
+            if (angle == 0) {
+                break;
+            }
+            path = next_path;
+            progress = next_progress;
+            if (cam_globals.island_state == -1) {
+                s32 diff = func_800245F0(path->points[progress >> 8].rot_y, ABS(angle));
+
+                if (diff < 0) {
+                    diff = -diff;
+                }
+                if (diff < 0x17) {
+                    break;
+                }
+            }
+            next_progress = progress + 0x100;
+            if (state & 4) {
+                next_progress = progress + 0x400;
+            }
+            index = -1;
+            if (next_progress >= path->length << 8) {
+                for (i = 0; i < path->neighbor_count; i++) {
+                    if (path->neighbors[i].goal == state) {
+                        index = i;
+                    } else if (index == -1) {
+                        if (next_path->neighbor_count == 1 || (state & 3) == (path->neighbors[i].goal & 3)) {
+                            index = i;
+                        }
+                    }
+                }
+                if (index == -1) {
+                    for (i = 0; i < next_path->neighbor_count; i++) {
+                        if (!(next_path->neighbors[i].goal & 4)) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+                header = (ZoneHeader *)next_path->zone->data;
+                neighbor = func_80015A98(&header->neighbors[next_path->neighbors[index].zone]);
+                goal = next_path->neighbors[index].goal;
+                next_path = neighbor->items[next_path->neighbors[index].path + ((ZoneHeader *)neighbor->items[0])->path_index];
+                if (!(goal & 1)) {
+                    next_progress = (next_path->length - 1) << 8;
+                } else {
+                    next_progress = 0;
+                }
+                if (state & 4) {
+                    path = next_path;
+                    progress = next_progress;
+                    break;
+                }
+            } else if (state & 4) {
+                progress = next_progress;
+                break;
+            }
+            if (angle > 0) {
+                path = next_path;
+                progress = next_progress;
+                break;
+            }
+        } while (next_path != D_8005791C || (next_progress >> 8) != (D_80057920 >> 8));
+        if (cam_globals.island_state == -1) {
+            cam_globals.island_state = state;
+        }
+        if (path != NULL && (path != D_8005791C || progress != D_80057920)) {
+            func_80025A60(path->zone, path, progress, 0);
+        }
+        return 1;
+    default:
+        return 1;
+    }
+}
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002BAB4);
