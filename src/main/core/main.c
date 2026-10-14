@@ -22,8 +22,6 @@ s32 CORE_Main(void)
     return 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/core/main", func_80011DD0);
-
 typedef struct ZoneHeaderView {
     s32 word00;
     u8 pad04[0x2F8];
@@ -59,6 +57,48 @@ typedef struct DrawStampView {
 } DrawStampView;
 
 extern NsState D_8005C528;
+extern s32 D_80056710;
+extern s32 D_800618BC, D_800618A8, D_800618A4, D_800618C4;
+extern u8 D_80060DC0[];
+void func_800167A4(void);
+void func_80015118(void *, s32, s32);
+void func_800262DC(s32);
+s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, s32 flag);
+
+/* Spawn default HUD objects and load the level's initial resource entries. */
+void func_80011DD0(void)
+{
+    func_800167A4();
+    D_800618BC = 0;
+    switch (D_80056710) {
+    case 0x38:
+    case 0x39:
+        break;
+    case 0x19:
+        func_80015118((u8 *)D_8005C528.level + 0x24, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0xE4, 0, 1);
+        break;
+    case 0x2D:
+        func_80015118((u8 *)D_8005C528.level + 0x88, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0x9C, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0x20, 0, 1);
+        break;
+    default:
+        D_800618A8 = GOOL_CreateObject(&D_80060DC0, 4, 0, 0, 0, 0);
+        D_800618A4 = GOOL_CreateObject(&D_80060DC0, 4, 1, 0, 0, 0);
+        D_800618C4 = GOOL_CreateObject(&D_80060DC0, 4, 5, 0, 0, 0);
+        func_80015118((u8 *)D_8005C528.level + 0x14, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0x28, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0x88, 0, 1);
+        if (D_80056710 != 0x2C) {
+            func_80015118((u8 *)D_8005C528.level + 0x9C, 0, 1);
+        }
+        func_80015118((u8 *)D_8005C528.level + 0x20, 0, 1);
+        func_80015118((u8 *)D_8005C528.level + 0x24, 0, 1);
+        break;
+    }
+    func_800262DC(1);
+}
 extern u32 engine_counter[] __asm__("func_80034520");
 extern PauseStateView D_80060DF0;
 extern s32 D_8005E71C;

@@ -9,12 +9,38 @@ typedef struct EngineState {
     s32 word00, word04, word08, word0C, word10, word14, word18;
 } EngineState;
 
+typedef struct EngineTileCoords {
+    s32 x, y, page;
+} EngineTileCoords;
+
+typedef struct EngineTileCell {
+    u32 x : 4;
+    u32 y : 4;
+    s32 tile_x : 9;
+    s32 tile_y : 8;
+    u32 page : 2;
+    u32 pad0 : 5;
+    u32 clut : 9;
+    s32 off_y : 14;
+    u32 pad1 : 9;
+    s32 off_x : 14;
+    u32 pad2 : 18;
+} EngineTileCell;
+
+typedef struct EngineDrawModePacket {
+    u32 words[3];
+} EngineDrawModePacket;
+
 /* Separate allocation in func_80031BAC; last observed word is at 0x35D4. */
 typedef struct EngineMode25State {
     /* Encoded map reference, derived words, and metadata copied by 31EB4. */
     u32 word00;
     s32 word04, word08, word0C, word10, word14, word18;
-    u8 pad1C[0x357C];
+    EngineTileCoords coords[528];
+    EngineTileCell cells[528];
+    u8 pad319C[0x3C4];
+    u16 word3560, word3562, word3564, word3566;
+    EngineDrawModePacket draw_modes[4];
     s32 word3598, word359C;
     /* func_80031BF8 copies the word at D_8006194C into both fields.
      * The instructions establish word width, not pointer semantics. */

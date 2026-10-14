@@ -240,4 +240,28 @@ s32 func_80015B58(NsState *ns, s32 level)
     return -0xFF;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/ns/init", func_80016420);
+void func_800164F8(NsState *, s32);
+void LIBC_Free(void *);
+
+/* Shut down subsystem tables, release all physical pages and free paging buffers. */
+s32 func_80016420(NsState *ns)
+{
+    s32 i;
+
+    if (ns->initialized != 1) {
+        return -0xFF;
+    }
+    for (i = 0; i < 21; i++) {
+        if (D_800514E0[i].kill) {
+            D_800514E0[i].kill();
+        }
+    }
+    for (i = 0; i < ns->physical_count; i++) {
+        func_800164F8(ns, i);
+    }
+    LIBC_Free(ns->physical[0].header);
+    LIBC_Free(ns->page_map);
+    LIBC_Free(ns->directory);
+    ns->initialized = 0;
+    return -0xFF;
+}

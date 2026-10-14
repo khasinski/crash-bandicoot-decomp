@@ -227,21 +227,14 @@ s32 func_80032298(void)
 }
 
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800322CC);
+#include "ns.h"
+#include "render.h"
 
-typedef struct EngineTileCell {
-    u32 x : 4;
-    u32 y : 4;
-    s32 tile_x : 9;
-    s32 tile_y : 8;
-    u32 page : 2;
-    u32 pad0 : 5;
-    u32 clut : 9;
-    s32 off_y : 14;
-    u32 pad1 : 9;
-    s32 off_x : 14;
-    u32 pad2 : 18;
-} EngineTileCell;
+extern void *LIBC_Malloc(u32);
+extern void func_8004025C(s32);
+extern void func_800169F8(void);
+extern RenderBuffer *D_80058408;
+extern s32 D_8005C54C;
 
 typedef struct EngineGpuRect {
     s16 x, y, w, h;
@@ -249,6 +242,57 @@ typedef struct EngineGpuRect {
 
 ResourceItemListView *func_80015A98(u32 *);
 void func_80040484(EngineGpuRect *, void *);
+
+s32 func_800322CC(s32 level, u8 *image, NsDirectory *dir)
+{
+    EngineGpuRect rect;
+    u16 *buf;
+    u16 *clut;
+    s32 pass;
+    u8 *src;
+    s32 strip;
+    s32 dx;
+    s32 x;
+    s32 y;
+    u16 *dst;
+    s32 row;
+    s32 col;
+
+    if (dir->word40C && dir->word410 && dir->word414
+        && D_800618D0 != 0x600 && D_800618D0 != 0x200 && D_800618D0 != 0x500
+        && (D_800618D0 != 0 || level != 25)) {
+        buf = LIBC_Malloc(0x4000);
+        func_8004025C(0);
+        clut = (u16 *)image;
+        for (pass = 0; pass < 2; pass++) {
+            src = image + 0x200;
+            func_800169F8();
+            strip = 0;
+            dx = dir->word410 / 2 - 0x100;
+            x = D_80058408->drawing.env.clip.x - dx;
+            y = D_80058408->drawing.env.clip.y - dir->word414 / 2 + 0x6C;
+            for (; strip < dir->word414 / 8; strip++) {
+                dst = buf;
+                for (row = 0; row < 8; row++) {
+                    for (col = 0; col < dir->word410; col++) {
+                        *dst++ = clut[*src++];
+                    }
+                }
+                rect.x = x;
+                rect.y = y;
+                y += 8;
+                rect.w = dir->word410;
+                rect.h = 8;
+                func_80040484(&rect, buf);
+                func_8004025C(0);
+            }
+            func_800172E8();
+        }
+        D_8005C54C = 2;
+        LIBC_Free(buf);
+    }
+    return -255;
+}
 
 /* Upload one 8x16 background tile cell and update its packed CLUT id. */
 void func_800324D4(EngineTileCell *cell)
@@ -341,8 +385,90 @@ next_column:
     } while (row < 0x10);
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80032BB4);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80032DFC);
+s32 func_8003F514(s32, s32, s32, s32);
+void func_80041054(EngineDrawModePacket *, s32, s32, s32, EngineGpuRect *);
+
+void func_80032BB4(EngineMode25State *state, s32 x, s32 y)
+{
+    EngineGpuRect rect;
+    s32 row;
+    s32 col;
+    EngineTileCell *cell;
+    s32 tx;
+    s32 ty;
+
+    func_80032AF4((u32)state->coords);
+    state->word3560 = func_8003F514(1, 1, 0x100, 0x100);
+    state->word3562 = func_8003F514(1, 1, 0x180, 0x100);
+    state->word3564 = func_8003F514(1, 1, 0x200, 0x100);
+    state->word3566 = func_8003F514(1, 1, 0x280, 0x100);
+    rect.x = 0x100;
+    rect.y = 0x100;
+    rect.w = 0x100;
+    rect.h = 0x100;
+    func_80041054(&state->draw_modes[0], 1, 1, state->word3560, &rect);
+    rect.x = 0x180;
+    rect.y = 0x100;
+    rect.w = 0x100;
+    rect.h = 0x100;
+    func_80041054(&state->draw_modes[1], 1, 1, state->word3562, &rect);
+    rect.x = 0x200;
+    rect.y = 0x100;
+    rect.w = 0x100;
+    rect.h = 0x100;
+    func_80041054(&state->draw_modes[2], 1, 1, state->word3564, &rect);
+    rect.x = 0x280;
+    rect.y = 0x100;
+    rect.w = 0x100;
+    rect.h = 0x100;
+    func_80041054(&state->draw_modes[3], 1, 1, state->word3566, &rect);
+    tx = x >> 4;
+    ty = y >> 4;
+    for (row = 0; row < 16; row++) {
+        for (col = 0; col < 33; col++) {
+            cell = &state->cells[(col << 4) + row];
+            cell->tile_x = tx + col;
+            cell->tile_y = ty + row;
+            cell->x = state->coords[(col << 4) + row].x;
+            cell->y = state->coords[(col << 4) + row].y;
+            cell->page = state->coords[(col << 4) + row].page;
+        }
+    }
+}
+
+void func_80032DFC(EngineMode25State *state, s32 x, s32 y)
+{
+    EngineGpuRect rect;
+    s32 row;
+    s32 col;
+    EngineTileCell *cell;
+    s32 coord_x;
+    s32 coord_y;
+
+    func_8004025C(0);
+    for (row = 0; row < 16; row++) {
+        for (col = 0; col < 33; col++) {
+            if ((x >> 4) + col < D_800566E0->word0C
+                && (y >> 4) + row < D_800566E0->word10) {
+                cell = &state->cells[(col << 4) + row];
+                cell->off_x = x + (col << 4);
+                cell->off_y = y + (row << 4);
+                cell->clut = *(u32 *)func_80015A98(
+                    &((u32 *)func_80015A98(&D_800566E0->word00)->items[0])[(x >> 4) + col + 0x6C]
+                )->items[(y >> 4) + row];
+                coord_x = state->coords[(col << 4) + row].x;
+                coord_y = state->coords[(col << 4) + row].y;
+                rect.w = 8;
+                rect.h = 16;
+                rect.x = (coord_x << 3) + 0x100;
+                rect.y = (coord_y << 4) + 0x100;
+                func_80040484(&rect, func_80015A98(
+                    &((u32 *)func_80015A98(&D_800566E0->word00)->items[0])[(x >> 4) + col + 0x6C]
+                )->items[(y >> 4) + row] + 4);
+            }
+        }
+    }
+}
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80032FDC);
 void func_80033464(void)
 {
