@@ -198,3 +198,14 @@ function matched.
 * **Two separate `x &= ~A; x &= ~B;`** statements give one load, two `and`s
   and one store (cse merges the memory ops). `x & ~A & ~B` folds into a
   single mask.
+* **Block-scoped locals share stack slots.** Different scopes reuse the
+  same frame offsets, so a retail "spill" that lands on another variable's
+  slot (e.g. comparison flags stored at the offset of a `vec` used in
+  another branch) means a block-local array or struct.
+* **Delay slots and 32-bit constants.** A `lui`/`ori` pair split across two
+  branch delay slots means the constant was the first statement of the
+  block both branches lead into. `reorg` first moves the `ori` (the insn
+  just before the second branch) into that branch's slot, then copies the
+  `lui` from the target thread into the earlier branch.
+* **No `return` at the end of a non-void function** is visible in retail as
+  an exit path that does not set `v0` (it happens to hold 0).

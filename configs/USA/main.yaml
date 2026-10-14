@@ -179,7 +179,7 @@ segments:
       - [0x16ADC, c, engine/level_start]
       - [0x16C60, asm, text_16C60]
       - [0x172DC, c, math/contains_point]
-      - [0x17380, asm, text_17380]
+      - [0x17380, c, level/zone_query]
       - [0x18208, c, engine/field138]
       - [0x1824C, asm, text_1824C]
       - [0x18700, c, math/step_halfword]
