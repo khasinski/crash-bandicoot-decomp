@@ -49,12 +49,25 @@ typedef struct ZoneLoadList {
     u32 pages[32];
 } ZoneLoadList;
 
+typedef struct ZoneColor {
+    u8 r, g, b, pad;
+} ZoneColor;
+
+typedef struct ZoneGfx {
+    u8 pad00[0x1C];
+    u32 flags;
+    u32 unk20;
+    u8 unk24[8];
+    ZoneColor color;
+} ZoneGfx;
+
 /* First item of a zone entry. */
 typedef struct ZoneHeader {
     s32 world_count;
     u8 pad004[0x200];
     s32 path_index;
-    u8 pad208[0x8];
+    s32 path_count;
+    s32 entity_count;
     s32 neighbor_count;
     u32 neighbors[8];
     ZoneLoadList load;

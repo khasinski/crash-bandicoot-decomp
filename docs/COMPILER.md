@@ -221,4 +221,12 @@ function matched.
   because `$v0` is now live across the earlier blocks during `local-alloc`,
   their temporaries shift to `$v1` and `$a0` (pushing `$a0` arguments to
   `$a2`).
+* **`BLKmode` struct copies vs scalar stores (`memrefs_conflict_p`).** Two
+  memory references with distinct `SYMBOL_REF`s never conflict in `sched.c`,
+  so `sched` freely moves an unaligned 4-byte struct copy (`movstrsi_internal`
+  in `BLKmode`) above an earlier scalar store to a neighbouring global. When
+  both belong to one struct (sharing a `SYMBOL_REF`), `GET_MODE_SIZE(BLKmode)`
+  is `0`, which makes `memrefs_conflict_p` treat the `BLKmode` access as
+  overlapping every field of that `SYMBOL_REF` and keeps the source order.
+
 

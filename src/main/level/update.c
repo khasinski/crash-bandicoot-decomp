@@ -18,8 +18,17 @@ typedef struct LvlCamera {
     LvlVec rot_before;
 } LvlCamera;
 
+typedef struct LvlColorState {
+    ZoneColor prev;
+    ZoneColor cur;
+    ZoneColor target;
+    u32 start_tick;
+} LvlColorState;
+
 extern LvlCamera lvl_camera __asm__("D_80057864");
-extern u32 D_8005FF58[];
+extern LvlColorState lvl_color __asm__("D_80057964");
+extern u32 engine_counter[] __asm__("func_80034520");
+extern u32 D_8005FF58[], D_80061904[];
 extern s32 D_800618D0[], D_80061998[], D_80061A5C[], D_80061A60[], D_80061A64[];
 
 /* SLST polygon id lists: current, and the two buffers swapped per step. */
@@ -33,10 +42,12 @@ ZoneEntry *func_80015A98(u32 *);
 void func_8001495C(ZoneLoadList *, s32);
 void func_80014D00(u32, s32, s32, u32);
 void func_80013748(void);
+void func_8001BCC8(ZoneEntry *, s32);
 void func_8001D200(ZoneEntry *);
 void *func_80029B0C(void *, void *, void *, s32);
 void func_800260AC(void *, u32);
 void func_800296A8(ZonePath *, s32, LvlVec *);
+void func_800317DC(void *);
 
 /* Whether one of the header's neighbour links resolves to entry. */
 static __inline__ s32 zone_has_neighbor(ZoneHeader *header, ZoneEntry *entry)
@@ -51,10 +62,43 @@ static __inline__ s32 zone_has_neighbor(ZoneHeader *header, ZoneEntry *entry)
     return 0;
 }
 
+/* Spawn type-3 entities of zone when its pending-spawn display flag is set. */
+__inline__ void func_80025858(ZoneEntry *zone)
+{
+    ZoneHeader *header, *cur;
+    u8 *entity;
+    s32 i;
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/update", func_80025858);
+    header = (ZoneHeader *)zone->items[0];
+    if (header->display_flags & 2) {
+        for (i = 0; i < header->entity_count; i++) {
+            cur = (ZoneHeader *)zone->items[0];
+            entity = (u8 *)zone->items[i + cur->path_index + cur->path_count];
+            if (entity[6] == 3) {
+                func_8001BCC8(zone, i);
+            }
+        }
+        header->display_flags &= ~2;
+    }
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/update", func_80025928);
+/* Spawn pending type-3 entities across all neighbours of the current zone. */
+void func_80025928(void)
+{
+    ZoneHeader *header;
+    ZoneEntry *neighbor;
+    s32 i;
+
+    if (level_position.zone == NULL) {
+        return;
+    }
+    header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
+    for (i = 0; i < header->neighbor_count; i++) {
+        neighbor = func_80015A98(&header->neighbors[i]);
+        func_80025858(neighbor);
+    }
+}
+
 
 /* LevelUpdate: move the camera to progress along path in zone. Updates the
  * visible polygon lists (SLST) point by point, and on a zone change unloads
@@ -200,4 +244,16 @@ done:
     D_8005C528.wordA98 = 0;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/update", func_800260AC);
+/* Update the zone colour transition state and graphics parameters. */
+void func_800260AC(void *arg0, u32 flags)
+{
+    ZoneGfx *gfx = (ZoneGfx *)arg0;
+
+    lvl_color.start_tick = engine_counter[0];
+    lvl_color.prev = lvl_color.cur;
+    lvl_color.target = gfx->color;
+    D_80061904[0] = gfx->flags;
+    if (!(flags & 4)) {
+        func_800317DC(gfx->unk24);
+    }
+}
