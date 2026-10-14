@@ -228,7 +228,48 @@ s32 func_80032298(void)
 
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800322CC);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800324D4);
+
+typedef struct EngineTileCell {
+    u32 x : 4;
+    u32 y : 4;
+    s32 tile_x : 9;
+    s32 tile_y : 8;
+    u32 page : 2;
+    u32 pad0 : 5;
+    u32 clut : 9;
+    s32 off_y : 14;
+    u32 pad1 : 9;
+    s32 off_x : 14;
+    u32 pad2 : 18;
+} EngineTileCell;
+
+typedef struct EngineGpuRect {
+    s16 x, y, w, h;
+} EngineGpuRect;
+
+ResourceItemListView *func_80015A98(u32 *);
+void func_80040484(EngineGpuRect *, void *);
+
+/* Upload one 8x16 background tile cell and update its packed CLUT id. */
+void func_800324D4(EngineTileCell *cell)
+{
+    EngineGpuRect rect;
+
+    if (cell->tile_x >= 0 && cell->tile_x < D_800566E0->word0C
+        && cell->tile_y >= 0 && cell->tile_y < D_800566E0->word10) {
+        cell->clut = *(u32 *)func_80015A98(
+            &((u32 *)func_80015A98(&D_800566E0->word00)->items[0])[cell->tile_x + 0x6C]
+        )->items[cell->tile_y];
+        rect.x = 0x100 + (cell->page << 7) + (cell->x << 3);
+        rect.y = (cell->y << 4) + 0x100;
+        rect.w = 8;
+        rect.h = 16;
+        func_80040484(&rect, func_80015A98(
+            &((u32 *)func_80015A98(&D_800566E0->word00)->items[0])[cell->tile_x + 0x6C]
+        )->items[cell->tile_y] + 4);
+    }
+}
+
 extern s32 D_800618BC[], D_80061A34;
 void func_80024040(s32, s32, s32, s32, s32 *);
 
@@ -553,9 +594,102 @@ void func_8003AED8(FileRequest *request) {
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003AF24);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B5E0);
+extern u8 D_80053890[][2];
+char *BIOS_StrCpy(char *, const char *);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003B74C);
+/* Convert a Shift-JIS memory-card block title in place to printable ASCII. */
+void func_8003B5E0(u8 *header)
+{
+    u8 *dst;
+    s32 i, j;
+    u8 c1, c2, out;
+    s32 len = 64;
+
+    header += 4;
+    dst = header;
+    for (i = 0; i < len; i += 2, header += 2) {
+        c1 = header[0];
+        c2 = header[1];
+        if (c1 < 0x81) {
+            out = c1;
+            header--;
+        } else if (c1 == 0xA0) {
+            out = ' ';
+            header--;
+        } else if (c1 == 0x81) {
+            out = '.';
+            for (j = 0; D_80053890[j][0] != 0xFF; j++) {
+                if (D_80053890[j][1] == c2) {
+                    out = D_80053890[j][0];
+                    break;
+                }
+            }
+        } else if (c1 == 0x82) {
+            out = '?';
+            if ((c2 >= 0x60 && c2 <= 0x79) || (c2 >= 0x4F && c2 <= 0x58)) {
+                out = c2 - 0x1F;
+            }
+            if (c2 >= 0x81 && c2 <= 0x9A) {
+                out = c2 - 0x20;
+            }
+        } else if (c1 >= 0xA1 && c1 <= 0xDF) {
+            out = '?';
+            header--;
+        } else {
+            out = '?';
+        }
+        if (out != 0 && (out < 0x20 || out > 0x7E)) {
+            out = ' ';
+        }
+        *dst++ = out;
+        if (out == 0) {
+            break;
+        }
+    }
+}
+
+/* Convert an ASCII title string in place to big-endian Shift-JIS characters. */
+void func_8003B74C(char *title, s32 len)
+{
+    char buf[64];
+    s32 i, j;
+    s32 ended = 0;
+    u16 *dst;
+    char *p;
+    u8 c;
+
+    BIOS_StrCpy(buf, title);
+    dst = (u16 *)title;
+    p = buf;
+    for (i = 0; i < len; p++, i++, dst++) {
+        c = *p;
+        if (ended) {
+            *dst = 0x8140;
+        } else if (c >= 'a' && c <= 'z') {
+            *dst = c + 0x8220;
+        } else if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            *dst = c + 0x821F;
+        } else {
+            *dst = 0x8140;
+            for (j = 0; D_80053890[j][0] != 0xFF; j++) {
+                if (D_80053890[j][0] == c) {
+                    *dst = D_80053890[j][1] | 0x8100;
+                    break;
+                }
+            }
+            if (c == 0) {
+                ended = 1;
+                *dst = 0;
+            }
+        }
+    }
+    p = title;
+    for (i = 0; i < len; i++, p += 2) {
+        c = p[0];
+        p[0] = p[1];
+        p[1] = c;
+    }
+}
 
 extern char D_80056574[], D_8005657C[];
 extern char D_80010E78[], D_80010E88[], D_80010E98[], D_80010EB0[];
@@ -564,10 +698,8 @@ extern s32 D_80061974;
 extern u32 D_800619D0;
 s32 func_8003D740(char *, char *, ...);
 void func_8003D730(char *, s32);
-char *BIOS_StrCpy(char *, const char *);
 s32 func_8003E218(char *, s32), func_8003E238(s32, void *, s32);
 s32 func_8003C6E4(const char *), func_8003CAF8(s32), func_8003CAD8(s32);
-void func_8003B74C(char *, s32);
 void func_8001A850(s32, u32, s32, u16 *, u8 *);
 
 static inline EngineDirectorySlot *engine_selected_file(void)
@@ -970,7 +1102,42 @@ s32 func_8003C714(const char *path, EngineDirectoryRecord *entries)
     return count;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003C7A8);
+s32 BIOS_StrCmp(char *, char *);
+void func_80033FBC(void *, void *, s32);
+
+/* Sort Crash directory entries ahead of other saves and alphabetically. */
+void func_8003C7A8(EngineDirectoryRecord *entries, s32 count)
+{
+    EngineDirectoryRecord temp;
+    s32 i, j, is_crash, match;
+    char *entry_name;
+
+    for (i = 0; i < count; i++) {
+        entry_name = (char *)&entries[i];
+        is_crash = BIOS_StrNCmp(D_80010E88, entry_name, 12) == 0;
+        for (j = i + 1; j < count; j++) {
+            match = BIOS_StrNCmp(D_80010E88, (char *)&entries[j], 12) == 0;
+            if (!is_crash) {
+                if (match) {
+                    continue;
+                }
+            } else {
+                if (!match) {
+                    goto swap;
+                }
+            }
+            match = BIOS_StrCmp(entry_name, (char *)&entries[j]);
+            if (match > 0) {
+            swap:
+                func_80033FBC(&entries[i], &temp, 0x14);
+                func_80033FBC(&entries[j], &entries[i], 0x14);
+                func_80033FBC(&temp, &entries[j], 0x14);
+                i--;
+                break;
+            }
+        }
+    }
+}
 
 extern s32 func_8003E248(s32);
 
@@ -1250,14 +1417,41 @@ s32 func_8003D028(s32 value)
         return 1;
     }
 }
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003D094);
+/* Select the directory slot matching the last active save filename. */
+s32 func_8003D094(void)
+{
+    s32 i;
+
+    if (D_80056564->word04 & 13) {
+        engine_flag_shadow[0] = D_80056564->word04 |= 2;
+        return 1;
+    }
+    for (i = 0; i < D_80056564->word08; i++) {
+        if (BIOS_StrCmp((char *)&D_8005703C,
+                (char *)((EngineDirectoryState *)D_80056564)
+                    ->records[((EngineDirectoryState *)D_80056564)->slots[i].record_index]
+                    .bytes) == 0) {
+            break;
+        }
+    }
+    if (i != D_80056564->word08) {
+        D_80056564->word0C = i;
+        D_80056564->word00 = 6;
+        engine_flag_shadow[0] = D_80056564->word04 |= 1;
+        D_80056564->word14 = 0;
+        D_80056564->word10 = 32;
+        return 0;
+    } else {
+        engine_flag_shadow[0] = D_80056564->word04 |= 2;
+        return 1;
+    }
+}
 
 s32 func_8003D1B4(void) {
     D_8005703C = D_80056590;
     return 0;
 }
 
-s32 BIOS_StrCmp(char *, char *);
 void func_80051424(s32);
 
 s32 func_8003D1F0(void)
