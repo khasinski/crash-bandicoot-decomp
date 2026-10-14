@@ -185,3 +185,16 @@ dumps (`cc1 -dj -ds -dL -dl -dg -dS`).
 source file's compiler profile into the permuter's `compile.sh`.
 `import.py` preprocesses the source and loses those comments, so without
 the script every permutation of a gcc 2.6.3 unit was built with 2.5.7.
+
+`probe_match.py` masks relocated fields, including `j` targets. A `j` into
+the wrong insn of the same function (for example before or after a spill
+reload) still shows MATCH, and only `make build check` catches it. When a
+`goto` or a shared tail is involved, run the full check before calling a
+function matched.
+
+* **`a - (b + C)` is reassociated by `fold`** into `(a - C) - b`. Retail
+  code that computes `b + 1` and then subtracts kept `b + 1` out of the
+  tree, for example through an assignment `(next = b + 1)`.
+* **Two separate `x &= ~A; x &= ~B;`** statements give one load, two `and`s
+  and one store (cse merges the memory ops). `x & ~A & ~B` folds into a
+  single mask.

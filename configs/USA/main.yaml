@@ -172,7 +172,7 @@ segments:
       - [0x15934, c, engine/tree_message]
       - [0x159B8, asm, text_159B8]
       - [0x15FB4, c, gool/resource]
-      - [0x16058, asm, text_16058]
+      - [0x16058, c, level/update]
       - [0x16938, c, engine/noop_26138]
       - [0x16940, c, engine/settings_reset]
       - [0x16A00, asm, text_16A00]

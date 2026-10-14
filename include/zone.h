@@ -41,12 +41,25 @@ typedef struct ZonePath {
     ZonePoint points[1];
 } ZonePath;
 
+/* Entries and pages a zone keeps loaded. */
+typedef struct ZoneLoadList {
+    s32 entry_count;
+    s32 page_count;
+    u32 entries[8];
+    u32 pages[32];
+} ZoneLoadList;
+
 /* First item of a zone entry. */
 typedef struct ZoneHeader {
-    u8 pad000[0x204];
+    s32 world_count;
+    u8 pad004[0x200];
     s32 path_index;
-    u8 pad208[0xC];
-    u32 neighbors[(0x2FC - 0x214) / 4];
+    u8 pad208[0x8];
+    s32 neighbor_count;
+    u32 neighbors[8];
+    ZoneLoadList load;
+    u32 display_flags;
+    u8 gfx[0x1C];
     u32 flags;
 } ZoneHeader;
 
