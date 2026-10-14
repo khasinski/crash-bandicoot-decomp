@@ -6,7 +6,7 @@
  * would take on it and how far that is from the current progress. */
 typedef struct CamCandidate {
     ZonePath *path;
-    s32 word04;
+    ZonePath *next_path;
     s32 progress;
     s32 exit;
     s32 entrance;
@@ -27,9 +27,33 @@ typedef struct CamVec {
 typedef struct CamObject {
     u8 pad00[0x80];
     CamVec trans;
-    u8 pad8C[0x140 - 0x8C];
+    CamVec rot;
+    CamVec scale;
+    u8 padA4[0x108 - 0xA4];
+    u32 *anim;
+    u32 anim_frame;
+    u8 pad110[0x140 - 0x110];
     s32 cam_zoom;
 } CamObject;
+
+typedef struct CamVertex {
+    u8 x, y, z;
+    u8 nx, ny, nz;
+} CamVertex;
+
+typedef struct CamSvtxFrame {
+    u8 pad00[8];
+    s32 x, y, z;
+    u8 pad14[0x38 - 0x14];
+    CamVertex verts[1];
+} CamSvtxFrame;
+
+typedef struct CamTgeoHeader {
+    u32 pad00;
+    s32 scale_x;
+    s32 scale_y;
+    s32 scale_z;
+} CamTgeoHeader;
 
 typedef struct CamLevelView {
     u8 pad00[4];
@@ -45,9 +69,21 @@ s32 D_800564B0 = 0;
 s32 D_800564B4 = 0x3E800;
 s32 D_800564B8 = 0;
 
-/* .sbss owned by this unit: camera speed along the path. */
+/* .sbss owned by this unit: camera speed along the path and death-cam state. */
 asm(".globl D_800565C0");
 s32 D_800565C0;
+asm(".globl D_800565C4");
+s32 D_800565C4;
+asm(".globl D_800565C8");
+s32 D_800565C8;
+asm(".globl D_800565CC");
+s32 D_800565CC;
+asm(".globl D_800565D0");
+s32 D_800565D0;
+asm(".globl D_800565D4");
+s32 D_800565D4;
+asm(".globl D_800565D8");
+s32 D_800565D8;
 
 /* View of the global state object at D_80060DF0 (camera fields only). */
 typedef struct CamGlobals {
@@ -56,7 +92,14 @@ typedef struct CamGlobals {
     s32 death_cam;          /* 0x800618B4 */
     u8 padAC8[0xAE0 - 0xAC8];
     s32 game_state;         /* 0x800618D0 */
-    u8 padAE4[0xB9C - 0xAE4];
+    u8 padAE4[0xB2C - 0xAE4];
+    CamObject *death_obj;   /* 0x8006191C */
+    u8 padB30[0xB60 - 0xB30];
+    u32 death_vert;         /* 0x80061950 */
+    u8 padB64[0xB7C - 0xB64];
+    s32 death_zoom_speed;   /* 0x8006196C */
+    s32 death_pan_speed;    /* 0x80061970 */
+    u8 padB84[0xB9C - 0xB84];
     s32 island_rot;         /* 0x8006198C */
     s32 wordBA0;            /* 0x80061990 */
     s32 island_state;       /* 0x80061994 */
@@ -70,28 +113,129 @@ extern s32 D_80057920;
 extern void *D_800566B4;    /* the player object */
 extern s32 D_8005E71C;      /* pad buttons pressed this frame */
 extern s32 D_80057974;
-extern s32 D_80057874;
+extern s32 D_80057864, D_80057868, D_8005786C, D_80057870, D_80057874;
 extern CamLevelView *D_8005C53C;
 extern s32 D_8005E720;
 extern u32 D_80060E04, D_80061990;
 
 ZoneEntry *func_80015A98(u32 *);
+s32 func_800243A0(s32, s32, s32, s32);
 s32 func_800245F0(s32, s32);
 s32 func_80024628(s32, s32, s32);
+void func_8002465C(CamVec *, CamVec *, CamVec *, CamVec *, CamVec *);
 void func_80025A60(ResourceEntry *, ZonePath *, s32, s32);
 void func_80026460(void *, s32 *, s32);
 void func_80029F6C(s32, CamCandidate *);
 s32 func_8002A0C4(CamVec *, ZonePath *, CamCandidate *, u8, s32);
-s32 func_8002A3EC(CamVec *, ZonePath *, CamCandidate *, u8, s32);
-void func_8002BAB4(s32 *);
+s32 func_8002A3EC(CamVec *, ZonePath *, CamCandidate *, s32, s32);
+s32 func_8002BAB4(s32 *);
+s32 func_80042B9C(s32);
+s32 func_8004301C(s32, s32);
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define SIGN(x) ((x) > 0 ? 1 : -((x) != 0))
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_80029F6C);
+/* Advance the camera along the current path by delta, crossing onto
+ * cam->next_path if the step passes the path end. */
+void func_80029F6C(s32 delta, CamCandidate *cam)
+{
+    s32 progress;
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002A0C4);
+    if (cam->flags & 2) {
+        if (cam->next_path != NULL
+            && ((progress = delta + D_80057920) >> 8) >= D_8005791C->length) {
+            progress = (progress - (D_8005791C->length << 8)) - 1;
+            if (!(cam->relation & 2)) {
+                progress = -progress;
+            }
+            func_80025A60(cam->next_path->zone, cam->next_path,
+                          MIN(cam->progress, progress + cam->entrance), 0);
+        } else {
+            func_80025A60(level_position.zone, D_8005791C, delta + D_80057920, 0);
+        }
+    } else {
+        if (cam->next_path != NULL && (progress = D_80057920) - delta < 0) {
+            progress = delta - progress;
+            if (!(cam->relation & 2)) {
+                progress = -progress;
+            }
+            progress += cam->entrance;
+            func_80025A60(cam->next_path->zone, cam->next_path,
+                          MAX(cam->progress, progress), 0);
+        } else {
+            func_80025A60(level_position.zone, D_8005791C, D_80057920 - delta, 0);
+        }
+    }
+}
+
+/* Project trans onto path along its direction vector and fill cam with the
+ * resulting progress and distance from the player. */
+s32 func_8002A0C4(CamVec *trans, ZonePath *path, CamCandidate *cam, u8 relation, s32 has_relation)
+{
+    CamVec diff1, diff2;
+    CamVec *zone_rect;
+    CamObject *player;
+    s32 progress, pt, entrance, exit;
+
+    zone_rect = (CamVec *)((ZoneEntry *)path->zone)->items[1];
+    cam->found = 1;
+    diff1.x = (trans->x >> 4) - ((path->points[0].x + zone_rect->x) << 4);
+    diff1.y = (trans->y >> 4) - ((path->points[0].y + zone_rect->y) << 4);
+    diff1.z = (trans->z >> 4) - ((path->points[0].z + zone_rect->z) << 4);
+    pt = (path->direction_x * diff1.x + path->direction_y * diff1.y
+          + path->direction_z * diff1.z) >> 8;
+    progress = pt / path->node_distance;
+    exit = 0;
+    entrance = 0;
+    pt = progress >> 8;
+    if (path == D_8005791C) {
+        cam->next_path = NULL;
+    } else {
+        if (path->direction_x != 0 && diff1.y < -0x3200
+            && (((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x40000)) {
+            return 0;
+        }
+        cam->next_path = path;
+    }
+    if (has_relation) {
+        if (relation & 1) {
+            entrance = path->entrance;
+        }
+        if (relation & 2) {
+            exit = path->exit;
+        }
+    }
+    if (pt < entrance) {
+        if (entrance != 0 || path != D_8005791C) {
+            return 0;
+        }
+        progress = 0;
+        pt = 0;
+        cam->found = 0;
+    } else if (pt >= path->length - exit) {
+        if (exit != 0 || path != D_8005791C) {
+            return 0;
+        }
+        progress = (path->length << 8) - 1;
+        pt = path->length - 1;
+        cam->found = 0;
+    }
+    player = (CamObject *)D_800566B4;
+    diff2.x = ((player->trans.x + cam->pan_x) >> 8) - zone_rect->x - path->points[pt].x;
+    diff2.y = ((player->trans.y + cam->pan_y) >> 8) - zone_rect->y - path->points[pt].y;
+    diff2.z = ((player->trans.z + cam->zoom) >> 8) - zone_rect->z - path->points[pt].z;
+    if (!cam->found
+        && (__builtin_abs(diff2.x) >= 0xC81 || __builtin_abs(diff2.y) >= 0xC81
+            || __builtin_abs(diff2.z) >= 0xC81)) {
+        return 0;
+    }
+    cam->path = path;
+    cam->progress = progress;
+    cam->distance = func_80042B9C(diff2.x * diff2.x + diff2.y * diff2.y + diff2.z * diff2.z);
+    return 1;
+}
 
 INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002A3EC);
 
@@ -572,4 +716,75 @@ s32 func_8002B2BC(void)
     }
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002BAB4);
+/* Death-camera tracking: focus on a vertex of death_obj's current animation
+ * frame and orbit/zoom around it. */
+s32 func_8002BAB4(s32 *arg0)
+{
+    CamVec v1, v2, v3, v4, v5, v6;
+    CamObject *obj;
+    CamSvtxFrame *frame;
+    ZoneEntry *tgeo;
+    CamVertex *vert;
+    CamTgeoHeader *header;
+    CamVec *p;
+    CamVec *cam_pos;
+    s32 dx, dy, dz, dist_xz, angle;
+    s32 x, y, z;
+
+    obj = cam_globals.death_obj;
+    frame = (CamSvtxFrame *)func_80015A98(&obj->anim[1])->items[obj->anim_frame >> 8];
+    tgeo = func_80015A98(&((u32 *)func_80015A98(&obj->anim[1])->items[obj->anim_frame >> 8])[1]);
+    vert = &frame->verts[cam_globals.death_vert >> 8];
+    header = (CamTgeoHeader *)tgeo->items[0];
+    v2.x = (frame->x - 0x80 + vert->x) << 10;
+    v2.y = (frame->y - 0x80 + vert->y) << 10;
+    v2.z = (frame->z - 0x80 + vert->z) << 10;
+    v3.x = (obj->scale.x * header->scale_x) >> 12;
+    v3.y = (obj->scale.y * header->scale_y) >> 12;
+    v3.z = (obj->scale.z * header->scale_z) >> 12;
+    p = &v1;
+    func_8002465C(&v2, &obj->trans, &obj->rot, &v3, p);
+    dx = (D_80057864 - p->x) >> 8;
+    dz = (D_8005786C - p->z) >> 8;
+    dy = (D_80057868 - p->y) >> 8;
+    dist_xz = func_80042B9C(dx * dx + dz * dz);
+    angle = func_8004301C(-dx, -dz) + 0x800;
+    if (*arg0 < 9) {
+        if (*arg0 == 0) {
+            D_800565C8 = func_800245F0(D_80057874, angle) / 9;
+        }
+        D_800565D8 = dist_xz << 8;
+        D_800565D0 = 0;
+        D_800565D4 = angle;
+        D_800565C4 = 0x16;
+        D_80057874 += D_800565C8;
+        (*arg0)++;
+    }
+    if (func_800245F0(D_80057870, -func_8004301C(dy, dist_xz)) >= 0x72) {
+        D_800565CC = cam_globals.death_pan_speed;
+    } else {
+        D_800565CC = cam_globals.death_pan_speed / 2;
+    }
+    D_80057870 = func_800243A0(D_80057870, -func_8004301C(dy, dist_xz), D_800565CC, 0);
+    cam_pos = (CamVec *)&D_80057864;
+    if (cam_globals.display_flags & 0x40000) {
+        D_800565D0 += D_800565C4;
+        D_80057874 += D_800565C4;
+    }
+    D_80057868 = func_80024628(D_80057868, p->y + 0x1D4C0, 0x19000);
+    D_800565D8 = func_80024628(dist_xz << 8, 0x2AB98, cam_globals.death_zoom_speed);
+    x = p->x;
+    y = D_80057868;
+    z = p->z;
+    v4.x = 0;
+    v4.y = 0;
+    v4.z = D_800565D8;
+    v5.x = x;
+    v5.y = y;
+    v5.z = z;
+    v6.x = 0;
+    v6.y = D_800565D4 + D_800565D0;
+    v6.z = 0;
+    func_8002465C(&v4, &v5, &v6, NULL, cam_pos);
+    return -0xFF;
+}

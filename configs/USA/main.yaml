@@ -500,7 +500,7 @@ segments:
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
       - { start: 0x46D98, type: .sbss, vram: 0x800565B8, name: core/main }
       - { start: 0x46D98, type: .sbss, vram: 0x800565C0, name: cam/camera }
-      - { start: 0x46D98, type: sbss, vram: 0x800565C4, name: sbss_565C4 }
+      - { start: 0x46D98, type: sbss, vram: 0x800565DC, name: sbss_565DC }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }
       - { start: 0x46D98, type: sbss, vram: 0x8005665C, name: sbss_5665C }

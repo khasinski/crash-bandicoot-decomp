@@ -17,7 +17,7 @@ typedef struct ZoneNeighbor {
 
 typedef struct ZonePoint {
     s16 x, y, z;
-    s16 rot_y, rot_x, rot_z;
+    s16 rot_x, rot_y, rot_z;
 } ZonePoint;
 
 /* Camera path item of a zone entry. Progress along it is length * 256.
@@ -37,7 +37,6 @@ typedef struct ZonePath {
     s16 direction_x;
     s16 direction_y;
     s16 direction_z;
-    u16 pad32;
     ZonePoint points[1];
 } ZonePath;
 
