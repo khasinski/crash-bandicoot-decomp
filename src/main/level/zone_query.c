@@ -1,9 +1,16 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
+#include "zone.h"
+
 typedef struct ZqVec {
     s32 x, y, z;
 } ZqVec;
+
+typedef struct ZqBound {
+    ZqVec p1;
+    ZqVec p2;
+} ZqBound;
 
 typedef struct ZqRect {
     s32 x, y, z;
@@ -12,22 +19,94 @@ typedef struct ZqRect {
 
 /* Zone dimensions item: bounds, then the octree header. */
 typedef struct ZqZoneRect {
-    u8 pad00[0x1E];
+    s32 x, y, z;
+    s32 w, h, d;
+    u32 unk18;
+    u16 root;
     s16 max_depth_x;
     s16 max_depth_y;
     s16 max_depth_z;
 } ZqZoneRect;
 
+ZoneEntry *func_80015A98(u32 *);
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_80026B80);
+/* Whether v lies inside the zone's 8-bit shifted bounding box. */
+static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
+{
+    return v->x >= (rect->x << 8) && v->y >= (rect->y << 8) && v->z >= (rect->z << 8)
+        && v->x < ((rect->x + rect->w) << 8) && v->y < ((rect->y + rect->h) << 8)
+        && v->z < ((rect->z + rect->d) << 8);
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_80026C04);
+/* Whether point v lies inside the bounding box [b->p1, b->p2). */
+s32 func_80026B80(ZqVec *v, ZqBound *b)
+{
+    if (v->x >= b->p1.x && v->y >= b->p1.y && v->z >= b->p1.z
+        && v->x < b->p2.x && v->y < b->p2.y && v->z < b->p2.z) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_80026CA8);
+/* Whether bounding box b overlaps the 8-bit shifted zone rectangle r. */
+s32 func_80026C04(ZqBound *b, ZqRect *r)
+{
+    if ((r->x << 8) < b->p2.x && (r->y << 8) < b->p2.y && (r->z << 8) < b->p2.z
+        && ((r->x + r->w) << 8) >= b->p1.x && ((r->y + r->h) << 8) >= b->p1.y
+        && ((r->z + r->d) << 8) >= b->p1.z) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_80026D40);
+/* Whether bounding boxes a and b overlap. */
+s32 func_80026CA8(ZqBound *a, ZqBound *b)
+{
+    if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
+        && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_80026DD4);
+/* Whether bounding box a is contained in bounding box b. */
+s32 func_80026D40(ZqBound *a, ZqBound *b)
+{
+    if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
+        && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
+        return 1;
+    }
+    return 0;
+}
+
+/* ZoneFindNeighbor: find the neighbour of zone (or of the current level zone)
+ * whose bounding box contains v, or return -0x17 if none does. */
+ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
+{
+    ZoneHeader *header;
+    ZoneEntry *neighbor;
+    s32 i;
+
+    header = (ZoneHeader *)zone->items[0];
+    for (i = header->neighbor_count - 1; i >= 0; i--) {
+        neighbor = func_80015A98(&header->neighbors[i]);
+        if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], v)) {
+            return neighbor;
+        }
+    }
+    if (zone != (ZoneEntry *)level_position.zone) {
+        header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
+        for (i = header->neighbor_count - 1; i >= 0; i--) {
+            neighbor = func_80015A98(&header->neighbors[i]);
+            if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], v)) {
+                return neighbor;
+            }
+        }
+    }
+    return (ZoneEntry *)-0x17;
+}
+
+
 
 /* ZoneFindNode: follow the ray va + t*vb through the zone octree below node,
  * which covers rect. A leaf returns its node and moves va onto the nearest
@@ -189,4 +268,40 @@ s32 func_80026FF0(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb
     }
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/level/zone_query", func_800277EC);
+/* Step va along vb across the current zone's neighbours until ZoneFindNode
+ * hits a leaf (returned) or va leaves every neighbour's bounds (returns 1). */
+s32 func_800277EC(ZqVec *va, ZqVec *vb)
+{
+    ZqVec copy;
+    ZqRect rect;
+    ZoneHeader *header;
+    ZoneEntry *neighbor;
+    ZqZoneRect *zone_rect;
+    s32 i, res;
+
+    header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
+    if (vb->x == 0 && vb->y == 0 && vb->z == 0) {
+        return 0;
+    }
+    do {
+        copy = *va;
+        for (i = 0; i < header->neighbor_count; i++) {
+            neighbor = func_80015A98(&header->neighbors[i]);
+            if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], va)) {
+                zone_rect = (ZqZoneRect *)neighbor->items[1];
+                rect.x = zone_rect->x << 8;
+                rect.y = zone_rect->y << 8;
+                rect.z = zone_rect->z << 8;
+                rect.w = zone_rect->w << 8;
+                rect.h = zone_rect->h << 8;
+                rect.d = zone_rect->d << 8;
+                res = func_80026FF0(zone_rect, zone_rect->root, &rect, va, vb, 0);
+                break;
+            }
+        }
+        if (i == header->neighbor_count) {
+            return 1;
+        }
+    } while (!res);
+    return res;
+}

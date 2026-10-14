@@ -209,3 +209,16 @@ function matched.
   `lui` from the target thread into the earlier branch.
 * **No `return` at the end of a non-void function** is visible in retail as
   an exit path that does not set `v0` (it happens to hold 0).
+* **`if (a && b) return 1; return 0;` vs `return a && b;`.** In `stmt.c`
+  `expand_return`, the `jumpifnot` shortcut for returning a truth expression
+  is gated on `simple_epilogue_p()`, which checks `reload_completed` and is
+  therefore always false during RTL generation. `return a && b;` evaluates
+  the chain into a fresh pseudo-register and copies it to `$v0` after the
+  join label, leaving `$v0` free for `local-alloc` to use as the `slt`
+  scratch register in every block. Writing `if (a && b) return 1; return 0;`
+  emits explicit moves into hard register `$v0`, which `jump_optimize` folds
+  into `$v0 = 0` before the first branch and `slt $v0, ...` on the last test;
+  because `$v0` is now live across the earlier blocks during `local-alloc`,
+  their temporaries shift to `$v1` and `$a0` (pushing `$a0` arguments to
+  `$a2`).
+
