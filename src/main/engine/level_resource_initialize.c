@@ -21,19 +21,10 @@ extern u8 D_80060DC0[];
 extern s32 D_800619A0;
 extern s32 D_80061A30;
 
-void func_8002E98C(s32 *resource_id)
+__inline__ void func_8002E8CC(void)
 {
-    s32 arguments[2];
-    ResourceEntry *entry;
     GoolActorView *object;
 
-    D_8005C54C = 0;
-    entry = func_80015118(resource_id, 1, 1);
-    *resource_id = 0x6396347F;
-    D_80056704 = (LevelResourceView *)entry->data;
-    arguments[0] = 0x8E7;
-    arguments[1] = 0x4E19;
-    GOOL_CreateObject(D_80060DC0, 4, 8, 2, arguments, 1);
     D_80061A30 = 2;
     D_800566A8 = D_80056704->bytes52C;
     func_8002F76C(D_80056704->word04);
@@ -44,4 +35,19 @@ void func_8002E98C(s32 *resource_id)
     __builtin_memcpy(object->bounds, D_80056704->bounds, sizeof(object->bounds));
     D_800619A0 = -1;
     func_80026650(D_80056704->bytes10);
+}
+
+void func_8002E98C(s32 *resource_id)
+{
+    s32 arguments[2];
+    ResourceEntry *entry;
+
+    D_8005C54C = 0;
+    entry = func_80015118(resource_id, 1, 1);
+    *resource_id = 0x6396347F;
+    D_80056704 = (LevelResourceView *)entry->data;
+    arguments[0] = 0x8E7;
+    arguments[1] = 0x4E19;
+    GOOL_CreateObject(D_80060DC0, 4, 8, 2, arguments, 1);
+    func_8002E8CC();
 }

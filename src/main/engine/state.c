@@ -113,7 +113,7 @@ s32 func_80031BAC(void)
 }
 
 extern u32 D_800618D0;
-extern s32 D_800618D4;
+extern volatile s32 D_800618D4;
 extern u32 D_8006194C[];
 s32 func_80031EB4(void);
 
@@ -318,7 +318,7 @@ extern s32 D_800618BC[], D_80061A34;
 void func_80024040(s32, s32, s32, s32, s32 *);
 
 /* Finish the pending object request before selecting the next mode. */
-void func_8003263C(s32 mode)
+__inline__ void func_8003263C(s32 mode)
 {
     s32 zero;
 
@@ -333,7 +333,109 @@ void func_8003263C(s32 mode)
     D_800566E0->word35D4 = mode;
     D_800566E0->word3598 = 5;
 }
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_800326D8);
+typedef struct EngineSprt16 {
+    GpuPacketHeader header;
+    s16 x, y;
+    u8 u, v;
+    u16 clut;
+} EngineSprt16;
+
+extern u32 D_800618B0;
+void func_8003F8F4(GpuPacketHeader *);
+void func_8003F73C(GpuPacketTag *, GpuPacketTag *);
+void func_80017448(s32);
+void func_80032BB4(EngineMode25State *, s32, s32);
+void func_80032DFC(EngineMode25State *, s32, s32);
+
+extern u32 D_8006189C_val __asm__("D_8006189C");
+
+s32 func_800326D8(GpuPacketTag *ot)
+{
+    char pad[32];
+    s32 row;
+    s32 col;
+    EngineTileCell *cell;
+    EngineSprt16 *sprt;
+    EngineDrawModePacket *mode_pkt;
+
+    switch ((u32)D_800566E0->word3598) {
+    case 0:
+        D_800566E0->word35A4 = 0;
+        D_800566E0->word35A0 = 0;
+    case 1:
+        D_80061A34 = 0x120;
+        D_8006189C[0] |= 0xC;
+        D_800566E0->word3598 = 6;
+        if (D_8006189C[0] & 0x20000) {
+            func_80032BB4(D_800566E0, D_800566E0->word14, D_800566E0->word18);
+            func_80032DFC(D_800566E0, D_800566E0->word14, D_800566E0->word18);
+        }
+        D_80061A34 = 0x120;
+        break;
+    case 2:
+        D_800566E0->word3598 = 6;
+        D_80061A34 = 0x120;
+        break;
+    }
+    if ((D_800618B0 & 0x20000) && D_800566E0->word359C) {
+        row = 0;
+        cell = D_800566E0->cells;
+        do {
+            col = 0;
+            do {
+                sprt = (EngineSprt16 *)D_8005840C->word78;
+                D_8005840C->word78 = (s32)(sprt + 1);
+                func_8003F8F4(&sprt->header);
+                sprt->x = (cell->tile_x << 4) - D_800566E0->word14 - 0x100;
+                sprt->y = (cell->tile_y << 4) - D_800566E0->word18 - 0x78;
+                sprt->u = cell->x << 4;
+                sprt->v = cell->y << 4;
+                sprt->header.color[0] = 0x80;
+                sprt->header.color[1] = 0x80;
+                sprt->header.color[2] = 0x80;
+                sprt->clut = D_800566E0->cluts[cell->clut];
+                func_8003F73C(ot, (GpuPacketTag *)sprt);
+                col++;
+                mode_pkt = (EngineDrawModePacket *)D_8005840C->word78;
+                D_8005840C->word78 = (s32)(mode_pkt + 1);
+                *mode_pkt = D_800566E0->draw_modes[cell->page];
+                cell++;
+                func_8003F73C(ot, (GpuPacketTag *)mode_pkt);
+            } while (col < 33);
+            row++;
+        } while (row < 16);
+    }
+    switch ((u32)D_800566E0->word3598) {
+    case 3:
+        break;
+    case 5:
+        if (D_80061A34 == 0) {
+            D_800566E0->word3598 = 7;
+            D_8006189C_val &= ~0xC;
+            func_80017448(0xFF);
+        }
+        break;
+    case 6:
+        if (D_80061A34 == 0) {
+            D_800566E0->word3598 = 3;
+        }
+        break;
+    case 7:
+        func_8001BA18(func_8001B92C, func_8001D1E0, NULL);
+        if (D_800566E0->word359C != 0) {
+            func_80032FDC(D_800566E0->word35D0, 0, -1);
+        }
+        D_800566E0->word3598 = 1;
+        D_800566E0->word35D0 = D_800566E0->word35D4;
+        func_80017448(0xFF);
+        func_80031EB4();
+        return 0;
+    }
+    if (D_800618D4 != D_800566E0->word35D4) {
+        func_8003263C(D_800618D4);
+    }
+    return 0;
+}
 /* Fill 16 rows by 33 columns of three-word coordinate/page entries. */
 void func_80032AF4(u32 base_address)
 {
@@ -469,7 +571,116 @@ void func_80032DFC(EngineMode25State *state, s32 x, s32 y)
         }
     }
 }
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80032FDC);
+
+typedef struct EngineClutSpan {
+    s32 x;
+    s32 y;
+    s32 count;
+} EngineClutSpan;
+
+typedef struct EngineMapHeader {
+    s32 count00;
+    s32 word04;
+    s32 clut_count;
+    s32 word0C;
+    s32 word10;
+    s32 count14;
+    EngineClutSpan spans[8];
+    s32 pages[46][1];
+    s32 words130[32];
+    s32 words1B0[32];
+} EngineMapHeader;
+
+static __inline__ s32 engine_resource_adjust(s32 *resource, s32 argument, s32 count)
+{
+    if (*resource != 0x6396347F) {
+        if (count > 0) {
+            return func_80015118(resource, argument, count);
+        } else {
+            func_80015458(resource, -count);
+        }
+    }
+    return 0;
+}
+
+static __inline__ void engine_update_slot_state(s32 slot, s32 active)
+{
+    if (active) {
+        func_80014514(slot);
+        D_800580A4[slot].state = 30;
+    } else if (D_800580A4[slot].state == 30) {
+        D_800580A4[slot].state = 1;
+    }
+}
+
+s32 func_80012820(s32);
+u16 func_8003F338(void *, s32, s32);
+void func_8001767C(void *);
+
+void func_80032FDC(s32 mode, s32 arg1, s32 count)
+{
+    char name[16];
+    s32 ref;
+    ResourceItemListView *list;
+    EngineMapHeader *header;
+    EngineClutSpan *span;
+    s32 span_offset;
+    s32 clut_count;
+    s32 i;
+    s32 end;
+    s32 page_idx;
+    u8 *clut_data;
+    EngineState *entry;
+
+    *(EngineByteRecord *)name = *(EngineByteRecord *)D_8005655C;
+    name[0] = func_80012820(mode);
+    ref = func_80012660((u8 *)name);
+    engine_resource_adjust(&ref, arg1, count);
+    list = func_80015A98((u32 *)&ref);
+    header = (EngineMapHeader *)list->items[0];
+    if (count > 0) {
+        span = header->spans;
+        span_offset = 0;
+        clut_count = header->clut_count;
+        for (i = 0; i < clut_count;) {
+            ref = header->pages[i / 120][0];
+            engine_resource_adjust(&ref, arg1, count);
+            if (clut_count - i < 120) {
+                end = clut_count;
+            } else {
+                end = i + 120;
+            }
+            for (; i < end; i++, span_offset++) {
+                page_idx = i / 120;
+                clut_data = func_80015A98((u32 *)&((EngineMapHeader *)list->items[0])->pages[page_idx][0])->items[i % 120];
+                if (span_offset >= span->count) {
+                    span++;
+                    span_offset = 0;
+                }
+                D_800566E0->cluts[i] = func_8003F338(clut_data, span->x, span_offset + span->y);
+            }
+            engine_resource_adjust(&ref, arg1, -count);
+        }
+        func_80014514(9);
+        D_800580A4[9].state = 30;
+        func_80014514(10);
+        D_800580A4[10].state = 30;
+        func_80014514(13);
+        D_800580A4[13].state = 30;
+        engine_update_slot_state(8, clut_count > 160);
+        engine_update_slot_state(12, clut_count > 288);
+        engine_update_slot_state(14, clut_count > 416);
+    }
+    for (i = 0; i < header->count00; i++) {
+        engine_resource_adjust(&header->words1B0[i], arg1, count);
+    }
+    for (i = 0; i < header->count14; i++) {
+        entry = (EngineState *)engine_resource_adjust(&header->words130[i], arg1, count);
+        if (arg1 != 0 && count > 0 && entry->word08 == 2) {
+            func_8001767C(entry);
+        }
+    }
+}
 void func_80033464(void)
 {
 }

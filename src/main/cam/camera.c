@@ -129,6 +129,8 @@ void func_80029F6C(s32, CamCandidate *);
 s32 func_8002A0C4(CamVec *, ZonePath *, CamCandidate *, u8, s32);
 s32 func_8002A3EC(CamVec *, ZonePath *, CamCandidate *, s32, s32);
 s32 func_8002BAB4(s32 *);
+s32 func_8003905C(s32);
+s32 func_800390D0(s32);
 s32 func_80042B9C(s32);
 s32 func_8004301C(s32, s32);
 
@@ -237,7 +239,105 @@ s32 func_8002A0C4(CamVec *trans, ZonePath *path, CamCandidate *cam, u8 relation,
     return 1;
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/cam/camera", func_8002A3EC);
+s32 func_8002A3EC(CamVec *trans, ZonePath *path, CamCandidate *cam, s32 relation, s32 has_relation)
+{
+    CamVec diff1, diff2, dir;
+    s32 entrance, exit;
+    CamVec *zone_rect, *rect;
+    CamObject *player;
+    s32 i, progress, zoom_offset;
+    s32 dot, abs_dot, prev_dot, min_abs_dot;
+
+    entrance = 0;
+    exit = 0;
+    rect = zone_rect = (CamVec *)((ZoneEntry *)path->zone)->items[1];
+    progress = -1;
+    cam->found = 1;
+    zoom_offset = -cam->zoom << 4;
+    for (i = 0; i < path->length; i++) {
+        diff1.x = (trans->x >> 8) - (path->points[i].x + rect->x);
+        diff1.z = (trans->z >> 8) - (path->points[i].z + rect->z);
+        dir.x = func_8003905C(path->points[i].rot_y);
+        dir.z = func_800390D0(path->points[i].rot_y);
+        dot = zoom_offset - (diff1.x * dir.x + diff1.z * dir.z);
+        abs_dot = __builtin_abs(dot);
+        if (path->direction_z > 0) {
+            if (i == 0 && dot > 0) {
+                if (dot > 0x1F400) {
+                    cam->found = 0;
+                }
+                progress = 0;
+                break;
+            }
+            if (i == path->length - 1 && dot < 0) {
+                if (dot < -0x1F400) {
+                    cam->found = 0;
+                }
+                progress = (path->length << 8) - 1;
+                break;
+            }
+        } else {
+            if (i == 0 && dot < 0) {
+                if (dot < -0x1F400) {
+                    cam->found = 0;
+                }
+                progress = 0;
+                break;
+            }
+            if (i == path->length - 1 && dot > 0) {
+                if (dot > 0x1F400) {
+                    cam->found = 0;
+                }
+                progress = (path->length << 8) - 1;
+                break;
+            }
+        }
+        if (i == 0 || abs_dot < min_abs_dot) {
+            if (i != 0 && (dot ^ prev_dot) < 0) {
+                progress += (min_abs_dot << 8) / (abs_dot + min_abs_dot);
+            } else {
+                progress = i << 8;
+            }
+            prev_dot = dot;
+            min_abs_dot = abs_dot;
+        }
+    }
+    if (path == D_8005791C) {
+        cam->next_path = NULL;
+    } else {
+        cam->next_path = path;
+    }
+    if (has_relation) {
+        if (relation & 1) {
+            entrance = path->entrance;
+        }
+        if (relation & 2) {
+            exit = path->exit;
+        }
+    }
+    if ((progress >> 8) < entrance) {
+        if (entrance != 0 || path != D_8005791C) {
+            return 0;
+        }
+        progress = 0;
+        cam->found = 0;
+    } else if ((progress >> 8) >= path->length - exit) {
+        if (exit == 0 && path == D_8005791C) {
+            progress = (path->length << 8) - 1;
+            cam->found = 0;
+        } else {
+            return 0;
+        }
+    }
+    player = (CamObject *)D_800566B4;
+    diff2.x = ((player->trans.x + cam->pan_x) >> 8) - zone_rect->x - path->points[progress >> 8].x;
+    diff2.y = ((player->trans.y + cam->pan_y) >> 8) - zone_rect->y - path->points[progress >> 8].y;
+    diff2.z = ((player->trans.z + cam->zoom) >> 8) - zone_rect->z - path->points[progress >> 8].z;
+    cam->path = path;
+    cam->progress = progress;
+    cam->distance = func_80042B9C(diff2.x * diff2.x + diff2.y * diff2.y + diff2.z * diff2.z);
+    return 1;
+}
 
 /* Path reached through neighbour link i of the current path. */
 static __inline__ ZonePath *cam_neighbor_path(s32 i)

@@ -38,7 +38,8 @@ typedef struct EngineMode25State {
     s32 word04, word08, word0C, word10, word14, word18;
     EngineTileCoords coords[528];
     EngineTileCell cells[528];
-    u8 pad319C[0x3C4];
+    u32 word319C;
+    u16 cluts[480];
     u16 word3560, word3562, word3564, word3566;
     EngineDrawModePacket draw_modes[4];
     s32 word3598, word359C;
