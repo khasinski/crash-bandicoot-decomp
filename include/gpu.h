@@ -52,7 +52,7 @@ typedef struct GpuTile {
     GpuRect rect;
 } GpuTile;
 
-GpuDrawEnv *func_8003F408(GpuDrawEnv *, s16, s16, s16, s32);
+GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h);
 void func_8003F7D8(u32 *packet);
 void func_8003FA14(GpuPacketHeader *packet);
 void func_80040760(GpuPacketHeader *packet);

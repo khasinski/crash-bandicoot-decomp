@@ -8,7 +8,7 @@
 extern s32 func_8003F23C(void);
 extern s32 func_80040144(void);
 
-GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s16 x, s16 y, s16 w, s32 h)
+GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
 {
     s32 mode = func_8003F23C();
     u8 draw;

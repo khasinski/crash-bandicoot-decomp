@@ -4,7 +4,50 @@
 /* GNU_AS_G: 8 */
 
 /* Set or clear the clipped rectangle in the 32-row grid. */
+extern u32 *D_800566AC;
 extern s32 *D_800566F4;
+extern u32 *D_8005670C;
+
+void func_8002D69C(s32 x, s32 y) {
+    s32 i;
+    s32 end;
+    u32 *p;
+
+    if ((x >= 0 ? x : -x) >= 32 || (y >= 0 ? y : -y) >= 32) {
+        return;
+    }
+    if (x < 0) {
+        p = &D_800566AC[(y + 32) << 1];
+        if (*p & (1 << (x + 32))) {
+            return;
+        }
+        *p |= 1 << (x + 32);
+    } else {
+        p = &D_800566AC[((y + 32) << 1) + 1];
+        if (*p & (1 << x)) {
+            return;
+        }
+        *p |= 1 << x;
+    }
+    if (y < 0) {
+        i = -y;
+        end = 32;
+    } else {
+        i = 0;
+        end = 32 - y;
+    }
+    p = (u32 *)&D_800566F4[y >= 0 ? y : 0];
+    if (x < 0) {
+        x = -x;
+        for (; i < end; i++, p++) {
+            *p |= D_8005670C[i] << x;
+        }
+    } else {
+        for (; i < end; i++, p++) {
+            *p |= D_8005670C[i] >> x;
+        }
+    }
+}
 
 void func_8002D7D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 *var_v1;
