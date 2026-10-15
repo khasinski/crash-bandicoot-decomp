@@ -13,6 +13,33 @@ s32 func_80043984(s32, s32);
 
 /* Return an item span from adjacent offsets in a nonempty resource page. */
 
+s32 func_80012BE4(ResourceEntry *entry)
+{
+    ResourceHeader *page = (ResourceHeader *)entry;
+    s32 *item;
+    s32 size;
+
+    switch (((ResourceHeader *)entry)->kind) {
+    case 1:
+        return 0x10000;
+    case 0:
+    case 3:
+    case 4:
+        item = (s32 *)((page->count << 2) + (s32)page);
+    common:
+        size = item[4];
+        if (size < 0) {
+            return size - (s32)page;
+        }
+        return size;
+    case 0x100:
+        item = (s32 *)((entry->word0C << 2) + (s32)entry);
+        goto common;
+    default:
+        return -14;
+    }
+}
+
 s32 func_80012C74(s32 *page, s32 index)
 {
     s32 *entry;
