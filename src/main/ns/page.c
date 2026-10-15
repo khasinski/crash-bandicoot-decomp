@@ -1,6 +1,15 @@
-#include "common.h"
-
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
+#include "common.h"
+#include "ns.h"
+
+extern s32 D_80056410;
+void *LIBC_Malloc(s32);
+void *LIBC_Realloc(void *, s32);
+u8 *func_80043A24(s32, u8 *);
+s32 func_80043520(u8, u8 *, u8 *);
+s32 func_800439A4(s32, void *, s32);
+s32 func_80043984(s32, s32);
 
 /* Return an item span from adjacent offsets in a nonempty resource page. */
 
@@ -16,3 +25,70 @@ s32 func_80012C74(s32 *page, s32 index)
     }
     return result;
 }
+
+void *func_80012CA8(void *arg0, void *buffer, s32 read_full)
+{
+    u8 result[8];
+    u8 position[4];
+    NsFileMap *map;
+
+    if (D_80056410) {
+        if (read_full == 1) {
+            map = (NsFileMap *)arg0;
+            if (buffer == NULL) {
+                buffer = LIBC_Malloc(((map->directory_size & 0x1FFFF) + 0x7FF) / 0x800 * 0x800);
+                if (buffer == NULL) {
+                    return (void *)-15;
+                }
+            }
+            func_80043A24(map->directory_sector & 0x7FFFFF, position);
+            func_80043520(2, position, result);
+            if (!func_800439A4(((map->directory_size & 0x1FFFF) + 0x7FF) / 0x800, buffer, 0x80)
+                || func_80043984(0, 0)) {
+                return (void *)-16;
+            }
+            buffer = LIBC_Realloc(buffer, map->directory_size & 0x1FFFF);
+        }
+        return buffer;
+    }
+}
+
+s32 func_80012DCC(NsState *ns, s32 type)
+{
+    s32 i;
+    s32 count = 0;
+
+    for (i = 0; i < ns->directory->entry_count; i++) {
+        if (func_800126C0(&ns->directory->entries[i]) == type) {
+            count++;
+        }
+    }
+    return count;
+}
+
+s32 func_80012E64(ResourceHeader *page)
+{
+    s32 count = page->count;
+    ResourceEntry **entries = page->entries;
+    s32 i, j;
+    ResourceEntry *entry;
+    u32 *items;
+
+    if (page->kind == 1) {
+        return -0xFF;
+    }
+    if (page->word00 != 0x1234) {
+        return -0x12;
+    }
+    for (i = count - 1; i >= 0; i--) {
+        entry = (ResourceEntry *)((u8 *)page + (u32)entries[i]);
+        entries[i] = entry;
+        items = (u32 *)&entry->data;
+        for (j = entry->word0C; j >= 0; j--) {
+            items[j] = (u32)entry + items[j];
+        }
+    }
+    entries[count] = (ResourceEntry *)((u8 *)page + (u32)entries[count]);
+    return -0xFF;
+}
+
