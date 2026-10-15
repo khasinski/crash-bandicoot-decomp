@@ -18,3 +18,21 @@ u32 func_8004158C(GpuRect *rect)
     }
     return 0;
 }
+
+extern volatile u8 D_80054A6C[];
+extern u8 D_80054A6F;
+
+s32 func_80041610(GpuRect *rect)
+{
+    switch (D_80054A6C[0]) {
+    case 1:
+        if (D_80054A6F) {
+            return 0x400 - rect->x - rect->w;
+        }
+        return rect->x;
+    case 2:
+        return D_80054A6F ? 0x400 - rect->x - rect->w / 2 : rect->x / 2;
+    default:
+        return rect->x;
+    }
+}
