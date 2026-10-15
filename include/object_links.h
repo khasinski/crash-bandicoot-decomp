@@ -5,7 +5,8 @@
 typedef struct Node {
     s32 kind;
     struct Node *word04;
-    u8 pad08[0x60];
+    u8 pad08[0x5C];
+    struct Node *parent;
     struct Node *next;
     struct Node *children;
 } Node;

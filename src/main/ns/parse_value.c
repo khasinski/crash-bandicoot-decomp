@@ -2,18 +2,26 @@
 
 /* GCC_VERSION: 2.6.3 */
 extern s32 BIOS_AToI(u8 *);
+extern s32 func_800128A4(s32, s32, s32, s32);
 extern u8 D_80051728[];
 
-s32 func_8001297C(u32 type, u8 *text) {
-    s32 end_address;
-    s32 character_code;
-    s32 packed;
-    s32 fallback;
+static __inline__ s32 func_80012834(u8 ch)
+{
     s32 index;
-    s32 result;
+    for (index = 0; index < 0x40; index++) {
+        if (D_80051728[index] == ch)
+            return index;
+    }
+    if (ch == 0x2D)
+        return 0x63;
+    return -0xE;
+}
+
+__inline__ s32 func_8001297C(u32 type, u8 *text) {
+    s32 end_address;
+    s32 packed;
     s32 alphabet_index;
     u8 *cursor;
-    u8 first_character;
     u32 character;
 
     switch (type) {
@@ -44,25 +52,12 @@ search_packed_character:
     case 1:
     case 13:
     case 14:
-        first_character = *text;
-        index = 0;
-        character_code = first_character & 0xFF;
-search_character:
-        result = index;
-        if (D_80051728[index] != character_code) {
-            index += 1;
-            if (index >= 0x40) {
-                fallback = -0xE;
-                if ((first_character & 0xFF) == 0x2D) {
-                    fallback = 0x63;
-                }
-                return fallback;
-            }
-            goto search_character;
-        }
-        return result;
+        return func_80012834(*text);
     default:
-        result = BIOS_AToI(text);
-        return result;
+        return BIOS_AToI(text);
     }
+}
+
+s32 func_80012A84(u32 type, u8 *text) {
+    return func_800128A4(type, func_8001297C(type, text), 0, 0);
 }
