@@ -29,3 +29,11 @@ u16 *func_8003ED50(void)
     }
     return result;
 }
+
+void func_8003EDD8(s32 *table, s32 count)
+{
+    while (--count != -1) {
+        *table++ = 0;
+    }
+}
+

@@ -3,6 +3,23 @@
 /* GCC_VERSION: 2.6.3 */
 /* Packed frame offsets are measured in bytes from object offset 0x60. */
 typedef GoolRuntimeObject Object;
+
+s32 GOOL_CreateObjectStackFrame(Object *object, s32 arg_words, s32 flags)
+{
+    u32 *sp;
+    u32 *old_fp;
+    u32 *new_sp;
+    u32 *new_fp;
+
+    sp = object->stack;
+    old_fp = object->frame;
+    object->frame = sp;
+    *object->stack++ = flags;
+    *object->stack++ = object->pc;
+    *object->stack++ = ((u32)(new_sp = sp - arg_words - 24) - (u32)object) | (((u32)(new_fp = old_fp - 24) - (u32)object) << 16);
+    return -0xFF;
+}
+
 s32 func_8001D97C(Object *object,s32 *flags) {
     u32 packed;
     u32 frame_offset;

@@ -20,3 +20,13 @@ s32 func_8003E298(s32 counter,s32 target,s32 flags) {
     D_80053910[index][2]=mode;
     return 1;
 }
+
+s32 func_8003E338(s32 counter)
+{
+    s32 index = counter & 0xFFFF;
+    if (index >= 3) {
+        return 0;
+    }
+    return D_80053910[index][0];
+}
+

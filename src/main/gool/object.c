@@ -1,4 +1,5 @@
 #include "object_links.h"
+#include "zone.h"
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -13,13 +14,19 @@ s32 func_8001D1E0(Node *obj, void *context)
 
 /* Apply the callback to each of eight object roots. */
 
-extern u8 D_80060DB8[];
+typedef struct ObjectRoot {
+    s32 kind;
+    Node *word04;
+} ObjectRoot;
+
+extern ObjectRoot D_80060DB8[];
 extern s32 func_8001D11C(Node *, void *);
+extern void *func_80015A98(u32 *);
 
 void func_8001D200(void *object)
 {
     s32 index = 0;
-    u8 *root = D_80060DB8;
+    u8 *root = (u8 *)D_80060DB8;
 
     do {
         func_8001B92C((Node *)root, func_8001D11C, object);
@@ -27,3 +34,24 @@ void func_8001D200(void *object)
         root += 8;
     } while (index < 8);
 }
+
+void func_8001D264(void)
+{
+    ZoneHeader *zone;
+    s32 i;
+    void *entry;
+    s32 index;
+
+    if (*(ResourceEntry *volatile *)&D_80057914 != NULL) {
+        zone = (ZoneHeader *)(*(ResourceEntry *volatile *)&D_80057914)->data;
+        for (i = 0; i < zone->neighbor_count; i++) {
+            entry = func_80015A98(&zone->neighbors[i]);
+            index = 0;
+            do {
+                func_8001B92C((Node *)&D_80060DB8[index], func_8001D11C, entry);
+                index++;
+            } while (index < 8);
+        }
+    }
+}
+
