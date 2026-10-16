@@ -2,12 +2,14 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-s32 func_8004E330(s16,s16,s16,s32);
+s32 func_8004E330(s16,s16,s16,u16);
 /* The retail call passes an unused mode value; allocation returns an index. */
 s32 func_8004E59C(s32);
 void func_8004E80C(void);
 s32 func_8004EA24(void);
 void func_8004EBDC(s16);
+void func_8004F090(s32);
+void func_8004F0D4(s32);
 void func_8004F1A4(u8,u16);
 s32 func_800500F8(u8 *,u8 *);
 s32 func_80050728(s16,s16);
@@ -111,3 +113,31 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
     }
     return var_s2;
 }
+
+s32 func_8004E330(s16 arg0, s16 arg1, s16 arg2, u16 arg3) {
+    u8 i;
+    s32 count;
+    s32 offset;
+
+    count = 0;
+    for (i = 0; i < D_8005E340; i++) {
+        offset = i * 0x34;
+        if (*(s16 *)(D_800572B8 + offset) == arg3) {
+            if (*(s16 *)(D_800572BE + offset) == arg2) {
+                if (*(s16 *)(D_800572BA + offset) == arg0) {
+                    if (*(s16 *)(D_800572C2 + offset) == arg1) {
+                        if (*(s16 *)(D_800572AC + offset) == 0xFF) {
+                            func_8004F090(i);
+                        } else {
+                            D_8005E572 = i;
+                            func_8004F0D4(0);
+                        }
+                        count += 1;
+                    }
+                }
+            }
+        }
+    }
+    return count;
+}
+
