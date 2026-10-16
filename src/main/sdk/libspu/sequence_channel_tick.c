@@ -50,3 +50,84 @@ block_10:
         *(s32 *)(temp_s1 + 0x88) = var_v0;
     }
 }
+
+typedef struct {
+    u8 gap00[4];
+    u8 *cursor;
+    u8 gap08[9];
+    u8 field_11;
+    u8 field_12;
+    u8 gap13[0x75];
+    s32 ticks;
+    u8 gap8C[0x20];
+} SeqChannelState;
+
+typedef void (*EventCallback)();
+s32 func_8004AEB8();
+extern EventCallback D_80058360, D_80058364, D_80058368, D_8005836C, D_80058370;
+
+void func_8004C4D4(s16 arg0, s16 arg1) {
+    s32 channel_index = arg1;
+    s32 sequence_index = arg0;
+    SeqChannelState *state = (SeqChannelState *)D_80060418[sequence_index] + channel_index;
+    s32 status;
+    s32 vel;
+
+    status = *state->cursor++;
+    if (status & 0x80) {
+        state->field_12 = status & 0xF;
+        switch (status & 0xF0) {
+        case 0x90:
+            state->field_11 = 0x90;
+            status = *state->cursor++;
+            vel = *state->cursor++;
+            state->ticks = func_8004AEB8(sequence_index, channel_index);
+            D_80058360(sequence_index, channel_index, status, vel);
+            break;
+        case 0xB0:
+            state->field_11 = 0xB0;
+            status = *state->cursor++;
+            status &= 0xFF;
+            D_80058370(sequence_index, channel_index, status);
+            break;
+        case 0xC0:
+            state->field_11 = 0xC0;
+            status = *state->cursor++;
+            status &= 0xFF;
+            D_80058364(sequence_index, channel_index, status);
+            break;
+        case 0xE0:
+            state->field_11 = 0xE0;
+            state->cursor++;
+            goto pitch_bend;
+        case 0xF0:
+            state->field_11 = 0xFF;
+            state->field_12 = status & 0xF;
+            status = *state->cursor++;
+            D_8005836C(sequence_index, channel_index, status);
+            break;
+        }
+    } else {
+        switch (state->field_11) {
+        case 0x90:
+            vel = *state->cursor++;
+            state->ticks = func_8004AEB8(sequence_index, channel_index);
+            D_80058360(sequence_index, channel_index, status, vel);
+            break;
+        case 0xB0:
+            D_80058370(sequence_index, channel_index, status);
+            break;
+        case 0xC0:
+            D_80058364(sequence_index, channel_index, status);
+            break;
+        case 0xE0:
+        pitch_bend:
+            D_80058368(sequence_index, channel_index);
+            break;
+        case 0xFF:
+            D_8005836C(sequence_index, channel_index, status);
+            break;
+        }
+    }
+}
+
