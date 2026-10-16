@@ -4,6 +4,20 @@
 typedef struct { s32 x, y, z; } Point3;
 typedef struct { s32 x, y, z, width, height, depth; } Bounds3;
 typedef struct { u8 pad00[0x14]; Bounds3 *bounds; } BoundsView;
+
+s32 func_80026A40(Bounds3 *arg0, Point3 *arg1)
+{
+    if (arg1->x >= (arg0->x << 8)
+        && arg1->y >= (arg0->y << 8)
+        && arg1->z >= (arg0->z << 8)
+        && arg1->x < ((arg0->x + arg0->width) << 8)
+        && arg1->y < ((arg0->y + arg0->height) << 8)
+        && arg1->z < ((arg0->z + arg0->depth) << 8)) {
+        return 1;
+    }
+    return 0;
+}
+
 s32 func_80026ADC(BoundsView *arg0, Point3 *arg1) {
     s32 temp_a0;
     s32 temp_a1;

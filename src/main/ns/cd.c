@@ -21,6 +21,11 @@ typedef struct CdResourceHash {
     u32 words420[1];
 } CdResourceHash;
 
+typedef struct CdResourceEntry {
+    u8 pad00[0x14];
+    s32 word14;
+} CdResourceEntry;
+
 typedef struct CdResourceSlot {
     u8 *header;
     u16 state;
@@ -31,6 +36,10 @@ typedef struct CdResourceSlot {
     s16 word0E;
     u32 word10;
     s32 id;
+    s32 word18;
+    s32 word1C;
+    s32 word20;
+    CdResourceEntry *word24;
 } CdResourceSlot;
 
 extern void *D_8005C540;
@@ -63,5 +72,20 @@ s32 func_8001384C(CdResourceSlot *slot, s32 count)
         return -0x10;
     }
     return -0xFF;
+}
+
+s32 func_80013924(CdResourceSlot *slot, s32 id)
+{
+    s32 max;
+
+    if (id == -1) {
+        return 1;
+    }
+    id >>= 1;
+    max = slot->word24->word14 >> 1;
+    if (id <= max && id > max - slot->word1C) {
+        return 1;
+    }
+    return 0;
 }
 
