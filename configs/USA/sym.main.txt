@@ -10,7 +10,6 @@ LIBC_Calloc = 0x80011D30; // type:func
 CORE_Main = 0x80011D88; // type:func
 CORE_Loop = 0x80011FC4; // type:func
 NS_13B30 = 0x80013B30; // type:func
-NS_13B94 = 0x80013B94; // type:func
 GOOL_InitAllocTable = 0x8001AAD8; // type:func
 GOOL_FreeAllocTable = 0x8001AC28; // type:func
 GOOL_TraverseObjectTreePreorder = 0x8001B3F0; // type:func
