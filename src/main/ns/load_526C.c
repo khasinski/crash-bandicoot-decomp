@@ -1,0 +1,105 @@
+/* GCC_VERSION: 2.6.3 */
+#include "common.h"
+#include "ns.h"
+#include "zone.h"
+
+extern volatile s32 D_80034520 __asm__("func_80034520");
+extern ResourceSlot D_8005C554[] __asm__("D_8005C528 + 44");
+extern ResourceSlot D_8005C920[];
+
+ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void func_800134C8(s32 id);
+ResourceSlot *func_80014C08(s32 id, s32 entry_id);
+__inline__ s32 func_80014E34(s32 id, s32 count);
+ResourceSlot *func_80015034(u32 *ref);
+
+static __inline__ void ns_pool_active_inc(void)
+{
+    D_8005C528.pool.active_count++;
+}
+
+
+s32 func_80014A6C(ZoneLoadList *load, ResourceSlot *slot)
+{
+    s32 i;
+    u32 *ref;
+    u32 entry_id;
+    u32 val;
+
+    if (load != NULL) {
+        i = 0;
+        while (i < load->entry_count) {
+            ref = &load->entries[i];
+            entry_id = slot->word18;
+            val = *ref;
+            if (val & 1) {
+                if (val == entry_id) {
+                    goto found;
+                }
+            } else if (((ResourceBucket *)val)->id == entry_id) {
+            found:
+                return 1;
+            }
+            i++;
+        }
+        for (i = 0; i < load->page_count; i++) {
+            if (load->pages[i] == (u32)slot->id) {
+                do {
+                    register s32 ret __asm__("$2") = 1;
+                    goto found2;
+                } while (0);
+            }
+        }
+        return 0;
+    found2:
+        do {
+            register s32 ret __asm__("$2");
+            return ret;
+        } while (0);
+    }
+    return 0;
+}
+
+#define NS_FIND_OR_ALLOC_SLOT(res_slot, page_id, ent_id, found_label, search_label, done_label) \
+    do { \
+        ResourceSlot *_cand; \
+        s32 _i; \
+        u32 _ticks; \
+        (res_slot) = D_8005C528.page_map[(page_id) >> 1]; \
+        if ((res_slot) == (ResourceSlot *)-0x12) { \
+            goto search_label; \
+        } \
+        if ((res_slot) != (ResourceSlot *)-0xFF) { \
+            (res_slot)->word18 = (ent_id); \
+        } \
+        goto done_label; \
+    found_label: \
+        _ticks = D_80034520; \
+        _cand->state = 2; \
+        _cand->id = (page_id); \
+        _cand->references = 0; \
+        _cand->word18 = (ent_id); \
+        _cand->word28 = _ticks; \
+        D_8005C528.page_map[(page_id) >> 1] = _cand; \
+        ns_pool_active_inc(); \
+        (res_slot) = _cand; \
+        goto done_label; \
+    search_label: \
+        for (_i = 0; _i < D_8005C91C.count; _i++) { \
+            _cand = &D_8005C920[_i]; \
+            if ((s16)_cand->state == 1) { \
+                goto found_label; \
+            } \
+        } \
+        (res_slot) = NULL; \
+    done_label:; \
+    } while (0)
+
+ResourceSlot *func_80014B20(s32 id, s32 entry_id)
+{
+    ResourceSlot *slot;
+
+    NS_FIND_OR_ALLOC_SLOT(slot, id, entry_id, found_0, search_0, done_0);
+    return slot;
+}
+

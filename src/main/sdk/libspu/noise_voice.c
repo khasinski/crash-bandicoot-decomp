@@ -2,7 +2,6 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-#ifdef NON_MATCHING
 extern volatile u16 *D_80056270;
 extern u16 D_8005724C;
 extern u16 D_80057254;
@@ -31,6 +30,8 @@ extern u16 D_80061A68;
 extern u16 D_80061A70;
 
 void func_8004EBDC(s32 arg0) {
+    s32 dummy;
+    s32 *unused_ptr = &dummy;
     s16 var_a1_2;
     s16 var_a2_2;
     s16 var_a3;
@@ -120,9 +121,3 @@ void func_8004EBDC(s32 arg0) {
     D_80056270[0x194 / 2] = var_a3;
     D_80056270[0x196 / 2] = var_a2_2;
 }
-
-#else
-
-INCLUDE_ASM("asm/USA/main/nonmatchings/sdk/libspu/noise_voice", func_8004EBDC);
-
-#endif

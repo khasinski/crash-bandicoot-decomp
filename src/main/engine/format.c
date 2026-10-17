@@ -1,16 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
+/* GCC_CPU: 3000 */
 /* CC1_FLAGS: -O2 -fno-cse-follow-jumps */
 #include "common.h"
 
-#ifdef NON_MATCHING
-
-/* Candidate: instruction Levenshtein 40 under GCC 2.6.3.
- * Native is 535 instructions with a 584-byte frame. The 512-byte digit
- * buffer, twelve-byte format record and actual variadic arguments are
- * recovered from the retail stack accesses. This branch is not a match.
- * The independent retail switch table and digit tables require ownership
- * reconciliation before this candidate can replace the assembly.
- */
 typedef union FormatFlags {
     u32 bits;
     struct {u8 flags; u8 sign; u8 reserved[2];} bytes;
@@ -28,7 +20,7 @@ s32 func_8003D740(s8 *arg0, s8 *arg1, ...) {
     s32 plus,minus,space;
     s32 alternate; s32 zero;
     u8 digits[512];
-    FormatSpec format;                              /* compiler-managed */
+    FormatSpec format;
     u32 *arguments;
     s32 var_s2;
     u8 *var_s1;
@@ -68,7 +60,7 @@ s32 func_8003D740(s8 *arg0, s8 *arg1, ...) {
     var_s2 = 0;
     if (var_a1 != 0) {minus=0x2D;plus=0x2B;space=0x20;
 loop_2:
-        if (var_a1 == 0x25) {
+        if (var_a1 != 0x25) goto block_108; {
             format = D_800538DC;alternate=0x23;zero=0x30;
 loop_4:
             temp_a0 = arg1;
@@ -95,12 +87,15 @@ loop_4:
                 goto loop_4;
             }
             if (var_a1 == 0x2A) {
-                temp_v1 = next_argument(&arguments);
+                temp_v1 = arguments;
+                arguments = temp_v1 + 1;
                 temp_v0 = *temp_v1;
                 format.width = temp_v0;
                 if ((s32) temp_v0 < 0) {
                     format.width = -(s32) temp_v0;
-                    format.flags.bits |= 1;
+                    temp_v1 = (u32 *)format.flags.bits;
+                    temp_v1 = (u32 *)((u32)temp_v1 | 1);
+                    format.flags.bits = (u32)temp_v1;
                 }
                 arg1 = temp_a0 + 2;
                 var_a1 = (u8)temp_a0[2];
@@ -159,25 +154,29 @@ block_35:
                 goto loop_30;
             case 24:
             case 29:
-                temp_v1_6 = next_argument(&arguments);
+                temp_v1_6 = arguments;
+                arguments = temp_v1_6 + 1;
                 var_a0 = *temp_v1_6;
-                if (format.flags.bits & 0x20) {
+                temp_v1_6 = (u32 *)format.flags.bits;
+                if ((u32)temp_v1_6 & 0x20) {
                     var_a0 = (u32) (s16) var_a0;
                 }
                 if ((s32) var_a0 < 0) {
                     var_a0 = (u32) -(s32) var_a0;
                     format.flags.bytes.sign = minus;
-                } else if (format.flags.bits & 2) {
+                } else if ((u32)temp_v1_6 & 2) {
                     format.flags.bytes.sign = plus;
                 }
                 goto block_44;
             case 41:
-                argument_flags = format.flags.bits;
-                temp_v1_7 = next_argument(&arguments);
-                var_a0 = *temp_v1_7;
-                format.flags.bytes.sign = 0;
-                if (argument_flags & 0x20) {
-                    var_a0 &= 0xFFFF;
+                {
+                    u32 flags_41 = format.flags.bits;
+                    temp_v1_7 = next_argument(&arguments);
+                    var_a0 = *temp_v1_7;
+                    format.flags.bytes.sign = 0;
+                    if (flags_41 & 0x20) {
+                        var_a0 &= 0xFFFF;
+                    }
                 }
 block_44:
                 if (!(format.flags.bits & 0x10)) {
@@ -217,13 +216,15 @@ block_44:
                 }
                 goto block_109;
             case 35:
-                temp_v1_8 = next_argument(&arguments);
+                temp_v1_8 = arguments;
+                arguments = temp_v1_8 + 1;
                 var_a0 = *temp_v1_8;
-                if (format.flags.bits & 0x20) {
+                temp_v1_8 = (u32 *)format.flags.bits;
+                if ((u32)temp_v1_8 & 0x20) {
                     var_a0 &= 0xFFFF;
                 }
-                if (!(format.flags.bits & 0x10)) {
-                    if (format.flags.bits & 8) {
+                if (!((u32)temp_v1_8 & 0x10)) {
+                    if ((u32)temp_v1_8 & 8) {
                         format.precision = format.width;
                     }
                     if (format.precision <= 0) {
@@ -256,7 +257,9 @@ block_44:
                 goto block_109;
             case 36:
                 format.precision = 8;
-                format.flags.bits |= 0x50;
+                temp_v1_9 = (u32 *)format.flags.bits;
+                temp_v1_9 = (u32 *)((u32)temp_v1_9 | 0x50);
+                format.flags.bits = (u32)temp_v1_9;
                 /* fallthrough */
             case 12:
                 var_a3 = D_80010F14;
@@ -264,15 +267,17 @@ block_44:
             case 44:
                 var_a3 = D_80010F28;
 block_79:
-                temp_v1_9 = next_argument(&arguments);
+                temp_v1_9 = arguments;
+                arguments = temp_v1_9 + 1;
                 var_a0 = *temp_v1_9;
-                if (format.flags.bits & 0x20) {
+                temp_v1_9 = (u32 *)format.flags.bits;
+                if ((u32)temp_v1_9 & 0x20) {
                     var_a0 &= 0xFFFF;
                 }
-                if (!(format.flags.bits & 0x10)) {
-                    if (format.flags.bits & 8) {
+                if (!((u32)temp_v1_9 & 0x10)) {
+                    if ((u32)temp_v1_9 & 8) {
                         format.precision = format.width;
-                        if (format.flags.bits & 4) {
+                        if ((u32)temp_v1_9 & 4) {
                             format.precision = format.width - 2;
                         }
                     }
@@ -336,18 +341,20 @@ block_79:
                 temp_v0_9 = next_argument(&arguments);
                 var_s1 = (u8 *)*temp_v0_9;
                 if (format.flags.bits & 0x20) {
-                    *(s16 *)var_s1 = var_s2;
+                    temp_v0_3 = format.flags.bits << 16;
+                    *(s16 *)var_s1 = var_s2 | temp_v0_3;
                 } else {
                     *(s32 *)var_s1 = (s32)var_s2;
                 }
                 goto block_118;
-            default:
-                if (var_a1 == 0x25) {
-                    goto block_108;
-                }
-                break;
+            default: ;
             }
-        } else {
+        }
+        do {
+            if (var_a1 == 0x25) {
+                goto block_108;
+            }
+            goto done;
 block_108:
             arg0[var_s2] = var_a1;
             var_s2 += 1;
@@ -383,14 +390,9 @@ block_118:
             if (var_a1 != 0) {
                 goto loop_2;
             }
-        }
+        } while (0);
     }
+done:
     arg0[var_s2] = 0;
     return var_s2;
 }
-
-#else
-
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/format", func_8003D740);
-
-#endif

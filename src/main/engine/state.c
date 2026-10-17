@@ -929,7 +929,166 @@ void func_8003AED8(FileRequest *request) {
     func_8003C900(request->resource);
 }
 
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003AF24);
+typedef struct {
+    s32 word00;
+    s32 word04;
+    s32 record_index;
+    char pad0C[64];
+} EngineDirectorySlotView;
+
+typedef struct {
+    EngineState prefix;
+    s32 empty_scan_count, record_count, record_cursor;
+    EngineDirectorySlotView slots[15];
+    EngineDirectoryRecord records[15];
+} EngineDirectoryStateView;
+
+extern char D_8005657C[];
+extern s32 D_800619CC_arr[] __asm__("D_800619CC");
+extern u32 D_800619D0_arr[] __asm__("D_800619D0");
+extern s32 D_800619D4[15];
+extern u32 D_80010E58[];
+extern char D_80010E68[];
+s32 func_8003D740(char *, char *, ...);
+s32 func_8003E218(char *, s32);
+s32 func_8003E228(s32, void *, s32);
+s32 func_8003C6E4(const char *);
+void func_8003B5E0(u8 *);
+char *BIOS_StrCpy(char *, const char *);
+void func_8003C970(u8 *);
+void func_8001A754(s32, s32, void *, s32, s32);
+void func_8001A850(s32, u32, s32, u16 *, u8 *);
+
+#define ENGINE_CARD_SCAN_RETRY(io, request) ({ \
+    s32 retries = 0, failed; \
+    do { \
+        if (io) break; \
+        retries++; \
+    } while (retries < 3); \
+    if (retries >= 3) { \
+        func_8003ADB8((s32 **)(request)); \
+        failed = 1; \
+    } else { \
+        failed = 0; \
+    } \
+    failed; \
+})
+
+void func_8003AF24(void)
+{
+    char path[64];
+    u8 images[3][0x80];
+    EngineCardBlock block;
+    EngineFileRequest request;
+    s32 descriptor;
+    s32 invalid = 0;
+    s32 slot_idx;
+    s32 cur_rec;
+    s32 blocks;
+    s32 i, j;
+
+    slot_idx = D_80056564->word08;
+    request.resource = &descriptor;
+    descriptor = -1;
+    if (((EngineDirectoryStateView *)D_80056564)->record_cursor >= ((EngineDirectoryStateView *)D_80056564)->record_count) {
+        func_8003CAD8(2);
+        func_8003CAF8(0);
+        return;
+    }
+    cur_rec = ((EngineDirectoryStateView *)D_80056564)->record_cursor;
+    func_8003D740(path, D_8005657C, D_80056574,
+        ((EngineDirectoryStateView *)D_80056564)->records[cur_rec].bytes);
+    if (ENGINE_CARD_SCAN_RETRY((descriptor = func_8003E218(path, 1)) >= 0, &request))
+        return;
+    if (ENGINE_CARD_SCAN_RETRY(func_8003E228(descriptor, &block, 128) == 128, &request))
+        return;
+    if (func_8003C6E4((char *)((EngineDirectoryStateView *)D_80056564)->records[cur_rec].bytes)) {
+        ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word00 = 1;
+    } else {
+        ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word00 = 0;
+    }
+    ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 = block.header.icons - 0x10;
+    if (((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 < 1
+        || ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 > 3) {
+        ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 = 1;
+        invalid = 1;
+    }
+    if (!invalid) {
+        ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C[0] = 0;
+        if ((u8)block.header.title[0] >= 0x80) {
+            func_8003B5E0((u8 *)&block);
+        }
+        block.header.title[31] = 0;
+        BIOS_StrCpy((char *)((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C,
+            block.header.title);
+    } else {
+        __builtin_memcpy(((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C,
+            D_80010E58, 13);
+    }
+    func_8003C970((u8 *)((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C);
+    if (invalid) {
+        blocks = 1;
+    } else {
+        blocks = block.header.blocks;
+    }
+    ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].record_index = cur_rec;
+    if (!invalid) {
+        for (i = 0; i < ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04; i++) {
+            if (ENGINE_CARD_SCAN_RETRY(func_8003E228(descriptor, images[i], 128) == 128, &request))
+                return;
+        }
+    }
+    for (i = 0; i < blocks; i++) {
+        char part_str[80];
+        func_8003D740(part_str, D_80010E68, i + 1, blocks);
+        func_8001A754(D_800619CC_arr[0], (slot_idx + i) << 8,
+            i == 0 ? (char *)((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C : part_str,
+            0x28, 1);
+    }
+    if (!invalid) {
+        for (i = 0; i < blocks; i++) {
+            for (j = 0; j < 3; j++) {
+                s32 img_idx = j < ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 ? j : 0;
+                func_8001A850(1, D_800619D0_arr[0], ((slot_idx + i) * 3 + j) << 8,
+                    j == 0 ? block.header.palette : NULL,
+                    images[img_idx]);
+            }
+        }
+    }
+    D_800619D4[slot_idx] = 0;
+    D_800619D4[slot_idx] = ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 << 1;
+    if (((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word00 != 0) {
+        if (!invalid) {
+            j = 0;
+            do {
+                if (func_8003E228(descriptor, &block, 128) == 128)
+                    break;
+                j++;
+            } while (j < 30);
+            if (j == 30) {
+                ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word00 = 0;
+                D_800619D4[slot_idx] |= 0x10;
+            } else {
+                D_800619D4[slot_idx] |= 8;
+                D_800619D4[slot_idx] |= *(s32 *)&block << 5;
+            }
+        }
+    }
+    if (invalid) {
+        D_800619D4[slot_idx] |= 0x20000;
+    }
+    D_800619D4[slot_idx] |= 1;
+    func_8003C900(&descriptor);
+    if (!invalid) {
+        for (j = 1; j < blocks; j++) {
+            ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx + j] =
+                ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx];
+            D_800619D4[slot_idx + j] = D_800619D4[slot_idx];
+        }
+    }
+    ((EngineDirectoryStateView *)D_80056564)->record_cursor++;
+    D_80056564->word08 += blocks;
+}
 
 extern u8 D_80053890[][2];
 char *BIOS_StrCpy(char *, const char *);
