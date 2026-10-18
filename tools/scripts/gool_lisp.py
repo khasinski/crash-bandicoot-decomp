@@ -1829,18 +1829,21 @@ def cmd_decompile_nsf(args: argparse.Namespace) -> int:
         return 1
 
     canonical_written: Dict[str, str] = {}
+    canonical_lower_written: Set[str] = set()
     variants_written: Set[Tuple[str, str]] = set()
     total_entries = 0
 
     for nsf_file in nsf_files:
         entries = extract_gool_entries_from_nsf(nsf_file.read_bytes(), str(nsf_file))
-        for name, _eid, raw in entries:
+        for name, eid, raw in entries:
             total_entries += 1
             sha = hashlib.sha1(raw).hexdigest()[:8]
             if name not in canonical_written:
                 gool_text = decompile_gool_entry(raw)
-                (out_dir / f"{name}.gool").write_text(gool_text, encoding="utf-8")
+                stem = name if name.lower() not in canonical_lower_written else f"{name}_{eid:08x}"
+                (out_dir / f"{stem}.gool").write_text(gool_text, encoding="utf-8")
                 canonical_written[name] = sha
+                canonical_lower_written.add(name.lower())
                 variants_written.add((name, sha))
             elif (name, sha) not in variants_written:
                 if args.all_variants:

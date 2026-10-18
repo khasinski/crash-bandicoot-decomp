@@ -189,6 +189,18 @@ class TestGoolLisp(unittest.TestCase):
                 f"Round-trip SHA-1 mismatch on {name}",
             )
 
+    def test_committed_src_gool_scripts_roundtrip(self) -> None:
+        gool_dir = Path(__file__).resolve().parents[1] / "src" / "gool"
+        gool_files = sorted(gool_dir.glob("*.gool"))
+        self.assertEqual(len(gool_files), 60)
+        for gool_file in gool_files:
+            source = gool_file.read_text(encoding="utf-8")
+            binary = compile_gool_source(source)
+            redecompiled = decompile_gool_entry(binary)
+            rebinary = compile_gool_source(redecompiled)
+            self.assertEqual(binary, rebinary, f"Round-trip mismatch in {gool_file.name}")
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -119,7 +119,7 @@ help:
 	@echo "  probe FILE=path.c  Compare functions against freshly split retail assembly"
 	@echo "  test             Run tooling regression tests (requires setup/toolchain/split)"
 	@echo "  audit-code       Check that C scaffolding and code debt did not increase"
-	@echo "  gool             Decompile all retail .NSF GOOL executables into build/gool/*.gool"
+	@echo "  gool             Decompile all retail .NSF GOOL executables into src/gool/*.gool"
 	@echo "  gool-check       Verify 100% byte-for-byte round-trip compilation of all GOOL scripts"
 	@echo "  diff FUNC=name   asm-differ one function against retail"
 	@echo "  objdiff-config   Build retail target objects (expected/) and objdiff.json"
@@ -142,7 +142,7 @@ audit-code:
 	$(PY) -m unittest discover -s tests -p test_report_audit.py -v
 
 gool:
-	$(PY) tools/scripts/gool_lisp.py decompile-nsf build/extract/$(VERSION)/files -o build/gool
+	$(PY) tools/scripts/gool_lisp.py decompile-nsf build/extract/$(VERSION)/files -o src/gool
 
 gool-check:
 	$(PY) tools/scripts/gool_lisp.py verify --nsf-dir build/extract/$(VERSION)/files
