@@ -4,8 +4,6 @@
 /* GCC_CPU: r4000 */
 s32 func_80050728(s16, s16);                          /* extern */
 extern u8 *D_8005CFE4;
-extern u8 D_8005E55F;
-extern u8 D_8005E578[];
 
 typedef struct {
     u8 field_0;u8 field_1;u8 field_2;u8 field_3;u8 field_4;u8 field_5;u8 field_6;u8 field_7;u8 field_8;u8 field_9;u8 field_A;u8 field_B;u8 field_C;u8 field_D;

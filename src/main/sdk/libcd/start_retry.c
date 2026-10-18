@@ -7,7 +7,7 @@ Callback func_800434D8(Callback);
 Callback func_800434F0(Callback);
 Callback func_80043508(Callback);
 void func_800432DC(void),func_80043304(void),func_8004332C(void);
-extern const char D_8001139C[];
+
 s32 func_8004324C(void)
 {
     s32 retries = 4;

@@ -3,9 +3,8 @@
 #include "common.h"
 #include "gpu.h"
 
+extern s32 D_80057868;
 
-extern s32 D_80057868, D_8005786C, D_80057870, D_80057874, D_80057878;
-extern s32 D_80057938, D_8005794C, D_80057950, D_80057954;
 typedef struct WgeoHeader {
     s32 x;
     s32 y;
@@ -44,9 +43,6 @@ typedef struct ResourceItem {
 
 extern s32 D_80057864;
 extern s16 D_80057804;
-extern s16 D_80057806, D_80057808;
-extern s16 D_8005780A, D_8005780C, D_8005780E;
-extern s16 D_80057810, D_80057812, D_80057814;
 
 extern struct {
     s32 unk0;
@@ -54,8 +50,6 @@ extern struct {
 } *D_8005C53C;
 
 extern s32 D_800618D4;
-extern s32 D_800619B0;
-extern s32 D_800619B8;
 
 ResourceItem *func_80015A98(void *);
 void func_8001A460(s32, s32);
@@ -92,7 +86,7 @@ void func_8001922C(ZoneHeader9A2C *arg0)
         arg0->worlds[i].wgeo = wgeo;
         arg0->worlds[i].item1 = entry->item1;
         arg0->worlds[i].item2 = entry->item2;
-        arg0->worlds[i].polys = (u8 *)wgeo + 0x40;
+        arg0->worlds[i].polys = wgeo + 1;
         for (j = 0; j < wgeo->tpage_count; j++) {
             arg0->worlds[i].tpages[j] = func_80015A98(&wgeo->tpages[j]);
         }

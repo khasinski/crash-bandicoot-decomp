@@ -5,7 +5,7 @@
 /* Clamp transfer size, forward buffer and size, and update completion state. */
 
 s32 func_80046CC8(s32,u32);
-extern s32 D_80055914;
+
 extern void (*volatile D_80055918)(void);
 
 u32 func_800489B8(s32 arg0,u32 arg1) {

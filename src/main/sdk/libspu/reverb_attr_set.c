@@ -22,11 +22,10 @@ void func_80046DB8(s32, u32, s32);
 
 extern volatile u16 *D_800558E4;
 extern u32 D_80055958;
-extern s32 D_80055960;
+
 extern volatile s16 D_80055964;
 extern volatile s16 D_80055966;
-extern s32 D_80055968;
-extern s32 D_8005596C;
+
 extern u32 D_80055DAC[];
 extern SpuReverbRegisters D_80055DFC[];
 

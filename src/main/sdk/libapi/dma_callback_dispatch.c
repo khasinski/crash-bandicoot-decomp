@@ -3,11 +3,8 @@
 
 typedef void (*Callback)(void);
 
-extern char D_8001106C[];
-extern char D_80011088[];
 extern volatile u32 *D_800549F8;
 extern Callback D_800549FC[];
-extern volatile u32 *D_80054A1C;
 
 s32 func_8003D730(const char *, ...);
 

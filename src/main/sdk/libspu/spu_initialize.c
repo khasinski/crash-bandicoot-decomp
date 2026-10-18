@@ -4,11 +4,7 @@
 #include "common.h"
 
 void func_8004DA9C(s32);              /* extern */
-extern u16 D_80056228[];
-extern u16 D_80056238[];
-extern s32 D_8005C520;
-extern s32 D_8005E548;
-extern s32 D_8005FF4C;
+
 typedef void (*SequenceCallback)();
 extern SequenceCallback D_80060498[];
 

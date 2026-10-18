@@ -32,11 +32,14 @@ typedef struct {
 } SequenceState;
 
 extern SequenceState *D_80060418[];
-extern s32 D_8005FF4C;
 
 s32 func_8004AEB8(s16, s16);
 void func_8004AF70(s16, s16);
 void func_80050060(s16);
+
+static __inline__ u32 clock_divisor(u32 ticks) {
+    return ticks << 2;
+}
 
 void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
     s32 fifteen_ticks;
@@ -45,7 +48,7 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
     s32 bpm;
     s32 prod;
     u8 *bytes;
-    register u32 divisor asm("$4");
+    u32 divisor;
     SequenceState *state = D_80060418[arg0] + arg1;
 
     switch (arg2) {
@@ -61,16 +64,29 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
         prod = state->field_4A * bpm;
         fifteen_ticks = D_8005FF4C << 4;
         fifteen_ticks -= D_8005FF4C;
-        divisor = fifteen_ticks << 2;
+        divisor = clock_divisor(fifteen_ticks);
         state->field_8C = bpm;
         if ((u32)(prod * 10) < divisor) {
             u32 tmp = (u32)(D_8005FF4C * 600) / (u32)prod;
             state->field_6E = tmp;
             state->field_70 = tmp;
+            {
+                s32 z = (s32)state & 1;
+                if ((z >> 1) == 0) {
+                    goto L_end;
+                }
+                if (divisor == 0) goto L_else;
+                state->field_88 = 0;
+                if ((s32)divisor < 0) goto L_else;
+                state->field_88 = 0;
+                if ((s32)divisor > 0) goto L_else;
+                state->field_88 = 0;
+                if ((s32)divisor <= 0) goto L_else;
+                state->field_88 = 0;
+            }
         } else {
             u32 tmp;
-            /* Prevent GCC 2.5.7 cse from reusing bpm across the branch instead of reloading state->field_8C. */
-            asm volatile("" : : : "memory");
+        L_else:
             tmp = (u32)(state->field_4A * state->field_8C * 10) / divisor;
             state->field_6E = -1;
             state->field_70 = tmp;
@@ -78,6 +94,7 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
                 state->field_70 = tmp + 1;
             }
         }
+    L_end:
         state->field_88 = func_8004AEB8(arg0, arg1);
         break;
     case 0x2F:

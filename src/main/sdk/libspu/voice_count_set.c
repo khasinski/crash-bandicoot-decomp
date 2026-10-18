@@ -3,7 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 extern s32 D_80056274;
-extern u8 D_8005E340;
 
 u8 func_800507EC(s32 count) {
     s32 bit;

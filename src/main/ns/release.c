@@ -6,8 +6,6 @@
 
 #include "resource.h"
 
-extern s32 *D_8005CFBC;
-
 void func_80014930(ResourceSlot *slot)
 {
     slot->state = 1;

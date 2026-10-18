@@ -7,11 +7,10 @@ void func_8003E1F8(void);
 void func_8003E208(void);
 Callback func_8003E724(s32, Callback);
 s32 func_8003E784(s32);
-extern s32 D_8005625C;
+
 extern Callback D_80056264;
-extern u8 D_80056268;
+
 extern s8 D_80056269;
-extern u8 D_8005626A;
 
 void func_80049648(void)
 {

@@ -4,8 +4,6 @@
 #include "common.h"
 #include "audio_channels.h"
 
-
-extern s32 D_8005666C;
 typedef struct {
     u16 count;
     u16 pad02;
@@ -25,12 +23,6 @@ typedef struct {
 
 extern s32 D_800564FC;
 extern u16 D_80056648;
-extern s32 D_80056650;
-extern s16 D_80056654;
-extern s16 D_80056658;
-extern s16 D_8005665C;
-extern s32 D_800566C0;
-extern s32 D_8005CFB0[];
 
 MidiResourceEntry *func_80015118(s32 *, s32, s32);
 s32 func_80015458(s32 *, s32);
@@ -44,7 +36,6 @@ s16 func_80049844(void *, s16, s16);
 void func_80031964(AudioChannel *, s32, s32, s32);
 void func_80049504(s16, s16, s16, s32);
 s32 func_80031A40(AudioChannel *, s32, s32);
-
 
 s32 func_800314C4(s32 *arg0) {
     s32 sp10;

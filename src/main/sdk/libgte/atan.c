@@ -4,8 +4,6 @@
 
 /* Compute a 12-bit signed angle with the retail lookup table and overflow-aware ratio scaling. */
 
-extern s16 D_80054D1C[];
-
 s32 func_8004301C(s32 x, s32 y) {
     s32 angle;
     s32 negative_y;

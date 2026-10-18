@@ -129,7 +129,7 @@ s32 func_80015B58(NsState *ns, s32 level)
     for (i = 0; i < ns->physical_count; i++) {
         ns->physical[i].state = 1;
         ns->physical[i].word06 = 1;
-        ns->physical[i].header = (ResourceHeader *)((u8 *)ns->physical[0].header + (i << 16));
+        ns->physical[i].header = (ResourceHeader *)((u32)ns->physical[0].header + (i << 16));
         ns->physical[i].word08 = i;
         ns->physical[i].references = 0;
     }

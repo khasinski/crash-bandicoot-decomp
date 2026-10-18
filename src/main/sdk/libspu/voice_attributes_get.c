@@ -3,8 +3,7 @@
 #include "common.h"
 #include "sdk/libspu/voice_attributes.h"
 extern volatile u16 *D_800558E4;
-extern u16 D_80055970[];
-extern s32 D_80055908;
+
 s32 func_80048FB4(s32,s32,s32);
 void func_800485E0(VoiceAttributes *arg0) {
     s32 temp_v0_3;
@@ -23,9 +22,9 @@ void func_800485E0(VoiceAttributes *arg0) {
     u16 var_a3;
     u32 temp_v1_4;
     u32 temp_v1_5;
-    volatile u8 *temp_v0;
-    volatile u8 *temp_v1;
-    volatile u8 *temp_v1_6;
+    volatile u16 *temp_v0;
+    volatile u16 *temp_v1;
+    volatile u16 *temp_v1_6;
 
     var_s1 = -1;
     for (var_v1 = 0; var_v1 < 24; var_v1++) {
@@ -36,9 +35,9 @@ void func_800485E0(VoiceAttributes *arg0) {
     }
     var_a1 = 0;
     if (var_s1 != -1) {
-        temp_v1 = (var_s1 * 0x10) + (volatile u8 *)D_800558E4;
-        var_a2 = *(volatile u16 *)(temp_v1 + 0);
-        var_a3 = *(volatile u16 *)(temp_v1 + 2);
+        temp_v1 = D_800558E4 + (var_s1 * 8);
+        var_a2 = temp_v1[0];
+        var_a3 = temp_v1[1];
         temp_s2 = var_s1 * 8;
         word_index = var_s1 * 2;
         if (var_a2 & 0x8000) {
@@ -84,10 +83,10 @@ void func_800485E0(VoiceAttributes *arg0) {
         }
         arg0->field_E = var_a0;
         arg0->field_C = var_a1;
-        temp_v0 = (word_index * 2) + (volatile u8 *)D_800558E4;
-        arg0->field_10 = (u16) *(volatile u16 *)(temp_v0 + 512);
-        arg0->field_12 = (u16) *(volatile u16 *)(temp_v0 + 514);
-        arg0->field_14 = (u16) (*(volatile u16 *)((temp_s2 * 2) + (volatile u8 *)D_800558E4 + 4));
+        temp_v0 = D_800558E4 + word_index;
+        arg0->field_10 = temp_v0[256];
+        arg0->field_12 = temp_v0[257];
+        arg0->field_14 = D_800558E4[temp_s2 + 2];
         temp_v0_2 = D_80055970 + var_s1;
         temp_v0_3 = func_80048FB4((u16) *temp_v0_2 >> 8, *(u8 *)temp_v0_2, arg0->field_14);
         if (temp_v0_3 >= 0) {
@@ -96,12 +95,12 @@ void func_800485E0(VoiceAttributes *arg0) {
             arg0->field_16 = 0;
         }
         arg0->field_18 = (u16) D_80055970[var_s1];
-        temp_v1_6 = (temp_s2 * 2) + (volatile u8 *)D_800558E4;
-        arg0->field_1A = (u16) *(volatile u16 *)(temp_v1_6 + 12);
-        arg0->field_1C = (s32) (*(volatile u16 *)(temp_v1_6 + 6) << D_80055908);
-        arg0->field_20 = (s32) (*(volatile u16 *)(temp_v1_6 + 14) << D_80055908);
-        adsr1 = *(volatile u16 *)(temp_v1_6 + 8);
-        adsr2 = *(volatile u16 *)(temp_v1_6 + 10);
+        temp_v1_6 = D_800558E4 + temp_s2;
+        arg0->field_1A = temp_v1_6[6];
+        arg0->field_1C = (s32) (temp_v1_6[3] << D_80055908);
+        arg0->field_20 = (s32) (temp_v1_6[7] << D_80055908);
+        adsr1 = temp_v1_6[4];
+        adsr2 = temp_v1_6[5];
         arg0->field_24 = (adsr1 & 0x80) ? 5 : 1;
         arg0->field_28 = (adsr2 & 0x300) ? 7 : ((adsr2 & 0x200) ? 5 : ((adsr2 & 0x100) ? 3 : 1));
         arg0->field_2C = (adsr2 & 0x20) ? 7 : 3;

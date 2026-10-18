@@ -106,8 +106,6 @@ ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
     return (ZoneEntry *)-0x17;
 }
 
-
-
 /* ZoneFindNode: follow the ray va + t*vb through the zone octree below node,
  * which covers rect. A leaf returns its node and moves va onto the nearest
  * face it crossed (reversing that component of vb); an empty node advances
@@ -120,7 +118,7 @@ s32 func_80026FF0(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb
     /* Non-leaf nodes are offsets of their child arrays in the zone item;
      * leaves (odd) and empty nodes (0) are returned as they are. */
     if (!(node & 1) && node) {
-        children = (u16 *)((u8 *)zone + node);
+        children = (u16 *)((u32)zone + node);
     } else {
         children = (u16 *)(u32)node;
     }

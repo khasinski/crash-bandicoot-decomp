@@ -9,7 +9,7 @@ typedef union FormatFlags {
 } FormatFlags;
 typedef struct FormatSpec {FormatFlags flags; s32 width; s32 precision;} FormatSpec;
 extern FormatSpec D_800538DC;
-extern const char D_80010F14[17],D_80010F28[17];
+
 s32 BIOS_StrLen(const char *);
 void *BIOS_MemChr(const void *,s32,s32);
 u8 *func_8003DFAC(u8 *,const u8 *,s32);

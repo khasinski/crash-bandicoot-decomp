@@ -1,4 +1,5 @@
 #include "common.h"
+extern s32 D_80057960;
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -21,7 +22,6 @@ extern struct {
     u8 *data;
 } *D_80057914;
 extern s32 D_800578D0;
-extern s32 D_80057960;
 extern u8 D_80051774[];
 
 extern struct {
@@ -34,8 +34,6 @@ extern struct {
     u8 padAAC[0xAC8 - 0xAAC];
     s32 wordAC8;
 } D_80060DF0;
-
-
 
 void func_80019508(s32 arg0)
 {

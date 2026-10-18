@@ -7,5 +7,5 @@ void func_80040760(GpuPacketHeader *packet) {
     u8 length;
     length=packet->length;
     D_80054A64->callback3C(0);
-    D_80054A64->send14((u8 *)packet+4,length);
+    D_80054A64->send14(&packet->color,length);
 }

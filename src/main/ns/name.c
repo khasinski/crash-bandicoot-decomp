@@ -5,8 +5,7 @@
 /* Format an encoded resource ID, or encode five characters with the 64-character alphabet. */
 
 extern u8 D_80051728[];
-extern char D_80056728[];
-extern char D_8005641C[];
+
 extern char D_80056414[];
 s32 func_8003D740(char *, const char *, ...);
 

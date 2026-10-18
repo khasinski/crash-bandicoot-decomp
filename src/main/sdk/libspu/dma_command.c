@@ -3,18 +3,10 @@
 
 extern u16 D_800558E0;
 extern volatile u16 *D_800558E4;
-extern volatile u32 *D_800558E8;
-extern volatile u32 *D_800558EC;
-extern volatile u32 *D_800558F0;
-extern volatile u32 *D_800558F8;
-extern s32 D_80055908;
-extern s32 D_80055930;
-extern u32 D_80055934;
-extern u32 D_80055938;
 
-typedef char *va_list;
-#define va_start(ap, last) ((ap) = (char *)&(last) + 4)
-#define va_arg(ap, type) ((ap) += 4, *(type *)((ap) - 4))
+typedef void *va_list;
+#define va_start(ap, last) ((ap) = (void *)(&(last) + 1))
+#define va_arg(ap, type) ((ap) += 4, ((type *)(ap))[-1])
 
 s32 func_80046A20(s32 mode, ...)
 {

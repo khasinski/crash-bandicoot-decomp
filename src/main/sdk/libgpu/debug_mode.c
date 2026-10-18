@@ -9,8 +9,6 @@ typedef struct {u8 debug;u8 pad01[13];u8 drawing[92];u8 display[20];} GpuState;
 extern GpuState D_80054A6E;
 typedef struct {u8 reverse;u8 pad01[12];u8 drawing[92];u8 display[20];} GpuReverseState;
 extern GpuReverseState D_80054A6F;
-extern const char D_800111D0[];
-extern const char D_800111E8[];
 
 typedef struct {
     u8 pad00[0x10];
@@ -48,7 +46,6 @@ u8 func_8004002C(u8 arg0) {
     return temp_s0;
 }
 
-extern const char D_80011214[];
 typedef struct {u8 mode,debug;u8 pad02[12];u8 drawing[92];u8 display[20];} GpuModeState;
 extern GpuModeState D_80054A6D;
 s32 func_8003E754(s32,s32);

@@ -7,11 +7,10 @@ u8 func_80012820(s32);
 s32 func_80012DCC(s32 *, s32);
 s32 func_8002F778(s32);
 
-extern u8 D_800564C0[];
 extern s32 D_80056710;
 /* Unsized storage views retain the native absolute addressing. Only the
  * mode word above is accessed through gp in this function. */
-extern s32 D_8005C528[], D_8005C52C[], D_8005C54C[];
+extern s32 D_8005C528[], D_8005C54C[];
 extern s32 D_800618D0[], D_80061A30[];
 
 void func_8002EABC(s32 *resource_id)

@@ -89,6 +89,6 @@ typedef struct LevelPosition {
     s32 progress;
 } LevelPosition;
 
-extern LevelPosition level_position __asm__("D_80057914");
+extern LevelPosition level_position;
 
 #endif

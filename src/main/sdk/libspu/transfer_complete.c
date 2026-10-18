@@ -5,7 +5,6 @@ void func_80043354(u32, u32);
 extern volatile u16 *D_800558E4;
 /* Retail tests and then reloads this shared completion callback slot. */
 extern void (*volatile D_80055918)(void);
-extern s32 D_80055930;
 
 void func_800466A0(void) {
     /* Retail stores and reloads both delay words on the stack. */

@@ -6,7 +6,7 @@ extern Api *D_80054A64;
 void func_800402C8(const char *,s32);
 extern s32 (*D_80054A68)(const char *,...);
 extern u8 D_80054A6E;
-extern const char D_800112F0[];
+
 void func_800407C0(s32 arg0) {
     if ((u8) D_80054A6E >= 2U) {
         D_80054A68(D_800112F0, arg0);

@@ -1,3 +1,4 @@
+#define CRASH_STATE_GLOBALS_OWNER
 #include "common.h"
 #include "engine_ticks.h"
 #define CRASH_ENGINE_STATE_STORAGE
@@ -112,14 +113,13 @@ s32 func_80031BAC(void)
 
 extern u32 D_800618D0;
 extern volatile s32 D_800618D4;
-extern u32 D_8006194C[];
 s32 func_80031EB4(void);
 
-extern s32 D_8006189C[];
 
 /* Apply a pending mode request and initialise the recovered mode-state words. */
 s32 func_80031BF8(void)
 {
+    extern s32 D_8006189C[];
     s32 request;
     u32 value;
     EngineMode25State *reset_state, *requested_state;
@@ -170,13 +170,13 @@ s32 func_80015118(s32 *, s32, s32);
 s32 func_80015458(s32 *, s32);
 void func_80025A60(ResourceItemListView *, u8 *, s32, s32);
 extern s32 D_80056400, D_8005640C;
-extern s32 D_8006189C[];
 extern ResourceSlotStateView D_800580A4[];
 
 /* Change mode flags, recycle pending texture slots 8..14, and initialise
  * the item selected by the resource metadata before releasing the reference. */
 void func_80031D50(s32 *reference, s32 mode)
 {
+    extern s32 D_8006189C[];
     s32 index;
     ResourceItemListView *resource;
     D_80056400 = 0;
@@ -222,6 +222,7 @@ s32 func_80012820(s32);
 s32 func_8003D740(char *, char *, ...);
 void func_8001BCC8(ResourceItemListView *, s32);
 s32 func_80031EB4(void) {
+    extern s32 D_8006189C[];
     char buf[32];
     s32 ref;
     s32 mode;
@@ -336,7 +337,8 @@ s32 func_80031EB4(void) {
         D_800566E0->word04 = D_800566E0->word0C << 4;
         D_800566E0->word08 = D_800566E0->word10 << 4;
         for (i = 0; i < header[3]; i++) {
-            if ((u32)*(s16 *)(list->items[i + 2] + 0x18) <= D_80061948[0]) {
+            typedef struct { u8 pad00[0x18]; s16 max_level; } MapItemHeader;
+            if ((u32)((MapItemHeader *)list->items[i + 2])->max_level <= D_80061948[0]) {
                 func_8001BCC8(list, i);
             }
         }
@@ -481,7 +483,6 @@ void func_80017448(s32);
 void func_80032BB4(EngineMode25State *, s32, s32);
 void func_80032DFC(EngineMode25State *, s32, s32);
 
-extern u32 D_8006189C_val __asm__("D_8006189C");
 
 s32 func_800326D8(GpuPacketTag *ot)
 {
@@ -496,7 +497,8 @@ s32 func_800326D8(GpuPacketTag *ot)
     case 0:
         D_800566E0->word35A4 = 0;
         D_800566E0->word35A0 = 0;
-    case 1:
+    case 1: {
+        extern s32 D_8006189C[];
         D_80061A34 = 0x120;
         D_8006189C[0] |= 0xC;
         D_800566E0->word3598 = 6;
@@ -504,6 +506,7 @@ s32 func_800326D8(GpuPacketTag *ot)
             func_80032BB4(D_800566E0, D_800566E0->word14, D_800566E0->word18);
             func_80032DFC(D_800566E0, D_800566E0->word14, D_800566E0->word18);
         }
+    }
         D_80061A34 = 0x120;
         break;
     case 2:
@@ -545,7 +548,10 @@ s32 func_800326D8(GpuPacketTag *ot)
     case 5:
         if (D_80061A34 == 0) {
             D_800566E0->word3598 = 7;
-            D_8006189C_val &= ~0xC;
+            {
+                extern s32 D_8006189C[1];
+                D_8006189C[0] &= ~0xC;
+            }
             func_80017448(0xFF);
         }
         break;
@@ -582,7 +588,7 @@ void func_80032AF4(u32 base_address)
     s32 index;
     s32 x;
     s32 byte_offset;
-    void *entry;
+    EngineTileCoords *entry;
 
     row = 0;
     do {
@@ -609,10 +615,10 @@ next_column:
         byte_offset = index * 3;
         column += 1;
         byte_offset = byte_offset << 2;
-        entry = (void *)(byte_offset + base_address);
-        *(s32 *)((u8 *)entry + 0x0) = x;
-        *(s32 *)((u8 *)entry + 0x4) = y;
-        *(s32 *)((u8 *)entry + 0x8) = page;
+        entry = (EngineTileCoords *)(byte_offset + base_address);
+        entry->x = x;
+        entry->y = y;
+        entry->page = page;
         index += 0x10;
         if (column < 0x21) {
             goto next_column;

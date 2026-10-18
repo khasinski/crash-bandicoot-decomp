@@ -2,11 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern char D_80010FF0[];
-extern volatile u32 *D_80053924;
-extern volatile u32 *D_80053928;
-extern u32 D_8005392C;
-extern s32 D_80053930;
 extern volatile s32 D_800549F0;
 
 void func_8003E4E0(s32);

@@ -8,19 +8,14 @@ s32 func_8003E6F4(void);
 void func_80045E50(s32);
 void func_80046DB8(s32, u32, s32);
 void func_80047078(u32);
-extern s32 D_800558FC;
-extern s32 D_8005594C;
-extern s32 D_80055950;
-extern s32 D_80055954;
+
 extern s32 D_80055958;
-extern s32 D_80055960;
+
 extern s16 D_80055964;
 extern s16 D_80055966;
-extern s32 D_80055968;
-extern s32 D_8005596C;
+
 /* Partial memory view: element zero precedes the 24 cached voice values. */
-extern u16 D_8005596E[25];
-extern u32 D_800559A4;
+
 extern s32 D_80055DAC;
 
 void func_80046FB0(s32 arg0) {

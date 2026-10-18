@@ -1,6 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 /* CC1_FLAGS: -O2 */
+/* GNU_AS_G: 8 */
 #include "common.h"
+extern s32 D_800618B8[];
 
 typedef struct GoolVectors {
     s32 trans[3];
@@ -43,18 +45,15 @@ typedef struct ResourceEntry88CC {
 } ResourceEntry88CC;
 
 extern u8 D_80057844[];
-extern u8 D_8005726C[];
-extern u8 D_80057824[];
-extern s32 D_80057888, D_8005788C, D_80057890;
-extern s32 D_800578D0[];
-extern s32 D_800618B0;
-extern s32 D_800618B8;
-extern GoolObj88CC *D_800618CC;
-extern GoolObj88CC *D_800566B4;
-extern ResourceEntry88CC *D_80057914;
 
-extern s32 D_80056470;
-asm(".sdata\n.size D_80056470,4\n.text");
+extern u8 D_80057824[];
+extern s32 D_80057888[], D_8005788C[], D_80057890[];
+extern s32 D_800578D0[];
+extern s32 D_800618B0[];
+
+extern GoolObj88CC *D_800618CC[];
+extern GoolObj88CC *D_800566B4[];
+extern ResourceEntry88CC *D_80057914[];
 
 void func_80042E9C(void *);
 void func_80042F2C(void *);
@@ -102,13 +101,13 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
     }
     func_80042E9C(D_80057844);
     func_80042F2C(D_8005726C);
-    sp10[0] = (arg2->vectors.trans[0] - D_80057888) >> 8;
-    sp10[1] = (arg2->vectors.trans[1] - D_8005788C) >> 8;
-    sp10[2] = (arg2->vectors.trans[2] - D_80057890) >> 8;
+    sp10[0] = (arg2->vectors.trans[0] - (*D_80057888)) >> 8;
+    sp10[1] = (arg2->vectors.trans[1] - (*D_8005788C)) >> 8;
+    sp10[2] = (arg2->vectors.trans[2] - (*D_80057890)) >> 8;
     func_80042FEC(sp10, sp18.t, &sp88);
 
-    if (!(D_800618B0 & 0x10000)) {
-        far_z = D_80057914->data->far_clip >> 8;
+    if (!((*D_800618B0) & 0x10000)) {
+        far_z = (*D_80057914)->data->far_clip >> 8;
         sp88 = far_z;
         if (far_z != 0 && sp18.t[2] > far_z) {
             return 0;
@@ -146,13 +145,13 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                 }
             }
         }
-        if (arg2 != D_800566B4 && !(arg2->status_b & 0x400)) {
-            header = D_80057914->data;
+        if (arg2 != (*D_800566B4) && !(arg2->status_b & 0x400)) {
+            header = (*D_80057914)->data;
             switch (header->light_mode) {
             case 2:
                 dst = (u16 *)&arg2->light;
                 src = header->light_src;
-                diff = sp18.t[2] - D_800618B8;
+                diff = sp18.t[2] - (*D_800618B8);
                 if (diff > 0) {
                     diff <<= 3;
                     if (diff > 0x7FFF) {
@@ -178,14 +177,14 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                 break;
             case 4:
                 light = &arg2->light;
-                if (D_800618CC != NULL) {
-                    tx = D_800618CC->vectors.trans[0];
-                    ty = D_800618CC->vectors.trans[1];
-                    tz = D_800618CC->vectors.trans[2];
+                if ((*D_800618CC) != NULL) {
+                    tx = (*D_800618CC)->vectors.trans[0];
+                    ty = (*D_800618CC)->vectors.trans[1];
+                    tz = (*D_800618CC)->vectors.trans[2];
                 } else {
-                    tx = D_800566B4->vectors.trans[0];
-                    ty = D_800566B4->vectors.trans[1];
-                    tz = D_800566B4->vectors.trans[2];
+                    tx = (*D_800566B4)->vectors.trans[0];
+                    ty = (*D_800566B4)->vectors.trans[1];
+                    tz = (*D_800566B4)->vectors.trans[2];
                 }
                 light->b[0] = 0;
                 light->b[1] = 0;
@@ -258,7 +257,7 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                 if (arg3 != 0) {
                     dst = (u16 *)&arg2->light;
                     src3 = header->light_src;
-                    diff = sp18.t[2] - D_800618B8;
+                    diff = sp18.t[2] - (*D_800618B8);
                     if (diff > 0) {
                         diff >>= 2;
                         if (diff >= 0x6D61) {
@@ -275,7 +274,7 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                         dst[i3] = val3;
                     }
                 } else {
-                    val3 = (sp18.t[2] - D_800618B8) / 200;
+                    val3 = (sp18.t[2] - (*D_800618B8)) / 200;
                     *arg4 = val3;
                     if (val3 < 0) {
                         *arg4 = 0;
@@ -288,7 +287,12 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
             }
         }
     }
-    asm("" : : "r"(vectors));
+    {
+        s32 z = (s32)vectors & 1;
+        if (z >> 1) {
+            arg4 = NULL;
+        }
+    }
     if (arg3 != 0) {
         func_8003913C(D_80057824, arg1, vectors, &arg2->light);
     } else {

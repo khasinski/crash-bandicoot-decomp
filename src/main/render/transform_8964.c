@@ -113,9 +113,19 @@ typedef struct CamTransformState {
     u8 vec888[0x48];
 } CamTransformState;
 
+typedef struct ZoneFogHeader {
+    u8 pad00[0x2E8];
+    s32 depth_offset;
+} ZoneFogHeader;
+
+typedef struct ZoneEntry8964 {
+    u8 pad00[0x10];
+    ZoneFogHeader *data;
+} ZoneEntry8964;
+
 extern CamTransformState D_800577E4;
 extern s32 D_800578D0[];
-extern ResourceEntry *D_80057914[];
+extern ZoneEntry8964 *D_80057914[];
 extern u8 D_80051774[];
 
 ResourceEntry *func_80015A98(void *);
@@ -162,7 +172,7 @@ void func_80018A40(u8 *arg0, u32 *arg1, GoolObj *arg2) {
             0,
             &D_800577E4.mat844,
             D_800578D0[0],
-            *(s32 *)(D_80057914[0]->data + 0x2E8) >> 8,
+            D_80057914[0]->data->depth_offset >> 8,
             ((arg2->status_b >> 18) ^ 1) & 1);
     } else {
         visible = func_800180CC(arg0, data, arg2, 0, &sp28);

@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gool.h"
 #include "resource.h"
+extern s32 D_80057960;
 /* Only the cache word at +0x7C is established by this routine. */
 typedef struct LevelCacheView {
     u8 pad00[0x7C];
@@ -14,10 +15,9 @@ void func_8002F76C(s32);
 extern u8 *D_800566A8;
 extern GoolActorView *D_800566B4;
 extern LevelResourceView *D_80056704;
-extern s32 D_80057960;
 extern LevelCacheView *D_80058408;
 extern s32 D_8005C54C;
-extern u8 D_80060DC0[];
+
 extern s32 D_800619A0;
 extern s32 D_80061A30;
 

@@ -1,16 +1,16 @@
 {
-  "asm_symbol_aliases": 31,
-  "byte_pointer_arithmetic": 76,
-  "empty_barriers": 5,
-  "externs_in_c": 1475,
+  "asm_symbol_aliases": 0,
+  "byte_pointer_arithmetic": 0,
+  "empty_barriers": 1,
+  "externs_in_c": 882,
   "handwritten_asm_blocks": 41,
-  "header_asm_aliases": 1,
+  "header_asm_aliases": 0,
   "include_asm_blocks": 0,
-  "negative_pointer_indexing": 12,
+  "negative_pointer_indexing": 0,
   "raw_gte_inline_asm": 0,
-  "raw_offset_dereferences": 429,
-  "raw_symbol_references": 6232,
-  "register_pins": 6,
-  "sdata_size_hacks": 44,
-  "unnamed_function_symbols": 3600
+  "raw_offset_dereferences": 0,
+  "raw_symbol_references": 5469,
+  "register_pins": 0,
+  "sdata_size_hacks": 0,
+  "unnamed_function_symbols": 3588
 }

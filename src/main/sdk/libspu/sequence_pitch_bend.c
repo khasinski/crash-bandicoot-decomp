@@ -6,19 +6,15 @@
 s32 func_8004EADC(u16, u16);
 s32 func_80050728(s16, s16);
 
-extern u8 D_800572B8[];
 extern u8 D_800572BA[];
 extern u8 D_800572BE[];
 extern u8 D_800572C0[];
 extern u8 D_800572C2[];
-extern u8 D_800577A4[];
+
 extern u8 *D_8005CFE4;
-extern u8 D_8005E340;
-extern u8 D_8005E55F;
-extern u8 D_8005E564;
+
 extern s16 D_8005E56E;
 extern s16 D_8005E572;
-extern u8 D_8005E58C[];
 
 s16 func_8004F680(s16 voice, s16 arg1, s16 arg2, s16 arg3, u16 arg4) {
     s16 bend;

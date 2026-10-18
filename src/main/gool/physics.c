@@ -116,7 +116,6 @@ typedef struct CamTransformState {
 
 extern ResourceEntry *D_80057914[];
 
-
 typedef struct GoolColor {
     u16 r, g, b;
 } GoolColor;
@@ -205,7 +204,11 @@ s32 func_8001EB28(GoolObj *obj) {
         break;
     default:
         if (obj == D_800566B4 && (obj->status_b & 0x4000000)) {
-            *(GoolColor *)&obj->defaults.field2A = *(GoolColor *)(obj->zone->data + 0x372);
+            typedef struct {
+                u8 pad00[0x372];
+                GoolColor color372;
+            } ZoneColorView;
+            *(GoolColor *)&obj->defaults.field2A = ((ZoneColorView *)obj->zone->data)->color372;
         }
         break;
     }
@@ -259,7 +262,7 @@ void func_8001EEA8(GoolObj *obj) {
         entry->bound.y2 = obj->vectors.trans[1] + obj->bound[4];
         entry->bound.z2 = obj->vectors.trans[2] + obj->bound[5];
     } else {
-        res = (void **)func_80015A98((u8 *)obj->anim_seq + 4);
+        res = (void **)func_80015A98((u32 *)obj->anim_seq + 1);
         model = (s32 *)res[((u32)obj->anim_frame >> 8) + 4];
         angle = obj->vectors.rot[1] & 0xFFF;
         if (angle == 0 && obj->vectors.scale[0] == 0x1000) {

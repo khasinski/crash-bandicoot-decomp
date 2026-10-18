@@ -20,12 +20,11 @@ typedef struct {
 
 extern CdCallback D_800555A0;
 extern CdCallback D_800555A4;
-extern s32 D_800555AC;
-extern u8 D_800555BC[4];
+
 extern u8 D_800555C0;
 extern u8 D_800555C1[];
 extern const char * const D_800555C4[];
-extern const char *D_80055644[];
+
 extern CdCmdTable D_800556E4;
 extern volatile u8 *D_80055864;
 extern volatile u8 *D_80055868;
@@ -34,16 +33,6 @@ extern volatile CdStatus D_8005587C;
 extern u8 D_80057198[8];
 extern u8 D_800571A0[8];
 extern u8 D_800571A8[8];
-extern s32 D_800571B0;
-extern s32 D_800571B4;
-extern const char *D_800571B8[];
-extern const char D_800114F8[];
-extern const char D_80011508[];
-extern const char D_80011580[];
-extern const char D_80011588[];
-extern const char D_80011594[];
-extern const char D_8001159C[];
-extern const char D_800115AC[];
 
 s32 VSync(s32);
 s32 func_8003D730(const char *, ...);

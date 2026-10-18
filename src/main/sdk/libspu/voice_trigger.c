@@ -2,30 +2,21 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-
 extern u16 D_8005724C;
 extern u16 D_80057254;
 extern u16 D_8005725C;
 extern u16 D_80057264;
 extern u8 D_800572B0[];
 extern u8 D_800572C7[];
-extern u8 D_800577A4[];
-extern s16 D_800583F8;
+
 extern u8 *D_8005CFDC;
-extern u8 D_8005E55C;
-extern u8 D_8005E55D;
-extern u8 D_8005E562;
-extern u8 D_8005E563;
-extern u8 D_8005E565;
-extern u8 D_8005E566;
-extern u8 D_8005E56C;
+
 extern s16 D_8005E56E;
 extern s16 D_8005E572[1];
-extern u8 D_8005E58C[];
-typedef struct { u8 bytes[172]; } State;
+
+typedef struct { u8 gap00[0x74]; u16 left, right; u8 gap78[0xAC - 0x78]; } State;
 extern State *D_80060418[];
 extern u16 D_80061A68;
-extern u16 D_80061A70;
 
 /* Retail caller passes a byte in a0 and the pitch in a1; a0 is unused here. */
 void func_8004F1A4(u8 arg0, u16 arg1) {
@@ -51,8 +42,8 @@ void func_8004F1A4(u8 arg0, u16 arg1) {
     temp_a0 = D_80060418[D_8005E56E & 255] + ((u32)(D_8005E56E << 16) >> 24);
     var_a3 = var_a2;
     if ((s16) D_8005E56E != 0x21) {
-        var_a3 = (u32) (var_a2 * *(u16 *)(temp_a0->bytes + 0x74)) / 127U;
-        var_a2 = (u32) (var_a2 * *(u16 *)(temp_a0->bytes + 0x76)) / 127U;
+        var_a3 = (u32) (var_a2 * temp_a0->left) / 127U;
+        var_a2 = (u32) (var_a2 * temp_a0->right) / 127U;
     }
     if ((u8) D_8005E566 < 0x40U) {
         var_a2 = (u32) (var_a2 * D_8005E566) / 63U;

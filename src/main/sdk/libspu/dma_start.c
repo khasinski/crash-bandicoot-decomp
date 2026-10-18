@@ -2,11 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 extern volatile u16 *D_800558E4;
-extern volatile u32 *D_800558E8;
-extern volatile u32 *D_800558EC;
-extern volatile u32 *D_800558F0;
-extern volatile u32 *D_800558F8;
-extern s32 D_80055930;
 
 void func_80046840(s32 arg0, s16 arg1, s32 arg2) {
     /* Retail stores and reloads both delay words on the stack. */

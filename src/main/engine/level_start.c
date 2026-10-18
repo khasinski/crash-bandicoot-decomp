@@ -4,13 +4,13 @@ Node *GOOL_CreateObject(Node *, s32, s32, s32, s32, s32);      /* extern */
 void func_8002BE8C(s32, s32, s32);                           /* extern */
 void func_8002EC68(s32);                                 /* extern */
 extern s32 *D_8005C53C;
-extern s32 D_8005DFEC;
+
 extern Node D_80060DD0;
 extern Node *D_800618AC;
 extern s32 D_800618D0;
 extern s32 D_80061984;
 extern s32 D_80061990;
-extern s32 D_80061994;
+
 extern s32 D_80061998;
 extern s32 D_800619B4;
 extern s32 D_800619BC;

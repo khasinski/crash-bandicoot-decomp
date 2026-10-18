@@ -4,8 +4,6 @@
 
 /* Set the wait flag and service pending resource operations until the counter reaches zero. */
 
-extern s32 D_8005CFA8;
-extern s32 D_8005CFC0;
 void func_800134C8(s32);
 
 void func_80013748(void)

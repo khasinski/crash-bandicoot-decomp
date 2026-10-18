@@ -36,15 +36,10 @@ s32 func_8004DDD4(void);
 void func_8004DDA8(s32);
 s32 func_8005115C(s32);
 
-extern u8 D_8005E578[];
 extern u16 D_80060CE8;
-extern s16 D_8005CFC4;
+
 extern VabHdr *D_80057EB0[];
 extern ProgAtr *D_80057E70[];
-extern u8 *D_80057EF8[];
-extern u8 *D_80060D30[];
-extern u32 D_80060CF0[];
-extern u32 D_80060CA8[];
 
 s16 func_80050D60(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
     u32 vag_len[256];

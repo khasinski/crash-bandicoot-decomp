@@ -35,20 +35,50 @@ void *LIBC_Malloc(u32);
 s32 func_80029B90(void *, void *);
 void func_800252C0(void *, s32, s32, s32 *);
 
+typedef struct GoolCodeHeader {
+    s32 unk00;
+    s32 category;
+} GoolCodeHeader;
+
+typedef struct GoolExecutable {
+    u8 pad00[0x10];
+    GoolCodeHeader *header;
+    void *code;
+    void *data;
+    u16 *states;
+    s32 states_base;
+} GoolExecutable;
+
+typedef struct GoolObj {
+    u8 pad00[0x20];
+    GoolExecutable *exec;
+    u8 pad24[0x58];
+    struct GoolObj *interrupter;
+    s32 trans[3];
+    u8 pad8C[0x44];
+    u32 status_c;
+    u8 padD4[0x24];
+    s32 unkF8;
+    u8 padFC[0x24];
+    u32 state_flags;
+    u8 pad124[4];
+    s32 anim_type;
+} GoolObj;
+
 typedef struct {
     u32 mask;
-    u8 *other;
-    u8 *best;
+    GoolObj *other;
+    GoolObj *best;
     s32 max_dist;
     s32 event;
 } GoolQuery;
 
-s32 func_8001BAB0(u8 *arg0, GoolQuery *arg1)
+s32 func_8001BAB0(GoolObj *arg0, GoolQuery *arg1)
 {
-    u8 *other;
+    GoolObj *other;
     s32 dist;
     s32 event;
-    u8 *hdr;
+    GoolExecutable *hdr;
     u32 state;
     u32 state_flags1;
     u32 state_flags2;
@@ -61,18 +91,18 @@ s32 func_8001BAB0(u8 *arg0, GoolQuery *arg1)
     if (arg0 == other) {
         return 0;
     }
-    if (!((1 << (*(s32 *)(*(u8 **)(*(u8 **)(arg0 + 0x20) + 0x10) + 4) >> 8)) & arg1->mask)) {
+    if (!((1 << (arg0->exec->header->category >> 8)) & arg1->mask)) {
         return 0;
     }
-    dist = func_80029B90(arg0 + 0x80, other + 0x80);
+    dist = func_80029B90(arg0->trans, other->trans);
     if (dist < arg1->max_dist) {
         event = arg1->event;
         if (event != 0xFF) {
-            hdr = *(u8 **)(arg0 + 0x20);
-            state = ((u16 *)*(u8 **)(hdr + 0x1C))[event >> 8];
+            hdr = arg0->exec;
+            state = hdr->states[event >> 8];
             if (state == 0xFF) {
-                if ((event == 0x300 && (event = *(s32 *)(arg0 + 0x128), state_flags1 = *(u32 *)(arg0 + 0xD0), (u32)(event - 3) >= 2 && event != 2 && !(state_flags1 & 2)))
-                    || (arg1->event == 0xA00 && !(*(u32 *)(arg0 + 0x120) & 0x800))
+                if ((event == 0x300 && (event = arg0->anim_type, state_flags1 = arg0->status_c, (u32)(event - 3) >= 2 && event != 2 && !(state_flags1 & 2)))
+                    || (arg1->event == 0xA00 && !(arg0->state_flags & 0x800))
                     || arg1->event == 0x1D00) {
                     state = 0xFE;
                 } else {
@@ -80,9 +110,9 @@ s32 func_8001BAB0(u8 *arg0, GoolQuery *arg1)
                 }
             } else {
                 if (!(state & 0x8000)) {
-                    state_flags2 = *(u32 *)(arg0 + 0xD0);
-                    anim_type2 = *(s32 *)(arg0 + 0x128);
-                    target_flags = *(u32 *)((state << 4) + *(s32 *)(hdr + 0x20));
+                    state_flags2 = arg0->status_c;
+                    anim_type2 = arg0->anim_type;
+                    target_flags = *(u32 *)((state << 4) + hdr->states_base);
                     if ((u32)(anim_type2 - 3) < 2 || anim_type2 == 2) {
                         test = (state_flags2 | 0x1002) & target_flags;
                     } else {
@@ -95,9 +125,9 @@ s32 func_8001BAB0(u8 *arg0, GoolQuery *arg1)
                 if (state & 0x8000) {
                     if (arg1->event == 0xF00) {
                         sp10 = 0x100;
-                        *(u8 **)(arg0 + 0x7C) = arg1->other;
+                        arg0->interrupter = arg1->other;
                         func_800252C0(arg0, state, 1, &sp10);
-                        if (*(s32 *)(arg1->other + 0xF8) == 0) {
+                        if (arg1->other->unkF8 == 0) {
                             return 0;
                         }
                     }

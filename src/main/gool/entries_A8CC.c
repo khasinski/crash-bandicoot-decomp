@@ -8,9 +8,16 @@ void func_80033FBC(void *, u32, s32);
 s32 *func_80016E18(void);
 void func_80036BF4(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
 
+typedef struct ZoneFogHeader {
+    s32 count;
+    u32 words[0xB9];
+    s32 depth_offset;
+    s32 fog_mode;
+} ZoneFogHeader;
+
 typedef struct ZoneHeader {
     u8 pad[0x10];
-    u8 *data;
+    ZoneFogHeader *data;
 } ZoneHeader;
 
 typedef struct NsdHeader {
@@ -38,15 +45,6 @@ extern struct {
     s32 wordAC8;
 } D_80060DF0;
 
-extern s32 D_80056440;
-extern s32 D_80056444;
-extern s32 D_80056448;
-extern s32 D_8005644C;
-extern s32 D_80056450;
-extern s32 D_80056454;
-extern s32 D_80056458;
-extern s32 D_8005645C;
-
 void func_8001A0CC(s32 arg0)
 {
     u32 sp20;
@@ -55,7 +53,7 @@ void func_8001A0CC(s32 arg0)
     if (*D_800566B8[0] != 0) {
         func_80042E9C(D_800577E4);
         func_80042ECC(D_800577E4 + 0x110);
-        func_80033FBC(D_80057914[0]->data + 4, 0x1F800100, 0x100);
+        func_80033FBC(D_80057914[0]->data->words, 0x1F800100, 0x100);
         {
             u32 *_arg0 = &sp20;
             s32 _type;
@@ -84,13 +82,13 @@ void func_8001A0CC(s32 arg0)
             _type = _hdr->type;
             if (_type == 0x14 || _type == 0x16) {
                 _offset = D_80060DF0.wordAA8 * 0xC80 + 0x64000;
-                _val = (*(u32 *)(D_80057914[0]->data + 0x2E8) - _offset) >> 8;
+                _val = ((u32)D_80057914[0]->data->depth_offset - _offset) >> 8;
                 D_80060DF0.wordAC8 = _val + 0x7D0;
-                _flag = *(s32 *)(D_80057914[0]->data + 0x2EC);
+                _flag = D_80057914[0]->data->fog_mode;
                 *_arg0 = _val;
             } else {
-                _val = (*(s32 *)(D_80057914[0]->data + 0x2E8) - 0x32000) >> 8;
-                _flag = *(s32 *)(D_80057914[0]->data + 0x2EC);
+                _val = (D_80057914[0]->data->depth_offset - 0x32000) >> 8;
+                _flag = D_80057914[0]->data->fog_mode;
                 if (_flag == 1) {
                     _val -= 0x4B0;
                 }

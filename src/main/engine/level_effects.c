@@ -16,7 +16,6 @@ typedef struct LevelHeader {
 
 extern LevelHeader *D_8005C53C[];
 
-
 typedef struct SaveVec {
     s32 x, y, z;
 } SaveVec;
@@ -50,79 +49,33 @@ typedef struct SaveObj {
 
 extern SaveObj *D_800566B4;
 
-
-extern s32 D_80056474;
-extern s32 D_80056478;
-extern s32 D_80056440;
-extern s32 D_80056444;
-extern s32 D_80056448;
-extern s32 D_8005644C;
-extern s32 D_8005644C_arr[] __asm__("D_8005644C");
-extern s32 D_80056450;
-extern s32 D_80056454;
-extern s32 D_80056458;
-extern s32 D_8005645C;
-extern s32 D_80056460;
-extern s32 D_80056464;
-extern s32 D_80056468;
-extern s32 D_8005646C;
-extern s32 D_80056470;
 extern s32 D_80056400;
 extern SaveObj *D_800618CC;
-extern s32 D_800566D4;
-extern s32 D_800566D8;
-extern s32 D_800566DC;
-extern s32 D_80061964;
-extern s32 D_80052D74[];
-extern s32 *D_80053054[];
-extern s32 func_80034520;
-extern u8 D_800564D0[];
 
-extern s32 D_800564C8;
-asm(".sdata\n.size D_800564C8,4\n.text");
-extern s32 D_800564CC;
-asm(".sdata\n.size D_800564CC,4\n.text");
-extern s32 D_800565EC;
-asm(".sdata\n.size D_800565EC,4\n.text");
-extern s32 D_800565F0;
-asm(".sdata\n.size D_800565F0,4\n.text");
-extern s32 D_800565F4;
-asm(".sdata\n.size D_800565F4,4\n.text");
-extern s32 D_800565F8;
-asm(".sdata\n.size D_800565F8,4\n.text");
-extern s32 D_800565FC;
-asm(".sdata\n.size D_800565FC,4\n.text");
-extern s32 D_80056600;
-asm(".sdata\n.size D_80056600,4\n.text");
-extern s32 D_80056604;
-asm(".sdata\n.size D_80056604,4\n.text");
-extern s32 D_80056608;
-asm(".sdata\n.size D_80056608,4\n.text");
-extern s32 D_8005660C;
-asm(".sdata\n.size D_8005660C,4\n.text");
-extern s32 D_80056610;
-asm(".sdata\n.size D_80056610,4\n.text");
-extern s32 D_80056614;
-asm(".sdata\n.size D_80056614,4\n.text");
-extern s32 D_80056618;
-asm(".sdata\n.size D_80056618,4\n.text");
-extern s32 D_8005661C;
-asm(".sdata\n.size D_8005661C,4\n.text");
-extern s32 D_80056620;
-asm(".sdata\n.size D_80056620,4\n.text");
-extern s32 D_80056624;
-asm(".sdata\n.size D_80056624,4\n.text");
-extern s32 D_80056628;
-asm(".sdata\n.size D_80056628,4\n.text");
-extern s32 D_8005662C;
-asm(".sdata\n.size D_8005662C,4\n.text");
-extern s32 D_80056630;
-asm(".sdata\n.size D_80056630,4\n.text");
-extern s32 D_80056634;
-asm(".sdata\n.size D_80056634,4\n.text");
-extern s32 D_80056638;
-asm(".sdata\n.size D_80056638,4\n.text");
-extern s32 D_80056638_arr[] __asm__("D_80056638");
+extern s32 frame_counter;
+
+s32 D_800564C8 = -1;
+s32 D_800564CC = 0;
+
+static s32 D_800565EC;
+static s32 D_800565F0;
+static s32 D_800565F4;
+static s32 D_800565F8;
+static s32 D_800565FC;
+static s32 D_80056600;
+static s32 D_80056604;
+static s32 D_80056608;
+static s32 D_8005660C;
+static s32 D_80056610;
+static s32 D_80056614;
+static s32 D_80056618;
+static s32 D_8005661C;
+static s32 D_80056620;
+static s32 D_80056624;
+static s32 D_80056628;
+static s32 D_8005662C;
+static s32 D_80056630;
+static s32 D_80056634[2];
 
 void func_80019DE0(s32);
 s32 func_8002F778(s32);
@@ -356,7 +309,7 @@ void func_8002EC68(s32 arg0)
             if (D_800564C8 != -1) {
                 v2 = D_80053054[D_800564C8][D_800564CC];
                 if (v2 == -1) {
-                    D_8005644C_arr[0] = 0;
+                    *(volatile s32 *)&D_8005644C = 0;
                     D_8005645C = 0;
                     D_800564C8 = -1;
                 } else {
@@ -385,12 +338,12 @@ void func_8002EC68(s32 arg0)
                     D_800564CC = 0;
                     if (D_80056400 == 0 &&
                         (D_8005C53C[0]->level_id == 0x1B || D_8005C53C[0]->level_id == 0x22 || D_8005C53C[0]->level_id == 0x2E) &&
-                        (v3 = func_80034520) - D_80056638 > 0x1800) {
+                        (v3 = frame_counter) - D_80056634[1] > 0x1800) {
                         __builtin_memcpy(name, D_800564D0, 6);
                         for (sp18 = 0; sp18 < 1; sp18++) {
-                            D_80056638_arr[sp18] = D_80056638_arr[sp18 - 1];
+                            D_80056634[sp18 + 1] = D_80056634[sp18];
                         }
-                        D_80056634 = v3;
+                        D_80056634[0] = v3;
                         name[2] += func_8002F778(3);
                         sp1C = func_80012660(name);
                         sp18 = (func_8002F778(0x4CC) + 0xD99) >> 3;

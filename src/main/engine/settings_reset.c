@@ -1,4 +1,7 @@
 #include "common.h"
+extern s32 D_80061910;
+extern s32 D_80061918;
+extern s32 D_80061914;
 
 /* GCC_VERSION: 2.6.3 */
 void func_80026200(s32);                                 /* extern */
@@ -8,33 +11,20 @@ extern u8 D_8005E348[];
 extern s32 D_800618A0;
 extern s32 D_800618D0;
 extern s32 D_800618D4;
-extern s32 D_800618D8;
+
 extern s32 D_800618DC;
-extern s32 D_800618E0;
-extern s32 D_800618EC;
-extern s32 D_800618F0;
-extern s32 D_800618F4;
-extern s32 D_800618F8;
-extern s32 D_800618FC;
-extern s32 D_80061900;
+
 extern s32 D_80061908;
 extern s32 D_8006190C;
-extern s32 D_80061910;
-extern s32 D_80061914;
-extern s32 D_80061918;
 extern s32 D_80061944;
 extern s32 D_80061948;
 extern s32 D_80061988;
 extern s32 D_80061998;
-extern s32 D_8006199C;
+
 extern s32 D_800619A0;
 extern s32 D_800619AC;
-extern s32 D_80061A1C;
-extern s32 D_80061A20;
+
 extern s32 D_80061A3C;
-extern s32 D_80061A40;
-extern s32 D_80061A50;
-extern s32 D_80061A58;
 
 void func_80026140(void) {
     D_800618DC = 0x63;

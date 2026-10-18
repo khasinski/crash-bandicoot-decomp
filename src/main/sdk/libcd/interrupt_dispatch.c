@@ -4,18 +4,18 @@
 #include "common.h"
 
 s32 func_8003D730(const char *, ...), func_8003E6D4(const char *, ...);
-extern s32 D_800555AC, D_800555B0, D_800555B4, D_800555B8;
+extern s32 D_800555B0;
 extern u8 D_800555C1[];
 extern const char *D_800555C4[];
-extern s32 D_80055664[], D_80055764[];
+
 extern volatile u8 *D_80055864[], *D_80055868[], *D_80055870[];
 extern volatile s8 *D_8005586C[];
-extern volatile u8 D_8005587C[], D_8005587D, D_8005587E;
+extern volatile u8 D_8005587C[], D_8005587D;
 extern u8 D_80057198[], D_800571A0[], D_800571A8[];
-extern const char D_80011524[], D_80011530[], D_8001154C[], D_80011560[];
+
 /* The SDK uses both scalar and array views of these event bytes. */
-extern volatile u8 cd_sync_status __asm__("D_8005587C");
-extern volatile u8 cd_ready_status[] __asm__("D_8005587D");
+extern volatile u8 cd_sync_status;
+extern volatile u8 cd_ready_status[];
 
 static inline void cd_publish_response(u8 *destination, u8 *source)
 {

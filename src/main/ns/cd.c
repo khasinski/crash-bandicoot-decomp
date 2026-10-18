@@ -1,4 +1,5 @@
 #include "common.h"
+extern void *D_8005C540;
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -42,8 +43,6 @@ typedef struct CdResourceSlot {
     CdResourceEntry *word24;
 } CdResourceSlot;
 
-extern void *D_8005C540;
-extern s32 D_8005C548;
 u8 *func_80043A24(s32, u8 *);
 s32 func_80043668(u8, u8 *);
 s32 func_800439A4(s32, void *, s32);

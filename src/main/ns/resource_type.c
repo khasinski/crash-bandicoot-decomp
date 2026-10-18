@@ -3,9 +3,8 @@
 typedef ResourceHandle Request;
 typedef ResourceEntry Entry;
 s32 func_8003D740(char *,char *,...);
-extern char D_80051728[],D_80056414[],D_80056718[];
-extern u8 D_8005671C;
-extern s8 D_8005671D;
+extern char D_80051728[], D_80056414[], D_80056718[];
+
 s32 func_800126C0(Request *arg0) {
     s32 temp_v1;
     s32 var_v1;

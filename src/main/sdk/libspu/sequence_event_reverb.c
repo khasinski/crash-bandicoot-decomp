@@ -2,7 +2,9 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 typedef struct {
-    u8 bytes[0xAC];
+    u8 bytes[0x88];
+    s32 ticks;
+    u8 gap8C[0xAC - 0x8C];
 } State;
 extern State *D_80060418[];
 s32 func_8004AEB8(s16,s16);
@@ -14,5 +16,5 @@ u8 value;
 {
     State *state=D_80060418[(s16)sequence]+(s16)channel;
     if (value<0x40) func_8004D65C(); else func_8004D66C();
-    *(s32 *)(state->bytes+0x88)=func_8004AEB8(sequence,channel);
+    state->ticks=func_8004AEB8(sequence,channel);
 }

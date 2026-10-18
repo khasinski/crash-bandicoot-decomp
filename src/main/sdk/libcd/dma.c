@@ -6,11 +6,7 @@
 
 extern volatile u8 *D_80055864;
 extern volatile u8 *D_80055870;
-extern volatile s32 *D_80055874;
-extern volatile s32 *D_800558C8;
-extern volatile s32 *D_800558CC;
-extern volatile s32 *D_800558D0;
-extern volatile s32 *D_800558D4;
+
 extern volatile s32 *D_800558D8;
 
 s32 func_80045A34(s32 arg0, s32 arg1) {

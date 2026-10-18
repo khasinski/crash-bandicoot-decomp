@@ -5,7 +5,7 @@
 typedef void (*Callback)();
 s32 func_8003D730(const char *, ...);
 s32 func_8004B078(s16, s16, s16, u8 *);
-extern const char D_80011728[];
+
 extern Callback D_80058360;
 extern Callback D_80058364;
 extern Callback D_80058368;
@@ -42,7 +42,7 @@ extern Callback D_800583E4;
 extern Callback D_800583E8;
 extern Callback D_800583EC;
 extern Callback D_800583F0;
-extern s32 D_8005E548;
+
 void func_8002FD30();
 void func_8002FD38();
 void func_8002FD40();

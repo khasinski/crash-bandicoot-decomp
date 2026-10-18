@@ -8,7 +8,6 @@ typedef struct {
     u32 size;
 } SpuBlock;
 
-extern s32 D_80055940;
 extern SpuBlock *D_80055944;
 
 void func_80050964(void) {

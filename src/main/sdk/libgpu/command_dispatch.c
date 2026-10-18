@@ -8,14 +8,6 @@ extern s32 (*D_80054A68)(const char *,...);
 extern u8 D_80054A6E;
 extern s16 D_80054A70;
 extern s16 D_80054A72;
-extern s32 D_80054B14[5];
-extern const char D_8001126C[];
-extern const char D_80011278[];
-extern const char D_8001128C[];
-extern const char D_80011290[];
-extern const char D_8001129C[];
-extern const char D_800112A8[];
-extern const char D_800112B4[];
 
 void func_800402C8(const char *name, GpuRect *rect) {
     switch (D_80054A6E) {

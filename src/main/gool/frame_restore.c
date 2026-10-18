@@ -37,7 +37,7 @@ s32 func_8001D97C(Object *object,s32 *flags) {
     object->pc=frame[1];
     stack=object->stack;
     object->stack=stack-1;
-    saved_flags=stack[-1];
+    saved_flags = *(stack - 1);
     if(flags!=0) *flags=(*flags&0xFFFF0000)|(saved_flags&0xFFFF);
     stack_offset=(packed&0xFFFF)+0x60;
     object->stack=(u32 *)(stack_offset+(u32)object);

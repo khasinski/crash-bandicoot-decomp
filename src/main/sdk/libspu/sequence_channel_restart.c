@@ -2,38 +2,31 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 /* GCC_CPU: r4000 */
-extern u8 *D_80060418[];
+typedef struct {
+    u8 gap00[4];
+    u8 *field_4;
+    u8 *field_8;
+    u8 gap0C[0x2B - 0x0C];
+    u8 field_2B;
+    u8 gap2C[0x46 - 0x2C];
+    s16 field_46;
+    s16 field_48;
+    u8 gap4A[0x90 - 0x4A];
+    s32 field_90;
+    u8 gap94[0xAC - 0x94];
+} SequenceState;
+extern SequenceState *D_80060418[];
 void func_8004AF70(s16 sequence, s16 channel) {
-    u32 table_base;
-    s32 sequence_shift;
-    u8 **table;
-    s32 offset;
-    u8 *state;
-    u8 *first;
-    u8 *second;
-    u8 *third;
-    u8 *fourth;
-    u8 *fifth;
-    u8 *last;
-    sequence_shift = (s32)sequence << 16;
-    table_base = (u32)D_80060418;
-    table = (u8 **)((sequence_shift >> 14) + table_base);
-    offset = channel * 0xAC;
-    state = offset + *table;
-    *(s16 *)(state + 0x46) = 1;
-    *(s16 *)(state + 0x48) = 0;
-    first = offset + *table;
-    *(s32 *)(first + 0x90) &= ~0x100;
-    second = offset + *table;
-    *(s32 *)(second + 0x90) &= ~8;
-    third = offset + *table;
-    *(s32 *)(third + 0x90) &= ~2;
-    fourth = offset + *table;
-    *(s32 *)(fourth + 0x90) &= ~4;
-    fifth = offset + *table;
-    *(s32 *)(fifth + 0x90) &= ~0x200;
-    state[0x2B] = 1;
-    *(u8 **)(state + 4) = *(u8 **)(state + 8);
-    last = offset + *table;
-    *(s32 *)(last + 0x90) |= 1;
+    SequenceState *state;
+    state = &D_80060418[sequence][channel];
+    state->field_46 = 1;
+    state->field_48 = 0;
+    D_80060418[sequence][channel].field_90 &= ~0x100;
+    D_80060418[sequence][channel].field_90 &= ~8;
+    D_80060418[sequence][channel].field_90 &= ~2;
+    D_80060418[sequence][channel].field_90 &= ~4;
+    D_80060418[sequence][channel].field_90 &= ~0x200;
+    state->field_2B = 1;
+    state->field_4 = state->field_8;
+    D_80060418[sequence][channel].field_90 |= 1;
 }

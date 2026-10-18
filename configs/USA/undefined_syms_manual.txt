@@ -1,2 +1,16 @@
 /* Hand-maintained linker assignments (e.g. mid-function entry points written
    relative to their function so they move with it). */
+level_position = D_80057914;
+frame_counter = func_80034520;
+engine_counter = func_80034520;
+setjmp = func_8003EE04;
+cam_globals = D_80060DF0;
+gool_update = D_80060DB8;
+gool_alloc = D_80060DB0;
+lvl_camera = D_80057864;
+lvl_color = D_80057964;
+engine_flag_shadow = D_80061978;
+D_8006189C_val = D_8006189C;
+cd_sync_status = D_8005587C;
+cd_ready_status = D_8005587D;
+D_8005C554 = D_8005C528 + 44;

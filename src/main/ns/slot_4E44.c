@@ -2,12 +2,11 @@
 #include "common.h"
 #include "ns.h"
 
-extern volatile s32 D_80034520 __asm__("func_80034520");
+extern volatile s32 frame_counter;
 
 s32 func_80013D48(ResourceSlot *slot, s32 arg1);
 s32 func_800141F4(s32 *count_ptr, s32 arg1);
 void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4);
-
 
 ResourceSlot *func_80014644(s32 id, s32 word18)
 {
@@ -21,7 +20,7 @@ ResourceSlot *func_80014644(s32 id, s32 word18)
             slot->id = id;
             slot->references = 0;
             slot->word18 = word18;
-            slot->word28 = D_80034520;
+            slot->word28 = frame_counter;
             D_8005C528.page_map[id >> 1] = slot;
             D_8005C528.pool.active_count++;
             return slot;
@@ -79,7 +78,7 @@ void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 
     phys->id = id;
     phys->word18 = word18;
     phys->references = 0;
-    phys->word28 = D_80034520;
+    phys->word28 = frame_counter;
     D_8005C528.pool.active_count++;
     phys->base = (u8 *)1;
     phys->slot = phys;

@@ -34,7 +34,7 @@ typedef struct {
 } SvmCur;
 
 extern SvmCur D_8005E558;
-extern u8 D_8005E340;
+
 extern VoiceStruct D_800572AC[];
 extern VoiceU16 D_800572AE[];
 extern VoiceU16 D_800572B2[];

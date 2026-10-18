@@ -20,7 +20,7 @@ s32 func_800500F8(u8 *tones,u8 *channels) {
         do {
             attrs=D_8005CFE4+((*program*16+(tone&0xFF))<<5);
             lower=attrs[6];
-            note=program[-5];
+            note = *(program - 5);
             if (note>=lower) {
                 if (attrs[7]>=note) {
                     channel_index=count&0xFF;

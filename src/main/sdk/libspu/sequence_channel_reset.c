@@ -1,73 +1,86 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
-/* CC1_FLAGS: -O2 -fno-strength-reduce */
 #include "common.h"
-void func_80050060(s16);
-extern u8 *D_80060418[];
-void func_8004C7CC(s16 arg0, s16 arg1) {
-    u8 **temp_t0;
-    s32 temp_a1;
-    s32 pan;
-    s32 gain;
-    s32 sequence_index;
-    u32 table_base;
-    s32 temp_v1;
-    s32 var_t0;
-    u8 *temp_a2;
-    u8 *temp_a2_2;
-    u8 *temp_s0;
-    u8 *temp_v1_2;
-    u8 *var_a3;
-    u8 *var_t1;
 
-    sequence_index = arg0;
-    table_base = (u32)D_80060418;
-    temp_t0 = (u8 **)(table_base + sequence_index * 4);
-    temp_v1 = arg1 * 0xAC;
-    temp_s0 = temp_v1 + *temp_t0;
-    *(s32 *)(temp_s0 + 0x90) = (s32) (*(s32 *)(temp_s0 + 0x90) & ~1);
-    temp_a2 = temp_v1 + *temp_t0;
-    *(s32 *)(temp_a2 + 0x90) = (s32) (*(s32 *)(temp_a2 + 0x90) & ~2);
-    temp_a2_2 = temp_v1 + *temp_t0;
-    *(s32 *)(temp_a2_2 + 0x90) = (s32) (*(s32 *)(temp_a2_2 + 0x90) & ~8);
-    temp_v1_2 = temp_v1 + *temp_t0;
-    temp_a1 = arg1 << 8;
-    *(s32 *)(temp_v1_2 + 0x90) = (s32) (*(s32 *)(temp_v1_2 + 0x90) | 4);
-    func_80050060(temp_a1 | arg0);
-    *(u8 *)(temp_s0 + 0x2B) = 0;
-    *(u32 *)(temp_s0 + 0x80) = 0;
-    *(u8 *)(temp_s0 + 0x27) = 0;
-    *(u8 *)(temp_s0 + 0x13) = 0;
-    *(u8 *)(temp_s0 + 0x14) = 0;
-    *(u8 *)(temp_s0 + 0x29) = 0;
-    *(u8 *)(temp_s0 + 0x15) = 0;
-    *(u8 *)(temp_s0 + 0x16) = 0;
-    *(u8 *)(temp_s0 + 0x2A) = 0;
-    *(u8 *)(temp_s0 + 0x12) = 0;
-    *(s16 *)(temp_s0 + 0x48) = 0;
-    *(u8 *)(temp_s0 + 0x27) = 0;
-    *(u8 *)(temp_s0 + 0x28) = 0;
-    *(u8 *)(temp_s0 + 0x10) = 0;
-    *(u8 *)(temp_s0 + 0x11) = 0;
-    var_t0 = 0;
-    pan = 0x40;
-    gain = 0x7F;
-    var_t1 = temp_s0;
-    var_a3 = temp_s0;
-    *(u32 *)(temp_s0 + 0x88) = (s32) *(u32 *)(temp_s0 + 0x7C);
-    *(u32 *)(temp_s0 + 0x8C) = (s32) *(u32 *)(temp_s0 + 0x84);
-    *(u16 *)(temp_s0 + 0x70) = (u16) *(u16 *)(temp_s0 + 0x72);
-    *(u32 *)(temp_s0 + 0x4) = (s32) *(u32 *)(temp_s0 + 0x8);
-    *(u32 *)(temp_s0 + 0xC) = (s32) *(u32 *)(temp_s0 + 0x8);
-    do {
-        *(u8 *)(var_a3 + 0x2C) = var_t0;
-        *(u8 *)(var_a3 + 0x17) = pan;
-        *(s16 *)(var_t1 + 0x4E) = gain;
-        var_t1 += 2;
-        var_t0 += 1;
-        var_a3 += 1;
-    } while (var_t0 < 0x10);
-    *(s16 *)(temp_s0 + 0x78) = 0x7F;
-    *(s16 *)(temp_s0 + 0x7A) = 0x7F;
+typedef struct {
+    u8 gap0[4];
+    u32 field_4;
+    u32 field_8;
+    u32 field_C;
+    u8 field_10;
+    u8 field_11;
+    u8 field_12;
+    u8 field_13;
+    u8 field_14;
+    u8 field_15;
+    u8 field_16;
+    u8 field_17[16];
+    u8 field_27;
+    u8 field_28;
+    u8 field_29;
+    u8 field_2A;
+    u8 field_2B;
+    u8 field_2C[16];
+    u8 gap3C[12];
+    s16 field_48;
+    s16 field_4A;
+    s16 field_4C;
+    s16 gains[16];
+    s16 field_6E;
+    u16 field_70;
+    u16 field_72;
+    u16 field_74;
+    u16 field_76;
+    s16 field_78;
+    s16 field_7A;
+    u32 field_7C;
+    u32 field_80;
+    u32 field_84;
+    u32 field_88;
+    u32 field_8C;
+    s32 field_90;
+    u8 gap94[0xAC - 0x94];
+} SequenceState;
+
+void func_80050060(s16);
+extern SequenceState *D_80060418[];
+
+void func_8004C7CC(s16 arg0, s16 arg1) {
+    s32 var_t0;
+    SequenceState *temp_s0;
+
+    temp_s0 = &D_80060418[arg0][arg1];
+    D_80060418[arg0][arg1].field_90 &= ~1;
+    D_80060418[arg0][arg1].field_90 &= ~2;
+    D_80060418[arg0][arg1].field_90 &= ~8;
+    D_80060418[arg0][arg1].field_90 |= 4;
+    func_80050060((arg1 << 8) | arg0);
+    temp_s0->field_2B = 0;
+    temp_s0->field_80 = 0;
+    temp_s0->field_27 = 0;
+    temp_s0->field_13 = 0;
+    temp_s0->field_14 = 0;
+    temp_s0->field_29 = 0;
+    temp_s0->field_15 = 0;
+    temp_s0->field_16 = 0;
+    temp_s0->field_2A = 0;
+    temp_s0->field_12 = 0;
+    temp_s0->field_48 = 0;
+    temp_s0->field_27 = 0;
+    temp_s0->field_28 = 0;
+    temp_s0->field_10 = 0;
+    temp_s0->field_11 = 0;
+    temp_s0->field_88 = temp_s0->field_7C;
+    temp_s0->field_8C = temp_s0->field_84;
+    temp_s0->field_70 = temp_s0->field_72;
+    temp_s0->field_4 = temp_s0->field_8;
+    temp_s0->field_C = temp_s0->field_8;
+    for (var_t0 = 0; var_t0 < 0x10; var_t0++) {
+        temp_s0->field_2C[var_t0] = var_t0;
+        temp_s0->field_17[var_t0] = 0x40;
+        temp_s0->gains[var_t0] = 0x7F;
+    }
+    temp_s0->field_78 = 0x7F;
+    temp_s0->field_7A = 0x7F;
 }

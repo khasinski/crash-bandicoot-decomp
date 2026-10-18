@@ -7,12 +7,7 @@ void func_8004CB6C(s32);
 void func_8004CD58();
 u8 func_800507EC(s32);
 extern s16 D_80056648;
-extern s32 D_80056650;
-extern s16 D_80056654;
-extern s16 D_80056658;
-extern s16 D_8005665C;
-extern s32 D_80056668;
-extern s32 D_800566C0;
+
 extern s32 D_80056710[];
 extern s32 D_80061914[];
 extern s32 D_80061918[];

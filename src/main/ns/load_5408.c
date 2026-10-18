@@ -3,7 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-extern const u32 D_80034520 __asm__("func_80034520");
+extern const u32 frame_counter;
 
 ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void func_800134C8(s32 id);
@@ -31,7 +31,6 @@ static __inline__ void ns_pool_active_inc(void)
     D_8005C528.pool.active_count++;
 }
 
-
 #define NS_FIND_OR_ALLOC_SLOT(res_slot, page_id, ent_id, found_label, search_label, done_label) \
     do { \
         ResourceSlot *_cand; \
@@ -46,7 +45,7 @@ static __inline__ void ns_pool_active_inc(void)
         } \
         goto done_label; \
     found_label: \
-        _ticks = D_80034520; \
+        _ticks = frame_counter; \
         _cand->state = 2; \
         _cand->id = (page_id); \
         _cand->references = 0; \
@@ -66,7 +65,6 @@ static __inline__ void ns_pool_active_inc(void)
         (res_slot) = NULL; \
     done_label:; \
     } while (0)
-
 
 ResourceSlot *func_80014C08(s32 id, s32 entry_id)
 {

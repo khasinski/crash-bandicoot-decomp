@@ -516,16 +516,30 @@ segments:
       - [0x46BFC, .sdata, core/main]
       - [0x46C10, .sdata, ns/init]
       - [0x46C14, sdata, sdata_46C14]
+      - [0x46C20, .sdata, ns/resource_process]
+      - [0x46C28, sdata, sdata_46C28]
+      - [0x46C2C, .sdata, render/frame_update]
+      - [0x46C30, sdata, sdata_46C30]
+      - [0x46C90, .sdata, gool/broadcast]
+      - [0x46C98, sdata, sdata_46C98]
+      - [0x46CA0, .sdata, level/checkpoint]
       - [0x46CA4, .sdata, cam/camera]
       - [0x46CBC, sdata, sdata_46CBC]
+      - [0x46CC8, .sdata, engine/level_effects]
+      - [0x46CD0, sdata, sdata_46CD0]
       - [0x46CD8, .sdata, math/random_state]
       - [0x46CE0, sdata, sdata_46CE0]
+      - [0x46CF4, .sdata, engine/audio_voice]
+      - [0x46CF8, sdata, sdata_46CF8]
       - [0x46D00, .sdata, engine/state]
       - [0x46D74, sdata, sdata_46D74]
       - { start: 0x46D98, type: sbss, vram: 0x80056598, name: sbss_56598 }
       - { start: 0x46D98, type: .sbss, vram: 0x800565B8, name: core/main }
       - { start: 0x46D98, type: .sbss, vram: 0x800565C0, name: cam/camera }
       - { start: 0x46D98, type: sbss, vram: 0x800565DC, name: sbss_565DC }
+      - { start: 0x46D98, type: .sbss, vram: 0x800565EC, name: engine/level_effects }
+      - { start: 0x46D98, type: .sbss, vram: 0x8005663C, name: engine/audio_voice }
+      - { start: 0x46D98, type: sbss, vram: 0x80056648, name: sbss_56648 }
       - { start: 0x46D98, type: .sbss, vram: 0x80056654, name: engine/audio_stop_current }
       - { start: 0x46D98, type: .sbss, vram: 0x80056658, name: engine/audio_stop }
       - { start: 0x46D98, type: sbss, vram: 0x8005665C, name: sbss_5665C }

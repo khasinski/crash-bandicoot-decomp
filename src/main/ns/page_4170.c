@@ -136,14 +136,14 @@ static __inline__ s32 ns_page_resolve(ResourceHeader *page)
         return -0x12;
     }
     for (i = count - 1; i >= 0; i--) {
-        entry = (ResourceEntry *)((u8 *)page + (u32)entries[i]);
+        entry = (ResourceEntry *)((u32)page + (u32)entries[i]);
         entries[i] = entry;
         items = (u32 *)&entry->data;
         for (j = entry->word0C; j >= 0; j--) {
             items[j] = (u32)entry + items[j];
         }
     }
-    entries[count] = (ResourceEntry *)((u8 *)page + (u32)entries[count]);
+    entries[count] = (ResourceEntry *)((u32)page + (u32)entries[count]);
     return -0xFF;
 }
 

@@ -11,23 +11,13 @@ typedef struct { s16 pitch; u8 pad[50]; } VoicePitch;
 extern VoicePitch D_800572B0[];
 typedef struct { u8 flags; u8 pad[51]; } VoiceFlags;
 extern VoiceFlags D_800572C7[];
-extern u8 D_800577A4[];
-extern s16 D_800583F8;
-extern u8 D_8005E340;
-extern u8 D_8005E55A;
-extern u8 D_8005E55D;
-extern u8 D_8005E562;
-extern u8 D_8005E563;
-extern u8 D_8005E565;
-extern u8 D_8005E566;
-extern u8 D_8005E568;
-extern u8 D_8005E56C;
+
 extern u16 D_8005E56E;
-extern u8 D_8005E588[];
-typedef struct { u8 bytes[172]; } State;
+typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
+extern VoiceVol D_8005E588[];
+typedef struct { u8 gap00[0x74]; u16 left, right; u8 gap78[0xAC - 0x78]; } State;
 extern State *D_80060418[];
 extern u16 D_80061A68;
-extern u16 D_80061A70;
 
 void func_8004EBDC(s32 arg0) {
     s32 dummy;
@@ -50,9 +40,9 @@ void func_8004EBDC(s32 arg0) {
 
     packed_id = D_8005E56E;
     temp_v1 = D_80060418[packed_id & 255] + (packed_id >> 8);
-    left_scale = *(u16 *)(temp_v1->bytes + 0x74);
+    left_scale = temp_v1->left;
     temp_lo = (u32)(((left_scale << 7) + left_scale) * D_8005E562) / 127U;
-    right_scale = *(u16 *)(temp_v1->bytes + 0x76);
+    right_scale = temp_v1->right;
     temp_lo_2 = (u32)(((right_scale << 7) + right_scale) * D_8005E562) / 127U;
     temp_lo = (temp_lo * D_8005E565) / 127U;
     temp_lo_2 = (temp_lo_2 * D_8005E565) / 127U;
@@ -86,8 +76,8 @@ void func_8004EBDC(s32 arg0) {
     D_80056270[0x1AA / 2] = control;
     temp_a0 = arg0 & 0xFF;
     temp_v1_2 = temp_a0 * 0x10;
-    *(s16 *)(D_8005E588 + 2 + temp_v1_2) = (s16) var_a2;
-    *(s16 *)(D_8005E588 + temp_v1_2) = (s16) var_a1;
+    *(s16 *)((u32)&D_8005E588[0].right + temp_v1_2) = (s16) var_a2;
+    *(s16 *)((u32)&D_8005E588[0].left + temp_v1_2) = (s16) var_a1;
     D_800577A4[temp_a0] = D_800577A4[temp_a0] | 3;
     if (temp_a0 < 0x10U) {
         var_a3 = 1 << temp_a0;

@@ -3,7 +3,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-
 typedef struct {
     u8 version;
     volatile u8 mode;
@@ -16,7 +15,6 @@ typedef struct {
 } GpuState;
 
 extern GpuState D_80054A6C;
-
 
 /* --- func_80042000 & func_800422E4 --- */
 
@@ -37,9 +35,7 @@ extern volatile u32 *D_80054B40;
 extern volatile u32 *D_80054B4C;
 extern volatile GpuActiveEntry D_80054B60;
 extern volatile s32 D_80054B70;
-extern volatile s32 D_80054B74;
-extern s32 D_80054B78[];
-extern s32 D_80054B7C[];
+
 extern volatile GpuQueueEntry D_8005E74C[64];
 
 s32 func_8003E754(s32, void *);

@@ -4,7 +4,6 @@
 
 /* Initialise SPU CD mixing and route CD stereo output. */
 
-extern volatile u16 *D_80055878;
 s32 func_80044D28(void) {
     u8 volume[4];
     if (D_80055878[0x1B8/2] == 0) {

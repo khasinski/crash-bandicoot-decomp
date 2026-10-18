@@ -105,15 +105,15 @@ typedef struct CamGlobals {
     s32 island_state;       /* 0x80061994 */
 } CamGlobals;
 
-extern CamGlobals cam_globals __asm__("D_80060DF0");
+extern CamGlobals cam_globals;
 /* Scalar names for the zone state also covered by level_position. CamFollow
  * reads it through the struct view, CamUpdate mostly through these. */
 extern ZonePath *D_8005791C;
-extern s32 D_80057920;
+
 extern void *D_800566B4;    /* the player object */
 extern s32 D_8005E71C;      /* pad buttons pressed this frame */
 extern s32 D_80057974;
-extern s32 D_80057864, D_80057868, D_8005786C, D_80057870, D_80057874;
+extern s32 D_80057864, D_80057868;
 extern CamLevelView *D_8005C53C;
 extern s32 D_8005E720;
 extern u32 D_80060E04, D_80061990;

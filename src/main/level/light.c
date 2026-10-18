@@ -15,7 +15,6 @@ typedef struct LevelHeader {
 } LevelHeader;
 
 extern LevelHeader *D_8005C53C[];
-extern u8 D_80052CB4[];
 
 void func_80027A4C(LightMat *src, LightMat *dst, s32 r, s32 g, s32 b);
 

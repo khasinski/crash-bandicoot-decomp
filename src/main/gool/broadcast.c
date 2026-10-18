@@ -1,4 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 4 */
 #include "common.h"
 #include "object_links.h"
 #include "gool.h"
@@ -103,26 +104,20 @@ typedef struct LevelDesc {
 } LevelDesc;
 
 extern s32 D_80061A30[];
-extern u32 *D_8005C538[];
+
 extern LevelDesc *D_8005C53C[];
-extern s32 D_8005C52C[];
-extern s32 D_800566E4;
-asm(".sdata\n.size D_800566E4,4\n.text");
+
+s32 D_80056490 = 0;
+s32 D_80056494 = 1;
+
 extern s32 D_800566E8[];
 extern s32 D_8006189C[];
 extern s32 D_800618B0[];
 extern u32 D_8005FF58[];
 extern s32 D_800618D0[];
-extern s32 D_80056494;
-asm(".sdata\n.size D_80056494,4\n.text");
-extern char D_80056498[];
-extern s32 D_80056490;
-asm(".sdata\n.size D_80056490,4\n.text");
-extern u32 D_80057998[];
-extern s32 D_8005799C[];
-extern s32 D_800579A0[];
-extern u32 D_800566B0;
-extern u8 D_80057968[], D_80057969[], D_8005796A[], D_8005796B[];
+
+extern u32 D_800566B0[2];
+extern u8 D_80057968[];
 extern u32 D_80057970[];
 extern u32 func_80034520[];
 extern s32 D_80056400[];
@@ -154,7 +149,7 @@ s32 func_800253A0(void)
             progress = D_800579A0[0];
         }
         zone = (ZoneEntry *)func_80015118(&D_8005C53C[0]->eid, 1, mode);
-        D_800566B0 = 0x6396347F;
+        D_800566B0[0] = 0x6396347F;
         level_position.zone = NULL;
         level_position.path = NULL;
         level_position.progress = 0;
@@ -164,7 +159,7 @@ s32 func_800253A0(void)
         D_8005796B[0] = 0;
         D_80057970[0] = func_80034520[0];
         if (D_800618D0[0] == 0x600) {
-            func_8002EABC(&D_800566B0);
+            func_8002EABC(D_800566B0);
         }
         func_80025A60(zone, zone->items[D_8005C53C[0]->path_idx + ((ZoneHeader *)zone->items[0])->path_index], progress, 0);
         func_80015458(&D_8005C53C[0]->eid, 1);

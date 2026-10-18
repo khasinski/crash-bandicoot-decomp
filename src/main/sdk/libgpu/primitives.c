@@ -110,36 +110,65 @@ void func_8003F980(GpuPacketHeader *packet)
     packet->command=0x50;
 }
 
-void func_8003F994(GpuPacketHeader *packet)
+typedef struct GpuLineF3 {
+    GpuPacketHeader header;
+    u32 v[3];
+    u32 pad;
+} GpuLineF3;
+
+typedef struct GpuLineG3 {
+    GpuPacketHeader header;
+    u32 v[5];
+    u32 pad;
+} GpuLineG3;
+
+typedef struct GpuLineF4 {
+    GpuPacketHeader header;
+    u32 v[4];
+    u32 pad;
+} GpuLineF4;
+
+typedef struct GpuLineG4 {
+    GpuPacketHeader header;
+    u32 v[7];
+    u32 pad;
+} GpuLineG4;
+
+typedef struct GpuMaskPacket {
+    GpuPacketHeader header;
+    u32 mask;
+} GpuMaskPacket;
+
+void func_8003F994(GpuLineF3 *packet)
 {
     u32 terminator=0x55555555;
-    packet->length=5;
-    packet->command=0x48;
-    *(u32*)((u8*)packet+0x14)=terminator;
+    packet->header.length=5;
+    packet->header.command=0x48;
+    packet->pad=terminator;
 }
 
-void func_8003F9B4(GpuPacketHeader *packet)
+void func_8003F9B4(GpuLineG3 *packet)
 {
     u32 terminator=0x55555555;
-    packet->length=7;
-    packet->command=0x58;
-    *(u32*)((u8*)packet+0x1C)=terminator;
+    packet->header.length=7;
+    packet->header.command=0x58;
+    packet->pad=terminator;
 }
 
-void func_8003F9D4(GpuPacketHeader *packet)
+void func_8003F9D4(GpuLineF4 *packet)
 {
     u32 terminator=0x55555555;
-    packet->length=6;
-    packet->command=0x4C;
-    *(u32*)((u8*)packet+0x18)=terminator;
+    packet->header.length=6;
+    packet->header.command=0x4C;
+    packet->pad=terminator;
 }
 
-void func_8003F9F4(GpuPacketHeader *packet)
+void func_8003F9F4(GpuLineG4 *packet)
 {
     u32 terminator=0x55555555;
-    packet->length=9;
-    packet->command=0x5C;
-    *(u32*)((u8*)packet+0x24)=terminator;
+    packet->header.length=9;
+    packet->header.command=0x5C;
+    packet->pad=terminator;
 }
 
 void func_8003FA14(GpuPacketHeader *packet)
@@ -148,9 +177,9 @@ void func_8003FA14(GpuPacketHeader *packet)
     packet->command=0x2;
 }
 
-void func_8003FA28(GpuPacketHeader *packet)
+void func_8003FA28(GpuMaskPacket *packet)
 {
-    packet->length=5;
-    packet->command=0x1;
-    *(u32*)((u8*)packet+8)=0x80000000;
+    packet->header.length=5;
+    packet->header.command=0x1;
+    packet->mask=0x80000000;
 }

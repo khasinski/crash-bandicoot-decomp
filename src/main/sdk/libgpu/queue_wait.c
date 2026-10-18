@@ -7,7 +7,6 @@ s32 func_80042898(void);
 extern volatile u32 *D_80054B40;
 extern volatile u32 *D_80054B4C;
 extern s32 D_80054B70;
-extern volatile s32 D_80054B74;
 
 s32 func_8004271C(s32 poll) {
     s32 pending;

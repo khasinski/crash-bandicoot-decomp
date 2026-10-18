@@ -30,19 +30,12 @@ extern CdCallback D_800555A0;
 extern CdCallback D_800555A4;
 extern u8 D_800555C1[];
 extern const char * const D_800555C4[];
-extern const char *D_80055644[];
+
 extern volatile u8 *D_80055864;
 extern volatile CdStatus D_8005587C;
 extern volatile u32 *D_800558D8;
 extern u8 D_80057198[8];
 extern u8 D_800571A0[8];
-extern s32 D_800571B0;
-extern s32 D_800571B4;
-extern const char *D_800571B8[];
-extern const char D_800114F8[];
-extern const char D_80011508[];
-extern const char D_8001164C[];
-extern const char D_80011654[];
 
 s32 VSync(s32);
 s32 func_8003D730(const char *, ...);

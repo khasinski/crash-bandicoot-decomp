@@ -1,7 +1,10 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 4 */
 /* GCC_CPU: 3000 */
 #include "common.h"
-
+extern s32 D_80061910;
+extern s32 D_80061918;
+extern s32 D_80061914;
 
 /* =========================================================================
  * Section 2: Audio / SPU Voice Management (asm/USA/main/text_20878.s)
@@ -91,40 +94,23 @@ typedef struct {
 } LevelHeaderInfo;
 
 extern LevelHeaderInfo *D_8005C53C;
-extern s32 D_80061910;
-extern s32 D_80061914;
-extern s32 D_80061918;
-extern s16 D_80056640;
-asm(".sdata\n.size D_80056640,4\n.text");
-extern s16 D_80056642;
-asm(".sdata\n.size D_80056642,4\n.text");
-extern s16 D_80056644;
-asm(".sdata\n.size D_80056644,4\n.text");
-extern s16 D_8005665C;
-asm(".sdata\n.size D_8005665C,4\n.text");
-extern s16 D_80056660;
-asm(".sdata\n.size D_80056660,4\n.text");
-extern s16 D_80056664;
-asm(".sdata\n.size D_80056664,4\n.text");
-extern s32 D_80056668;
-asm(".sdata\n.size D_80056668,4\n.text");
-extern s32 D_8005666C;
-asm(".sdata\n.size D_8005666C,4\n.text");
-extern s32 D_800566C0;
-asm(".sdata\n.size D_800566C0,4\n.text");
-extern s32 D_8005663C;
-asm(".sdata\n.size D_8005663C,4\n.text");
-extern s32 D_800564F4;
-asm(".sdata\n.size D_800564F4,4\n.text");
-extern s32 D_8005640C;
+s32 D_800564F4 = 0x1E;
+asm(".globl D_8005663C, D_80056640, D_80056642, D_80056644");
+s32 D_8005663C;
+s16 D_80056640;
+s16 D_80056642;
+s16 D_80056644;
+
+extern struct { s32 v, pad; } D_8005640C;
 extern VoiceEntry D_80056804[24];
-extern u8 D_80056E64[24];
+
 extern VoiceParams D_80056E7C;
 extern u8 D_80056ED0[];
-extern struct {
+typedef struct {
     u8 pad00[0x10];
     s32 unk10;
-} *D_80057914;
+} ZonePtr57914;
+extern ZonePtr57914 *D_80057914;
 
 s32 func_80034580(s32, s32, s32);
 s32 func_80034524();
@@ -479,13 +465,13 @@ void func_80030CC0(void) {
         D_80056660 += D_80056664;
         func_8004B7D8(D_80056660 >> 7, D_80056660 >> 7);
     }
-    if (D_8005640C == 1) {
+    if (D_8005640C.v == 1) {
         D_80056664 = -0x222;
         if (D_8005666C != 0 && D_8005665C >= 2 && D_800566C0 == 3) {
             func_80031A40(D_80056ED0, 2, 0);
         }
     }
-    if (D_8005640C == -1) {
+    if (D_8005640C.v == -1) {
         D_80056664 = 0x667;
         if (D_8005666C != 0 && D_8005665C >= 2 && D_800566C0 == 3) {
             func_80031A40(D_80056ED0, 3, 0);

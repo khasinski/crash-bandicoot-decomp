@@ -4,7 +4,6 @@
 
 /* Decode CLUT coordinates for the diagnostic callback. */
 
-extern char D_800110B0[];
 extern s32 (*D_80054A68)(const char *, ...);
 
 void func_8003F6C4(s32 arg0) {

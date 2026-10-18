@@ -7,13 +7,7 @@
 
 extern u8 D_80051728[];
 extern s32 D_80056410;
-extern char D_80056738[];
-extern const char D_80010000[];
-extern const char D_80010010[];
-extern const char D_80010020[];
-extern const char D_80010038[];
-extern const char D_80010044[];
-extern const char D_80010054[];
+
 char *func_800128A4(s32, u32, s32, s32);
 s32 func_8003D740(char *, const char *, ...);
 

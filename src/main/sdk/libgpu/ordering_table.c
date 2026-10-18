@@ -2,7 +2,7 @@
 #include "gpu.h"
 extern u8 D_80054A6E;
 extern s32 (*D_80054A68)(const char *, ...);
-extern const char D_800112C0[];
+
 extern u32 D_80054B28;
 
 u32 *func_80040610(u32 *ot,s32 count) {

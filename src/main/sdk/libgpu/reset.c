@@ -7,10 +7,10 @@ void func_8003E6F4(void);
 u8 func_800425E0(s32);
 void *func_80042AE0(void *, s32, u32);
 void func_80042B0C(u32);
-extern const char D_8001119C[], D_800111BC[], D_80054A24[];
+
 extern u8 D_80054A6C[], D_80054A6D, D_80054A6E;
 extern u16 D_80054A70, D_80054A72;
-extern u8 D_80054AEC[], D_80054B00[];
+
 typedef struct {u8 reserved00[0x34];s32 (*reset34)(s32);} GpuApi;
 extern GpuApi *D_80054A64;
 extern s32 (*D_80054A68)(const char *, ...);

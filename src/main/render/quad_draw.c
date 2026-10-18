@@ -4,7 +4,6 @@
 #include "gpu.h"
 #include "gte.h"
 
-
 typedef struct Rect9398 {
     u16 x0;
     u16 pad02;
@@ -80,7 +79,7 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
     }
 
     p = D_8005840C->prim_ptr;
-    D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyFT4_9398);
+    D_8005840C->prim_ptr = (PolyFT4_9398 *)p + 1;
     w0 = p0[0];
     poly = (PolyFT4_9398 *)p;
     poly->color_code = w0;
@@ -198,7 +197,7 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
     }
 
     p = D_8005840C->prim_ptr;
-    D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyGT4_9398);
+    D_8005840C->prim_ptr = (PolyGT4_9398 *)p + 1;
     w0 = arg1[0];
     poly = (PolyGT4_9398 *)p;
     if (arg6 != 0) {

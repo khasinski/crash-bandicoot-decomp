@@ -28,8 +28,6 @@ typedef struct {
 } SequenceState;
 
 extern SequenceState *D_80060418[];
-extern s16 D_80060C98;
-extern s16 D_80060CA0;
 
 void func_8004C990(void *table, s16 s_max, s16 t_max) {
     s32 i;

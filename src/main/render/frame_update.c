@@ -1,6 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 /* CC1_FLAGS: -O2 */
+/* GNU_AS_G: 4 */
 #include "common.h"
+extern s32 D_80057960;
 #include "gpu.h"
 
 /* =========================================================================
@@ -23,13 +25,12 @@ typedef struct {
     u8 bytes[4];
 } BufferToken;
 
-extern volatile u32 frame_counter __asm__("func_80034520");
+extern volatile u32 frame_counter;
 extern BufferToken D_80057968[];
 extern BufferToken D_8005796C;
-extern s32 D_80056400;
+extern struct { s32 v, pad; } D_80056400;
 extern u32 D_800618B0;
 extern u32 D_8006189C;
-extern s32 D_80057960;
 extern s32 D_80061A34[];
 extern s32 D_80061A38;
 extern s32 D_80061A30;
@@ -39,10 +40,8 @@ extern struct { RenderBufferFull *buf; } D_80058404;
 extern RenderBufferFull *D_80058408;
 extern RenderBufferFull *D_8005840C;
 
-extern s32 D_8005642C;
-asm(".sdata\n.size D_8005642C,4\n.text");
+s32 D_8005642C = 0;
 extern s32 *D_800566A8;
-asm(".sdata\n.size D_800566A8,4\n.text");
 
 typedef struct ZoneHeader8214 {
     u8 pad00[0x2E0];
@@ -95,7 +94,7 @@ void func_80016E5C(void)
     RenderBufferFull *swap;
 
     token = func_80016E28_inline();
-    if (D_80056400 == 0 && (D_800618B0 & 0x1000)) {
+    if (D_80056400.v == 0 && (D_800618B0 & 0x1000)) {
         D_80057960++;
     }
     if (D_80061A34[0] != 0) {

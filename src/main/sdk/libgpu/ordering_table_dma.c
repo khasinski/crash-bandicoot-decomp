@@ -13,9 +13,6 @@ extern volatile u32 *D_80054B40;
 extern volatile u32 *D_80054B44;
 extern volatile u32 *D_80054B48;
 extern volatile u32 *D_80054B4C;
-extern volatile u32 *D_80054B50, *D_80054B54, *D_80054B58, *D_80054B5C;
-extern u32 D_80057058[8];
-extern u32 D_80057078[4];
 
 s32 func_800416E4(u32 *table, s32 count)
 {

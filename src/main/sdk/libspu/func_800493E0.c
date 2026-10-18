@@ -28,9 +28,7 @@ typedef struct {
     u8 padA8[4];
 } SequenceState;
 
-extern s32 D_8005E548;
 extern SequenceState *D_80060418[];
-extern s16 D_80060CA0;
 
 void func_80049268(s16 arg0) {
     s32 i;

@@ -1,4 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 4 */
 #include "common.h"
 #include "engine_ticks.h"
 #define CRASH_ENGINE_STATE_STORAGE
@@ -8,21 +9,9 @@
 #include "object_links.h"
 
 extern EngineState *D_80056564;
-extern s32 D_80056568;
-extern s32 D_8005656C;
-extern u32 D_80056570;
-extern s32 D_80061978;
-extern s32 engine_flag_shadow[] __asm__("D_80061978");
-extern u32 D_8005668C, D_80056690;
-extern s32 D_800566C4, D_800566C8, D_800566CC, D_800566D0;
-extern s32 D_800566EC, D_800566F0;
-extern s32 D_800566F8, D_800566FC;
-asm(".sdata\n"
-    ".size D_80056564,4\n.size D_80056568,4\n.size D_8005656C,4\n.size D_80056570,4\n"
-    ".size D_8005668C,4\n.size D_80056690,4\n"
-    ".size D_800566C4,4\n.size D_800566C8,4\n.size D_800566CC,4\n.size D_800566D0,4\n"
-    ".size D_800566EC,4\n.size D_800566F0,4\n.size D_800566F8,4\n.size D_800566FC,4\n"
-    ".text");
+
+extern s32 engine_flag_shadow[];
+
 typedef EngineFileRequest FileRequest;
 s32 func_8003CEF0(s32);
 s32 func_8003CAD8(s32);
@@ -41,7 +30,6 @@ s32 func_8003CB88(void), func_8003CB74(void), func_8003AC2C(void), func_8003ABA4
 void func_8003C3D4(void), func_8003C3DC(void), func_8003AA7C(void), func_8003AF24(void);
 void func_8003B8B8(s32), func_8003C358(void);
 s32 func_8003C038(void);
-extern s32 D_80061980;
 
 void func_8003A94C(void)
 {
@@ -133,7 +121,6 @@ s32 func_8003ABA4(void) {
     return result;
 }
 
-extern char D_80056574[];
 void func_8003C538(void), func_80051434(s32), func_8003CA50(void);
 void func_8003C7A8(EngineDirectoryRecord *, s32);
 
@@ -240,12 +227,9 @@ typedef struct {
     EngineDirectoryRecord records[15];
 } EngineDirectoryStateView;
 
-extern char D_8005657C[];
-extern s32 D_800619CC_arr[] __asm__("D_800619CC");
-extern u32 D_800619D0_arr[] __asm__("D_800619D0");
-extern s32 D_800619D4[15];
-extern u32 D_80010E58[];
-extern char D_80010E68[];
+typedef struct { s32 v; } WordView;
+typedef struct { u32 v; } UWordView;
+
 s32 func_8003D740(char *, char *, ...);
 s32 func_8003E218(char *, s32);
 s32 func_8003E228(s32, void *, s32);
@@ -338,7 +322,7 @@ void func_8003AF24(void)
     for (i = 0; i < blocks; i++) {
         char part_str[80];
         func_8003D740(part_str, D_80010E68, i + 1, blocks);
-        func_8001A754(D_800619CC_arr[0], (slot_idx + i) << 8,
+        func_8001A754(((WordView *)&D_800619CC)->v, (slot_idx + i) << 8,
             i == 0 ? (char *)((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].pad0C : part_str,
             0x28, 1);
     }
@@ -346,7 +330,7 @@ void func_8003AF24(void)
         for (i = 0; i < blocks; i++) {
             for (j = 0; j < 3; j++) {
                 s32 img_idx = j < ((EngineDirectoryStateView *)D_80056564)->slots[slot_idx].word04 ? j : 0;
-                func_8001A850(1, D_800619D0_arr[0], ((slot_idx + i) * 3 + j) << 8,
+                func_8001A850(1, ((UWordView *)&D_800619D0)->v, ((slot_idx + i) * 3 + j) << 8,
                     j == 0 ? block.header.palette : NULL,
                     images[img_idx]);
             }
@@ -387,7 +371,6 @@ void func_8003AF24(void)
     D_80056564->word08 += blocks;
 }
 
-extern u8 D_80053890[][2];
 char *BIOS_StrCpy(char *, const char *);
 
 /* Convert a Shift-JIS memory-card block title in place to printable ASCII. */
@@ -484,11 +467,8 @@ void func_8003B74C(char *title, s32 len)
     }
 }
 
-extern char D_80056574[], D_8005657C[];
-extern char D_80010E78[], D_80010E88[], D_80010E98[], D_80010EB0[];
 extern EngineByteRecord D_8005703C;
-extern s32 D_80061974;
-extern u32 D_800619D0;
+
 s32 func_8003D740(char *, char *, ...);
 void func_8003D730(char *, s32);
 s32 func_8003E218(char *, s32), func_8003E238(s32, void *, s32);
@@ -565,11 +545,9 @@ void func_8003B8B8(s32 mode)
         counter = ((EngineDirectoryState *)D_80056564)->record_count - 1;
         index = 0;
         if (counter >= 0) {
-            counter = counter * sizeof(EngineDirectoryRecord)
-                + CRASH_OFFSETOF(EngineDirectoryState, records);
-            if (func_8003C6E4((char *)((u8 *)D_80056564 + counter))) {
+            if (func_8003C6E4((char *)((EngineDirectoryState *)D_80056564)->records[counter].bytes)) {
                 EngineDirectoryRecord *record =
-                    (EngineDirectoryRecord *)((u8 *)D_80056564 + counter);
+                    &((EngineDirectoryState *)D_80056564)->records[counter];
                 index = (record->bytes[12] - '0') * 10 + record->bytes[13] - '/';
             }
         }
@@ -621,7 +599,7 @@ void func_8003B8B8(s32 mode)
     func_8003CAD8(2);
     func_8003CAF8(0);
     func_8003C9B8();
-    BIOS_StrCpy((char *)&D_8005703C, path + 5);
+    BIOS_StrCpy((char *)&D_8005703C, &path[5]);
     func_8003CAD8(16);
 }
 
@@ -630,7 +608,7 @@ void func_8003B8B8(s32 mode)
 /* Word views of the runtime values serialised in the save record. */
 extern u32 D_80061944[], D_80061908[], D_8006190C[], D_80061910[];
 extern u32 D_80061914[], D_80061918[], D_80061988[], D_800619AC[];
-extern u32 D_80061948[], D_800618DC[], D_80061A10[], D_80061A14[];
+extern u32 D_80061948[], D_800618DC[];
 u32 func_8003BFFC(u8 *, u32);
 void func_80026200(s32);
 
@@ -684,7 +662,6 @@ inline s32 func_8003BF34(EngineSaveRecord *record)
 
 #include "engine/checksum.c"
 
-extern char D_80056574[], D_8005657C[];
 s32 func_8003D740(char *, char *, ...);
 s32 func_8003E218(char *, s32);
 s32 func_8003E228(s32, void *, s32);
@@ -758,7 +735,6 @@ s32 func_8003C038(void)
 
 #undef ENGINE_CARD_RETRY
 
-extern char D_80056574[];
 s32 func_8003E258(const char *);
 s32 func_8003C3FC(void);
 s32 func_8003CAD8(s32);
@@ -863,13 +839,11 @@ void func_8003C69C(void) {
 }
 
 s32 BIOS_StrNCmp(const char *, const char *, s32);                      /* extern */
-extern char D_80010E88[];
 
 s32 func_8003C6E4(const char *arg0) {
     return BIOS_StrNCmp(D_80010E88, arg0, 0xC) == 0;
 }
 
-extern char D_80056584[];
 char *BIOS_StrCpy(char *, const char *);
 char *BIOS_StrCat(char *, const char *);
 EngineDirectoryRecord *func_8003E268(char *, EngineDirectoryRecord *);
@@ -983,7 +957,6 @@ s32 func_8003C9B8(void)
     }
 }
 
-extern s32 D_800619D4[15];
 s32 func_8003CA04(s32 flags)
 {
     s32 index;
@@ -996,8 +969,7 @@ s32 func_8003CA04(s32 flags)
 }
 
 void func_8001A754(s32, s32, void *, s32, s32);
-extern u8 D_80056588[];
-extern s32 D_800619CC;
+
 void func_8003CA50(void)
 {
     s32 channel;
@@ -1005,7 +977,6 @@ void func_8003CA50(void)
         func_8001A754(D_800619CC, channel << 8, D_80056588, 0x28, 1);
     }
 }
-
 
 s32 func_8003CAB0(s32 arg0) {
     s32 temp_a0;
@@ -1100,7 +1071,6 @@ s32 func_8003CD3C(void) {
 }
 
 /* Fifteen consecutive words ending at 0x80061A0C. */
-extern s32 D_800619D4[15];
 
 void func_8003CD60(s32 flags)
 {
@@ -1189,7 +1159,6 @@ s32 func_8003D008(void)
     D_80056564->word04 &= ~0x20;
     return 0;
 }
-
 
 /* Alias view of the shared flag word; retain the native ordering of state
  * writes and their externally visible shadow store. */
@@ -1365,7 +1334,6 @@ s32 func_8003D444(void)
         return 1;
     }
 }
-
 
 s32 func_8003D4AC(void) {
     s32 result;

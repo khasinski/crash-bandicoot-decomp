@@ -4,7 +4,7 @@
 s32 func_80044640(s32, u8 *, u8 *, s32);
 s32 func_80044B30(void);
 s32 func_800440EC(s32, u8 *);
-extern s32 D_80055520[32];
+
 typedef void (*CdCallback)(s32, u8 *);
 extern CdCallback D_800555A0;
 extern u8 D_800555B0;

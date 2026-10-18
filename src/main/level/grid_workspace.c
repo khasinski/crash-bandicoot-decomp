@@ -32,10 +32,18 @@ typedef struct LevelStateView {
     s32 level_id;
 } LevelStateView;
 
+typedef struct SubExec {
+    u8 pad00[0x10];
+    struct {
+        s32 type;
+        s32 category;
+    } *header;
+} SubExec;
+
 typedef struct SubObj {
     u8 pad00[8];
     ZqBound bound;
-    void *unk20;
+    SubExec *unk20;
     u8 pad24[4];
     ResourceEntry *entry;
     u8 pad2C[0x64 - 0x2C];
@@ -90,8 +98,6 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern s32 D_800564BC;
-extern u32 *D_800566AC;
 extern s32 *D_800566F4;
 
 ZoneEntry *func_80015A98(u32 *);
@@ -245,11 +251,11 @@ void func_8002D8B8(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
                 if (no_grid
                     && (cand_obj->status_b & 0x10000)
                     && (!(((obj->flags120 & 0x10) || obj->anim_state == 5)
-                          && *(s32 *)(*(s32 *)((u8 *)cand_obj->unk20 + 0x10) + 4) == 0x300
+                          && cand_obj->unk20->header->category == 0x300
                           && (!(cand_obj->status_c & 0x1012) || (cand_obj->flags120 & 0x10020))))
                     && bound2.p1.y <= box->bound.p2.y
                     && bound2.p2.y > box->bound.p1.y
-                    && (**(s32 **)((u8 *)cand_obj->unk20 + 0x10) != 0xB
+                    && (cand_obj->unk20->header->type != 0xB
                         || (diff.x = (v->x - cand_obj->trans.x) >> 8,
                             diff.z = (v->z - cand_obj->trans.z) >> 8,
                             (func_80042B9C(diff.x * diff.x + diff.z * diff.z) << 8) > 0x19000))) {

@@ -2,20 +2,17 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern s32 D_80056258;
-extern s32 D_8005625C;
 extern void (*D_80056260)(void);
 extern void (*D_80056264)(void);
-extern u8 D_80056268;
+
 extern u8 D_80056269;
-extern u8 D_8005626A;
 
 void func_8003E1F8(void);
 void func_8003E208(void);
 s32 func_8003E298();
 s32 func_8003E3D8(u32);
-extern void *func_8003E724(s32, void (*)(void));
-extern s32 func_8003E784(void (*)(void));
+void *func_8003E724(s32, void (*)(void));
+s32 func_8003E784(void (*)(void));
 void func_8004B828(void);
 void func_8004B868(void);
 
@@ -58,17 +55,26 @@ loop:
         break;
     default:
         {
-            u8 *p = (u8 *)&D_8005625C;
-            /* Prevent GCC 2.5.7 cse from folding &D_8005625C into direct symbol-offset loads. */
-            asm("" : "=r"(p) : "0"(p));
+            struct { s32 val; u8 pad[9]; u8 flag_d; } *p = (void *)&D_8005625C;
+            s32 tmp;
             if (*(s32 *)p != 0) {
                 return;
             }
-            if (*(s32 *)(p - 4) < 70) {
-                target = 0x204CC0 / *(s32 *)(p - 4);
-                p[0xD]++;
+            tmp = (s32)p & 1;
+            if ((tmp >> 1) == 0) {
+                goto L_after;
+            }
+            if (*flag_p) {
+                goto L_after;
+            }
+            *flag_p = 0;
+            return;
+        L_after:
+            if (*((s32 *)p - 1) < 70) {
+                target = 0x204CC0 / *((s32 *)p - 1);
+                p->flag_d++;
             } else {
-                target = 0x409980 / *(s32 *)(p - 4);
+                target = 0x409980 / *((s32 *)p - 1);
             }
         }
         break;

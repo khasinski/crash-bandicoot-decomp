@@ -3,7 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-
 typedef struct {
     u16 unk0;
     u16 unk2;
@@ -36,16 +35,11 @@ typedef struct {
 
 extern SvmCur D_8005E558;
 extern VoiceU16 D_800572B2[];
-extern u32 D_80060D70[];
-extern u8 *D_8005CFCC;
+
 extern u32 D_8005CFE4;
-extern u16 D_8005E58E[];
-extern u16 D_8005E590[];
-extern u16 D_8005E592[];
-extern u8 D_800577A4[];
+
 extern u16 D_80057EF0;
 void func_8004DA78(s32, s32);
-
 
 void func_8004E80C(void) {
     s32 var_t0;

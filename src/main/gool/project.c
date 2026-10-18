@@ -2,8 +2,6 @@
 #include "common.h"
 #include "ns.h"
 
-
-
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 #include "vector.h"
@@ -34,10 +32,9 @@ void func_80042FEC(SVector *, Vec3 *, s32 *);
 s32 func_80026CA8(s32 *, s32 *);
 s32 func_80029B90(Vec3 *, Vec3 *);
 
-extern u8 D_8005726C[];
 extern u8 D_800577E4[];
 extern u8 D_80057844[];
-extern s32 D_80057864, D_80057868, D_8005786C;
+extern s32 D_80057864, D_80057868;
 extern s32 D_80057888, D_8005788C, D_80057890;
 
 void func_8002465C(Vec3 *arg0, Vec3 *arg1, Vec3 *arg2, Vec3 *arg3, Vec3 *arg4)

@@ -5,7 +5,7 @@
 #include "engine_state.h"
 
 extern EngineState *D_80056564;
-extern s32 engine_flag_shadow[] __asm__("D_80061978");
+extern s32 engine_flag_shadow[];
 extern EngineByteRecord D_80056590[], D_8005703C[];
 
 void func_8003CD60(s32);

@@ -3,23 +3,15 @@
 /* GCC_VERSION: 2.6.3 */
 s32 func_8003D730(const char *, ...);
 void func_8004636C(u16 *, u32);
-extern char D_80011660[];
-extern char D_80011670[];
-extern s32 D_800558DC;
+
 extern s16 D_800558E0;
 extern volatile u16 *D_800558E4;
-extern volatile u32 *D_800558F4;
-extern s32 D_800558FC;
-extern s32 D_80055900;
-extern s32 D_80055904;
-extern s32 D_80055908;
+
 extern s32 D_8005590C;
 extern s32 D_80055910;
-extern s32 D_80055914;
+
 extern void (*volatile D_80055918)(void);
 /* Preserve the driver reset write after enabling SPU control. */
-extern volatile s32 D_8005591C;
-extern u16 D_80055920[];
 
 s32 func_80045E50(s32 arg0) {
     /* The hardware delay repeatedly accesses these two stack words. */

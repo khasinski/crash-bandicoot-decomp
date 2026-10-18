@@ -59,7 +59,6 @@ extern GoolTimeState *D_80058404[];
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define SCALE_DT(x) (((s32)((x) * (D_80058404[0]->unk84 < 0x67U ? D_80058404[0]->unk84 : 0x66))) / 1024)
 
-
 extern GoolObjView *D_800566B4;
 s32 GOOL_InterpretObject(GoolObjView *, s32, void *);
 s32 GOOL_ChangeObjectState(GoolObjView *, s32, s32, s32 *);
@@ -130,7 +129,7 @@ s32 func_80024040(GoolObjView *sender, GoolObjView *recipient, s32 event, s32 ar
                     *recipient->sp++ = argv[i];
                 }
                 GOOL_CreateObjectStackFrame(recipient, argc, 0xFFFF);
-                recipient->pc = (u32 *)((u8 *)recipient->exec->code + ((state & 0x7FFF) << 2));
+                recipient->pc = (u32 *)recipient->exec->code + (state & 0x7FFF);
                 return GOOL_InterpretObject(recipient, 3, 0);
             }
         }

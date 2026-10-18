@@ -1,15 +1,16 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-extern u8 *D_80060418[];
+typedef struct {
+    u8 gap00[0x2B];
+    u8 field_2B;
+    u8 gap2C[0x90 - 0x2C];
+    s32 field_90;
+    u8 gap94[0xAC - 0x94];
+} SequenceState;
+extern SequenceState *D_80060418[];
 void func_8004C764(s16 sequence,s16 channel) {
-    s32 index=sequence;
-    u8 **base_table=D_80060418;
-    u8 **entry=base_table+index;
-    s32 offset=channel*0xAC;
-    u8 *state=offset+*entry;
-    u8 *updated;
-    state[0x2B]=1;
-    updated=offset+*entry;
-    *(s32 *)(updated+0x90)&=~8;
+    SequenceState *state = &D_80060418[sequence][channel];
+    state->field_2B = 1;
+    D_80060418[sequence][channel].field_90 &= ~8;
 }

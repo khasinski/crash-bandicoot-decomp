@@ -4,7 +4,7 @@ void func_8003D740(u8 *, u8 *, u32);
 extern u8 D_80051728[];
 extern u8 D_80056414[];
 extern u8 D_80056718[];
-extern s8 D_8005671D;
+
 u8 *func_80012580(u32 id)
 {
     s32 index;

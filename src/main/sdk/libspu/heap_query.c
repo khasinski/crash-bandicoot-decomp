@@ -1,6 +1,6 @@
 #include "common.h"
 typedef struct {u32 address, size;} SpuBlock;
-extern s32 D_80055908;
+
 extern SpuBlock *D_80055944;
 s32 func_80047120(u32 address) {
     u32 free_flag = 0x80000000;

@@ -2,9 +2,9 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-extern u16 D_80056278[];
+
 extern u32 D_8005CFE4;
-extern u8 D_8005E55F,D_8005E564;
+
 s32 func_8004EADC(s32 arg0, s32 arg1) {
     s16 temp_v0;
     s16 temp_v0_2;

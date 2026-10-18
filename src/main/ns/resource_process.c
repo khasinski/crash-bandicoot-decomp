@@ -11,8 +11,7 @@ typedef ResourceHandler Handler;
 extern Slot D_8005C554[], D_800580A0[];
 extern Handler D_800514EC[];
 extern u32 D_8005728C[];
-extern GpuRect D_80056420;
-asm(".sdata\n.size D_80056420,8\n.text");
+GpuRect D_80056420 = { 0, 0, 0x100, 0x80 };
 
 void func_80040484(GpuRect *, Header *);
 

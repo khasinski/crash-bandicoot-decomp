@@ -12,7 +12,6 @@ extern VoiceWord D_800572B0[];
 extern VoiceByte D_800572C7[];
 extern s16 D_8005E572;
 extern u16 D_80061A68;
-extern u16 D_80061A70;
 
 void func_8004F0D4(void) {
     u16 voice;

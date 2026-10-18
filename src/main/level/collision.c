@@ -32,10 +32,18 @@ typedef struct LevelStateView {
     s32 level_id;
 } LevelStateView;
 
+typedef struct SubExec {
+    u8 pad00[0x10];
+    struct {
+        s32 type;
+        s32 category;
+    } *header;
+} SubExec;
+
 typedef struct SubObj {
     u8 pad00[8];
     ZqBound bound;
-    void *unk20;
+    SubExec *unk20;
     u8 pad24[4];
     ResourceEntry *entry;
     u8 pad2C[0x64 - 0x2C];
@@ -92,8 +100,7 @@ typedef struct SubWorkspace {
 
 extern LevelStateView *D_8005C53C[];
 extern u32 D_80060E04[];
-extern s32 D_800564BC;
-extern s32 D_800565DC;
+
 extern s32 *D_800566F4;
 
 ZoneEntry *func_80015A98(u32 *);
@@ -310,7 +317,6 @@ void func_8002C184(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel)
     }
 }
 
-
 s32 func_8002C3B8(SubObj *obj, u32 node)
 {
     s32 type, subtype, level;
@@ -401,7 +407,6 @@ __inline__ void func_8002C51C(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *w
     func_80038AC4(obj, ws, &ws->bound1, bound, max_y, out, -0x3B9AC9FF, func_8002C3B8);
 }
 
-
 s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
 {
     s32 res;
@@ -438,7 +443,7 @@ s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
             hit_box = box;
             if (cand_obj->status_b & 0x20000) {
                 if (!(((obj->flags120 & 0x10) || obj->anim_state == 5)
-                      && *(s32 *)(*(s32 *)((u8 *)cand_obj->unk20 + 0x10) + 4) == 0x300
+                      && cand_obj->unk20->header->category == 0x300
                       && (!(cand_obj->status_c & 0x1012) || (cand_obj->flags120 & 0x10020)))) {
                     res = hit_box->bound.p2.y + 1;
                 }
@@ -452,7 +457,6 @@ s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
     }
     return res;
 }
-
 
 s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y)
 {
@@ -598,7 +602,6 @@ s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws)
     return res2;
 }
 
-
 __inline__ void func_8002D0B8(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
 {
     s32 res;
@@ -619,7 +622,6 @@ __inline__ void func_8002D0B8(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *w
         }
     }
 }
-
 
 s32 func_8002D18C(SubObj *obj, ZqVec *v)
 {
@@ -665,7 +667,6 @@ s32 func_8002D18C(SubObj *obj, ZqVec *v)
     }
     return -0xFF;
 }
-
 
 void func_8002D384(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out)
 {

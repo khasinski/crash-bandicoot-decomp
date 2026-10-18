@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
+extern s16 D_80056EBC[];
 
 /* Wait for a pending fade, then request the selected sequence. Tagged
  * references contain an ID; resolved references point to a handle whose
@@ -8,11 +9,10 @@
  * at this call site, although the current callee consumes three words. */
 void func_800314C4();
 void func_80049614();
-extern s16 D_800564F8,D_80056654,D_80056658;
+
 extern s32 *D_800564FC;
 extern u16 D_80056648;
-extern s32 D_80056650,D_8005666C,D_800566C0;
-extern s16 D_80056EBC[];
+
 void func_800317F8(s32 *reference) {
  s16 countdown;
  s32 key,ready,state;
@@ -25,7 +25,7 @@ void func_800317F8(s32 *reference) {
     if(D_80056650!=key)goto change;
     goto finish;
    }
-   if(D_80056650!=*(s32 *)(key+4)) {
+   if(D_80056650!=((s32 *)key)[1]) {
 change:
     if(D_8005666C==0 && D_80056658!=-1 && D_800564FC==0) {
      func_80049614(D_80056654,D_80056EBC[0],(s32)(D_80056648<<16)>>23,30);

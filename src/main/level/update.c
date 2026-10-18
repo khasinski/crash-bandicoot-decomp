@@ -25,16 +25,14 @@ typedef struct LvlColorState {
     u32 start_tick;
 } LvlColorState;
 
-extern LvlCamera lvl_camera __asm__("D_80057864");
-extern LvlColorState lvl_color __asm__("D_80057964");
-extern u32 engine_counter[] __asm__("func_80034520");
-extern u32 D_8005FF58[], D_80061904[];
+extern LvlCamera lvl_camera;
+extern LvlColorState lvl_color;
+extern u32 engine_counter[];
+extern u32 D_8005FF58[];
 extern s32 D_800618D0[], D_80061998[], D_80061A5C[], D_80061A60[], D_80061A64[];
 
 /* SLST polygon id lists: current, and the two buffers swapped per step. */
 extern void *D_800566B8;
-extern void *D_800566BC;
-extern void *D_80056700;
 
 ResourceEntry *func_80015118(void *, s32, s32);
 void func_80015458(void *, s32);
@@ -62,19 +60,24 @@ static __inline__ s32 zone_has_neighbor(ZoneHeader *header, ZoneEntry *entry)
     return 0;
 }
 
+typedef struct ZoneEntityHeader {
+    u8 pad00[6];
+    u8 group;
+} ZoneEntityHeader;
+
 /* Spawn type-3 entities of zone when its pending-spawn display flag is set. */
 __inline__ void func_80025858(ZoneEntry *zone)
 {
     ZoneHeader *header, *cur;
-    u8 *entity;
+    ZoneEntityHeader *entity;
     s32 i;
 
     header = (ZoneHeader *)zone->items[0];
     if (header->display_flags & 2) {
         for (i = 0; i < header->entity_count; i++) {
             cur = (ZoneHeader *)zone->items[0];
-            entity = (u8 *)zone->items[i + cur->path_index + cur->path_count];
-            if (entity[6] == 3) {
+            entity = (ZoneEntityHeader *)zone->items[i + cur->path_index + cur->path_count];
+            if (entity->group == 3) {
                 func_8001BCC8(zone, i);
             }
         }
@@ -98,7 +101,6 @@ void func_80025928(void)
         func_80025858(neighbor);
     }
 }
-
 
 /* LevelUpdate: move the camera to progress along path in zone. Updates the
  * visible polygon lists (SLST) point by point, and on a zone change unloads

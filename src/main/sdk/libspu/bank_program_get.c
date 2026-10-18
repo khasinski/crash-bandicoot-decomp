@@ -3,8 +3,7 @@
 #include "common.h"
 /* GCC_CPU: r4000 */
 s32 func_80050728(s16, s16);
-extern u8 D_8005E578[];
-extern u8 *D_8005CFCC;
+
 typedef struct {
     u8 tones, volume, priority, mode, pan, unused;
     u16 attributes;

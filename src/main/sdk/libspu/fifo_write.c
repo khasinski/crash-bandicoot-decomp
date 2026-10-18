@@ -2,10 +2,7 @@
 #include "common.h"
 
 s32 func_8003D730(const char *, ...);
-extern char D_80011660[];
-extern char D_80011680[];
-extern char D_80011694[];
-extern s32 D_800558DC;
+
 extern u16 D_800558E0;
 extern volatile u16 *D_800558E4;
 

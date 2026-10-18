@@ -5,8 +5,6 @@
 
 extern s16 D_800580A4[];
 
-extern s32 D_800580B8[];
-
 /* Prefer free or inactive slots; otherwise evict a texture absent from the
  * current zone load list. Odd references are IDs, even references are entries.
  */
@@ -40,7 +38,7 @@ s32 func_8001439C(void)
     scan_offset = 15 * 44;
     do
     {
-        if ((*((s16 *) (((u8 *) D_800580A4) + scan_offset))) == wanted)
+        if ((*((s16 *) (((u32) D_800580A4) + scan_offset))) == wanted)
             goto found;
         i--;
         scan_offset -= 44;
@@ -70,7 +68,7 @@ s32 func_8001439C(void)
         {
             for (j = 0; j < zone->count; j++)
             {
-                id = *((u32 *) (((u8 *) D_800580B8) + offset));
+                id = *((u32 *) (((u32) D_800580B8) + offset));
                 ref = zone->refs[j];
                 if (ref & 1)
                 {

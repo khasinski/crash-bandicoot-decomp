@@ -8,19 +8,15 @@ void func_80045D70(s32,void *);
 void func_8004F0D4();
 void func_8004D680(void);
 extern volatile u8 *D_80056270;
-extern u8 D_800571C4[];
+
 extern s16 D_8005724C;
 extern s16 D_80057254;
 extern s16 D_8005725C;
 extern s16 D_80057264;
 extern s32 D_8005778C;
-extern s32 D_80057790;
-extern s16 D_80057794;
-extern s16 D_80057796;
+
 extern s16 D_80057EF0;
-extern s16 D_800583F8;
-extern s16 D_8005CFC4;
-extern u8 D_8005E340;
+
 extern s16 D_8005E572;
 extern s8 D_8005E710;
 extern s16 D_80060CE8;
@@ -32,22 +28,11 @@ extern u8 D_800572B2[];
 extern u8 D_800572B4[];
 extern u8 D_800572B6[];
 extern u8 D_800572BA[];
-extern u8 D_800572BC[];
+
 extern u8 D_800572BE[];
 extern u8 D_800572C0[];
 extern u8 D_800572C7[];
-extern u8 D_800572C8[];
-extern u8 D_800572CA[];
-extern u8 D_800572CC[];
-extern u8 D_800572CE[];
-extern u8 D_800572D0[];
-extern u8 D_800572D4[];
-extern u8 D_800572D6[];
-extern u8 D_800572D8[];
-extern u8 D_800572DA[];
-extern u8 D_800572DC[];
-extern u8 D_800577A4[];
-extern u8 D_8005E578[];
+
 extern u16 D_8005E588[];
 void func_8004DA9C(s32 arg0) {
     u32 index;

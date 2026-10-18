@@ -1,7 +1,6 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern u16 D_800560A4[];
 
 s32 func_80048EC4(s32 base_note, s32 base_fine, s32 note, s32 fine) {
     s16 octave_shift;

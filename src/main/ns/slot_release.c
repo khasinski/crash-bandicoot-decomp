@@ -3,7 +3,7 @@
 typedef ResourceSlotStateView Slot;
 extern ResourceSlot D_80057F40[8];
 extern Slot D_800580A4[];
-extern s32 *D_8005CFBC;
+
 s32 func_80014514(s32 arg0) {
     s16 temp_v1;
 

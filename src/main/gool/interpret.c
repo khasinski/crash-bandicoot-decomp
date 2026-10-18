@@ -274,7 +274,7 @@ static __inline__ s32 *TRANS_GOP_IN(GoolObj *obj, s32 gop)
             return --obj->sp;
         }
         offset = ((gop & 0x1FF) << 2) + 0x60;
-        return (s32 *)((u8 *)obj + offset);
+        return (s32 *)((u32)obj + offset);
     }
     return GOOL_TranslateGop(obj, gop);
 }
@@ -287,7 +287,7 @@ static __inline__ s32 *TRANS_GOP_OUT(GoolObj *obj, s32 gop)
             return obj->sp++;
         }
         offset = ((gop & 0x1FF) << 2) + 0x60;
-        return (s32 *)((u8 *)obj + offset);
+        return (s32 *)((u32)obj + offset);
     }
     return GOOL_TranslateGop(obj, gop);
 }
@@ -299,7 +299,7 @@ static __inline__ s32 *TRANS_REG_IN(GoolObj *obj, s32 reg)
         return --obj->sp;
     }
     offset = (reg << 2) + 0x60;
-    return (s32 *)((u8 *)obj + offset);
+    return (s32 *)((u32)obj + offset);
 }
 
 static __inline__ s32 *TRANS_REG_OUT(GoolObj *obj, s32 reg)
@@ -309,7 +309,7 @@ static __inline__ s32 *TRANS_REG_OUT(GoolObj *obj, s32 reg)
         return obj->sp++;
     }
     offset = (reg << 2) + 0x60;
-    return (s32 *)((u8 *)obj + offset);
+    return (s32 *)((u32)obj + offset);
 }
 
 static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words, s32 flags)
@@ -347,9 +347,9 @@ static __inline__ s32 func_8001D97C(GoolObj *object, s32 *flags, u32 cur_flags)
     object->sp = frame + 1;
     object->pc = (u32 *)frame[1];
     if (flags != NULL) {
-        stack = object->sp;
-        object->sp = stack - 1;
-        ((struct { s32 v; } *)flags)->v = (cur_flags & 0xFFFF0000) | *(u16 *)(stack - 1);
+        stack = object->sp - 1;
+        object->sp = stack;
+        ((struct { s32 v; } *)flags)->v = (cur_flags & 0xFFFF0000) | *(u16 *)stack;
     }
     stack_offset = (packed & 0xFFFF) + 0x60;
     object->sp = (s32 *)(stack_offset + (u32)object);
@@ -583,9 +583,9 @@ next_ins:
                 if (((ins >> 12) & 0xFFF) == 0xBF0) {
                     s32 *sp = obj->sp;
                     obj->sp = sp - 1;
-                    rate = sp[-1];
+                    rate = *(sp - 1);
                     obj->sp = sp - 2;
-                    limit = sp[-2];
+                    limit = *(sp - 2);
                 } else {
                     rate = 0x100;
                     limit = *TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
@@ -625,9 +625,9 @@ next_ins:
                 if (((ins >> 12) & 0xFFF) == 0xBF0) {
                     s32 *sp = obj->sp;
                     obj->sp = sp - 1;
-                    rate = sp[-1];
+                    rate = *(sp - 1);
                     obj->sp = sp - 2;
-                    target = sp[-2];
+                    target = *(sp - 2);
                 } else {
                     rate = 0x100;
                     target = *TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
@@ -1364,7 +1364,7 @@ next_ins:
         case 0x83:
         {
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
-            obj->anim_seq = (GoolAnimSeq *)((u8 *)obj->exec->anims + ((ins >> 5) & 0x7FC));
+            obj->anim_seq = (GoolAnimSeq *)((u32)obj->exec->anims + ((ins >> 5) & 0x7FC));
             obj->anim_frame = (ins & 0x7F) << 8;
             *obj->sp++ = (((ins >> 16) & 0x3F) << 24) | D_80060E04[0];
             switch ((ins >> 22) & 3) {
@@ -1517,7 +1517,7 @@ next_ins:
                             GoolAnimModel *model;
                             GoolAnimVertex *vert;
 
-                            model_group = func_80015A98((u32 *)((u8 *)model_group + 4));
+                            model_group = func_80015A98((u32 *)model_group + 1);
                             model = (GoolAnimModel *)model_group->items[0];
                             vert = &frame->verts[(u32)*s_ptr >> 8];
                             v3.x = ((frame->offset.x - 0x80) + vert->x) << 10;

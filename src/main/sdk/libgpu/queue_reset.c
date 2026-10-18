@@ -7,11 +7,10 @@ s32 func_80042A04(s32);
 void *func_80042AE0(void *, s32, u32);
 extern volatile u32 *D_80054B40;
 extern volatile u32 *D_80054B4C;
-extern volatile u32 *D_80054B5C;
+
 extern s32 D_80054B70;
 /* The queue consumer callback also updates this index. */
-extern volatile s32 D_80054B74;
-extern s32 D_80054B80;
+
 extern u8 D_80057098[0x100];
 extern u8 D_8005E74C[0x1800];
 

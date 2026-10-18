@@ -1,5 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
-/* GNU_AS_G: 8 */
+/* GNU_AS_G: 4 */
 #include "common.h"
 
 void func_80042E9C(void *);
@@ -19,22 +19,20 @@ extern s32 D_800578D0[];
 extern s32 D_80057960[];
 extern u8 D_80051774[];
 
-extern s32 D_80056460;
-extern s32 D_80056464;
-extern s32 D_80056468;
-extern s32 D_8005646C;
-extern s32 D_800566D4;
-extern s32 D_800566D8;
-extern s32 D_800566DC;
 extern void * D_800566B4;
 
+typedef struct {
+    u32 words[5];
+    u8 *ptr14;
+    u32 rest[10];
+} ZoneItem64;
 
 void func_8001A2E0(s32 arg0)
 {
     s32 *data;
     s32 i;
     u32 dst;
-    u8 *ptr;
+    ZoneItem64 *ptr;
 
     data = (s32 *)D_80057914[0]->data;
     if (*D_800566B8[0] != 0) {
@@ -43,8 +41,8 @@ void func_8001A2E0(s32 arg0)
         func_80033FBC(data + 1, 0x1F800100, 0x100);
         dst = 0x1F800300;
         for (i = 0; i < *data; i++) {
-            ptr = (u8 *)data + (i << 6);
-            func_80033FBC(*(void **)(ptr + 0x14), dst, 6);
+            ptr = (ZoneItem64 *)((u32)data + (i << 6));
+            func_80033FBC(ptr->ptr14, dst, 6);
             dst += 0x10;
         }
         *(s32 *)0x1F800048 = D_800566D4 >> 8;
@@ -58,16 +56,29 @@ void func_8001A2E0(s32 arg0)
     }
 }
 
+typedef struct {
+    u32 pad00[3];
+    u32 count;
+} WgeoSubHeader;
+
+typedef struct {
+    u32 pad00[3];
+    s32 item_count;
+    WgeoSubHeader *sub;
+    u32 pad14[2];
+    u16 *list;
+} WgeoEntry;
+
 void func_8001A460(u32 arg0, u32 arg1)
 {
     u8 *data;
     s32 group;
     s32 count;
-    u8 *base;
+    ZoneItem64 *base;
     s32 j;
-    u8 *res;
+    WgeoEntry *res;
     u16 *list;
-    u8 *sub;
+    WgeoSubHeader *sub;
     s32 len;
     s32 i;
     u16 item;
@@ -77,21 +88,21 @@ void func_8001A460(u32 arg0, u32 arg1)
     data = D_80057914[0]->data;
     group = -1;
     count = *(s32 *)data;
-    base = data + 4;
+    base = (ZoneItem64 *)(data + 4);
     for (j = 0; j < count; j++) {
-        res = func_80015A98(base + (j << 6));
-        if (*(s32 *)(res + 0xC) >= 4) {
-            list = *(u16 **)(res + 0x1C);
+        res = func_80015A98(&base[j]);
+        if (res->item_count >= 4) {
+            list = res->list;
             len = list[0];
-            sub = *(u8 **)(res + 0x10);
+            sub = res->sub;
             for (i = 1; i < len + 1; i++) {
                 item = list[i];
                 if (item & 0x8000) {
                     group = item & 0xFFF;
                 } else {
                     idx = item & 0xFFF;
-                    if (idx < *(u32 *)(sub + 0xC)) {
-                        target = (u32 *)(*(u8 **)(base + (j << 6) + 0x14) + (idx << 3));
+                    if (idx < sub->count) {
+                        target = (u32 *)(base[j].ptr14 + (idx << 3));
                         if (group < 32) {
                             if (arg0 & (1 << group)) {
                                 goto set_flag;
@@ -110,9 +121,14 @@ void func_8001A460(u32 arg0, u32 arg1)
     }
 }
 
+typedef struct {
+    u8 bytes[4];
+    u32 word;
+} AnimSpriteDesc;
+
 void func_8001A5F4(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
 {
-    u8 *ptr;
+    AnimSpriteDesc *ptr;
     u32 res;
     u32 word;
     s16 y;
@@ -122,18 +138,18 @@ void func_8001A5F4(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
 
     switch (*arg1) {
     case 2:
-        ptr = arg1 + (((arg2 >> 8) << 3) + 8);
+        ptr = (AnimSpriteDesc *)(arg1 + (((arg2 >> 8) << 3) + 8));
         break;
     case 5:
-        ptr = arg1 + (((arg2 >> 8) << 4) + 12);
+        ptr = (AnimSpriteDesc *)(arg1 + (((arg2 >> 8) << 4) + 12));
         break;
     }
     res = (u32)func_80015A98(arg1 + 4);
-    word = *(u32 *)(ptr + 4);
+    word = ptr->word;
     switch (arg0) {
     case 2:
         y = ((res >> 10) & 0x180) | ((word >> 6) & 0x7F);
-        x = (res & 0x300) | ((ptr[3] & 0xF) << 4);
+        x = (res & 0x300) | ((ptr->bytes[3] & 0xF) << 4);
         arg3[1] = y;
         arg3[0] = x;
         if (!((word >> 20) & 3)) {
@@ -238,18 +254,28 @@ void func_8001A850(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 
 void *LIBC_Malloc(u32);
 
+typedef struct GoolObj {
+    s32 header;
+    u8 pad04[0x60 - 0x04];
+    struct GoolObj *self;
+    void *parent;
+    struct GoolObj *sibling;
+    struct GoolObj *child;
+    u8 pad70[0x25C - 0x70];
+} GoolObj;
+
 typedef struct GoolAllocGlobals {
-    u8 *db0;
-    u8 *db4;
+    GoolObj *db0;
+    GoolObj *db4;
     s32 db8[16];
     s32 df8;
-    u8 *dfc;
+    GoolObj *dfc;
     void *e00;
     s32 e04;
 } GoolAllocGlobals;
 
-extern GoolAllocGlobals gool_alloc __asm__("D_80060DB0");
-extern u8 * volatile D_80060DB0;
+extern GoolAllocGlobals gool_alloc_state __asm__("gool_alloc");
+extern GoolObj * volatile gool_alloc[2];
 extern s32 D_80060DB8[];
 extern s32 D_80060DF8[];
 extern void *D_80060E00[];
@@ -258,36 +284,36 @@ extern s32 D_80060E04[];
 s32 GOOL_InitAllocTable(void)
 {
     s32 i;
-    u8 *obj;
+    GoolObj *obj;
 
     D_800566B4 = NULL;
-    gool_alloc.db4 = LIBC_Malloc(0xE280);
-    gool_alloc.db0 = LIBC_Malloc(0x35C);
-    if (gool_alloc.db4 == NULL || gool_alloc.db0 == NULL) {
+    gool_alloc_state.db4 = LIBC_Malloc(0xE280);
+    gool_alloc_state.db0 = LIBC_Malloc(0x35C);
+    if (gool_alloc_state.db4 == NULL || gool_alloc_state.db0 == NULL) {
         return -0xF;
     }
     D_80060E00[0] = NULL;
     D_80060E04[0] = 0;
     D_80060DF8[0] = 2;
-    gool_alloc.dfc = gool_alloc.db4;
+    gool_alloc_state.dfc = gool_alloc_state.db4;
     for (i = 0; i < 0x60; i++) {
-        obj = gool_alloc.db4 + i * 0x25C;
-        *(s32 *)(obj + 0x0) = 0;
-        *(void **)(obj + 0x64) = &gool_alloc.df8;
-        *(void **)(obj + 0x6C) = NULL;
+        obj = &gool_alloc_state.db4[i];
+        obj->header = 0;
+        obj->parent = &gool_alloc_state.df8;
+        obj->child = NULL;
         if (i < 0x5F) {
-            *(void **)(obj + 0x68) = gool_alloc.db4 + (i + 1) * 0x25C;
+            obj->sibling = &gool_alloc_state.db4[i + 1];
         } else {
-            *(void **)(obj + 0x68) = NULL;
+            obj->sibling = NULL;
         }
     }
     for (i = 0; i < 8; i++) {
         D_80060DB8[i * 2] = 2;
         D_80060DB8[i * 2 + 1] = 0;
     }
-    *(s32 *)(D_80060DB0 + 0x0) = 0;
-    *(void **)(D_80060DB0 + 0x64) = NULL;
-    *(void **)(D_80060DB0 + 0x6C) = NULL;
-    *(void **)(D_80060DB0 + 0x68) = NULL;
+    gool_alloc[0]->header = 0;
+    gool_alloc[0]->parent = NULL;
+    gool_alloc[0]->child = NULL;
+    gool_alloc[0]->sibling = NULL;
     return -0xFF;
 }

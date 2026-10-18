@@ -1,4 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
 #include "common.h"
 
 typedef struct GoolVectors {
@@ -113,9 +114,7 @@ extern GoolObj D_80060DD0;
 GoolExecutable *func_80015118(s32 *, s32, s32);
 s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
-
-extern GoolObj * D_800566B4;
-asm(".sdata\n.size D_800566B4,4\n.text");
+extern GoolObj *D_800566B4;
 
 extern u32 D_8005FF58[];
 extern GoolObj D_80060DF8;
@@ -154,7 +153,6 @@ static __inline__ s32 func_8001B56C(GoolObj *node, GoolObj *new_parent)
     *NODE_CHILDREN_PTR(new_parent) = node;
 }
 
-
 typedef s32 (*Visitor)(GoolObj *, void *);
 GoolObj *GOOL_TestObjectStateFlags(GoolObj *, u32);
 s32 func_8001D1E0(GoolObj *, void *);
@@ -188,7 +186,6 @@ static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *cont
     return result;
 }
 
-
 typedef struct ZoneEntity {
     u8 pad00[4];
     u16 flags;
@@ -217,6 +214,9 @@ typedef struct ZoneHeaderView {
     s32 path_count;
     u8 pad20C[0xD0];
     u32 flags2DC;
+    u8 pad2E0[0x38];
+    GoolDefaults obj_defaults;
+    GoolDefaults player_defaults;
 } ZoneHeaderView;
 
 typedef struct ZoneEntryView {
@@ -242,7 +242,6 @@ void func_80026460(GoolObj *, void *, s32);
     ((e)->group == 3 && \
      ((e)->type == 0 || ((e)->id != 0 && (e)->id < 5) || \
       (((e)->type == 0x2C || (e)->type == 0x30) && (e)->subtype == 0)))
-
 
 GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_count, s32 *args, s32 flag);
 s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *args);
@@ -322,9 +321,9 @@ GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
         }
         obj->zone = (ResourceEntry *)zone;
         if (IS_PLAYER_ENTITY(entity)) {
-            obj->defaults = *(GoolDefaults *)((u8 *)zone->items[0] + 0x348);
+            obj->defaults = ((ZoneHeaderView *)zone->items[0])->player_defaults;
         } else {
-            obj->defaults = *(GoolDefaults *)((u8 *)zone->items[0] + 0x318);
+            obj->defaults = ((ZoneHeaderView *)zone->items[0])->obj_defaults;
         }
         obj->entity = entity;
         obj->path_length = entity->path_length << 8;
@@ -393,11 +392,11 @@ GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_co
     obj->unk04 = 3;
     res = GOOL_InitObject(obj, exec_id, subtype, arg_count, args);
     if (obj->zone != NULL) {
-        obj->defaults = *(GoolDefaults *)(obj->zone->data + 0x318);
+        obj->defaults = ((ZoneHeaderView *)obj->zone->data)->obj_defaults;
     } else if (obj == D_800566B4) {
-        obj->defaults = *(GoolDefaults *)(D_80057914[0]->data + 0x348);
+        obj->defaults = ((ZoneHeaderView *)D_80057914[0]->data)->player_defaults;
     } else {
-        obj->defaults = *(GoolDefaults *)(D_80057914[0]->data + 0x318);
+        obj->defaults = ((ZoneHeaderView *)D_80057914[0]->data)->obj_defaults;
     }
     if (res >= -0xFE) {
         return (GoolObj *)res;
@@ -489,7 +488,6 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
     }
     return -0xE;
 }
-
 
 s32 func_8001CDD0(GoolObj *obj, s32 flag) {
     GoolObj *child;

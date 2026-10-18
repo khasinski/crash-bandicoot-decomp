@@ -32,10 +32,15 @@ typedef struct LevelStateView {
     s32 level_id;
 } LevelStateView;
 
+typedef struct SubExec {
+    u8 pad00[0x10];
+    s32 *header;
+} SubExec;
+
 typedef struct SubObj {
     u8 pad00[8];
     ZqBound bound;
-    void *unk20;
+    SubExec *unk20;
     u8 pad24[4];
     ResourceEntry *entry;
     u8 pad2C[0x64 - 0x2C];
@@ -92,7 +97,6 @@ typedef struct SubWorkspace {
 
 extern s32 *D_800566F4;
 extern SubWorkspace D_8005CFEC;
-extern s8 D_80052A34[];
 
 ZoneEntry *func_80015A98(u32 *);
 s32 func_80024040(SubObj *, SubObj *, s32, s32, s32 *);
@@ -115,7 +119,6 @@ typedef struct SubBoxList {
     SubBox boxes[96];
     s32 count;
 } SubBoxList;
-
 
 void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
 void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
@@ -343,7 +346,7 @@ start:
         }
     }
     if ((gx != 16 || gz != 16)
-        && (obj->unk78 == NULL || **(s32 **)((u8 *)obj->unk78->unk20 + 0x10) != 0x22)) {
+        && (obj->unk78 == NULL || *obj->unk78->unk20->header != 0x22)) {
         for (i = 0; i < 32; i++) {
             if (D_800566F4[i] != -1) {
                 goto retry;
@@ -351,7 +354,7 @@ start:
         }
     }
     if (depth < 0x100
-        && (obj->unk78 == NULL || **(s32 **)((u8 *)obj->unk78->unk20 + 0x10) != 0x22)) {
+        && (obj->unk78 == NULL || *obj->unk78->unk20->header != 0x22)) {
         if (func_8002E0A0(0, 0, v, obj)) {
             func_8002E0A0(1, 1, v, obj);
             func_8002D8B8(v, obj, &D_8005CFEC, 0);

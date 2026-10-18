@@ -3,7 +3,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-
 /* --- func_80040A0C --- */
 
 typedef struct {
@@ -40,7 +39,6 @@ typedef struct {
 extern volatile GpuReverseState D_80054A6F;
 
 extern volatile GpuDisplayEnv D_80054AD8;
-extern const char D_80011338[];
 
 s32 func_8003F23C(void);
 s32 func_80041610(GpuRect *rect);

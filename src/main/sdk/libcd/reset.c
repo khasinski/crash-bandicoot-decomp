@@ -8,10 +8,9 @@ extern volatile s8 D_800555C0;
 extern volatile s8 *D_80055864;
 extern volatile s8 *D_8005586C;
 extern volatile u8 *D_80055870;
-extern volatile s32 *D_80055874;
+
 extern volatile s8 D_8005587C;
 extern volatile u8 D_8005587D[];
-extern volatile u8 D_8005587E;
 
 void func_80044C40(void) {
     u32 acknowledge = 7;

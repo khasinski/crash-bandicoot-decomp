@@ -3,7 +3,7 @@
 #include "common.h"
 #include "sdk/libspu/voice_attributes.h"
 extern volatile u16 *D_800558E4;
-extern u16 D_80055970[];
+
 u32 func_80046E00(s32,u32);
 s32 func_80048EC4(s32,s32,s32,s32);
 static inline u16 encode_attack(s32 mode) {
@@ -60,11 +60,11 @@ s32 func_80047F84(VoiceAttributes *attr, s32 first, s32 last, s32 skip_wait) {
     u16 rate;
     u16 right_volume;
     u16 left_volume;
-    volatile u8 *attack_regs;
-    volatile u8 *decay_regs;
-    volatile u8 *level_regs;
-    volatile u8 *sustain_regs;
-    volatile u8 *release_regs;
+    volatile u16 *attack_regs;
+    volatile u16 *decay_regs;
+    volatile u16 *level_regs;
+    volatile u16 *sustain_regs;
+    volatile u16 *release_regs;
 
     first_voice = first;
     end_voice = last;
@@ -91,7 +91,7 @@ valid:
             if ((1 << voice) & attr->field_0) {
                 word_index = voice * 8;
                 if ((all_fields != 0) || (field_mask & 0x10)) {
-                    *(volatile u16 *)(((voice * 0x10) + ((volatile u8 *)D_800558E4)) + 4) = (u16) attr->field_14;
+                    D_800558E4[(voice * 8) + 2] = (u16) attr->field_14;
                 }
                 if ((all_fields != 0) || (field_mask & 0x40)) {
                     D_80055970[voice] = attr->field_18;
@@ -99,7 +99,7 @@ valid:
                 if ((all_fields != 0) || ((field_mask & 0x20) != 0)) {
                     base_note = D_80055970[voice];
                     note = attr->field_16;
-                    *(volatile u16 *)(((word_index * 2) + ((volatile u8 *)D_800558E4)) + 4) = func_80048EC4(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
+                    D_800558E4[word_index + 2] = func_80048EC4(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
                 }
                 if ((all_fields != 0) || (field_mask & 0x80)) {
                     func_80046E00(word_index | 3, attr->field_1C);
@@ -120,20 +120,20 @@ set_attack_rate:
                     if ((u16) attr->field_30 < 0x80U) {
                         rate = attr->field_30;
                     }
-                    attack_regs = (word_index * 2) + ((volatile u8 *)D_800558E4);
-                    operand.word = *(volatile u16 *)(attack_regs + 8) & 0xFF;
-                    *(volatile u16 *)(attack_regs + 8) = (u16) (operand.word | ((rate | adsr_mode) << 8));
+                    attack_regs = D_800558E4 + word_index;
+                    operand.word = attack_regs[4] & 0xFF;
+                    attack_regs[4] = (u16) (operand.word | ((rate | adsr_mode) << 8));
                 }
                 if ((all_fields != 0) || (field_mask & 0x1000)) {
                     rate = clamp_rate4(&attr->field_32);
-                    decay_regs = (word_index * 2) + ((volatile u8 *)D_800558E4);
-                    operand.word = *(volatile u16 *)(decay_regs + 8) & 0xFF0F;
-                    *(volatile u16 *)(decay_regs + 8) = (u16) (operand.word | (rate * 0x10));
+                    decay_regs = D_800558E4 + word_index;
+                    operand.word = decay_regs[4] & 0xFF0F;
+                    decay_regs[4] = (u16) (operand.word | (rate * 0x10));
                 }
                 if ((all_fields != 0) || (field_mask & 0x8000)) {
                     rate = clamp_rate4(&attr->field_38);
-                    level_regs = (word_index * 2) + ((volatile u8 *)D_800558E4);
-                    *(volatile u16 *)(level_regs + 8) = (u16) (rate | (*(volatile u16 *)(level_regs + 8) & 0xFFF0));
+                    level_regs = D_800558E4 + word_index;
+                    level_regs[4] = (u16) (rate | (level_regs[4] & 0xFFF0));
                 }
                 if (all_fields == 0) {
                     if (field_mask & 0x2000) {
@@ -151,9 +151,9 @@ set_sustain_rate:
                     if ((u16) attr->field_34 < 0x80U) {
                         rate = attr->field_34;
                     }
-                    sustain_regs = (word_index * 2) + ((volatile u8 *)D_800558E4);
-                    operand.word = *(volatile u16 *)(sustain_regs + 10) & 0x3F;
-                    *(volatile u16 *)(sustain_regs + 10) = (u16) (operand.word | ((rate | adsr_mode) << 6));
+                    sustain_regs = D_800558E4 + word_index;
+                    operand.word = sustain_regs[5] & 0x3F;
+                    sustain_regs[5] = (u16) (operand.word | ((rate | adsr_mode) << 6));
                 }
                 if (all_fields == 0) {
                     if (field_mask & 0x4000) {
@@ -171,17 +171,17 @@ set_release_rate:
                     if ((u16) attr->field_36 < 0x20U) {
                         rate = attr->field_36;
                     }
-                    release_regs = (word_index * 2) + ((volatile u8 *)D_800558E4);
-                    operand.word = *(volatile u16 *)(release_regs + 10) & 0xFFC0;
-                    *(volatile u16 *)(release_regs + 10) = (u16) (operand.word | (rate | adsr_mode));
+                    release_regs = D_800558E4 + word_index;
+                    operand.word = release_regs[5] & 0xFFC0;
+                    release_regs[5] = (u16) (operand.word | (rate | adsr_mode));
                 }
                 if ((all_fields != 0) || ((field_mask & 0x20000) != 0)) {
                     operand.word = attr->field_3A;
-                    *(volatile u16 *)((word_index * 2 + ((volatile u8 *)D_800558E4)) + 8) = (u16) operand.word;
+                    D_800558E4[word_index + 4] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || ((field_mask & 0x40000) != 0)) {
                     operand.word = attr->field_3C;
-                    *(volatile u16 *)((word_index * 2 + ((volatile u8 *)D_800558E4)) + 10) = (u16) operand.word;
+                    D_800558E4[word_index + 5] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || (field_mask & 0x10000)) {
                     func_80046E00(word_index | 7, attr->field_20);
@@ -288,7 +288,7 @@ set_release_rate:
                     voice_address = word_index * 2;
                     operand.base = D_800558E4;
                     voice_address += (u32)operand.base;
-                    *(volatile u16 *)(voice_address + 2) = encoded_volume | volume_mode;
+                    ((volatile u16 *)voice_address)[1] = encoded_volume | volume_mode;
                 }
             }
             voice += 1;

@@ -1,5 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 4 */
 #include "common.h"
+extern s32 D_80057960;
+extern s32 D_800578D0;
 #include "zone.h"
 
 typedef struct {
@@ -15,7 +18,6 @@ typedef struct LevelHeader {
 } LevelHeader;
 
 extern LevelHeader *D_8005C53C[];
-
 
 typedef struct SaveVec {
     s32 x, y, z;
@@ -59,26 +61,21 @@ typedef struct LevelSave {
     s32 unk4F8;
 } LevelSave;
 
-extern SaveObj *D_800566B4;
+extern SaveObj *D_800566B4[2];
 extern u32 D_800619A0[];
 extern SaveVec D_80061A24;
 extern u32 D_8005FF58[0x130];
 extern s32 D_80061984[];
+s32 D_800564A0 = 0;
 extern s32 D_80056714;
-asm(".sdata\n.size D_80056714,4\n.text");
-extern s32 D_800564A0;
-asm(".sdata\n.size D_800564A0,4\n.text");
-extern s32 D_8006197C[];
+
 extern s32 D_800578D0;
-extern u32 D_80060DE8[];
-extern s32 D_80057960;
 extern s32 D_80061894;
-extern s32 D_800566E8;
-extern s32 D_8006189C;
-extern s32 D_800618A0[];
-extern s32 D_800618A0_w[] __asm__("D_800618A0");
-extern s32 D_80061A3C[];
-extern s32 D_80061A3C_w[] __asm__("D_80061A3C");
+extern struct { s32 v, pad; } D_800566E8;
+extern u32 D_8006189C;
+typedef struct { s32 v, pad; } WordView;
+extern WordView D_800618A0;
+extern WordView D_80061A3C;
 
 void func_80025134(void *, s32, s32, s32, s32);
 ZoneEntry *func_80015A98(u32 *);
@@ -100,7 +97,7 @@ void func_80026460(SaveObj *obj, LevelSave *save, s32 flag)
         return;
     }
     save->flag34 = flag;
-    save->transform = D_800566B4->transform;
+    save->transform = (*(SaveObj **)&D_800566B4)->transform;
     if (!(obj->status_b & 0x200)) {
         save->transform.trans = obj->transform.trans;
     }
@@ -172,11 +169,11 @@ void func_80026650(LevelSave *save)
     zone = (ZoneEntry *)func_80015118(&zone_eid, 1, 1);
     func_80025A60((ResourceEntry *)zone, zone->items[save->path_idx + ((ZoneHeader *)zone->items[0])->path_index], save->progress, !D_800564A0);
     func_80015458(&zone_eid, 1);
-    if (D_800566B4 == NULL) {
+    if (D_800566B4[0] == NULL) {
         GOOL_CreateObject(D_80060DE8, 0, 0, 0, 0, 1);
     }
-    D_800566B4->transform = save->transform;
-    player = D_800566B4;
+    D_800566B4[0]->transform = save->transform;
+    player = D_800566B4[0];
     player->entry = level_position.zone;
     player->unk130 = 0;
     player->unkA4 = 0;
@@ -191,14 +188,14 @@ void func_80026650(LevelSave *save)
     }
     D_80057960 = 0;
     D_80061894 = 0;
-    D_800566E8 = 0;
+    D_800566E8.v = 0;
     D_8006189C = 0xFFFF;
     if (!D_800564A0) {
-        D_800618A0_w[0] = D_800618A0[0] + 0x100;
+        D_800618A0.v += 0x100;
         if (save->flag34) {
-            D_80061A3C[0] = 0;
+            D_80061A3C.v = 0;
         } else {
-            D_80061A3C_w[0] = D_80061A3C[0] + 0x100;
+            D_80061A3C.v += 0x100;
         }
     }
     func_800262DC(0);

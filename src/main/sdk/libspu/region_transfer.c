@@ -5,11 +5,9 @@
 s32 func_80046A20(s32, ...);
 s32 func_80047190(u32);
 void func_80047ED4(s32);
-extern s32 D_800558FC;
-extern s32 D_80055908;
+
 extern volatile s32 D_80055918;
-extern s32 D_800559A0;
-extern u8 D_800559A8[];
+
 extern s32 D_80055DAC[];
 
 /* Wait for this block, then account for the transfer quantum. */

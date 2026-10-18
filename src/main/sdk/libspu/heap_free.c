@@ -7,7 +7,7 @@ typedef struct {
 } SpuBlock;
 
 void func_80050964(void);
-extern s32 D_8005593C;
+
 extern SpuBlock *D_80055944;
 
 void func_800508E8(u32 address)

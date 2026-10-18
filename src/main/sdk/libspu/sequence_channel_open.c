@@ -5,8 +5,7 @@
 #include "common.h"
 s32 func_8003D730(const char *, ...);
 s32 func_8004AEB8(s16, s16);
-extern const char D_8001174C[];
-extern s32 D_8005FF4C;
+
 typedef struct {
     u8 gap0[4];
     u8 *field_4,*field_8,*field_C;
@@ -87,10 +86,10 @@ s32 func_8004B078(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
     var_a1 = 0;
     var_v1 = (u8 *)temp_s0;
     do {
-        temp_v0 = (SequenceState *)((u8 *)temp_s0 + var_a1);
+        temp_v0 = (SequenceState *)((u32)temp_s0 + var_a1);
         temp_v0->field_17[0] = 0x40;
         temp_v0->field_2C[0] = var_a1;
-        *(s16 *)(var_v1 + 0x4E) = 0x7F;
+        ((s16 *)var_v1)[0x27] = 0x7F;
         var_a1 += 1;
         var_v1 += 2;
     } while (var_a1 < 0x10);

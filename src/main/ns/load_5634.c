@@ -3,7 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-extern ResourceSlot D_8005C554[] __asm__("D_8005C528 + 44");
+extern ResourceSlot D_8005C554[];
 
 ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void func_800134C8(s32 id);
@@ -30,7 +30,6 @@ static __inline__ void ns_pool_active_inc(void)
 {
     D_8005C528.pool.active_count++;
 }
-
 
 s32 func_80014E34(s32 id, s32 count)
 {

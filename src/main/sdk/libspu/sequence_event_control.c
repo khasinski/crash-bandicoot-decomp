@@ -2,7 +2,9 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 typedef struct {
-    u8 bytes[0xAC];
+    u8 bytes[0x88];
+    s32 ticks;
+    u8 gap8C[0xAC - 0x8C];
 } State;
 typedef void (*SequenceCallback)(s16,s16,u8);
 extern State *D_80060418[];
@@ -28,5 +30,5 @@ check_callback:
         callback=D_80060498[(s16)sequence][(s16)channel];
         if(callback) callback(sequence,channel,value);
     }
-    *(s32 *)(state->bytes+0x88)=func_8004AEB8(sequence,channel);
+    state->ticks=func_8004AEB8(sequence,channel);
 }

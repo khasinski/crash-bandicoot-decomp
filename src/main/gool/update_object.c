@@ -111,7 +111,6 @@ extern ResourceEntry *D_80057914[];
 GoolExecutable *func_80015118(s32 *, s32, s32);
 s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
-
 extern GoolObj *D_800566B4;
 
 void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
@@ -249,7 +248,7 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
                 }
             }
             sp = obj->sp;
-            wait_entry = sp[-1];
+            wait_entry = *(sp - 1);
             if (D_80060E04[0] - (wait_entry & 0xFFFFFF) >= (wait_entry >> 24)) {
                 obj->sp = sp - 1;
                 res = GOOL_InterpretObject(obj, 4, 0);
@@ -292,14 +291,6 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
     return -0xFF;
 }
 
-typedef struct GoolAnimSeq {
-    u8 type;
-    u8 pad01[3];
-    u32 eid;
-    s32 count;
-    u8 data[1];
-} GoolAnimSeq;
-
 typedef struct GoolFrag {
     u8 tex[8];
     s16 x1;
@@ -307,6 +298,21 @@ typedef struct GoolFrag {
     s16 x2;
     s16 y2;
 } GoolFrag;
+
+typedef struct GoolSpriteAnim {
+    u8 type;
+    u8 pad01[3];
+    u32 eid;
+    u8 frames[1][8];
+} GoolSpriteAnim;
+
+typedef struct GoolAnimSeq {
+    u8 type;
+    u8 pad01[3];
+    u32 eid;
+    s32 count;
+    GoolFrag frags[1];
+} GoolAnimSeq;
 
 typedef struct GoolBound {
     s32 x1;
@@ -333,6 +339,14 @@ typedef struct RenderProjectionState {
     s32 distance;
     s16 matrix[9];
 } RenderProjectionState;
+
+typedef struct ZoneDrawHeader {
+    u8 pad00[0x2E8];
+    s32 depth_offset;
+    u8 pad2EC[0x2C];
+    GoolDefaults obj_defaults;
+    GoolDefaults player_defaults;
+} ZoneDrawHeader;
 
 extern CamTransformState D_800577E4;
 extern RenderProjectionState D_800578D0;
@@ -361,7 +375,7 @@ void func_8001DE78(GoolObj *obj) {
     switch (anim_seq->type) {
     case 2:
         {
-            GoolAnimSeq *anim2 = anim_seq;
+            GoolSpriteAnim *anim2 = (GoolSpriteAnim *)anim_seq;
             s32 shift = ABS(obj->vectors.scale[0]) / 27279;
             if (func_8003A144(
                     &obj->vectors,
@@ -370,12 +384,12 @@ void func_8001DE78(GoolObj *obj) {
                     shift,
                     (obj->status_b & 0x200000) ? &D_800577E4.mat7E4 : &D_800577E4.mat844,
                     D_800578D0.distance,
-                    *(s32 *)(D_80057914[0]->data + 0x2E8) >> 8,
+                    ((ZoneDrawHeader *)D_80057914[0]->data)->depth_offset >> 8,
                     ((obj->status_b >> 18) ^ 1) & 1)) {
                 void *tex = func_80015A98(&anim2->eid);
                 func_8003A76C(
                     D_8005840C[0]->ordering_table,
-                    (u8 *)anim2 + (anim_frame * 8 + 8),
+                    anim2->frames[anim_frame],
                     tex,
                     200 << shift,
                     obj->cam_zoom + (0x800 - D_800578D0.distance / 2),
@@ -394,11 +408,11 @@ void func_8001DE78(GoolObj *obj) {
                     shift,
                     &D_800577E4.mat844,
                     D_800578D0.distance,
-                    *(s32 *)(D_80057914[0]->data + 0x2E8) >> 8,
+                    ((ZoneDrawHeader *)D_80057914[0]->data)->depth_offset >> 8,
                     ((obj->status_b >> 18) ^ 1) & 1)) {
                 GoolAnimSeq *anim5 = anim_seq;
                 s32 i = 0;
-                GoolFrag *frag = (GoolFrag *)((u8 *)anim5 + (anim_frame * anim5->count * 16 + 12));
+                GoolFrag *frag = &anim5->frags[anim_frame * anim5->count];
                 void *tex = func_80015A98(&anim5->eid);
                 for (; i < anim5->count; frag++, i++) {
                     bound.x1 = frag->x1 << shift;
@@ -427,10 +441,10 @@ void func_8001DE78(GoolObj *obj) {
         }
         if (obj->status_b & 0x100000) {
             if (obj == D_800566B4) {
-                obj->defaults = *(GoolDefaults *)(obj->zone->data + 0x348);
+                obj->defaults = ((ZoneDrawHeader *)obj->zone->data)->player_defaults;
             } else {
                 zone = obj->zone ? obj->zone : D_80057914[0];
-                obj->defaults = *(GoolDefaults *)(zone->data + 0x318);
+                obj->defaults = ((ZoneDrawHeader *)zone->data)->obj_defaults;
             }
         }
         break;
@@ -501,7 +515,7 @@ s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex,
                 }
                 break;
             case 'p':
-                if (*(u32 *)((u8 *)obj->sp - ((*str++ - 0x2E) << 2)) == 1) {
+                if (*(u32 *)((u32)obj->sp - ((*str++ - 0x2E) << 2)) == 1) {
                     str++;
                 }
                 if (*str == '\0') {

@@ -1,6 +1,8 @@
 #include "common.h"
+extern s32 D_80057960;
 
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 4 */
 
 void func_80042E9C(void *);
 void func_80042ECC(void *);
@@ -18,7 +20,6 @@ extern struct {
     u8 pad[0x10];
     u8 *data;
 } *D_80057914;
-extern s32 D_80057960;
 
 extern struct {
     s32 unk0;
@@ -31,79 +32,155 @@ extern struct {
     s32 wordAC8;
 } D_80060DF0;
 
-extern void * D_800566B4;
-asm(".sdata\n.size D_800566B4,4\n.text");
-extern void *D_80060E00;
-extern s32 D_80060E04;
+extern void *D_800566B4;
+extern void *D_80060E00[2];
+extern s32 D_80060E04[2];
 
-void func_8001D33C(u8 *arg0, s32 *arg1)
+typedef struct {
+    u8 type;
+    u8 pad[3];
+    u32 eid;
+} GoolAnim;
+
+typedef struct {
+    u8 pad00[0x14];
+    s32 box[6];
+    s32 col_x;
+    s32 col_y;
+    s32 col_z;
+} SvtxFrame;
+
+typedef struct {
+    u8 pad00[0x0C];
+    s32 sp_offset;
+} GoolHeader;
+
+typedef struct {
+    u32 flags;
+    u32 status_c;
+    u16 extern_idx;
+    u16 pc_event;
+    u16 pc_trans;
+    u16 pc_code;
+} GoolState;
+
+typedef struct {
+    u8 pad00[0x10];
+    GoolHeader *header;
+    u32 *code;
+    u32 *externs;
+    u32 *events;
+    GoolState *states;
+} GoolExecutable;
+
+typedef struct {
+    s32 header;
+    void *process;
+    s32 bound_x1;
+    s32 bound_y1;
+    s32 bound_z1;
+    s32 bound_x2;
+    s32 bound_y2;
+    s32 bound_z2;
+    GoolExecutable *global;
+    GoolExecutable *external;
+    void *zone;
+    s32 state_idx;
+    u8 pad30[0x60 - 0x30];
+    s32 regs[14];
+    s32 scale_x;
+    s32 scale_y;
+    s32 scale_z;
+    u8 padA4[0xC8 - 0xA4];
+    u32 status_a;
+    u32 status_b;
+    u32 status_c;
+    s32 subtype;
+    s32 pid_flags;
+    s32 *sp;
+    u32 *pc;
+    s32 *fp;
+    u32 *tp;
+    u32 *ep;
+    u32 once_p;
+    u32 misc_flag;
+    void *entity;
+    s32 path_progress;
+    s32 state_stamp;
+    u32 anim_counter;
+    GoolAnim *anim_seq;
+    u32 anim_frame;
+    u8 pad110[0x120 - 0x110];
+    u32 state_flags;
+} GoolObj;
+
+void func_8001D33C(GoolObj *arg0, s32 *arg1)
 {
     s32 bounds[6];
-    u8 *anim;
-    u8 **res;
-    u8 *model;
+    GoolAnim *anim;
+    SvtxFrame **res;
+    SvtxFrame *model;
     s32 scale_x;
     s32 *box;
     s32 abs_x;
     s32 val;
 
-    anim = *(u8 **)(arg0 + 0x108);
+    anim = arg0->anim_seq;
     if (anim == NULL) {
         return;
     }
-    if (*anim != 4) {
-        if ((((u32)(anim + 4) & 0xFF800003) != 0x80000000) || ((s32)func_80015A98(anim + 4) >= -0xFE)) {
+    if (anim->type != 4) {
+        if ((((u32)&anim->eid & 0xFF800003) != 0x80000000) || ((s32)func_80015A98(&anim->eid) >= -0xFE)) {
             return;
         }
     }
-    if (**(u8 **)(arg0 + 0x108) == 1) {
-        res = func_80015A98(*(u8 **)(arg0 + 0x108) + 4);
+    if (arg0->anim_seq->type == 1) {
+        res = func_80015A98(&arg0->anim_seq->eid);
         scale_x = arg1[0];
-        model = res[(*(u32 *)(arg0 + 0x10C) >> 8) + 4];
+        model = res[(arg0->anim_frame >> 8) + 4];
         if (scale_x < 0) {
             arg1[0] = -scale_x;
         }
         if (arg0 == D_800566B4) {
-            bounds[0] = *(s32 *)(model + 0x2C) + *(s32 *)(model + 0x14);
-            bounds[1] = *(s32 *)(model + 0x30) + *(s32 *)(model + 0x18);
-            bounds[2] = *(s32 *)(model + 0x34) + *(s32 *)(model + 0x1C);
-            bounds[3] = *(s32 *)(model + 0x2C) + *(s32 *)(model + 0x20);
-            bounds[4] = *(s32 *)(model + 0x30) + *(s32 *)(model + 0x24);
-            bounds[5] = *(s32 *)(model + 0x34) + *(s32 *)(model + 0x28);
+            bounds[0] = model->col_x + model->box[0];
+            bounds[1] = model->col_y + model->box[1];
+            bounds[2] = model->col_z + model->box[2];
+            bounds[3] = model->col_x + model->box[3];
+            bounds[4] = model->col_y + model->box[4];
+            bounds[5] = model->col_z + model->box[5];
             box = bounds;
         } else {
-            box = (s32 *)(model + 0x14);
+            box = model->box;
         }
-        *(s32 *)(arg0 + 0x8) = ((box[0] >> 8) * arg1[0]) >> 4;
-        *(s32 *)(arg0 + 0xC) = ((box[1] >> 8) * arg1[1]) >> 4;
-        *(s32 *)(arg0 + 0x10) = ((box[2] >> 8) * arg1[2]) >> 4;
-        *(s32 *)(arg0 + 0x14) = ((box[3] >> 8) * arg1[0]) >> 4;
-        *(s32 *)(arg0 + 0x18) = ((box[4] >> 8) * arg1[1]) >> 4;
-        *(s32 *)(arg0 + 0x1C) = ((box[5] >> 8) * arg1[2]) >> 4;
+        arg0->bound_x1 = ((box[0] >> 8) * arg1[0]) >> 4;
+        arg0->bound_y1 = ((box[1] >> 8) * arg1[1]) >> 4;
+        arg0->bound_z1 = ((box[2] >> 8) * arg1[2]) >> 4;
+        arg0->bound_x2 = ((box[3] >> 8) * arg1[0]) >> 4;
+        arg0->bound_y2 = ((box[4] >> 8) * arg1[1]) >> 4;
+        arg0->bound_z2 = ((box[5] >> 8) * arg1[2]) >> 4;
         arg1[0] = scale_x;
     } else {
         abs_x = arg1[0] >= 0 ? arg1[0] : -arg1[0];
         val = (abs_x * 200) >> 4;
-        *(s32 *)(arg0 + 0x14) = val;
-        *(s32 *)(arg0 + 0x8) = -val;
+        arg0->bound_x2 = val;
+        arg0->bound_x1 = -val;
         val = (arg1[1] * 200) >> 4;
-        *(s32 *)(arg0 + 0x18) = val;
-        *(s32 *)(arg0 + 0xC) = -val;
+        arg0->bound_y2 = val;
+        arg0->bound_y1 = -val;
         val = (arg1[2] * 200) >> 4;
-        *(s32 *)(arg0 + 0x1C) = val;
-        *(s32 *)(arg0 + 0x10) = -val;
+        arg0->bound_z2 = val;
+        arg0->bound_z1 = -val;
     }
-    *(s32 *)(arg0 + 0x98) = arg1[0];
-    *(s32 *)(arg0 + 0x9C) = arg1[1];
-    *(s32 *)(arg0 + 0xA0) = arg1[2];
+    arg0->scale_x = arg1[0];
+    arg0->scale_y = arg1[1];
+    arg0->scale_z = arg1[2];
 }
 
 extern struct {
     u8 pad[0x7C];
     u32 stamp;
-} *D_80058408;
-extern s32 D_80061888;
-extern s32 D_800619C8;
+} *D_80058408[2];
+
 void GOOL_UpdateObject(void *, s32);
 void func_8001B84C(void *, void *, s32);
 
@@ -115,7 +192,7 @@ typedef struct GoolUpdateGlobals {
     s32 e04;
 } GoolUpdateGlobals;
 
-extern GoolUpdateGlobals gool_update __asm__("D_80060DB8");
+extern GoolUpdateGlobals gool_update;
 
 void func_8001D5EC(s32 arg0)
 {
@@ -124,7 +201,7 @@ void func_8001D5EC(s32 arg0)
 
     D_80061888 = 0;
     D_800619C8 = D_80057960;
-    gool_update.e04 = D_80058408->stamp / 34;
+    gool_update.e04 = (*D_80058408)->stamp / 34;
     if (D_800566B4 != NULL) {
         i = 0;
         ptr = gool_update.db8;
@@ -139,52 +216,52 @@ void func_8001D5EC(s32 arg0)
 s32 GOOL_CreateObjectStackFrame(void *, s32, s32);
 s32 GOOL_InterpretObject(void *, s32, s32);
 
-s32 GOOL_ChangeObjectState(u8 *arg0, s32 arg1, s32 arg2, s32 *arg3)
+s32 GOOL_ChangeObjectState(GoolObj *arg0, s32 arg1, s32 arg2, s32 *arg3)
 {
     u32 saved_f0;
-    u8 *state_desc;
+    GoolState *state_desc;
     s32 i;
 
-    saved_f0 = *(u32 *)(arg0 + 0xF0);
-    if (arg1 == 0xFF || (*(u32 *)(arg0 + 0xCC) & 0x10000000)) {
+    saved_f0 = arg0->once_p;
+    if (arg1 == 0xFF || (arg0->status_b & 0x10000000)) {
         return -0xE;
     }
-    *(s32 *)(arg0 + 0x2C) = arg1;
-    state_desc = *(u8 **)(*(u8 **)(arg0 + 0x20) + 0x20) + (arg1 << 4);
-    *(u32 *)(arg0 + 0xD0) = *(u32 *)(state_desc + 4);
-    *(u8 **)(arg0 + 0x24) = func_80015A98(*(u8 **)(*(u8 **)(arg0 + 0x20) + 0x18) + (*(u16 *)(state_desc + 8) << 2));
-    *(u8 **)(arg0 + 0xE0) = (*(u16 *)(state_desc + 0xE) != 0x3FFF)
-        ? *(u8 **)(*(u8 **)(arg0 + 0x24) + 0x14) + (*(u16 *)(state_desc + 0xE) << 2)
+    arg0->state_idx = arg1;
+    state_desc = &arg0->global->states[arg1];
+    arg0->status_c = state_desc->status_c;
+    arg0->external = func_80015A98(&arg0->global->externs[state_desc->extern_idx]);
+    arg0->pc = (state_desc->pc_code != 0x3FFF)
+        ? &arg0->external->code[state_desc->pc_code]
         : NULL;
-    *(u8 **)(arg0 + 0xEC) = (*(u16 *)(state_desc + 0xA) != 0x3FFF)
-        ? *(u8 **)(*(u8 **)(arg0 + 0x24) + 0x14) + (*(u16 *)(state_desc + 0xA) << 2)
+    arg0->ep = (state_desc->pc_event != 0x3FFF)
+        ? &arg0->external->code[state_desc->pc_event]
         : NULL;
-    *(u8 **)(arg0 + 0xE8) = (*(u16 *)(state_desc + 0xC) != 0x3FFF)
-        ? *(u8 **)(*(u8 **)(arg0 + 0x24) + 0x14) + (*(u16 *)(state_desc + 0xC) << 2)
+    arg0->tp = (state_desc->pc_trans != 0x3FFF)
+        ? &arg0->external->code[state_desc->pc_trans]
         : NULL;
-    *(u32 *)(arg0 + 0xF0) = 0;
-    *(u8 **)(arg0 + 0xE4) = arg0 + 0x60;
-    *(u8 **)(arg0 + 0xDC) = arg0 + ((*(s32 *)(*(u8 **)(*(u8 **)(arg0 + 0x20) + 0x10) + 0xC) << 2) + 0x60);
-    *(u32 *)(arg0 + 0x120) = *(u32 *)state_desc;
-    *(u32 *)(arg0 + 0xC8) |= 0x20020;
+    arg0->once_p = 0;
+    arg0->fp = arg0->regs;
+    arg0->sp = &arg0->regs[arg0->global->header->sp_offset];
+    arg0->state_flags = state_desc->flags;
+    arg0->status_a |= 0x20020;
     for (i = 0; i < arg2; i++) {
-        *(*(s32 ***)(arg0 + 0xDC))++ = arg3[i];
+        *arg0->sp++ = arg3[i];
     }
     GOOL_CreateObjectStackFrame(arg0, arg2, 0xFFFF);
     if (saved_f0 != 0) {
         GOOL_CreateObjectStackFrame(arg0, 0, 0xFFFF);
-        *(u32 *)(arg0 + 0xE0) = saved_f0;
+        arg0->pc = (u32 *)saved_f0;
         i = GOOL_InterpretObject(arg0, 0x13, 0);
         if (i >= -0xFE) {
             return i;
         }
     } else {
-        *(*(s32 ***)(arg0 + 0xDC))++ = 0;
+        *arg0->sp++ = 0;
     }
-    *(s32 *)(arg0 + 0x100) = D_80060E04;
-    if (*(u8 **)(arg0 + 0xE8) != NULL && arg0 == D_80060E00) {
+    arg0->state_stamp = *D_80060E04;
+    if (arg0->tp != NULL && arg0 == *D_80060E00) {
         GOOL_CreateObjectStackFrame(arg0, 0, 0xFFFF);
-        *(u8 **)(arg0 + 0xE0) = *(u8 **)(arg0 + 0xE8);
+        arg0->pc = arg0->tp;
         i = GOOL_InterpretObject(arg0, 3, 0);
         if (i >= -0xFE) {
             return i;

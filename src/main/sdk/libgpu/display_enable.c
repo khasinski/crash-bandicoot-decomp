@@ -8,7 +8,7 @@ typedef struct {u8 pad00[16];void (*command10)(u32);} GpuApi;
 extern GpuState D_80054A6E;
 extern GpuApi *D_80054A64;
 extern s32 (*D_80054A68)(const char *,...);
-extern const char D_80011244[];
+
 void func_80042AE0(void *,s32,s32);
 void func_800401C0(s32 enabled) {
     GpuState *state = &D_80054A6E;

@@ -6,20 +6,14 @@
 s32 VSync(s32);
 s32 func_8003D730(const char *, ...);
 s32 func_8003E870(s32);
-extern char D_80011350[];
-extern char D_80011384[];
+
 extern volatile u32 *D_80054B40;
 extern volatile u32 *D_80054B44;
 extern volatile u32 *D_80054B4C;
-extern volatile u32 *D_80054B5C;
+
 extern volatile s32 D_80054B60[];
-extern s32 D_80054B64;
-extern s32 D_80054B68;
+
 extern volatile s32 D_80054B70;
-extern volatile s32 D_80054B74;
-extern s32 D_80054B80;
-extern s32 D_80054B84;
-extern s32 D_80054B88;
 
 void func_80042864(void)
 {

@@ -1,11 +1,9 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-extern u8 *D_80057E70[], *D_80057EB0[], *D_80057EF8[];
-extern u8 *D_8005CFCC,*D_8005CFDC,*D_8005CFE4;
-extern s16 D_8005CFC4;
-extern s8 D_8005E559,D_8005E55E;
-extern u8 D_8005E55F,D_8005E578[];
+extern u8 *D_80057E70[], *D_80057EB0[];
+extern u8 *D_8005CFDC, *D_8005CFE4;
+
 s32 func_80050728(s16 arg0, s16 arg1) {
     u8 *temp_a0, *master;
 

@@ -29,7 +29,7 @@ void func_8004324C(void);
 s32 func_80043520(u8, u8 *, u8 *);
 /* External word view: this unit uses an absolute reference to the flag. */
 extern s32 D_80056410[];
-extern s32 D_80056708;
+
 extern u32 D_8005728C[];
 
 typedef struct {

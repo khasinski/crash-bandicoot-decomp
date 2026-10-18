@@ -5,7 +5,7 @@ s32 func_80043498(s32, u8 *);
 s32 func_80043668(u8, u8 *);
 u8 *func_80043A24(s32, u8 *);
 extern s32 D_80056410;
-extern void *D_8005CFAC[];
+
 extern u32 D_8005E03C[][3];
 void func_80013798(s32 index)
 {

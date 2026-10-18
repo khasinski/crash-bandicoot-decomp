@@ -44,13 +44,9 @@ typedef struct {
 
 extern VoiceEntry D_80056804[];
 extern VoiceEntry D_80056E78;
-extern u8 D_80056EE4[];
-extern u8 D_80056670[];
+
 extern s32 D_80056710[];
 extern s32 D_80061914[];
-extern s16 D_80056660;
-extern s16 D_80056664;
-extern s32 D_8005666C;
 
 void func_800497F4(void);
 void func_8004C990(void *, s16, s16);

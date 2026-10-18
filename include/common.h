@@ -18,4 +18,6 @@ typedef unsigned int u32;
 #define NULL ((void *)0)
 #endif
 
+#include "globals.h"
+
 #endif

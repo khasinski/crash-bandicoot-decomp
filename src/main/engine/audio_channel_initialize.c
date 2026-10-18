@@ -4,9 +4,6 @@
 #include "common.h"
 #include "audio_channels.h"
 void func_8004CD58();
-extern s16 D_80056654;
-extern s16 D_8005665C;
-extern s32 D_8005666C;
 
 void func_80031964(AudioChannel *record, s32 packed_volume, s32 channel) {
     if (D_8005665C >= 2 && channel == 1) {

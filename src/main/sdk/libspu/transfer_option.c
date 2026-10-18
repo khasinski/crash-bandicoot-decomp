@@ -1,7 +1,7 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern s32 D_800558FC, D_8005594C;
+
 void func_80048A54(s32 mode)
 {
     s32 enabled;

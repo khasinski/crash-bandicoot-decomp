@@ -19,18 +19,7 @@ extern s32 D_800578D0[];
 extern s32 D_80057960[];
 extern u8 D_80051774[];
 
-extern s32 D_80056440;
-extern s32 D_80056444;
-extern s32 D_80056448;
-extern s32 D_8005644C;
-extern s32 D_80056450;
-extern s32 D_80056454;
-extern s32 D_80056458;
-extern s32 D_8005645C;
 extern s32 D_80056400[];
-extern s32 D_80056474;
-extern s32 D_80056478;
-extern s32 D_800567B8[];
 
 void func_80019DE0(s32 arg0)
 {

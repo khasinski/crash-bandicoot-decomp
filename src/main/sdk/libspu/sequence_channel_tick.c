@@ -2,8 +2,22 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
+typedef struct {
+    u8 gap00[4];
+    u8 *cursor;
+    u8 gap08[9];
+    u8 field_11;
+    u8 field_12;
+    u8 gap13[0x6E - 0x13];
+    s16 field_6E;
+    s16 field_70;
+    u8 gap72[0x88 - 0x72];
+    s32 ticks;
+    u8 gap8C[0x20];
+} SeqChannelState;
+
 void func_8004C4D4(s16,s16);
-extern u8 *D_80060418[];
+extern SeqChannelState *D_80060418[];
 void func_8004C3C8(s16 arg0, s16 arg1) {
     s16 temp_v0;
     s16 temp_v1_2;
@@ -13,24 +27,24 @@ void func_8004C3C8(s16 arg0, s16 arg1) {
     s32 temp_v1;
     s32 var_s0;
     s32 var_v0;
-    u8 *temp_s1;
+    SeqChannelState *temp_s1;
 
-    temp_s1 = (arg1 * 0xAC) + D_80060418[arg0];
-    temp_v0 = *(s16 *)(temp_s1 + 0x70);
-    temp_v1 = *(s32 *)(temp_s1 + 0x88);
+    temp_s1 = &D_80060418[arg0][arg1];
+    temp_v0 = temp_s1->field_70;
+    temp_v1 = temp_s1->ticks;
     temp_a1 = temp_v1 - temp_v0;
     if (temp_a1 > 0) {
-        temp_v1_2 = *(s16 *)(temp_s1 + 0x6E);
+        temp_v1_2 = temp_s1->field_6E;
         if (temp_v1_2 > 0) {
-            *(s16 *)(temp_s1 + 0x6E) = (s16) (temp_v1_2 - 1);
+            temp_s1->field_6E = (s16) (temp_v1_2 - 1);
             return;
         }
         if (temp_v1_2 == 0) {
-            *(s16 *)(temp_s1 + 0x6E) = temp_v0;
-            var_v0 = *(s32 *)(temp_s1 + 0x88) - 1;
+            temp_s1->field_6E = temp_v0;
+            var_v0 = temp_s1->ticks - 1;
             goto block_10;
         }
-        *(s32 *)(temp_s1 + 0x88) = temp_a1;
+        temp_s1->ticks = temp_a1;
         return;
     }
     if (temp_v0 >= temp_v1) {
@@ -38,29 +52,18 @@ void func_8004C3C8(s16 arg0, s16 arg1) {
         do {
 loop_8:
             func_8004C4D4(arg0, arg1);
-            temp_v0_2 = *(s32 *)(temp_s1 + 0x88);
+            temp_v0_2 = temp_s1->ticks;
             if (temp_v0_2 == 0) {
                 goto loop_8;
             }
-            temp_v1_3 = *(s16 *)(temp_s1 + 0x70);
+            temp_v1_3 = temp_s1->field_70;
             var_s0 += temp_v0_2;
         } while (var_s0 < temp_v1_3);
         var_v0 = var_s0 - temp_v1_3;
 block_10:
-        *(s32 *)(temp_s1 + 0x88) = var_v0;
+        temp_s1->ticks = var_v0;
     }
 }
-
-typedef struct {
-    u8 gap00[4];
-    u8 *cursor;
-    u8 gap08[9];
-    u8 field_11;
-    u8 field_12;
-    u8 gap13[0x75];
-    s32 ticks;
-    u8 gap8C[0x20];
-} SeqChannelState;
 
 typedef void (*EventCallback)();
 s32 func_8004AEB8();

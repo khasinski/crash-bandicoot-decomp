@@ -8,17 +8,13 @@
 s32 func_8003E208(void);
 s32 func_8003EE44(void *);
 extern u16 D_80053934[];
-extern u16 D_80053966;
-extern s32 D_80053968;
-extern volatile u16 *D_800549C4;
-extern volatile s32 *D_800549C8;
 
 u16 *func_8003ED50(void)
 {
     u16 *result;
 
     if (*D_80053934 == 0) {
-        func_8003EE44((u8 *)D_80053934 + 0x38);
+        func_8003EE44(&D_80053934[0x1C]);
         *D_80053934 = 1;
         *D_800549C4 = D_80053966;
         *D_800549C8 = D_80053968;

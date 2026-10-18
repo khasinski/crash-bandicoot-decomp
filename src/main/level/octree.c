@@ -32,13 +32,22 @@ typedef struct LevelStateView {
     s32 level_id;
 } LevelStateView;
 
+typedef struct SubLight {
+    s16 m1[3][3];
+    s16 v1[3];
+    s16 m2[3][3];
+    s16 v2[3];
+} SubLight;
+
 typedef struct SubObj {
     u8 pad00[8];
     ZqBound bound;
     void *unk20;
     u8 pad24[4];
     ResourceEntry *entry;
-    u8 pad2C[0x64 - 0x2C];
+    u8 pad2C[4];
+    SubLight light;
+    u8 pad60[4];
     struct SubObj *parent;
     u8 pad68[0x78 - 0x68];
     struct SubObj *unk78;
@@ -199,13 +208,6 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     }
 }
 
-typedef struct SubLight {
-    s16 m1[3][3];
-    s16 v1[3];
-    s16 m2[3][3];
-    s16 v2[3];
-} SubLight;
-
 void func_80027BC4(s32, void *, SubLight *);
 
 static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
@@ -220,7 +222,6 @@ static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
     *dst_f = *src_f;
 }
 
-
 void func_8002940C(SubObj *obj);
 s32 func_800294B0(ZqVec *v, SubObj *obj, SubWorkspace *ws);
 
@@ -230,7 +231,7 @@ void func_80027F50(void *defaults, SubObj *obj, s32 idx, s32 flag)
     SubLight *dst;
     s32 step, i;
 
-    dst = (SubLight *)((u8 *)obj + 0x30);
+    dst = &obj->light;
     if (obj == D_800566B4[0] && (obj->flags120 & 0x20)) {
         idx = 0x37;
     }
@@ -258,7 +259,7 @@ u32 func_8002832C(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, s32 level
     s32 i, j, k, idx;
 
     if (!(node & 1) && node) {
-        children = (u16 *)((u8 *)zone + node);
+        children = (u16 *)((u32)zone + node);
     } else {
         children = (u16 *)(u32)node;
     }
@@ -415,7 +416,6 @@ done:
 }
 
 extern s32 D_80057868[];
-extern s32 D_80052CA4[];
 
 static __inline__ s32 get_offset_base(SubObj *obj)
 {
@@ -694,11 +694,11 @@ s32 func_800294B0(ZqVec *v, SubObj *obj, SubWorkspace *ws)
     ws->bound1.p2.z = v->z + 0x12C00;
     header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
     for (i = 0; i < header->neighbor_count; i++) {
-        rect = (ZqZoneRect *)func_80015A98((u32 *)((u8 *)header + ((i << 2) + 0x214)))->items[1];
+        rect = (ZqZoneRect *)func_80015A98(&header->neighbors[i])->items[1];
         if (zone_rect_overlaps(&ws->bound1, (ZqRect *)rect)) {
-            ws->count = func_80037D50(rect, &ws->bound1, (u8 *)ws + (ws->count << 3), ws->count);
+            ws->count = func_80037D50(rect, &ws->bound1, &ws->nodes[ws->count], ws->count);
         }
     }
-    *(u16 *)((u8 *)ws + (ws->count << 3)) = 0xFFFF;
+    ws->nodes[ws->count].flags = 0xFFFF;
     return ws->count;
 }

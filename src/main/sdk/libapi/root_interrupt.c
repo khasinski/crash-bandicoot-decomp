@@ -15,13 +15,7 @@ typedef struct {
     u32 stack[0x3F0];
 } IntrState;
 
-extern char D_80011034[];
-extern char D_80011050[];
 extern IntrState D_80053934;
-extern volatile u16 *D_800549C0;
-extern volatile u16 *D_800549C4;
-extern volatile s32 *D_800549C8;
-extern s32 D_800549CC;
 
 s32 func_8003D730(const char *, ...);
 void func_8003E1F8(void);

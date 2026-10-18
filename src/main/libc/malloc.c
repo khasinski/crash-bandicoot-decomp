@@ -13,11 +13,6 @@ void *func_80011870(void *ptr, int size);
 void BIOS_BZero(void *dst, int len);
 void BIOS_BCopy(void *src, void *dst, int len);
 
-extern s32 *D_80056598, *D_800565A8;
-extern u32 D_800565A0;
-extern s32 D_800565B0;
-extern u32 *D_800577BC,*D_80057F38;
-
 s32 func_8001177C(u32 amount) {
     u32 maximum;
     s32 available, words, next_size;
@@ -34,7 +29,7 @@ s32 func_8001177C(u32 amount) {
     next_size=(s32)(amount+4);
     words >>= 2;
     D_80056598[words]=-2;
-    D_80056598[-1]=amount|1;
+    *(D_80056598 - 1) = amount | 1;
     D_80056598 += next_size/4;
     return 0;
 }

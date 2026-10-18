@@ -3,7 +3,7 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Register the SPU callback and enable its event once. */
-extern s32 D_80055DA8,D_80055948,D_800559A0;
+
 void func_8003E1F8(void);
 void func_800466A0(void);
 void func_800470FC(void (*callback)(void));

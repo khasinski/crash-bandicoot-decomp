@@ -4,9 +4,8 @@
 /* GNU_AS_G: 8 */
 
 /* Set or clear the clipped rectangle in the 32-row grid. */
-extern u32 *D_800566AC;
+
 extern s32 *D_800566F4;
-extern u32 *D_8005670C;
 
 void func_8002D69C(s32 x, s32 y) {
     s32 i;

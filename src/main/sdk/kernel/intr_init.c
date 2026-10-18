@@ -3,7 +3,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-
 /* --- func_8003E88C --- */
 
 typedef void (*Callback)(void);
@@ -20,9 +19,6 @@ typedef struct {
 } IntrState;
 
 extern IntrState D_80053934;
-extern volatile u16 *D_800549C0;
-extern volatile u16 *D_800549C4;
-extern volatile s32 *D_800549C8;
 
 typedef struct {
     u32 word00;
@@ -37,7 +33,7 @@ typedef struct {
 extern Dispatch *D_800549BC;
 
 void func_8003EDD8(void *, s32);
-s32 setjmp(void *) __asm__("func_8003EE04");
+s32 setjmp(void *);
 void func_8003E968(void);
 void func_8003EE44(void *);
 s32 func_8003EE54(void);

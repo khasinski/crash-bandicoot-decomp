@@ -2,7 +2,6 @@
 
 /* GCC_VERSION: 2.5.7 */
 extern volatile u16 *D_800558E4;
-extern u32 D_800559A4;
 
 void func_80047EE4(s32 arg0, u32 arg1) {
     u32 var_v0;

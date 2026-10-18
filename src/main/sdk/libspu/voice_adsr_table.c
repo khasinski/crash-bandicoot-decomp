@@ -16,21 +16,18 @@ typedef struct {
     u8 pad2A[10];
 } VoiceStruct;
 
-extern s32 D_8005E744;
-extern u32 D_80060D70[];
-extern u8 D_8005E340;
 extern VoiceStruct D_800572AC[];
 extern u16 *D_80056270;
 extern u8 D_8005E710;
 extern u16 D_80061A68;
-extern u16 D_80061A70;
+
 extern u16 D_8005724C;
 extern u16 D_80057254;
 extern u16 D_8005725C;
 extern u16 D_80057264;
 extern void (*D_8005E708)(s32);
 extern void (*D_8005E550)(s32);
-extern u8 D_800577A4[];
+
 extern u16 D_8005E588[];
 extern u32 D_80056274;
 

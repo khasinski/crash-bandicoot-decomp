@@ -3,11 +3,10 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Align a byte address, convert to SPU units, optionally write a register. */
-extern s32 D_80055904,D_80055908;
-extern u32 D_8005590C,D_80055910;
+
+extern u32 D_8005590C, D_80055910;
 extern u16 *D_800558E4;
-extern s32 D_80055950;
-extern s32 D_80055954;
+
 extern s32 D_80055958;
 s32 func_80047190(s32);
 

@@ -3,7 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-extern volatile s32 D_80034520 __asm__("func_80034520");
+extern volatile s32 frame_counter;
 
 ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void func_800134C8(s32 id);
@@ -15,7 +15,6 @@ static __inline__ void ns_pool_active_inc(void)
 {
     D_8005C528.pool.active_count++;
 }
-
 
 s32 func_80014A6C(ZoneLoadList *load, ResourceSlot *slot)
 {
@@ -40,20 +39,26 @@ s32 func_80014A6C(ZoneLoadList *load, ResourceSlot *slot)
             }
             i++;
         }
-        for (i = 0; i < load->page_count; i++) {
-            if (load->pages[i] == (u32)slot->id) {
-                do {
-                    register s32 ret __asm__("$2") = 1;
+        {
+            s32 ret;
+            for (i = 0; i < load->page_count; i++) {
+                if (load->pages[i] == (u32)slot->id) {
+                    ret = 1;
                     goto found2;
-                } while (0);
+                }
             }
-        }
-        return 0;
-    found2:
-        do {
-            register s32 ret __asm__("$2");
+            {
+                s32 z = i & 1;
+                if ((z >> 1) == 0) {
+                    goto ret0;
+                }
+            }
+            ret = 0;
+        found2:
             return ret;
-        } while (0);
+        }
+    ret0:
+        return 0;
     }
     return 0;
 }
@@ -72,7 +77,7 @@ s32 func_80014A6C(ZoneLoadList *load, ResourceSlot *slot)
         } \
         goto done_label; \
     found_label: \
-        _ticks = D_80034520; \
+        _ticks = frame_counter; \
         _cand->state = 2; \
         _cand->id = (page_id); \
         _cand->references = 0; \

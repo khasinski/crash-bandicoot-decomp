@@ -23,10 +23,10 @@ HANDWRITTEN_ASM("src/main/engine/gte_asm", func_800342D8);
 
 /* The following assembly label contains a writable counter word, not an
  * ABI function. Retain its original address while typing this data access. */
-extern u32 engine_counter_80034520[] __asm__("func_80034520");
+extern u32 func_80034520[];
 void func_80034504(void)
 {
-    engine_counter_80034520[0]++;
+    func_80034520[0]++;
 }
 
 HANDWRITTEN_ASM("src/main/engine/gte_asm", func_80034520);

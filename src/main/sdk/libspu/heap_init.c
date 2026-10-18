@@ -4,9 +4,7 @@
 #include "common.h"
 
 typedef struct { u32 address; s32 size; } HeapEntry;
-extern s32 D_80055908;
-extern s32 D_8005593C;
-extern s32 D_80055940;
+
 extern HeapEntry *D_80055944;
 
 s32 func_80045D70(s32 capacity, HeapEntry *entries)

@@ -8,8 +8,6 @@ static __inline__ s32 func_8001FB20(s32 value, s32 bits)
     return (s32)((u32)value << shift) >> shift;
 }
 
-extern s32 * D_80056488;
-extern s32 D_8005648C;
 void printf(char *, ...);
 
 typedef struct GoolExecView {
@@ -70,7 +68,7 @@ static __inline__ s32 *GoolRegPtr(GoolObjView *obj, u32 reg, s32 mode)
             return obj->sp++;
         }
     } else {
-        return (s32 *)((u8 *)obj + ((reg << 2) + 0x60));
+        return (s32 *)&obj->links[reg];
     }
 }
 

@@ -1,5 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "render.h"
+extern s32 D_80057960;
 typedef GpuDrawing Drawing;
 typedef GpuTile Tile;
 
@@ -11,8 +12,7 @@ typedef struct {
 
 extern RenderSystem D_80058400;
 extern s32 D_80056710;
-extern s32 D_80057960;
-extern s32 frame_counter __asm__("func_80034520");
+extern s32 frame_counter;
 
 void *LIBC_Malloc(s32);
 void LIBC_Free(void *);

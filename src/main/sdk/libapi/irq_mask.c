@@ -4,8 +4,6 @@
 
 /* Exchange the hardware interrupt mask. */
 
-extern volatile u16 *D_800549C4;
-
 u16 func_8003E870(u16 arg0) {
     u16 temp_v0;
 

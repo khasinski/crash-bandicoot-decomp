@@ -2,8 +2,7 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-extern u16 D_80056278[];
-extern u8 D_8005E55A,D_8005E568,D_8005E569;
+
 s32 func_8004EA24(void) {
     s32 temp_v0;
     s32 semitone_index;

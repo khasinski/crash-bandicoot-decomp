@@ -10,11 +10,10 @@ void func_8004B6AC(s16, s16);                          /* extern */
 void func_8004C964(s16, s16);                          /* extern */
 void func_8004CD58(s16, s16, s16, s16);                /* extern */
 void func_80050868(s16);                               /* extern */
-extern s16 D_80056654;
+
 /* Export the real small-common channel identifier. */
 asm(".globl D_80056658");
 s16 D_80056658;
-extern s16 D_8005665C;
 
 void func_800319DC(s16 arg0, s32 arg1) {
     if (arg0 != -1) {

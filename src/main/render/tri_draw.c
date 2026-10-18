@@ -3,16 +3,14 @@
 #include "common.h"
 #include "gpu.h"
 #include "gte.h"
-
-
 extern s32 D_80057960;
+
 extern s32 D_800578D0;
 void func_80042E9C(void *);
 typedef struct PrimBuf9398 {
     u8 pad00[0x78];
     void *prim_ptr;
 } PrimBuf9398;
-
 
 extern PrimBuf9398 *D_8005840C;
 extern s32 D_800578D0;
@@ -164,7 +162,7 @@ void func_800195CC(u32 *arg0)
         w0 >>= 24;
         if (w0 & 0x80) {
             void *p = D_8005840C->prim_ptr;
-            D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyGT3_9DCC);
+            D_8005840C->prim_ptr = (PolyGT3_9DCC *)p + 1;
             t3 = **(u32 ***)(((tri_w0 & 0xE0) >> 3) + (u32)group_ptr->tex_tab - 0x20);
             poly = (PolyGT3_9DCC *)p;
             poly->color0 = vtx0->v0;
@@ -203,7 +201,7 @@ void func_800195CC(u32 *arg0)
             *(u32 *)xy = (u32)poly & 0xFFFFFF;
         } else {
             void *p = D_8005840C->prim_ptr;
-            D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyG3_9DCC);
+            D_8005840C->prim_ptr = (PolyG3_9DCC *)p + 1;
             poly_g3 = (PolyG3_9DCC *)p;
             poly_g3->color0 = vtx0->v0;
             poly_g3->color1 = vtx1->v0;

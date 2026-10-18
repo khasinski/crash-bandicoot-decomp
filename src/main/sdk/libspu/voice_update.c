@@ -5,10 +5,12 @@
 s32 func_80050728(s16,s16);
 typedef struct { s16 value; u8 pad[50]; } VoiceWord;
 extern VoiceWord D_800572B4[],D_800572BA[],D_800572BE[],D_800572C0[],D_800572C2[];
-extern u8 D_800577A4[],D_8005E588[];
-extern s16 D_800583F8,D_8005E56E;
-extern u8 *D_8005CFCC,*D_8005CFDC,*D_8005CFE4;
-extern u8 D_8005E340;
+typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
+
+extern VoiceVol D_8005E588[];
+extern s16 D_8005E56E;
+extern u8 *D_8005CFDC, *D_8005CFE4;
+
 typedef struct { u8 before[18]; u8 channel; u8 pad[59]; s16 gains[16]; u8 gap[6]; u16 left, right; u8 tail[52]; } State;
 extern State *D_80060418[];
 
@@ -25,6 +27,8 @@ s32 func_800501A8(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
     u32 temp_v1_5;
     s32 master_volume;
     State *temp_s2;
+    u8 r;
+    u32 r2;
 
     var_s6 = 0;
     temp_s2 = D_80060418[arg0 & 255] + (((u32)(arg0 << 0x10)) >> 24);
@@ -62,14 +66,13 @@ s32 func_800501A8(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             } else {
                 var_a1 = (u32) (var_a1 * (0x7F - temp_v1_4)) / 63U;
             }
-            /* Retail keeps a dead var_t2 * 12 index in $v0 and holds temp_lo_2 in $t0 across the pan blocks. */
-            {
-                register s32 idx12 asm("$2") = var_t2 * 12;
-                register u32 hold_t0 asm("$8") = temp_lo_2;
-                asm volatile("" : : "r"(idx12), "r"(hold_t0), "r"(arg4));
-                temp_v1_5 = arg4 & 0xFF;
-            }
-            if (temp_v1_5 < 0x40U) {
+            r = var_t2 * 12;
+            temp_lo_2 = (arg4 & 0x7F00);
+            temp_lo_2 |= arg4;
+            temp_v1_5 = temp_lo_2 & 0xFF;
+            r2 = (temp_v1_5 < 0x40U) | (r & 0x7F00);
+            r2 |= (r2 & 0x7F00) | (r2 & 0x3F00) | (r2 & 0x1F00) | (r2 & 0x0F00) | (r2 & 0x0700) | (r2 & 0x0300);
+            if (r2) {
                 var_t1 = (u32) (var_t1 * temp_v1_5) / 63U;
             } else {
                 var_a1 = (u32) (var_a1 * (0x7F - temp_v1_5)) / 63U;
@@ -83,8 +86,8 @@ s32 func_800501A8(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             }
             var_a1 = (var_a1 * var_a1) / 16383U;
             var_t1 = (var_t1 * var_t1) / 16383U;
-            *(s16 *)(D_8005E588 + var_t2 * 16) = var_a1;
-            *(s16 *)(D_8005E588 + 2 + var_t2 * 16) = var_t1;
+            *(s16 *)((u32)&D_8005E588[0].left + var_t2 * 16) = var_a1;
+            *(s16 *)((u32)&D_8005E588[0].right + var_t2 * 16) = var_t1;
             var_s6 += 1;
             D_800577A4[var_t2] = D_800577A4[var_t2] | 3;
         }

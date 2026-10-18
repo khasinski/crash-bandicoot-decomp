@@ -5,9 +5,6 @@
 /* Query transfer completion, or wait for the event in blocking mode. */
 
 s32 func_8003E1C8(s32);
-extern s32 D_80055914;
-extern s32 D_8005594C;
-extern s32 D_800559A0;
 
 s32 func_80048A88(s32 blocking) {
     s32 completed;

@@ -2,8 +2,7 @@
 /* ASPSX_VERSION: 2.21 */
 #include "common.h"
 extern const char *D_800555C4[];
-extern const char *D_80055644[];
-extern const char D_800113B4[];
+
 const char *func_80043428(s32 command)
 {
     u32 index=command & 0xFF;

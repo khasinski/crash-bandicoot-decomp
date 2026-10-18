@@ -3,7 +3,7 @@
 #include "common.h"
 typedef struct {u16 registers[8];} VoiceRegisters;
 extern volatile VoiceRegisters *D_800558E4;
-extern u32 D_800559A4;
+
 s32 func_80049110(s32 first,s32 last,u8 *output) {
     s32 voice;
     s32 end;

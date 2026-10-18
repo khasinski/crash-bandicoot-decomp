@@ -175,7 +175,7 @@ void func_8001E7D8(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot,
         font_offset = (u32)obj->invincibility_state >> 8;
         font = (GoolFont *)(obj->exec->anims + (font_offset ? font_offset : anim4->count));
         tex = func_80015A98(&font->eid);
-        func_8003D740(buf, str, obj->sp[-2], obj->sp[-3], obj->sp[-4], obj->sp[-5]);
+        func_8003D740(buf, str, *(obj->sp - 2), *(obj->sp - 3), *(obj->sp - 4), *(obj->sp - 5));
         str = buf;
         p = str;
         while (*p != '\0') {

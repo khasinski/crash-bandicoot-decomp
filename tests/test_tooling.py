@@ -109,18 +109,16 @@ class ToolingTests(unittest.TestCase):
             self.assertIn('Levenshtein=2', line)
 
     def test_strength_reduction_compiler_profile(self):
-        source = ROOT / 'src/main/sdk/libspu/sequence_channel_reset.c'
+        source = ROOT / 'src/main/sdk/libspu/spu_initialize.c'
         result = self.run_probe(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('Levenshtein=0', result.stdout)
-        # Strength reduction biases the byte cursor by 23, changing its
-        # initialization and both byte-store offsets in the retail loop.
         with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
-            trial = Path(tmp) / 'sequence_channel_reset.c'
+            trial = Path(tmp) / 'spu_initialize.c'
             trial.write_text(source.read_text().replace('-fno-strength-reduce', ''))
             result = self.run_probe(trial)
             self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-            self.assertIn('Levenshtein=3', result.stdout)
+            self.assertIn('Levenshtein=17', result.stdout)
 
     def test_promoted_function_with_switch_tables_has_retail_reference(self):
         source = ROOT / 'src/main/sdk/libspu/voice_attributes_set.c'

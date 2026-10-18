@@ -17,9 +17,7 @@ typedef struct {
 } NsFileMapBits;
 
 extern NsFileMapBits D_8005E03C[];
-extern const char D_800564E0[];
-extern const char D_80010BC0[];
-extern u16 D_800564E8;
+
 extern struct { s16 a; s8 b; } D_800564EC;
 
 void *LIBC_Malloc(s32);

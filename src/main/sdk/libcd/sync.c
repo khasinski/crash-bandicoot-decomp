@@ -9,9 +9,6 @@ extern char D_800115B4[];
 extern char D_800115C4[];
 extern s32 D_800555A0;
 extern s32 D_800555B0;
-extern s32 D_800555B8;
-extern s32 D_800558A8;
-extern u8 D_800558AC[];
 
 void func_80044B30(void) {
     s32 saved_callback;
