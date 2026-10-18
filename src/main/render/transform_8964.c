@@ -118,12 +118,12 @@ extern s32 D_800578D0[];
 extern ResourceEntry *D_80057914[];
 extern u8 D_80051774[];
 
-extern ResourceEntry *func_80015A98(void *);
-extern s32 *func_80016E18(void);
-extern s32 func_800180CC(u8 *, void *, GoolObj *, s32, s32 *);
-extern void func_8003460C(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-extern void func_80034B08(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-extern s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+ResourceEntry *func_80015A98(void *);
+s32 *func_80016E18(void);
+s32 func_800180CC(u8 *, void *, GoolObj *, s32, s32 *);
+void func_8003460C(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
+void func_80034B08(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
+s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
 
 void func_80018964(u8 *arg0, u32 *arg1, GoolObj *arg2) {
     ResourceEntry *res;

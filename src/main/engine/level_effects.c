@@ -15,7 +15,6 @@ typedef struct LevelHeader {
 } LevelHeader;
 
 extern LevelHeader *D_8005C53C[];
-extern u8 D_80052CB4[];
 
 
 typedef struct SaveVec {
@@ -49,37 +48,7 @@ typedef struct SaveObj {
     s32 unk130;
 } SaveObj;
 
-typedef struct LevelSave {
-    SaveTransform transform;
-    u32 zone_eid;
-    s32 path_idx;
-    s32 progress;
-    s32 level_id;
-    s32 flag34;
-    u32 flags38[0x130];
-    s32 unk4F8;
-} LevelSave;
-
 extern SaveObj *D_800566B4;
-extern u32 D_800619A0[];
-extern SaveVec D_80061A24;
-extern u32 D_8005FF58[0x130];
-extern s32 D_80061984[];
-extern s32 D_80056714;
-asm(".sdata\n.size D_80056714,4\n.text");
-extern s32 D_800564A0;
-asm(".sdata\n.size D_800564A0,4\n.text");
-extern s32 D_8006197C[];
-extern s32 D_800578D0;
-extern u32 D_80060DE8[];
-extern s32 D_80057960;
-extern s32 D_80061894;
-extern s32 D_800566E8;
-extern s32 D_8006189C;
-extern s32 D_800618A0[];
-extern s32 D_800618A0_w[] __asm__("D_800618A0");
-extern s32 D_80061A3C[];
-extern s32 D_80061A3C_w[] __asm__("D_80061A3C");
 
 
 extern s32 D_80056474;

@@ -256,6 +256,7 @@ segments:
       - [0x221DC, c, engine/audio_stop]
       - [0x22360, c, engine/resource_adjust]
       - [0x223AC, c, engine/state]
+      - [0x23CA0, c, engine/gte_render]
       - [0x2B14C, c, engine/card]
       - [0x2DCEC, c, engine/bios_ctrl]
       - [0x2DE80, c, sdk/bios/bios_libc]

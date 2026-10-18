@@ -8,7 +8,7 @@ extern u8 D_80051728[];
 extern char D_80056728[];
 extern char D_8005641C[];
 extern char D_80056414[];
-extern s32 func_8003D740(char *, const char *, ...);
+s32 func_8003D740(char *, const char *, ...);
 
 char *func_80012604(s32 id)
 {

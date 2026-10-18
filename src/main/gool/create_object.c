@@ -110,8 +110,8 @@ extern NsdTable *D_8005C53C[];
 extern GoolObj *D_80060DB0[];
 extern ResourceEntry *D_80057914[];
 extern GoolObj D_80060DD0;
-extern GoolExecutable *func_80015118(s32 *, s32, s32);
-extern s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
+GoolExecutable *func_80015118(s32 *, s32, s32);
+s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
 
 extern GoolObj * D_800566B4;
@@ -119,8 +119,8 @@ asm(".sdata\n.size D_800566B4,4\n.text");
 
 extern u32 D_8005FF58[];
 extern GoolObj D_80060DF8;
-extern void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
-extern void func_80030260(GoolObj *);
+void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
+void func_80030260(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -156,10 +156,10 @@ static __inline__ s32 func_8001B56C(GoolObj *node, GoolObj *new_parent)
 
 
 typedef s32 (*Visitor)(GoolObj *, void *);
-extern GoolObj *GOOL_TestObjectStateFlags(GoolObj *, u32);
-extern s32 func_8001D1E0(GoolObj *, void *);
+GoolObj *GOOL_TestObjectStateFlags(GoolObj *, u32);
+s32 func_8001D1E0(GoolObj *, void *);
 
-extern s32 func_8001B788_ext(GoolObj *, Visitor, void *) __asm__("func_8001B788");
+s32 func_8001B788(GoolObj *, Visitor, void *);
 static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *context)
 {
     GoolObj *child;
@@ -182,7 +182,7 @@ static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *cont
     }
     while (child != NULL && result == 0) {
         next = child->next;
-        result = func_8001B788_ext(child, visitor, context);
+        result = func_8001B788(child, visitor, context);
         child = next;
     }
     return result;
@@ -234,9 +234,9 @@ extern ObjectRoot D_80060DB8[];
 extern GoolObj D_80060DD8;
 extern s32 D_80056714[];
 extern u8 D_80057974[];
-extern s32 func_8002F840(s32, s32);
-extern void func_8001AC9C(GoolObj *, s32, s32 *);
-extern void func_80026460(GoolObj *, void *, s32);
+s32 func_8002F840(s32, s32);
+void func_8001AC9C(GoolObj *, s32, s32 *);
+void func_80026460(GoolObj *, void *, s32);
 
 #define IS_PLAYER_ENTITY(e) \
     ((e)->group == 3 && \

@@ -6,7 +6,7 @@
 
 #include "vector.h"
 
-extern s32 func_80042B9C(s32);
+s32 func_80042B9C(s32);
 
 s32 func_80029D30(Vec3 *a, Vec3 *b)
 {

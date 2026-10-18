@@ -5,8 +5,8 @@
 
 /* Initialise draw/display environments and pack the texture-page field for the active GPU mode. */
 
-extern s32 func_8003F23C(void);
-extern s32 func_80040144(void);
+s32 func_8003F23C(void);
+s32 func_80040144(void);
 
 GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
 {

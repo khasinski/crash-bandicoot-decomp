@@ -9,7 +9,7 @@ extern u16 *D_800558E4;
 extern s32 D_80055950;
 extern s32 D_80055954;
 extern s32 D_80055958;
-extern s32 func_80047190(s32);
+s32 func_80047190(s32);
 
 u32 func_80046E00(s32 reg,u32 address) {
     u32 units;

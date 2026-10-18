@@ -1,12 +1,12 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
 #include "common.h"
 
 #include "engine_state.h"
 
 extern EngineState *D_80056564;
-asm(".sdata\n.size D_80056564,4\n.text");
 extern s32 engine_flag_shadow[] __asm__("D_80061978");
-extern EngineByteRecord D_80056590, D_8005703C;
+extern EngineByteRecord D_80056590[], D_8005703C[];
 
 void func_8003CD60(s32);
 s32 func_8003D094(void);
@@ -58,7 +58,7 @@ static __inline__ s32 func_8003D3D8_inline(s32 value)
 
 static __inline__ s32 func_8003D1B4_inline(void)
 {
-    D_8005703C = D_80056590;
+    D_8005703C[0] = D_80056590[0];
     return 0;
 }
 

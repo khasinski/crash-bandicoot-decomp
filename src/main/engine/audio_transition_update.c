@@ -6,8 +6,8 @@
  * references contain an ID; resolved references point to a handle whose
  * second word is the ID. The fourth fade argument is retained as observed
  * at this call site, although the current callee consumes three words. */
-extern void func_800314C4();
-extern void func_80049614();
+void func_800314C4();
+void func_80049614();
 extern s16 D_800564F8,D_80056654,D_80056658;
 extern s32 *D_800564FC;
 extern u16 D_80056648;

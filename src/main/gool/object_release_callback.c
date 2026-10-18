@@ -3,8 +3,8 @@
 /* GCC_VERSION: 2.6.3 */
 typedef GoolRuntimeObject Object;
 extern s32 D_80057918;
-extern s32 func_8001CDD0(Object *,s32);
-extern void func_80024040(s32,Object *,s32,s32,s32);
+s32 func_8001CDD0(Object *,s32);
+void func_80024040(s32,Object *,s32,s32,s32);
 s32 func_8001D11C(Object *arg0, s32 arg1) {
     s32 temp_s1;
 

@@ -5,8 +5,8 @@
 /* Pass the matrix at D_800577C4 to the two GTE setup routines. */
 
 extern u8 D_800577C4[];
-extern void func_80042E9C(void *);
-extern void func_80042F2C(void *);
+void func_80042E9C(void *);
+void func_80042F2C(void *);
 
 void func_8001892C(void)
 {

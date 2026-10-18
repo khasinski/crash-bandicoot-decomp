@@ -15,10 +15,10 @@ typedef struct {
     s16 values[32];
 } SpuReverbRegisters;
 
-extern s32 func_80047190(u32);
-extern void func_80047718(SpuReverbRegisters *);
-extern s32 func_80047D38(u32);
-extern void func_80046DB8(s32, u32, s32);
+s32 func_80047190(u32);
+void func_80047718(SpuReverbRegisters *);
+s32 func_80047D38(u32);
+void func_80046DB8(s32, u32, s32);
 
 extern volatile u16 *D_800558E4;
 extern u32 D_80055958;

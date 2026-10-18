@@ -3,8 +3,8 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Synchronise cached disc state while temporarily suppressing the callback. */
-extern s32 func_8003E6D4(const char *, ...);
-extern s32 func_80044640(s32, void *, s32, void *);
+s32 func_8003E6D4(const char *, ...);
+s32 func_80044640(s32, void *, s32, void *);
 extern char D_800115B4[];
 extern char D_800115C4[];
 extern s32 D_800555A0;

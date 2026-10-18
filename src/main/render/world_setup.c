@@ -42,8 +42,8 @@ typedef struct ResourceItem {
     void *item2;
 } ResourceItem;
 
-extern s32 D_80057864_s32 __asm__("D_80057864");
-extern s16 D_80057804_s16 __asm__("D_80057804");
+extern s32 D_80057864;
+extern s16 D_80057804;
 extern s16 D_80057806, D_80057808;
 extern s16 D_8005780A, D_8005780C, D_8005780E;
 extern s16 D_80057810, D_80057812, D_80057814;
@@ -79,7 +79,7 @@ void func_8001922C(ZoneHeader9A2C *arg0)
         } else {
             trans = (s32 *)(i * 64 + (s32)arg0);
             trans += 2;
-            trans[0] = (D_80057804_s16 * (v[0] = wgeo->x - (D_80057864_s32 >> 8))
+            trans[0] = (D_80057804 * (v[0] = wgeo->x - (D_80057864 >> 8))
                       + D_80057806 * (v[1] = wgeo->y - (D_80057868 >> 8))
                       + D_80057808 * (v[2] = wgeo->z - (D_8005786C >> 8))) >> 12;
             trans[1] = (D_8005780A * v[0]

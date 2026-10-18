@@ -4,8 +4,8 @@
 
 /* Dispatch the transfer through the configured mode. */
 
-extern void func_8004636C(s32,s32);
-extern s32 func_80046A20(s32, ...);
+void func_8004636C(s32,s32);
+s32 func_80046A20(s32, ...);
 extern u16 D_800558E0;
 extern s32 D_800558FC;
 extern s32 D_80055908;

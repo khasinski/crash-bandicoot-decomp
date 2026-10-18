@@ -1,78 +1,32 @@
+/* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
 #include "common.h"
 
-/* GCC_VERSION: 2.6.3 */
+void func_80042E9C(void *);
+void func_80042ECC(void *);
+void func_80033FBC(void *, u32, s32);
+s32 *func_80016E18(void);
+void func_800375EC(u16 *, s32, s32, s32, s32 *, void *);
+void *func_80015A98(void *);
 
-extern void func_80042E9C(void *);
-extern void func_80042ECC(void *);
-extern void func_80033FBC(void *, u32, s32);
-extern s32 *func_80016E18(void);
-extern void func_80035438(u16 *, s32, s32, s32, s32 *, void *);
-extern void func_80035898(u16 *, s32, s32, s32, s32 *, void *);
-extern void func_80035E10(u16 *, s32, s32, s32, s32 *, void *);
-extern void func_80036340(u16 *, s32, s32, s32, s32 *, void *);
-extern void func_80036BF4(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
-extern void func_800375EC(u16 *, s32, s32, s32, s32 *, void *);
-extern void *func_80015A98(void *);
-
-extern u16 *D_800566B8;
+extern u16 *D_800566B8[];
 extern u8 D_800577E4[];
 extern struct {
     u8 pad[0x10];
     u8 *data;
-} *D_80057914;
-extern s32 D_800578D0;
-extern s32 D_80057960;
+} *D_80057914[];
+extern s32 D_800578D0[];
+extern s32 D_80057960[];
 extern u8 D_80051774[];
 
-extern struct {
-    s32 unk0;
-    s32 type;
-} *D_8005C53C;
-extern struct {
-    u8 pad000[0xAA8];
-    s32 wordAA8;
-    u8 padAAC[0xAC8 - 0xAAC];
-    s32 wordAC8;
-} D_80060DF0;
-
-extern s32 D_80056440;
-asm(".sdata\n.size D_80056440,4\n.text");
-extern s32 D_80056444;
-asm(".sdata\n.size D_80056444,4\n.text");
-extern s32 D_80056448;
-asm(".sdata\n.size D_80056448,4\n.text");
-extern s32 D_8005644C;
-asm(".sdata\n.size D_8005644C,4\n.text");
-extern s32 D_80056450;
-asm(".sdata\n.size D_80056450,4\n.text");
-extern s32 D_80056454;
-asm(".sdata\n.size D_80056454,4\n.text");
-extern s32 D_80056458;
-asm(".sdata\n.size D_80056458,4\n.text");
-extern s32 D_8005645C;
-asm(".sdata\n.size D_8005645C,4\n.text");
 extern s32 D_80056460;
-asm(".sdata\n.size D_80056460,4\n.text");
 extern s32 D_80056464;
-asm(".sdata\n.size D_80056464,4\n.text");
 extern s32 D_80056468;
-asm(".sdata\n.size D_80056468,4\n.text");
 extern s32 D_8005646C;
-asm(".sdata\n.size D_8005646C,4\n.text");
 extern s32 D_800566D4;
-asm(".sdata\n.size D_800566D4,4\n.text");
 extern s32 D_800566D8;
-asm(".sdata\n.size D_800566D8,4\n.text");
 extern s32 D_800566DC;
-asm(".sdata\n.size D_800566DC,4\n.text");
-extern s32 D_80056400;
-extern s32 D_80056474;
-asm(".sdata\n.size D_80056474,4\n.text");
-extern s32 D_80056478;
-asm(".sdata\n.size D_80056478,4\n.text");
-extern s32 D_800567B8[];
 extern void * D_800566B4;
-asm(".sdata\n.size D_800566B4,4\n.text");
 
 
 void func_8001A2E0(s32 arg0)
@@ -82,8 +36,8 @@ void func_8001A2E0(s32 arg0)
     u32 dst;
     u8 *ptr;
 
-    data = (s32 *)D_80057914->data;
-    if (*D_800566B8 != 0) {
+    data = (s32 *)D_80057914[0]->data;
+    if (*D_800566B8[0] != 0) {
         func_80042E9C(D_800577E4);
         func_80042ECC(D_800577E4 + 0x110);
         func_80033FBC(data + 1, 0x1F800100, 0x100);
@@ -100,7 +54,7 @@ void func_8001A2E0(s32 arg0)
         *(s32 *)0x1F800058 = D_80056464;
         *(s32 *)0x1F80005C = D_80056468;
         *(s32 *)0x1F800060 = D_8005646C;
-        func_800375EC(D_800566B8, arg0, 0x800 - (D_800578D0 / 2), D_80057960, func_80016E18(), D_80051774);
+        func_800375EC(D_800566B8[0], arg0, 0x800 - (D_800578D0[0] / 2), D_80057960[0], func_80016E18(), D_80051774);
     }
 }
 
@@ -120,7 +74,7 @@ void func_8001A460(u32 arg0, u32 arg1)
     u32 idx;
     u32 *target;
 
-    data = D_80057914->data;
+    data = D_80057914[0]->data;
     group = -1;
     count = *(s32 *)data;
     base = data + 4;
@@ -238,9 +192,9 @@ void func_8001A754(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3)
     }
 }
 
-extern void func_80040484(s16 *, u8 *);
-extern void func_800404E8(s16 *, u8 *);
-extern void func_8004025C(s32);
+void func_80040484(s16 *, u8 *);
+void func_800404E8(s16 *, u8 *);
+void func_8004025C(s32);
 
 void func_8001A850(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 {
@@ -282,7 +236,7 @@ void func_8001A850(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
     }
 }
 
-extern void *LIBC_Malloc(u32);
+void *LIBC_Malloc(u32);
 
 typedef struct GoolAllocGlobals {
     u8 *db0;
@@ -296,11 +250,10 @@ typedef struct GoolAllocGlobals {
 
 extern GoolAllocGlobals gool_alloc __asm__("D_80060DB0");
 extern u8 * volatile D_80060DB0;
-extern u8 *D_80060DB4;
 extern s32 D_80060DB8[];
-extern s32 D_80060DF8;
-extern void *D_80060E00;
-extern s32 D_80060E04;
+extern s32 D_80060DF8[];
+extern void *D_80060E00[];
+extern s32 D_80060E04[];
 
 s32 GOOL_InitAllocTable(void)
 {
@@ -313,9 +266,9 @@ s32 GOOL_InitAllocTable(void)
     if (gool_alloc.db4 == NULL || gool_alloc.db0 == NULL) {
         return -0xF;
     }
-    D_80060E00 = NULL;
-    D_80060E04 = 0;
-    D_80060DF8 = 2;
+    D_80060E00[0] = NULL;
+    D_80060E04[0] = 0;
+    D_80060DF8[0] = 2;
     gool_alloc.dfc = gool_alloc.db4;
     for (i = 0; i < 0x60; i++) {
         obj = gool_alloc.db4 + i * 0x25C;

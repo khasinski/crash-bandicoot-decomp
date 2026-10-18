@@ -7,7 +7,7 @@
 extern u16 D_8005E348[];
 extern u32 D_8005FF58[];
 
-void GOOL_TraverseObjectTreePreorder(u32 group)
+void GOOL_InitLevelSpawns(u32 group)
 {
     u16 *entry = D_8005E348;
     while (*entry) {

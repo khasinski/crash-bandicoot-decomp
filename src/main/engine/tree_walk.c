@@ -4,8 +4,8 @@
 
 /* Partial linked-object layout; word04 is used when kind is two. */
 
-extern s32 func_8001B6F0(Node *, Visitor, void *);
-extern s32 func_8001CDD0(Node *, s32);
+s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
+s32 func_8001CDD0(Node *, s32);
 s32 func_8001B92C(Node *root, Visitor visitor, void *context)
 {
     Node *node, *next, *child, *next_child;
@@ -18,7 +18,7 @@ s32 func_8001B92C(Node *root, Visitor visitor, void *context)
             if(child != NULL) {
                 do {
                     next_child = child->next;
-                    if(func_8001B6F0(child, visitor, context) == -25)
+                    if(GOOL_TraverseObjectTreePostorder(child, visitor, context) == -25)
                         func_8001CDD0(node, 0);
                     child = next_child;
                 } while(child != NULL);

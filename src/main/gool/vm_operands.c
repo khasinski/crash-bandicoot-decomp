@@ -8,11 +8,9 @@ static __inline__ s32 func_8001FB20(s32 value, s32 bits)
     return (s32)((u32)value << shift) >> shift;
 }
 
-extern s32 * D_80056480;
-extern s32 D_80056484;
 extern s32 * D_80056488;
 extern s32 D_8005648C;
-extern void printf(char *, ...);
+void printf(char *, ...);
 
 typedef struct GoolExecView {
     u8 pad00[0x10];

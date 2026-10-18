@@ -107,20 +107,15 @@ typedef struct NsdTable {
     s32 items[1];
 } NsdTable;
 
-extern NsdTable *D_8005C53C[];
-extern GoolObj *D_80060DB0[];
 extern ResourceEntry *D_80057914[];
-extern GoolObj D_80060DD0;
-extern GoolExecutable *func_80015118(s32 *, s32, s32);
-extern s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
+GoolExecutable *func_80015118(s32 *, s32, s32);
+s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
 
 extern GoolObj *D_800566B4;
 
-extern u32 D_8005FF58[];
-extern GoolObj D_80060DF8;
-extern void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
-extern void func_80030260(GoolObj *);
+void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
+void func_80030260(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -163,26 +158,19 @@ typedef struct ZoneEntryView {
     void *items[1];
 } ZoneEntryView;
 
-extern GoolObj *D_80061A5C[];
-extern s32 D_80061A60[];
-extern ZoneEntity *D_80061A64[];
-extern ObjectRoot D_80060DB8[];
-extern GoolObj D_80060DD8;
-extern s32 D_80056714[];
-extern u8 D_80057974[];
-extern s32 func_8002F840(s32, s32);
-extern void func_8001AC9C(GoolObj *, s32, s32 *);
-extern void func_80026460(GoolObj *, void *, s32);
+s32 func_8002F840(s32, s32);
+void func_8001AC9C(GoolObj *, s32, s32 *);
+void func_80026460(GoolObj *, void *, s32);
 
 extern GoolObj *D_80060E00[];
 extern u32 D_80060E04[];
 extern u32 D_800618B0[];
-extern void func_800167A4(void);
-extern void func_8001EEA8(GoolObj *);
-extern s32 GOOL_InterpretObject(GoolObj *, s32, s32);
-extern void func_8001EB28(GoolObj *, s32);
-extern void func_8001F30C(GoolObj *, s32);
-extern void func_8001DE78(GoolObj *);
+void func_800167A4(void);
+void func_8001EEA8(GoolObj *);
+s32 GOOL_InterpretObject(GoolObj *, s32, s32);
+void func_8001EB28(GoolObj *, s32);
+void func_8001F30C(GoolObj *, s32);
+void func_8001DE78(GoolObj *);
 
 static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words, s32 flags)
 {
@@ -351,14 +339,14 @@ extern RenderProjectionState D_800578D0;
 extern RenderBufferView *D_8005840C[];
 extern u8 D_80051774[];
 
-extern ZoneEntryView *func_80015A98(u32 *);
-extern s32 *func_80016E18(void);
-extern s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-extern void func_8003A76C(u32 *, void *, void *, s32, s32, s32 *, void *);
-extern void func_80018B98(void *, s32, void *, GoolBound *, u32 *);
-extern void func_80018A40(void *, u32 *, GoolObj *);
-extern void func_80018964(void *, u32 *, GoolObj *);
-extern void func_8001E7D8(GoolObj *, GoolAnimSeq *, u32, u32 *, u32);
+ZoneEntryView *func_80015A98(u32 *);
+s32 *func_80016E18(void);
+s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+void func_8003A76C(u32 *, void *, void *, s32, s32, s32 *, void *);
+void func_80018B98(void *, s32, void *, GoolBound *, u32 *);
+void func_80018A40(void *, u32 *, GoolObj *);
+void func_80018964(void *, u32 *, GoolObj *);
+void func_8001E7D8(GoolObj *, GoolAnimSeq *, u32, u32 *, u32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
@@ -463,9 +451,9 @@ typedef struct GoolFont {
     GoolGlyph backdrop;
 } GoolFont;
 
-extern s32 BIOS_AToI(u8 *);
-extern void func_80018DBC(GoolObj *, GoolGlyph *, s32, void *, GoolBound *, u32 *, s32);
-extern void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
+s32 BIOS_AToI(u8 *);
+void func_80018DBC(GoolObj *, GoolGlyph *, s32, void *, GoolBound *, u32 *, s32);
+void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
 
 s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot) {
     GoolBound glyph_bound;

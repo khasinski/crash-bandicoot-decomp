@@ -70,7 +70,7 @@ void func_80017448(u32);
 void func_80017358(s32, s32, s32, s32, u8, u8, u8);
 void func_80030CC0(void);
 void func_8004025C(s32);
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 void func_8003E1F8(void);
 void func_8003E3A4(u32);
 void func_8003E370(u32);
@@ -135,9 +135,9 @@ void func_80016E5C(void)
         D_80058408 = D_8005840C;
         D_8005840C = swap;
     }
-    CORE_VSync(0);
+    VSync(0);
     if ((u32)(frame_counter - D_80058404.buf->word7C) < 0x19) {
-        CORE_VSync(0);
+        VSync(0);
     }
     if (D_800618B0 & 0x100000) {
         if (!D_8005642C) {

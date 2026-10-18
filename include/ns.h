@@ -62,6 +62,7 @@ typedef struct NsSubsystem {
 } NsSubsystem;
 
 extern NsState D_8005C528;
+extern ResourceSlot D_8005C920[];
 extern NsFileMap D_8005E03C[];
 extern NsSubsystem D_800514E0[];
 

@@ -23,15 +23,19 @@ Contributors must provide their own legally obtained copy of the game.
 ![code](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkhasinski%2Fcrash-bandicoot-decomp%2Fmain%2Fdocs%2Fbadges%2Fcode.json)
 
 Regenerate the badges with `make report`. They summarize fully matching code
-in the objdiff report, including SDK routines. Retained split assembly keeps
-the executable buildable but is not completed C. Function boundaries and names
-remain provisional; code bytes are the stronger progress measure.
+in the objdiff report across both Game code and PsyQ libraries, audited against
+every linked `.text` object by `tools/scripts/audit_report.py` and
+`tools/scripts/classify_embedded_data.py` — see
+[docs/ASM_AND_GTE_POLICY.md](docs/ASM_AND_GTE_POLICY.md).
 
 Candidate functions are scored exclusively by instruction Levenshtein distance,
 with relocation fields masked. Acceptance requires distance zero and a rebuilt
 executable matching the retail SHA-1. See [CONTRIBUTING.md](CONTRIBUTING.md).
 Shared layouts and the automatic stock-profile comparison tool are documented
-in [docs/STRUCTURES.md](docs/STRUCTURES.md).
+in [docs/STRUCTURES.md](docs/STRUCTURES.md), the complete 825-function symbol
+catalog in [docs/names.md](docs/names.md), and the round-trip verified GOOL
+Lisp bytecode decompiler and assembler (`tools/scripts/gool_lisp.py`) in
+[docs/GOOL_LISP.md](docs/GOOL_LISP.md).
 
 ## Quick start
 
@@ -41,8 +45,10 @@ make toolchain             # old-gcc builds, maspsx, objdiff-cli, asm-differ, pe
 make stage                 # disc image -> assets/USA/main.exe (+ all disc files)
 make split                 # splat -> asm/, linkers/, new src/ stubs
 make build check           # build/USA/main.exe, SHA-1 against retail
-make test                  # tooling regressions
-make report                # objdiff progress
+make report                # objdiff progress + embedded-data & denominator audit
+make audit-code            # verify C scaffolding / code debt ratchet
+make gool gool-check       # decompile & round-trip verify all 60 .NSF GOOL Lisp scripts
+make test                  # tooling & GOOL Lisp regressions
 ```
 
 Requirements: Python 3.12, 7-Zip (`7z`), GNU binutils for mipsel

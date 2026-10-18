@@ -3,9 +3,9 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Establish the GPU operation timeout and reset its polling counter. */
-extern s32 CORE_VSync(s32);
-extern s32 func_8003D730(const char *, ...);
-extern s32 func_8003E870(s32);
+s32 VSync(s32);
+s32 func_8003D730(const char *, ...);
+s32 func_8003E870(s32);
 extern char D_80011350[];
 extern char D_80011384[];
 extern volatile u32 *D_80054B40;
@@ -23,13 +23,13 @@ extern s32 D_80054B88;
 
 void func_80042864(void)
 {
-    D_80054B84 = CORE_VSync(-1) + 240;
+    D_80054B84 = VSync(-1) + 240;
     D_80054B88 = 0;
 }
 
 s32 func_80042898(void)
 {
-    if (CORE_VSync(-1) > D_80054B84 || D_80054B88++ > 0xF0000) {
+    if (VSync(-1) > D_80054B84 || D_80054B88++ > 0xF0000) {
         *D_80054B40;
         func_8003D730(D_80011350, (D_80054B70 - D_80054B74) & 0x3F, *D_80054B40, *D_80054B4C, *D_80054B44);
         func_8003D730(D_80011384, D_80054B60[0], D_80054B64, D_80054B68);

@@ -4,10 +4,10 @@
 
 /* Initialise SPU state and its 24 cached voice values. */
 
-extern s32 func_8003E6F4(void);
-extern void func_80045E50(s32);
-extern void func_80046DB8(s32, u32, s32);
-extern void func_80047078(u32);
+s32 func_8003E6F4(void);
+void func_80045E50(s32);
+void func_80046DB8(s32, u32, s32);
+void func_80047078(u32);
 extern s32 D_800558FC;
 extern s32 D_8005594C;
 extern s32 D_80055950;

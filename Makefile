@@ -50,7 +50,7 @@ UNDEFINED_FUNCS  := linkers/$(VERSION)/undefined_funcs_auto.$(BASENAME).txt
 UNDEFINED_MANUAL := configs/$(VERSION)/undefined_syms_manual.txt
 ADDR_ALIASES     := $(BUILD)/undefined_addr_aliases.$(BASENAME).txt
 
-.PHONY: all setup toolchain stage split build check diff objdiff-config report m2c permute probe test test-source verify clean distclean help
+.PHONY: all setup toolchain stage split build check diff objdiff-config report audit-code gool gool-check m2c permute probe test test-source verify clean distclean help
 
 all: build check
 
@@ -118,9 +118,12 @@ help:
 	@echo "  check            Verify the rebuilt EXE's SHA-1 against retail"
 	@echo "  probe FILE=path.c  Compare functions against freshly split retail assembly"
 	@echo "  test             Run tooling regression tests (requires setup/toolchain/split)"
+	@echo "  audit-code       Check that C scaffolding and code debt did not increase"
+	@echo "  gool             Decompile all retail .NSF GOOL executables into build/gool/*.gool"
+	@echo "  gool-check       Verify 100% byte-for-byte round-trip compilation of all GOOL scripts"
 	@echo "  diff FUNC=name   asm-differ one function against retail"
 	@echo "  objdiff-config   Build retail target objects (expected/) and objdiff.json"
-	@echo "  report           objdiff progress report -> build/USA/report.json"
+	@echo "  report           objdiff progress report + embedded-data/denominator audit"
 	@echo "  m2c FUNC=name    m2c decompilation of a not-yet-decompiled function"
 	@echo "  permute FUNC=name  Set up a decomp-permuter scratch dir in nonmatchings/"
 
@@ -129,8 +132,20 @@ objdiff-config:
 	$(PY) tools/scripts/gen_objdiff.py --version $(VERSION)
 
 report: check objdiff-config
-	$(TOOLCHAIN)/bin/objdiff-cli report generate -p . -o $(BUILD)/report.json
+	$(TOOLCHAIN)/bin/objdiff-cli report generate -p . -o $(BUILD)/report.raw.json
+	$(PY) tools/scripts/classify_embedded_data.py --version $(VERSION)
+	$(PY) tools/scripts/audit_report.py --version $(VERSION)
 	$(PY) tools/scripts/progress.py $(BUILD)/report.json
+
+audit-code:
+	$(PY) tools/scripts/code_debt.py --check
+	$(PY) -m unittest discover -s tests -p test_report_audit.py -v
+
+gool:
+	$(PY) tools/scripts/gool_lisp.py decompile-nsf build/extract/$(VERSION)/files -o build/gool
+
+gool-check:
+	$(PY) tools/scripts/gool_lisp.py verify --nsf-dir build/extract/$(VERSION)/files
 
 m2c:
 	@test -n "$(FUNC)" || { echo "usage: make m2c FUNC=<symbol>"; exit 2; }
@@ -154,6 +169,8 @@ test:
 # Retail-free checks suitable for a public checkout and CI.
 test-source:
 	$(PY) -m unittest discover -s tests -p test_instruction_distance.py -v
+	$(PY) -m unittest discover -s tests -p test_report_audit.py -v
+	$(PY) -m unittest discover -s tests -p test_gool_lisp.py -v
 	$(PY) -m unittest discover -s tests -p test_tooling.py -k test_shell_syntax -v
 
 verify: build check test

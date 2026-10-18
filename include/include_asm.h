@@ -28,6 +28,10 @@
     }
 #endif
 
+#ifndef HANDWRITTEN_ASM
+#define HANDWRITTEN_ASM(FOLDER, NAME) INCLUDE_ASM(FOLDER, NAME)
+#endif
+
 #ifndef INCLUDE_RODATA
 #define INCLUDE_RODATA(FOLDER, NAME) \
     void __maspsx_include_asm_hack_rodata_##NAME(void) { \
@@ -45,6 +49,9 @@ __asm__(".include \"include/macro.inc\"\n");
 
 #ifndef INCLUDE_ASM
 #define INCLUDE_ASM(FOLDER, NAME)
+#endif
+#ifndef HANDWRITTEN_ASM
+#define HANDWRITTEN_ASM(FOLDER, NAME)
 #endif
 #ifndef INCLUDE_RODATA
 #define INCLUDE_RODATA(FOLDER, NAME)

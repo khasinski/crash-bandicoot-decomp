@@ -9,7 +9,6 @@ extern u8 D_80054A6E;
 extern s16 D_80054A70;
 extern s16 D_80054A72;
 extern s32 D_80054B14[5];
-extern u8 D_80054B28[];
 extern const char D_8001126C[];
 extern const char D_80011278[];
 extern const char D_8001128C[];

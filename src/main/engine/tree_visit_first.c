@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *); /* extern */
+extern s32 GOOL_TraverseObjectTreePreorder(Node *, Visitor, void *); /* extern */
 extern s32 func_8001CDD0(Node *, s32);                         /* extern */
 
 s32 func_8001B84C(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
@@ -29,7 +29,7 @@ s32 func_8001B84C(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
 loop_8:
                     if (var_a0->kind != 0) {
                         temp_s0 = var_a0->next;
-                        GOOL_TraverseObjectTreePostorder(var_a0, arg1, arg2);
+                        GOOL_TraverseObjectTreePreorder(var_a0, arg1, arg2);
                         var_a0 = temp_s0;
                         if (var_a0 != NULL) {
                             goto loop_8;

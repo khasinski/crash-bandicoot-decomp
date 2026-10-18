@@ -13,4 +13,6 @@ typedef struct AudioChannel {
     s16 right_volume;
 } AudioChannel;
 
+extern AudioChannel D_80056EBC[];
+
 #endif

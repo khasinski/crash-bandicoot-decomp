@@ -4,7 +4,7 @@
 
 /* Decode a texture-page value for the diagnostic callback. */
 
-extern s32 func_80040144(void);
+s32 func_80040144(void);
 extern char D_80011098[];
 extern s32 (*D_80054A68)(const char *, ...);
 

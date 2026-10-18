@@ -45,7 +45,7 @@ extern const char D_80011594[];
 extern const char D_8001159C[];
 extern const char D_800115AC[];
 
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 s32 func_8003D730(const char *, ...);
 s32 func_8003E6D4(const char *, ...);
 s32 func_8003E848(void);
@@ -54,14 +54,14 @@ void func_80044C40(void);
 
 static inline void cd_set_timeout(const char *name)
 {
-    D_800571B0 = CORE_VSync(-1) + 0x1E0;
+    D_800571B0 = VSync(-1) + 0x1E0;
     D_800571B4 = 0;
     D_800571B8[0] = name;
 }
 
 static inline s32 cd_check_timeout(void)
 {
-    if (CORE_VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
+    if (VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
         func_8003E6D4(D_800114F8);
         func_8003D730(D_80011508, D_800571B8[0], D_800555C4[D_800555C1[0]], D_80055644[D_8005587C.sync], D_80055644[D_8005587C.ready]);
         func_80044C40();

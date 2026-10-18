@@ -1,5 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 /* GCC_CPU: 3000 */
+/* GNU_AS_G: 8 */
 #include "common.h"
 
 /* =========================================================================
@@ -19,9 +20,7 @@ extern NsFileMapBits D_8005E03C[];
 extern const char D_800564E0[];
 extern const char D_80010BC0[];
 extern u16 D_800564E8;
-asm(".sdata\n.size D_800564E8,2\n.text");
 extern struct { s16 a; s8 b; } D_800564EC;
-asm(".sdata\n.size D_800564EC,4\n.text");
 
 void *LIBC_Malloc(s32);
 void LIBC_Free(void *);

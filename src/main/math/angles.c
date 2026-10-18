@@ -4,8 +4,8 @@
 
 /* Compute 12-bit angles between two points in the XZ and XY planes. */
 
-extern s32 abs(s32);
-extern s32 func_8004301C(s32, s32);
+s32 abs(s32);
+s32 func_8004301C(s32, s32);
 
 s32 func_80029E10(s32 *origin, s32 *target)
 {

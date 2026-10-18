@@ -2,7 +2,7 @@
 /* ASPSX_VERSION: 2.21 */
 /* GNU_AS_G: 0 */
 #include "common.h"
-extern s32 func_80043BA8(void);
+s32 func_80043BA8(void);
 typedef void (*CdCallback)(s32,void*);
 extern CdCallback D_800555A0[],D_800555A4[];
 extern volatile u8 *D_80055864[];

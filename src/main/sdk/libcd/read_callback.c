@@ -4,7 +4,7 @@
 
 /* Consume a completed sector, advance read state and dispatch completion. */
 #include "cd_read_state.h"
-s32 CORE_VSync(s32);                                  /* extern */
+s32 VSync(s32);                                  /* extern */
 s32 func_80044640(s32,s32,s32,s32);                        /* extern */
 s32 func_8004519C(void);                                  /* extern */
 s32 func_80045A34(s32,s32);                          /* extern */
@@ -24,7 +24,7 @@ void func_80045C04(s32 arg0, void *arg1) {
     } else {
         D_80055880.remaining = -1;
     }
-    D_80055880.time = CORE_VSync(-1);
+    D_80055880.time = VSync(-1);
     if ((D_80055880.remaining < 0) && (D_80055880.state > 0)) {
         func_8004519C();
     }

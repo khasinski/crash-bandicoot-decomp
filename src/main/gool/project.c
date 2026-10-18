@@ -2,9 +2,6 @@
 #include "common.h"
 #include "ns.h"
 
-extern ResourceHandler D_800514EC[];
-extern s32 D_80056410;
-extern s32 D_80034520;
 
 
 /* GCC_VERSION: 2.6.3 */

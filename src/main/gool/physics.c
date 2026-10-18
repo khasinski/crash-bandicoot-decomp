@@ -1,4 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
+/* GNU_AS_G: 8 */
 #include "common.h"
 
 typedef struct GoolVec3 {
@@ -113,10 +114,7 @@ typedef struct CamTransformState {
     u8 vec888[0x48];
 } CamTransformState;
 
-extern CamTransformState D_800577E4;
-extern s32 D_800578D0[];
 extern ResourceEntry *D_80057914[];
-extern u8 D_80051774[];
 
 
 typedef struct GoolColor {
@@ -124,10 +122,9 @@ typedef struct GoolColor {
 } GoolColor;
 
 extern GoolObj * D_800566B4;
-asm(".sdata\n.size D_800566B4,4\n.text");
 extern u32 D_80060E04[];
 extern s32 D_80057960[];
-extern void func_80024040(GoolObj *, GoolObj *, s32, s32, s32 *);
+void func_80024040(GoolObj *, GoolObj *, s32, s32, s32 *);
 
 static __inline__ void func_8001EA00(GoolObj *object, s32 mode) {
     ResourceEntry *entry;
@@ -235,10 +232,10 @@ typedef struct GoolBoundsGlobals {
 } GoolBoundsGlobals;
 
 extern GoolBoundsGlobals D_80060E08;
-extern void func_8001D33C(GoolObj *, s32 *);
-extern void func_8002465C(s32 *, s32 *, s32 *, s32 *, s32 *);
-extern s32 func_80026CA8(GoolBound *, GoolBound *);
-extern void func_80024AD4(GoolObj *, GoolBound *, GoolObj *, GoolBound *);
+void func_8001D33C(GoolObj *, s32 *);
+void func_8002465C(s32 *, s32 *, s32 *, s32 *, s32 *);
+s32 func_80026CA8(GoolBound *, GoolBound *);
+void func_80024AD4(GoolObj *, GoolBound *, GoolObj *, GoolBound *);
 
 void func_8001EEA8(GoolObj *obj) {
     s32 trans[3];
@@ -343,13 +340,13 @@ extern s32 D_80057930[];
 extern GoolTimeState *D_80058404[];
 extern u8 D_8005CFEC[];
 
-extern s32 func_8003905C(s32);
-extern s32 func_800390D0(s32);
-extern s32 func_800243A0(s32, s32, s32, GoolObj *);
-extern s32 func_80024528(s32, s32, s32, GoolObj *);
-extern void func_8002BE8C(GoolObj *, s32 *, void *);
-extern s32 func_8001AC9C(GoolObj *, s32, s32 *);
-extern s32 func_80029C90(GoolObj *, s32 *, s32 *, s32, s32, s32);
+s32 func_8003905C(s32);
+s32 func_800390D0(s32);
+s32 func_800243A0(s32, s32, s32, GoolObj *);
+s32 func_80024528(s32, s32, s32, GoolObj *);
+void func_8002BE8C(GoolObj *, s32 *, void *);
+s32 func_8001AC9C(GoolObj *, s32, s32 *);
+s32 func_80029C90(GoolObj *, s32 *, s32 *, s32, s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define SCALE_DT(x) (((s32)((D_80058404[0]->unk84 < 0x67U ? D_80058404[0]->unk84 : 0x66) * (x))) / 1024)

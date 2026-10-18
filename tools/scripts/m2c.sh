@@ -4,7 +4,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FUNC="${1:?usage: $0 <function> [m2c flags]}"; shift
-ASM="$(find "$ROOT/asm/USA/main/nonmatchings" -name "$FUNC.s" | head -1)"
+ASM=""
+if [ -d "$ROOT/asm/USA/main/nonmatchings" ]; then
+    ASM="$(find "$ROOT/asm/USA/main/nonmatchings" -name "$FUNC.s" | head -1)"
+fi
 if [ -z "$ASM" ]; then
     ASM="$(grep -rlE --include='*.s' "^[[:space:]]*glabel[[:space:]]+$FUNC([[:space:]]|$)" "$ROOT/asm/USA/main" | head -1 || true)"
     if [ -z "$ASM" ] && [ -d "$ROOT/expected/asm/USA/main" ]; then

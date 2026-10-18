@@ -9,7 +9,7 @@ typedef struct {
     u8 length;
     u32 mode;
 } GpuModePacket;
-extern s32 func_80040144(void);
+s32 func_80040144(void);
 
 u32 func_8003FA44(GpuModePacket *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_a3;

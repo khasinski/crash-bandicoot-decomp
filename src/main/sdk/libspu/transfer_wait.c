@@ -4,7 +4,7 @@
 
 /* Query transfer completion, or wait for the event in blocking mode. */
 
-extern s32 func_8003E1C8(s32);
+s32 func_8003E1C8(s32);
 extern s32 D_80055914;
 extern s32 D_8005594C;
 extern s32 D_800559A0;

@@ -1,7 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gpu.h"
 #include "render.h"
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 void *func_80040A0C(GpuDisplayEnv *);
 
 void func_800172E8(void)
@@ -12,7 +12,7 @@ void func_800172E8(void)
     *active = swap;
     D_80058404[1] = D_80058404[2];
     D_80058404[2] = swap;
-    CORE_VSync(0);
+    VSync(0);
     func_80040A0C(&(*active)->display);
     func_80040834(&D_80058404[1]->drawing);
 }

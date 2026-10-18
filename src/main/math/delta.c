@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern s32 abs(s32);
+s32 abs(s32);
 
 s32 func_800245F0(s32 current,s32 target) {
     s32 delta;

@@ -6,7 +6,6 @@
 typedef ResourceEntry Entry;
 typedef ResourceHeader Header;
 typedef ResourceSlot Slot;
-extern Slot *D_8005CFAC;
 typedef ResourceBucket Bucket;
 typedef ResourceHandler Handler;
 extern Slot D_8005C554[], D_800580A0[];

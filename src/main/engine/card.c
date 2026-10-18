@@ -13,28 +13,15 @@ extern s32 D_8005656C;
 extern u32 D_80056570;
 extern s32 D_80061978;
 extern s32 engine_flag_shadow[] __asm__("D_80061978");
-extern s32 D_80056678;
-extern u32 D_8005667C, D_80056680, D_80056684, D_80056688, D_8005668C, D_80056690, D_80056694, D_80056698, D_8005669C, D_800566A0, D_800566A4, D_800566A8, D_800566AC, D_800566B0;
-extern GoolDefaultsObject *D_800566B4;
-extern u32 D_800566B8, D_800566BC;
-extern s32 D_800566C0;
-extern s32 D_800566C4, D_800566C8, D_800566CC, D_800566D0, D_800566D4, D_800566D8, D_800566DC;
-extern EngineMode25State *D_800566E0;
-extern s32 D_800566E4, D_800566E8, D_800566EC, D_800566F0;
-extern s32 *D_800566F4;
+extern u32 D_8005668C, D_80056690;
+extern s32 D_800566C4, D_800566C8, D_800566CC, D_800566D0;
+extern s32 D_800566EC, D_800566F0;
 extern s32 D_800566F8, D_800566FC;
 asm(".sdata\n"
     ".size D_80056564,4\n.size D_80056568,4\n.size D_8005656C,4\n.size D_80056570,4\n"
-    ".sbss\n"
-    ".size D_80056678,4\n.size D_8005667C,4\n.size D_80056680,4\n.size D_80056684,4\n"
-    ".size D_80056688,4\n.size D_8005668C,4\n.size D_80056690,4\n.size D_80056694,4\n"
-    ".size D_80056698,4\n.size D_8005669C,4\n.size D_800566A0,4\n.size D_800566A4,4\n"
-    ".size D_800566A8,4\n.size D_800566AC,4\n.size D_800566B0,4\n.size D_800566B4,4\n"
-    ".size D_800566B8,4\n.size D_800566BC,4\n.size D_800566C0,4\n.size D_800566C4,4\n"
-    ".size D_800566C8,4\n.size D_800566CC,4\n.size D_800566D0,4\n.size D_800566D4,4\n"
-    ".size D_800566D8,4\n.size D_800566DC,4\n.size D_800566E0,4\n.size D_800566E4,4\n"
-    ".size D_800566E8,4\n.size D_800566EC,4\n.size D_800566F0,4\n.size D_800566F4,4\n"
-    ".size D_800566F8,4\n.size D_800566FC,4\n"
+    ".size D_8005668C,4\n.size D_80056690,4\n"
+    ".size D_800566C4,4\n.size D_800566C8,4\n.size D_800566CC,4\n.size D_800566D0,4\n"
+    ".size D_800566EC,4\n.size D_800566F0,4\n.size D_800566F8,4\n.size D_800566FC,4\n"
     ".text");
 typedef EngineFileRequest FileRequest;
 s32 func_8003CEF0(s32);
@@ -45,7 +32,7 @@ s32 func_8003C3FC(void);
 s32 func_8003CA04(s32);
 s32 func_8003CAB0(s32);
 void func_8003C900(s32 *);
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 s32 func_8003E288(char *);
 s32 func_8003E1C8(s32);
 s32 func_8002F778(s32);
@@ -219,11 +206,11 @@ void func_8003AE08(FileRequest *request) {
     if (*request->pending) {
         s32 retries;
         s32 status;
-        CORE_VSync(60);
+        VSync(60);
         retries = 0;
         do {
             status = func_8003E288(request->path);
-            CORE_VSync(20);
+            VSync(20);
             if (status == 1) break;
             retries++;
         } while (retries < 9);
@@ -558,10 +545,10 @@ void func_8003B8B8(s32 mode)
         func_8003D740(path, D_8005657C, D_80056574,
             ((EngineDirectoryState *)D_80056564)->records[slot->record_index].bytes);
         if (mode == 6) {
-            CORE_VSync(20);
+            VSync(20);
             if (!ENGINE_CARD_WRITE_RETRY(({
                     s32 status = func_8003E288(path);
-                    CORE_VSync(20);
+                    VSync(20);
                     index = status;
                     index;
                 }) == 1, &request, counter)) func_8003CAF8(7);
@@ -591,7 +578,7 @@ void func_8003B8B8(s32 mode)
     }
     if (slot == NULL || slot->word00 == 0) {
         if (mode == 7) {
-            CORE_VSync(20);
+            VSync(20);
             if (!ENGINE_CARD_WRITE_RETRY(
                     (descriptor = func_8003E218(path, 0x10200)) >= 0,
                     &request, counter)) {
@@ -945,7 +932,7 @@ void func_8003C7A8(EngineDirectoryRecord *entries, s32 count)
     }
 }
 
-extern s32 func_8003E248(s32);
+s32 func_8003E248(s32);
 
 void func_8003C900(s32 *arg0) {
     s32 temp_a0;
@@ -1088,13 +1075,13 @@ D_800566F0=func_8003E1A8(0xF0000011,32768,0x2000,NULL);
 D_800566F8=func_8003E1A8(0xF0000011,256,0x2000,NULL);
 D_800566FC=func_8003E1A8(0xF0000011,8192,0x2000,NULL);
 func_8003E208();
-CORE_VSync(5);
+VSync(5);
 func_80051444(1);
-CORE_VSync(5);
+VSync(5);
 func_80051454();
-CORE_VSync(5);
+VSync(5);
 func_8003E198();
-CORE_VSync(5);
+VSync(5);
 func_8003E1D8(D_800566C4);
 func_8003E1D8(D_800566C8);
 func_8003E1D8(D_800566CC);
@@ -1105,7 +1092,7 @@ func_8003E1D8(D_800566F8);
 func_8003E1D8(D_800566FC);
 }
 
-extern void func_80051464(void);
+void func_80051464(void);
 
 s32 func_8003CD3C(void) {
     func_80051464();

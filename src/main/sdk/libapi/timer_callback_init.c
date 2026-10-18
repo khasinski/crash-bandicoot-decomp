@@ -3,7 +3,7 @@
 /* GCC_VERSION: 2.6.3 */
 typedef void (*Callback)(void);
 typedef Callback (*Registrar)(s32,Callback);
-extern Callback func_8003E724(s32,Callback);
+Callback func_8003E724(s32,Callback);
 extern void func_8003EEAC(void),func_8003EFCC(void);
 extern Callback func_8003EF24(s32,Callback),func_8003F150(s32,Callback);
 extern void func_8003EF50(Callback *,s32),func_8003F1F8(Callback *,s32);

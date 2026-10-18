@@ -5,8 +5,8 @@
 
 /* Upload a 256- or 16-colour palette and return its CLUT ID. */
 
-extern u16 func_8003F5DC(s32,s32);
-extern void func_80040484(GpuRect *, void *);
+u16 func_8003F5DC(s32,s32);
+void func_80040484(GpuRect *, void *);
 
 u16 func_8003F338(void *image, s32 x, s32 y)
 {

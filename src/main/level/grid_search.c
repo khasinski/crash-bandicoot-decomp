@@ -90,12 +90,6 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern SubObj *D_800566B4[];
-extern LevelStateView *D_8005C53C[];
-extern u32 D_80060E04[];
-extern s32 D_800564BC;
-extern s32 D_800565DC;
-extern u32 *D_800566AC;
 extern s32 *D_800566F4;
 extern SubWorkspace D_8005CFEC;
 extern s8 D_80052A34[];
@@ -122,8 +116,6 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList D_80060E08;
-extern ZqVec D_800567F8;
 
 void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
 void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));

@@ -9,7 +9,6 @@ extern s16 D_80056654;
 extern s16 D_8005665C;
 extern s32 D_8005666C;
 extern s32 D_800566C0;
-extern AudioChannel D_80056EBC[];
 extern AudioChannel D_80056ED0[];
 extern s32 D_80061914[];
 extern s32 D_80061918[];

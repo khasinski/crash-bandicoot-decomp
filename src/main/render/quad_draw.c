@@ -2,6 +2,7 @@
 /* CC1_FLAGS: -O2 */
 #include "common.h"
 #include "gpu.h"
+#include "gte.h"
 
 
 typedef struct Rect9398 {
@@ -41,7 +42,7 @@ typedef struct PolyFT4_9398 {
     u16 pad26;
 } PolyFT4_9398;
 
-extern PrimBuf9398 *D_8005840C_9398 __asm__("D_8005840C");
+extern PrimBuf9398 *D_8005840C;
 extern s32 D_800578D0;
 extern UvPair9398 D_80051774[];
 
@@ -67,33 +68,30 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
     x0 = arg3->x0;
     v = x0 | y1;
     p0 = arg0;
-    asm volatile("mtc2 %0, $0" : : "r"(v));
-    asm volatile("mtc2 %0, $1" : : "r"(0));
+    gte_ldv0(v, 0);
     v = arg3->x1 | y1;
-    asm volatile("mtc2 %0, $2" : : "r"(v));
-    asm volatile("mtc2 %0, $3" : : "r"(0));
+    gte_ldv1(v, 0);
     v = x0 | (arg3->y0 << 16);
-    asm volatile("mtc2 %0, $4" : : "r"(v));
-    asm volatile("mtc2 %0, $5" : : "r"(0));
-    asm volatile("rtpt");
-    asm volatile("cfc2 %0, $31; nop" : "=r"(v));
+    gte_ldv2(v, 0);
+    gte_rtpt();
+    gte_getflag_nop(v);
     if (v < 0) {
         return;
     }
 
-    p = D_8005840C_9398->prim_ptr;
-    D_8005840C_9398->prim_ptr = (u8 *)p + sizeof(PolyFT4_9398);
+    p = D_8005840C->prim_ptr;
+    D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyFT4_9398);
     w0 = p0[0];
     poly = (PolyFT4_9398 *)p;
     poly->color_code = w0;
     w0 >>= 24;
-    asm volatile("mfc2 %0, $17" : "=r"(sz1));
+    gte_getsz1(sz1);
     ((u8 *)&poly->color_code)[3] = ((w0 & 0x60) == 0x60) ? 0x2C : 0x2E;
-    asm volatile("mfc2 %0, $18" : "=r"(v));
-    asm volatile("swc2 $14, %0" : "=m"(poly->xy2));
+    gte_getsz2(v);
+    gte_stsxy2(poly->xy2);
     sz1 += v;
-    asm volatile("mfc2 %0, $19" : "=r"(v));
-    asm volatile("swc2 $13, %0" : "=m"(poly->xy1));
+    gte_getsz3(v);
+    gte_stsxy1(poly->xy1);
 
     ot_bias = arg1 + 0x800;
     ot_bias -= D_800578D0 / 2;
@@ -111,11 +109,10 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
     *ot_entry = (u32)poly & 0xFFFFFF;
 
     v = arg3->x1 | (arg3->y0 << 16);
-    asm volatile("swc2 $12, %0" : "=m"(poly->xy0));
-    asm volatile("mtc2 %0, $0" : : "r"(v));
-    asm volatile("mtc2 %0, $1" : : "r"(0));
-    asm volatile("rtps");
-    asm volatile("swc2 $14, %0" : "=m"(poly->xy3));
+    gte_stsxy0(poly->xy0);
+    gte_ldv0(v, 0);
+    gte_rtps();
+    gte_stsxy2(poly->xy3);
 
     w1 = p0[1];
     uv_base = (w1 >> 20) & 3;
@@ -189,22 +186,19 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
     y1 = arg4->y1 << 16;
     x0 = arg4->x0;
     v = x0 | y1;
-    asm volatile("mtc2 %0, $0" : : "r"(v));
-    asm volatile("mtc2 %0, $1" : : "r"(0));
+    gte_ldv0(v, 0);
     v = arg4->x1 | y1;
-    asm volatile("mtc2 %0, $2" : : "r"(v));
-    asm volatile("mtc2 %0, $3" : : "r"(0));
+    gte_ldv1(v, 0);
     v = x0 | (arg4->y0 << 16);
-    asm volatile("mtc2 %0, $4" : : "r"(v));
-    asm volatile("mtc2 %0, $5" : : "r"(0));
-    asm volatile("rtpt");
-    asm volatile("cfc2 %0, $31; nop" : "=r"(v));
+    gte_ldv2(v, 0);
+    gte_rtpt();
+    gte_getflag_nop(v);
     if (v < 0) {
         return;
     }
 
-    p = D_8005840C_9398->prim_ptr;
-    D_8005840C_9398->prim_ptr = (u8 *)p + sizeof(PolyGT4_9398);
+    p = D_8005840C->prim_ptr;
+    D_8005840C->prim_ptr = (u8 *)p + sizeof(PolyGT4_9398);
     w0 = arg1[0];
     poly = (PolyGT4_9398 *)p;
     if (arg6 != 0) {
@@ -227,13 +221,13 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
         *(u32 *)&poly->r3 = w0;
     }
     w0 >>= 24;
-    asm volatile("mfc2 %0, $17" : "=r"(sz1));
+    gte_getsz1(sz1);
     poly->code = ((w0 & 0x60) == 0x60) ? 0x3C : 0x3E;
-    asm volatile("mfc2 %0, $18" : "=r"(v));
-    asm volatile("swc2 $14, %0" : "=m"(poly->xy2));
+    gte_getsz2(v);
+    gte_stsxy2(poly->xy2);
     sz1 += v;
-    asm volatile("mfc2 %0, $19" : "=r"(v));
-    asm volatile("swc2 $13, %0" : "=m"(poly->xy1));
+    gte_getsz3(v);
+    gte_stsxy1(poly->xy1);
 
     ot_bias = arg2 + 0x800;
     ot_bias -= D_800578D0 / 2;
@@ -251,11 +245,10 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
     *ot_entry = (u32)poly & 0xFFFFFF;
 
     v = arg4->x1 | (arg4->y0 << 16);
-    asm volatile("swc2 $12, %0" : "=m"(poly->xy0));
-    asm volatile("mtc2 %0, $0" : : "r"(v));
-    asm volatile("mtc2 %0, $1" : : "r"(0));
-    asm volatile("rtps");
-    asm volatile("swc2 $14, %0" : "=m"(poly->xy3));
+    gte_stsxy0(poly->xy0);
+    gte_ldv0(v, 0);
+    gte_rtps();
+    gte_stsxy2(poly->xy3);
 
     w1 = arg1[1];
     uv_base = (w1 >> 20) & 3;

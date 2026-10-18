@@ -139,9 +139,8 @@ typedef struct Unk4Bytes {
 
 extern GoolVec3 D_80051768;
 extern Unk4Bytes D_8005647C;
-asm(".sdata\n.size D_8005647C,4\n.text");
-extern s32 func_80042B9C(s32);
-extern s32 func_8004301C(s32, s32);
+s32 func_80042B9C(s32);
+s32 func_8004301C(s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 

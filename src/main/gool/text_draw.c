@@ -134,10 +134,10 @@ typedef struct GoolFont {
 extern CamTransformState D_800577E4;
 extern RenderProjectionState D_800578D0;
 
-extern void *func_80015A98(u32 *);
-extern s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-extern void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
-extern s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot);
+void *func_80015A98(u32 *);
+s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
+s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 

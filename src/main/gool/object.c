@@ -5,7 +5,7 @@
 
 /* Call the object cleanup routine with its recursive/event flag enabled. */
 
-extern s32 func_8001CDD0(Node *, s32);
+s32 func_8001CDD0(Node *, s32);
 
 s32 func_8001D1E0(Node *obj, void *context)
 {
@@ -20,8 +20,8 @@ typedef struct ObjectRoot {
 } ObjectRoot;
 
 extern ObjectRoot D_80060DB8[];
-extern s32 func_8001D11C(Node *, void *);
-extern void *func_80015A98(u32 *);
+s32 func_8001D11C(Node *, void *);
+void *func_80015A98(u32 *);
 
 void func_8001D200(void *object)
 {

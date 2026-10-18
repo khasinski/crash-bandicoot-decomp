@@ -1,8 +1,8 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern s32 func_8003D730(const char *, ...);
-extern void func_8004636C(u16 *, u32);
+s32 func_8003D730(const char *, ...);
+void func_8004636C(u16 *, u32);
 extern char D_80011660[];
 extern char D_80011670[];
 extern s32 D_800558DC;

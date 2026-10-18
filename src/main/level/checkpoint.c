@@ -15,7 +15,6 @@ typedef struct LevelHeader {
 } LevelHeader;
 
 extern LevelHeader *D_8005C53C[];
-extern u8 D_80052CB4[];
 
 
 typedef struct SaveVec {

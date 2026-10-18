@@ -6,7 +6,7 @@
 
 #include "render.h"
 
-extern void func_800342D8(void *, s32);
+void func_800342D8(void *, s32);
 
 void func_80016DCC(RenderBuffer *buffer)
 {

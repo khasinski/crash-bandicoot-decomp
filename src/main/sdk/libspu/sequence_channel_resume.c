@@ -2,7 +2,7 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 /* GCC_CPU: r4000 */
-extern s16 func_8004FF54(s16, u16 *, u16 *);
+s16 func_8004FF54(s16, u16 *, u16 *);
 extern u8 *D_80060418[];
 void func_8004B44C(s16 sequence, s16 channel) {
     s32 sequence_index;

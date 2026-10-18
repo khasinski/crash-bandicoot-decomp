@@ -5,9 +5,9 @@
 #include "zone.h"
 #include "ns.h"
 
-extern s32 func_8001B6F0(Node *, Visitor, void *);
-extern s32 func_8001CDD0(Node *, s32);
-extern s32 func_80024CC8(Node *, void *);
+s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
+s32 func_8001CDD0(Node *, s32);
+s32 func_80024CC8(Node *, void *);
 
 s32 func_800251B8(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
 {
@@ -33,7 +33,7 @@ s32 func_800251B8(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5
             if (child != NULL) {
                 do {
                     next_child = child->next;
-                    if (func_8001B6F0(child, func_80024CC8, context) == -25) {
+                    if (GOOL_TraverseObjectTreePostorder(child, func_80024CC8, context) == -25) {
                         func_8001CDD0(node, 0);
                     }
                     child = next_child;
@@ -86,7 +86,7 @@ s32 func_800252C0(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
 }
 
 void BIOS_MemSet(void *, s32, s32);
-void GOOL_TraverseObjectTreePreorder(s32);
+void GOOL_InitLevelSpawns(s32);
 void func_80017790(void);
 ResourceEntry *func_80015118(void *, s32, s32);
 void func_80015458(void *, s32);
@@ -141,7 +141,7 @@ s32 func_800253A0(void)
         D_800618B0[0] = 0xFFFF;
         BIOS_MemSet(D_8005FF58, 0, 0x4C0);
         progress = 0;
-        GOOL_TraverseObjectTreePreorder(D_8005C53C[0]->unk4);
+        GOOL_InitLevelSpawns(D_8005C53C[0]->unk4);
         mode = (D_8005C52C[0] == 0x11 || D_8005C52C[0] == 0x1E) ? 2 : 1;
         func_80017790();
         if (D_8005C52C[0] == 0x19 && D_800618D0[0] == 0x200 && D_80056494 == 0) {

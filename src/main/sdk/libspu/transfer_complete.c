@@ -1,7 +1,7 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern void func_80043354(u32, u32);
+void func_80043354(u32, u32);
 extern volatile u16 *D_800558E4;
 /* Retail tests and then reloads this shared completion callback slot. */
 extern void (*volatile D_80055918)(void);

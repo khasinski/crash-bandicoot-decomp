@@ -14,7 +14,7 @@ void func_8003E638(s32, s32);
 s32 func_8003E6D4(const char *);
 void func_8003E6E4(s32, s32);
 
-s32 CORE_VSync(s32 mode)
+s32 VSync(s32 mode)
 {
     u32 status = *D_80053924;
     s32 hsync = (*D_80053928 - D_8005392C) & 0xFFFF;

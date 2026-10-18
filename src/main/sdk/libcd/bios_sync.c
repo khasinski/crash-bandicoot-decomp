@@ -44,7 +44,7 @@ extern const char D_80011508[];
 extern const char D_8001164C[];
 extern const char D_80011654[];
 
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 s32 func_8003D730(const char *, ...);
 s32 func_8003E6D4(const char *, ...);
 s32 func_8003E848(void);
@@ -55,14 +55,14 @@ s32 func_800458C8(s32);
 
 static inline void cd_set_timeout(const char *name)
 {
-    D_800571B0 = CORE_VSync(-1) + 0x1E0;
+    D_800571B0 = VSync(-1) + 0x1E0;
     D_800571B4 = 0;
     D_800571B8[0] = name;
 }
 
 static inline s32 cd_check_timeout(void)
 {
-    if (CORE_VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
+    if (VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
         func_8003E6D4(D_800114F8);
         func_8003D730(D_80011508, D_800571B8[0], D_800555C4[D_800555C1[0]], D_80055644[D_8005587C.sync], D_80055644[D_8005587C.ready]);
         func_80044C40();
@@ -112,7 +112,7 @@ s32 func_80045610(s32 mode, u8 *result)
             cd_poll_interrupts();
         }
         cd_publish_response(result, D_800571A0);
-        if (CORE_VSync(-1) > D_80055880.time + 0x3C) {
+        if (VSync(-1) > D_80055880.time + 0x3C) {
             func_8004519C();
         }
         if (D_80055880.remaining == 0) {

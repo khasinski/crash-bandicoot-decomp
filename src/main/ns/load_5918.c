@@ -5,7 +5,6 @@
 
 extern volatile s32 D_80034520 __asm__("func_80034520");
 extern ResourceSlot D_8005C554[] __asm__("D_8005C528 + 44");
-extern ResourceSlot D_8005C920[];
 
 ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void func_800134C8(s32 id);

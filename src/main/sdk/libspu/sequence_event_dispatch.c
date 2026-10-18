@@ -10,14 +10,14 @@ extern u8 D_80056268;
 extern u8 D_80056269;
 extern u8 D_8005626A;
 
-extern void func_8003E1F8(void);
-extern void func_8003E208(void);
-extern s32 func_8003E298();
-extern s32 func_8003E3D8(u32);
+void func_8003E1F8(void);
+void func_8003E208(void);
+s32 func_8003E298();
+s32 func_8003E3D8(u32);
 extern void *func_8003E724(s32, void (*)(void));
 extern s32 func_8003E784(void (*)(void));
-extern void func_8004B828(void);
-extern void func_8004B868(void);
+void func_8004B828(void);
+void func_8004B868(void);
 
 void func_8004B8B8(s32 arg0) {
     s32 i;
@@ -59,20 +59,11 @@ loop:
     default:
         {
             u8 *p = (u8 *)&D_8005625C;
-            s32 tmp;
+            /* Prevent GCC 2.5.7 cse from folding &D_8005625C into direct symbol-offset loads. */
+            asm("" : "=r"(p) : "0"(p));
             if (*(s32 *)p != 0) {
                 return;
             }
-            tmp = (s32)p & 1;
-            if ((tmp >> 1) == 0) {
-                goto L_after;
-            }
-            if (*flag_p) {
-                goto L_after;
-            }
-            *flag_p = 0;
-            return;
-        L_after:
             if (*(s32 *)(p - 4) < 70) {
                 target = 0x204CC0 / *(s32 *)(p - 4);
                 p[0xD]++;

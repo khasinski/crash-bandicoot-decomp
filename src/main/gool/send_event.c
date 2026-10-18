@@ -8,11 +8,7 @@ static __inline__ s32 func_8001FB20(s32 value, s32 bits)
     return (s32)((u32)value << shift) >> shift;
 }
 
-extern s32 * D_80056480;
-extern s32 D_80056484;
-extern s32 * D_80056488;
-extern s32 D_8005648C;
-extern void printf(char *, ...);
+void printf(char *, ...);
 
 typedef struct GoolExecView {
     u8 pad00[0x10];
@@ -65,8 +61,8 @@ extern GoolTimeState *D_80058404[];
 
 
 extern GoolObjView *D_800566B4;
-extern s32 GOOL_InterpretObject(GoolObjView *, s32, void *);
-extern s32 GOOL_ChangeObjectState(GoolObjView *, s32, s32, s32 *);
+s32 GOOL_InterpretObject(GoolObjView *, s32, void *);
+s32 GOOL_ChangeObjectState(GoolObjView *, s32, s32, s32 *);
 
 static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObjView *object, s32 arg_words, s32 flags)
 {

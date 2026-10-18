@@ -31,8 +31,6 @@ s32 D_80056568 = 1;
 /* Sentinel values make the first card flags/mode poll register a change. */
 s32 D_8005656C = -1;
 u32 D_80056570 = 0xFFFFFFFF;
-extern s32 D_80061978;
-extern s32 engine_flag_shadow[] __asm__("D_80061978");
 
 
 /* File cleanup requests and lifecycle entry points. */
@@ -45,7 +43,7 @@ s32 func_8003C3FC(void);
 s32 func_8003CA04(s32);
 s32 func_8003CAB0(s32);
 void func_8003C900(s32 *);
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 s32 func_8003E288(char *);
 s32 func_8003E1C8(s32);
 s32 func_8002F778(s32);
@@ -97,9 +95,9 @@ s32 *D_800566F4;
 s32 D_800566F8;
 s32 D_800566FC;
 
-extern void func_80032FDC(s32, s32, s32);
-extern void *LIBC_Calloc(int, int);
-extern void func_8003D680(s32);
+void func_80032FDC(s32, s32, s32);
+void *LIBC_Calloc(int, int);
+void func_8003D680(s32);
 extern s32 D_80056710;
 s32 func_80031BAC(void)
 {
@@ -353,7 +351,7 @@ void func_80032244(void)
         func_80032FDC(D_800566E0->word35D0, 0, -1);
 }
 
-extern void LIBC_Free(void *);
+void LIBC_Free(void *);
 extern s32 D_80056710;
 s32 func_80032298(void)
 {
@@ -366,9 +364,9 @@ s32 func_80032298(void)
 #include "ns.h"
 #include "render.h"
 
-extern void *LIBC_Malloc(u32);
-extern void func_8004025C(s32);
-extern void func_800169F8(void);
+void *LIBC_Malloc(u32);
+void func_8004025C(s32);
+void func_800169F8(void);
 extern RenderBuffer *D_80058408;
 extern s32 D_8005C54C;
 
@@ -827,53 +825,4 @@ void func_80033490(void *a, void *b, void *c, u32 color)
 void func_80033498(void)
 {
 }
-INCLUDE_ASM("src/main/engine/gte_asm", func_800334A0);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033878);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033F18);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033F38);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033F58);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033F78);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033F98);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80033FBC);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034230);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034250);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034270);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034290);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800342B0);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800342D8);
-/* The following assembly label contains a writable counter word, not an
- * ABI function. Retain its original address while typing this data access. */
-extern u32 engine_counter_80034520[] __asm__("func_80034520");
-void func_80034504(void)
-{
-    engine_counter_80034520[0]++;
-}
-asm(".include \"macro.inc\"\n.purgem nonmatching\n.macro nonmatching label, size=1\n.endm");
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034520);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034524);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034580);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003460C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80034B08);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800351C8);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80035370);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800353B0);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80035438);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80035898);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80035E10);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80036340);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80036BF4);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80036D9C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800375EC);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80037D50);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003864C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003899C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800389A8);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80038AC4);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80038DF8);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003905C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_800390D0);
-INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_8003913C);
-INCLUDE_ASM("src/main/engine/gte_asm", func_80039BD4);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003A144);
-INCLUDE_ASM("src/main/engine/gte_asm", func_8003A76C);
-/* Both cached words are compared before dispatching the current card mode. */
+

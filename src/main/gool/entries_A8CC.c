@@ -2,11 +2,11 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-extern void func_80042E9C(void *);
-extern void func_80042ECC(void *);
-extern void func_80033FBC(void *, u32, s32);
-extern s32 *func_80016E18(void);
-extern void func_80036BF4(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
+void func_80042E9C(void *);
+void func_80042ECC(void *);
+void func_80033FBC(void *, u32, s32);
+s32 *func_80016E18(void);
+void func_80036BF4(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
 
 typedef struct ZoneHeader {
     u8 pad[0x10];

@@ -49,7 +49,7 @@ extern const char D_80011614[];
 extern const char D_80011620[];
 extern const char D_80011630[];
 
-s32 CORE_VSync(s32);
+s32 VSync(s32);
 s32 func_8003D730(const char *, ...);
 s32 func_8003E6D4(const char *, ...);
 s32 func_8003E6F4(void);
@@ -164,7 +164,7 @@ s32 func_8004519C(void)
         D_80055880.cursor = D_80055880.count;
         func_80044640(6, NULL, NULL, 1);
         D_80055880.remaining = D_80055880.buffer;
-        D_80055880.time = CORE_VSync(-1) + 0x1E0;
+        D_80055880.time = VSync(-1) + 0x1E0;
         return D_80055880.remaining;
     }
     return D_80055880.remaining = -1;

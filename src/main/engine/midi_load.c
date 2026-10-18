@@ -45,7 +45,6 @@ void func_80031964(AudioChannel *, s32, s32, s32);
 void func_80049504(s16, s16, s16, s32);
 s32 func_80031A40(AudioChannel *, s32, s32);
 
-extern AudioChannel D_80056EBC[];
 
 s32 func_800314C4(s32 *arg0) {
     s32 sp10;

@@ -9,7 +9,7 @@ extern Api *D_80054A64;
 extern s32 (*D_80054A68)(const char *,...);
 typedef struct {u8 debug;u8 pad01[13];u8 drawing[sizeof(Drawing)];} GpuState;
 extern GpuState D_80054A6E;
-extern void *BIOS_MemCpy(void *,void *,s32);
+void *BIOS_MemCpy(void *,void *,s32);
 extern const char D_80011304[];
 extern const char D_8001131C[];
 void *func_80040834(Drawing *arg0) {

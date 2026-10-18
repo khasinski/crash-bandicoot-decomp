@@ -4,7 +4,7 @@
 
 /* Allocate a 64 KiB resource buffer; retain the original signed pointer/error test. */
 
-extern void *LIBC_Malloc(s32);
+void *LIBC_Malloc(s32);
 
 s32 func_80012BAC(void)
 {

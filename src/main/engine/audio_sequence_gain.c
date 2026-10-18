@@ -7,7 +7,6 @@ void func_8004CD58();
 extern s16 D_80056648;
 extern s16 D_80056654;
 extern s16 D_8005665C;
-extern AudioChannel D_80056EBC[];
 
 void func_800311B0(s16 gain) {
     s16 channel;

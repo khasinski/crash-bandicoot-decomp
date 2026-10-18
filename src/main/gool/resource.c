@@ -8,7 +8,7 @@
 #include "zone.h"
 
 ZoneEntry *func_80015A98(u32 *);
-extern void func_8001D200(void *);
+void func_8001D200(void *);
 extern s32 D_80061A5C;
 extern s32 D_80061A60;
 extern s32 D_80061A64;

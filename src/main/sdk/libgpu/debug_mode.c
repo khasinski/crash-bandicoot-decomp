@@ -9,7 +9,6 @@ typedef struct {u8 debug;u8 pad01[13];u8 drawing[92];u8 display[20];} GpuState;
 extern GpuState D_80054A6E;
 typedef struct {u8 reverse;u8 pad01[12];u8 drawing[92];u8 display[20];} GpuReverseState;
 extern GpuReverseState D_80054A6F;
-extern s32 D_80054A78;
 extern const char D_800111D0[];
 extern const char D_800111E8[];
 

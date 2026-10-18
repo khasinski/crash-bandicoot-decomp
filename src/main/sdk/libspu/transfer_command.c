@@ -4,7 +4,7 @@
 
 /* Configure the SPU transfer address and issue a transfer command. */
 
-extern s32 func_80046A20(s32, ...);
+s32 func_80046A20(s32, ...);
 extern u16 D_800558E0;
 extern s32 D_80055908;
 

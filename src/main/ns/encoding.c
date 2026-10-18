@@ -14,8 +14,8 @@ extern const char D_80010020[];
 extern const char D_80010038[];
 extern const char D_80010044[];
 extern const char D_80010054[];
-extern char *func_800128A4(s32, u32, s32, s32);
-extern s32 func_8003D740(char *, const char *, ...);
+char *func_800128A4(s32, u32, s32, s32);
+s32 func_8003D740(char *, const char *, ...);
 
 u8 func_80012820(s32 index)
 {

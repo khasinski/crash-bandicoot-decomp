@@ -25,8 +25,6 @@ s32 func_800501A8(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
     u32 temp_v1_5;
     s32 master_volume;
     State *temp_s2;
-    u8 r;
-    u32 r2;
 
     var_s6 = 0;
     temp_s2 = D_80060418[arg0 & 255] + (((u32)(arg0 << 0x10)) >> 24);
@@ -64,13 +62,14 @@ s32 func_800501A8(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             } else {
                 var_a1 = (u32) (var_a1 * (0x7F - temp_v1_4)) / 63U;
             }
-            r = var_t2 * 12;
-            temp_lo_2 = (arg4 & 0x7F00);
-            temp_lo_2 |= arg4;
-            temp_v1_5 = temp_lo_2 & 0xFF;
-            r2 = (temp_v1_5 < 0x40U) | (r & 0x7F00);
-            r2 |= (r2 & 0x7F00) | (r2 & 0x3F00) | (r2 & 0x1F00) | (r2 & 0x0F00) | (r2 & 0x0700) | (r2 & 0x0300);
-            if (r2) {
+            /* Retail keeps a dead var_t2 * 12 index in $v0 and holds temp_lo_2 in $t0 across the pan blocks. */
+            {
+                register s32 idx12 asm("$2") = var_t2 * 12;
+                register u32 hold_t0 asm("$8") = temp_lo_2;
+                asm volatile("" : : "r"(idx12), "r"(hold_t0), "r"(arg4));
+                temp_v1_5 = arg4 & 0xFF;
+            }
+            if (temp_v1_5 < 0x40U) {
                 var_t1 = (u32) (var_t1 * temp_v1_5) / 63U;
             } else {
                 var_a1 = (u32) (var_a1 * (0x7F - temp_v1_5)) / 63U;

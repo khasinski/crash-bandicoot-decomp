@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern s32 func_8001CDD0(Node *, s32);
+s32 func_8001CDD0(Node *, s32);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (n)->word04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? &(n)->word04 : &(n)->children)
@@ -36,7 +36,7 @@ s32 func_8001B56C(Node *node, Node *new_parent)
     *NODE_CHILDREN_PTR(new_parent) = node;
 }
 
-s32 GOOL_TraverseObjectTreePostorder(Node *root, Visitor visitor, void *context)
+s32 GOOL_TraverseObjectTreePreorder(Node *root, Visitor visitor, void *context)
 {
     Node *child, *next;
     s32 result = visitor(root, context);
@@ -47,7 +47,7 @@ s32 GOOL_TraverseObjectTreePostorder(Node *root, Visitor visitor, void *context)
     child = root->children;
     while(child != NULL && child->kind != 0) {
         next = child->next;
-        GOOL_TraverseObjectTreePostorder(child, visitor, context);
+        GOOL_TraverseObjectTreePreorder(child, visitor, context);
         child = next;
     }
     return result;

@@ -4,7 +4,7 @@
 
 /* Free the two allocation tables and update the fixed-point value from the current resource. */
 
-extern void LIBC_Free(void *);
+void LIBC_Free(void *);
 extern void *D_80060DB4;
 extern void *D_80060DB0;
 extern s32 *D_8005C53C;

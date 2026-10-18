@@ -5,7 +5,6 @@
 
 extern ResourceHandler D_800514EC[];
 extern s32 D_80056410;
-extern s32 D_80034520;
 
 s32 func_80013D48(ResourceSlot *slot, s32 arg1);
 s32 func_800141F4(s32 *count_ptr, s32 arg1);

@@ -55,6 +55,7 @@ void func_80049C20(s16 sequence, s16 channel, u8 value) {
                 func_8004D184(*(s16 *)(state->bytes + 0x4C), state->bytes[0x2C + index], i, &tone_attr);
                 switch (state->bytes[0x13]) {
                 case 0:
+                    /* Force GCC 2.5.7 loop/cse2 to hoist value * 3 into $s3/$fp before combine/jump2 elides block. */
                     z = tone_attr.vol & 1;
                     if ((z >> 1) != 0) {
                         var2 = value * 25;

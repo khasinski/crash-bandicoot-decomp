@@ -4,7 +4,7 @@
 
 /* Call the CD routine with the inverted flag; report success only for a zero result. */
 
-extern s32 func_80043984(s32, s32);
+s32 func_80043984(s32, s32);
 
 s32 func_8001381C(s32 enabled)
 {
@@ -44,9 +44,9 @@ typedef struct CdResourceSlot {
 
 extern void *D_8005C540;
 extern s32 D_8005C548;
-extern u8 *func_80043A24(s32, u8 *);
-extern s32 func_80043668(u8, u8 *);
-extern s32 func_800439A4(s32, void *, s32);
+u8 *func_80043A24(s32, u8 *);
+s32 func_80043668(u8, u8 *);
+s32 func_800439A4(s32, void *, s32);
 
 s32 func_8001384C(CdResourceSlot *slot, s32 count)
 {

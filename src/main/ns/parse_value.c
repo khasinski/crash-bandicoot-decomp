@@ -1,8 +1,8 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern s32 BIOS_AToI(u8 *);
-extern s32 func_800128A4(s32, s32, s32, s32);
+s32 BIOS_AToI(u8 *);
+s32 func_800128A4(s32, s32, s32, s32);
 extern u8 D_80051728[];
 
 static __inline__ s32 func_80012834(u8 ch)

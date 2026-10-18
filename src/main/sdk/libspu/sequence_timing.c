@@ -5,7 +5,7 @@
 /* Select sequence timing using the mode returned by the video-mode query.
  * Flag 0x1000 is stored separately; values below six select preset timings.
  */
-extern s32 func_8003F23C(void);
+s32 func_8003F23C(void);
 extern s32 D_80056258, D_8005625C, D_8005FF4C;
 
 void func_8004CB6C(s32 arg0)
