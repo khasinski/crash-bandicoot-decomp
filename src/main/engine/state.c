@@ -848,6 +848,7 @@ void func_80034504(void)
 {
     engine_counter_80034520[0]++;
 }
+asm(".include \"macro.inc\"\n.purgem nonmatching\n.macro nonmatching label, size=1\n.endm");
 INCLUDE_ASM("asm/USA/main/nonmatchings/engine/state", func_80034520);
 INCLUDE_ASM("src/main/engine/gte_asm", func_80034524);
 INCLUDE_ASM("src/main/engine/gte_asm", func_80034580);
