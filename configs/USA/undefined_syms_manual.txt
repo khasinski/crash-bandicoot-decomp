@@ -13,3 +13,9 @@ D_8006189C_val = g_fade_counter;
 cd_sync_status = g_cd_status;
 cd_ready_status = g_cd_in_callback;
 g_ns_physical_pages = g_ns + 44;
+/* Section-relative, so they follow the layout when code or data move. */
+_gp = main_SDATA_START;
+g_bss_end = main_BSS_END;
+/* PS-X EXE payload size for the header: the loaded image rounded up to a
+   CD sector. */
+main_EXE_TEXT_SIZE = ALIGN(main_ROM_END - main_ROM_START, 0x800);

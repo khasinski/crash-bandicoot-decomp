@@ -30,9 +30,9 @@ CC_WRAPPER := tools/scripts/cc.sh
 TOOLCHAIN  := tools/toolchain
 
 # The retail file stops at the 0x800 boundary after .sdata; .sbss/.bss are
-# not stored. objcopy reproduces the zero padding PsyQ's EXE conversion wrote
-# (--pad-to takes a load address, which here is the file offset of 0x80056800).
-PAD_TO     := 0x47000
+# not stored. objcopy reproduces the zero padding PsyQ's EXE conversion wrote.
+# --pad-to takes a load address, i.e. the file offset: the 0x800-byte header
+# plus main_EXE_TEXT_SIZE (computed by the linker, so it follows the layout).
 
 # Compile exactly the units the splat config names, so a TU switches from asm
 # to C by changing its subsegment type to `c`.
@@ -50,7 +50,7 @@ UNDEFINED_FUNCS  := linkers/$(VERSION)/undefined_funcs_auto.$(BASENAME).txt
 UNDEFINED_MANUAL := configs/$(VERSION)/undefined_syms_manual.txt
 ADDR_ALIASES     := $(BUILD)/undefined_addr_aliases.$(BASENAME).txt
 
-.PHONY: all setup toolchain stage split build check diff objdiff-config report audit-code gool gool-check m2c permute probe test test-source verify clean distclean help
+.PHONY: shiftcheck all setup toolchain stage split build check diff objdiff-config report audit-code gool gool-check m2c permute probe test test-source verify clean distclean help
 
 all: build check
 
@@ -66,7 +66,8 @@ stage:
 
 split:
 	rm -rf $(ASM_DIR) $(LD_SCRIPT) $(UNDEFINED_SYMS) $(UNDEFINED_FUNCS) $(BUILD)
-	$(PY) -m splat split $(SPLAT_CFG)
+	$(PY) tools/scripts/splat_split.py $(SPLAT_CFG)
+	$(PY) tools/scripts/patch_header.py $(ASM_DIR)/header.s
 	$(PY) -c 'from pathlib import Path; from tools.scripts.gen_objdiff import retype_embedded_data_in_asm; retype_embedded_data_in_asm(Path("$(ASM_DIR)/nonmatchings/engine/gte_render/g_rcnt_ticks.s"), {"g_rcnt_ticks": [4224, 4]})'
 
 $(BUILD)/asm/%.s.o: asm/%.s
@@ -91,7 +92,8 @@ $(ELF): Makefile $(OBJS) $(LD_SCRIPT) $(UNDEFINED_MANUAL) $(ADDR_ALIASES)
 	      -Map $(BUILD)/$(BASENAME).map --no-check-sections -o $@
 
 $(OUT_BIN): $(ELF) Makefile
-	$(OBJCOPY) -O binary --gap-fill 0 --pad-to $(PAD_TO) $< $@
+	$(OBJCOPY) -O binary --gap-fill 0 \
+	    --pad-to $$(printf '0x%x' $$(( 0x800 + 0x$$($(NM) $< | awk '$$3 == "main_EXE_TEXT_SIZE" {print $$1}') ))) $< $@
 
 build: $(OUT_BIN)
 
@@ -124,6 +126,7 @@ help:
 	@echo "  gool-check       Verify 100% byte-for-byte round-trip compilation of all GOOL scripts"
 	@echo "  diff FUNC=name   asm-differ one function against retail"
 	@echo "  objdiff-config   Build retail target objects (expected/) and objdiff.json"
+	@echo "  shiftcheck       Check that code and data can move (no hard-coded addresses)"
 	@echo "  report           objdiff progress report + embedded-data/denominator audit"
 	@echo "  m2c FUNC=name    m2c decompilation of a not-yet-decompiled function"
 	@echo "  permute FUNC=name  Set up a decomp-permuter scratch dir in nonmatchings/"
@@ -173,5 +176,10 @@ test-source:
 	$(PY) -m unittest discover -s tests -p test_report_audit.py -v
 	$(PY) -m unittest discover -s tests -p test_gool_lisp.py -v
 	$(PY) -m unittest discover -s tests -p test_tooling.py -k test_shell_syntax -v
+
+# Link once more with padding in .text and .data and check that every moved
+# word is relocated and no unrelocated word points into the image.
+shiftcheck: $(ELF)
+	$(PY) tools/scripts/check_shiftable.py --version $(VERSION)
 
 verify: build check test

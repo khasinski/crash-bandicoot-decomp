@@ -84,6 +84,15 @@ Run `make test` after modifying build tooling, and `make report` to refresh
 progress. `make split` deletes generated build and assembly output; keep C
 attempts in `src/` or the ignored `scratch/` directory.
 
+The build is shiftable: code and data can grow or move and the result still
+links correctly. `make shiftcheck` relinks with padding inserted in `.text` and
+`.data` and fails if a word changed without a relocation, or if an
+unrelocated word points into the image. Name data in `configs/USA/sym.main.txt`
+(hand edits to `asm/` are lost on the next `make split`), give fixed points
+relative to sections in `configs/USA/undefined_syms_manual.txt`, and never write
+image addresses as numbers. Struct views that span several globals (for example
+the state block at 0x80060DF0) still assume the original relative data layout.
+
 Per-file compiler overrides go in a comment in the C file:
 `/* GCC_VERSION: 2.6.3 */`, `/* CC1_FLAGS: -O1 */`,
 `/* CC1_FLAGS: -O2 -fno-cse-follow-jumps */`, `/* ASPSX_VERSION: 2.56 */`.
