@@ -12,28 +12,28 @@ void SsSetTickMode(s32 arg0)
     s32 mode = GetVideoMode();
 
     if (arg0 & 0x1000) {
-        D_8005625C = 1;
-        D_80056258 = arg0 & 0xFFF;
+        g_ss_tick_mode_cur = 1;
+        g_ss_ticks_per_sec = arg0 & 0xFFF;
     } else {
-        D_8005625C = 0;
-        D_80056258 = arg0;
+        g_ss_tick_mode_cur = 0;
+        g_ss_ticks_per_sec = arg0;
     }
-    if (D_80056258 < 6) {
-        switch (D_80056258) {
+    if (g_ss_ticks_per_sec < 6) {
+        switch (g_ss_ticks_per_sec) {
         case 4:
             g_spawns_base = 50;
             if (mode == 1) {
-                D_80056258 = 5;
+                g_ss_ticks_per_sec = 5;
             } else {
-                D_80056258 = 50;
+                g_ss_ticks_per_sec = 50;
             }
             break;
         case 1:
             g_spawns_base = 60;
             if (mode == 0) {
-                D_80056258 = 5;
+                g_ss_ticks_per_sec = 5;
             } else {
-                D_80056258 = 60;
+                g_ss_ticks_per_sec = 60;
             }
             break;
         case 3:
@@ -69,6 +69,6 @@ void SsSetTickMode(s32 arg0)
             break;
         }
     } else {
-        g_spawns_base = D_80056258;
+        g_spawns_base = g_ss_ticks_per_sec;
     }
 }

@@ -86,14 +86,14 @@ void SpuGetVoiceAttr(VoiceAttributes *arg0) {
         arg0->field_10 = temp_v0[256];
         arg0->field_12 = temp_v0[257];
         arg0->field_14 = g_spu_RXX[temp_s2 + 2];
-        temp_v0_2 = D_80055970 + var_s1;
+        temp_v0_2 = g_spu_pitch_scale_tab + var_s1;
         temp_v0_3 = _spu_pitch2note((u16) *temp_v0_2 >> 8, *(u8 *)temp_v0_2, arg0->field_14);
         if (temp_v0_3 >= 0) {
             arg0->field_16 = temp_v0_3;
         } else {
             arg0->field_16 = 0;
         }
-        arg0->field_18 = (u16) D_80055970[var_s1];
+        arg0->field_18 = (u16) g_spu_pitch_scale_tab[var_s1];
         temp_v1_6 = g_spu_RXX + temp_s2;
         arg0->field_1A = temp_v1_6[6];
         arg0->field_1C = (s32) (temp_v1_6[3] << g_spu_trans_mode);

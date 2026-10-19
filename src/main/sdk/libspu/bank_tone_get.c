@@ -17,7 +17,7 @@ s32 SsUtGetVagAtr(s16 bank, s16 program, s32 tone, ToneAttributes *result) {
 
     if (g_midi_tracks[bank] == 1) {
         SpuVmVSetUp(bank, program);
-        temp_v1 = (s32) (((u32)tone + (D_8005E55F * 0x10)) << 0x10) >> 0xB;
+        temp_v1 = (s32) (((u32)tone + (g_spu_vm_cur_prog_tones * 0x10)) << 0x10) >> 0xB;
         result->field_0 = (u8) ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_0;
         result->field_1 = (u8) ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_1;
         result->field_2 = (u8) ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_2;

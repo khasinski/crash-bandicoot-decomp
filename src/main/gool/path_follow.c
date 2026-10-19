@@ -137,8 +137,8 @@ typedef struct Unk4Bytes {
     u8 bytes[4];
 } Unk4Bytes;
 
-extern GoolVec3 D_80051768;
-extern Unk4Bytes D_8005647C;
+extern GoolVec3 g_path_orient_zero_vec;
+extern Unk4Bytes gp_path_orient_step;
 s32 SquareRoot0(s32);
 s32 ratan2(s32, s32);
 
@@ -169,7 +169,7 @@ s32 Gool_ObjectOrientOnPath(GoolObj *obj, s32 progress, s32 *trans_arr) {
         shift = 2;
         break;
     case 17:
-        origin = &D_80051768;
+        origin = &g_path_orient_zero_vec;
         shift = 0;
         break;
     }
@@ -199,7 +199,7 @@ s32 Gool_ObjectOrientOnPath(GoolObj *obj, s32 progress, s32 *trans_arr) {
             ((next_pt.x - trans->x) >> 8) * ((next_pt.x - trans->x) >> 8) +
             dot * dot);
         if (dist != 0) {
-            Unk4Bytes sp40 = D_8005647C;
+            Unk4Bytes sp40 = gp_path_orient_step;
             s32 abs_dx;
             s32 abs_dz;
             s32 temp;

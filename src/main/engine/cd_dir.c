@@ -62,7 +62,7 @@ s32 Cd_ReadFileSys(void) {
     if (BIOS_StrNCmp((char *)(buf + 1), gp_cd_name, 5) != 0) {
         goto fail;
     }
-    BIOS_Printf(D_80010BC0);
+    BIOS_Printf(g_str_cd_dir_reading_file_system_n);
     __builtin_memcpy(&sector, buf + 0x8C, 4);
     if (cd_read_sectors(1, sector, buf, position) != 1) {
         goto fail;

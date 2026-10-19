@@ -43,14 +43,14 @@ void Gfx_TransformWorldsDark2(s32 arg0)
             RMemcpy(ptr->ptr14, dst, 6);
             dst += 0x10;
         }
-        *(s32 *)0x1F800048 = D_800566D4 >> 8;
-        *(s32 *)0x1F80004C = D_800566D8 >> 8;
-        *(s32 *)0x1F800050 = D_800566DC >> 8;
+        *(s32 *)0x1F800048 = gp_dark_target_x >> 8;
+        *(s32 *)0x1F80004C = gp_dark_target_y >> 8;
+        *(s32 *)0x1F800050 = gp_dark_target_z >> 8;
         *(s32 *)0x1F800054 = gp_dark_cone_rot;
-        *(s32 *)0x1F800058 = D_80056464;
-        *(s32 *)0x1F80005C = D_80056468;
-        *(s32 *)0x1F800060 = D_8005646C;
-        Gte_RTransformWorldsDark2(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774);
+        *(s32 *)0x1F800058 = gp_shader_dark_radius;
+        *(s32 *)0x1F80005C = gp_shader_dark_intensity;
+        *(s32 *)0x1F800060 = gp_shader_dark_z_bias;
+        Gte_RTransformWorldsDark2(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), g_wgeo_tex_anim_masks);
     }
 }
 
@@ -160,7 +160,7 @@ void Gfx_GetIconTexinfo(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
     case 1:
         arg3[0] = (res & 0x300) | ((word >> 12) & 0xFE);
         arg3[1] = ((res >> 10) & 0x180) | ((word << 2) & 0x7C);
-        table_entry = D_80051774 + ((word >> 22) << 3);
+        table_entry = g_wgeo_tex_anim_masks + ((word >> 22) << 3);
         val = table_entry[2] + 1;
         arg3[2] = ((word >> 20) & 3) ? (val >> 1) : (val >> 2);
         arg3[3] = table_entry[5] + 1;
@@ -274,7 +274,7 @@ typedef struct GoolAllocGlobals {
 
 extern GoolAllocGlobals gool_alloc;
 extern GoolObj * volatile g_player[];
-extern s32 D_80060DF8[];
+extern s32 g_gool_obj_list_7[];
 extern void *g_savestate[];
 
 s32 GOOL_InitAllocTable(void)
@@ -289,8 +289,8 @@ s32 GOOL_InitAllocTable(void)
         return -0xF;
     }
     g_savestate[0] = NULL;
-    D_80060E04[0] = 0;
-    D_80060DF8[0] = 2;
+    g_level_zone_flags[0] = 0;
+    g_gool_obj_list_7[0] = 2;
     gool_alloc.dfc = gool_alloc.db4;
     for (i = 0; i < 0x60; i++) {
         obj = &gool_alloc.db4[i];

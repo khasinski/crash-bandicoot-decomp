@@ -41,16 +41,16 @@ s32 CD_datasync(s32);
 
 static inline void cd_set_timeout(const char *name)
 {
-    D_800571B0 = VSync(-1) + 0x1E0;
-    D_800571B4 = 0;
-    D_800571B8[0] = name;
+    g_cd_timeout_deadline = VSync(-1) + 0x1E0;
+    g_cd_timeout_ticks = 0;
+    g_cd_timeout_cmd_name[0] = name;
 }
 
 static inline s32 cd_check_timeout(void)
 {
-    if (VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
-        puts(D_800114F8);
-        BIOS_Printf(D_80011508, D_800571B8[0], D_800555C4[D_800555C1[0]], D_80055644[g_cd_status.sync], D_80055644[g_cd_status.ready]);
+    if (VSync(-1) > g_cd_timeout_deadline || g_cd_timeout_ticks++ > 0x1E0000) {
+        puts(g_str_bios_com_cd_timeout);
+        BIOS_Printf(g_str_bios_com_s_s_sync_s, g_cd_timeout_cmd_name[0], g_cd_com_str_ptrs[g_cd_com_flags_tab[0]], g_cd_intr_str_ptrs[g_cd_status.sync], g_cd_intr_str_ptrs[g_cd_status.ready]);
         CD_initvol();
         return -1;
     }
@@ -62,11 +62,11 @@ static inline void cd_poll_interrupts(void)
     s32 event;
     u8 bank = *g_cd_reg0 & 3;
     while ((event = getintr()) != 0) {
-        if ((event & 4) && D_800555A4 != NULL) {
-            D_800555A4(g_cd_status.ready, D_800571A0);
+        if ((event & 4) && g_cd_ready_cb != NULL) {
+            g_cd_ready_cb(g_cd_status.ready, g_cd_ready_result_buf);
         }
         if ((event & 2) && g_cd_sync_cb != NULL) {
-            g_cd_sync_cb(g_cd_status.sync, D_80057198);
+            g_cd_sync_cb(g_cd_status.sync, g_cd_sync_result_buf);
         }
     }
     *g_cd_reg0 = bank;
@@ -89,7 +89,7 @@ static inline void cd_publish_response(u8 *dst, u8 *src)
 
 s32 CD_readsync(s32 mode, u8 *result)
 {
-    cd_set_timeout(D_8001164C);
+    cd_set_timeout(g_str_cd_com_sync);
     while (1) {
         if (cd_check_timeout() != 0) {
             return;
@@ -97,7 +97,7 @@ s32 CD_readsync(s32 mode, u8 *result)
         if (CheckCallback() != 0) {
             cd_poll_interrupts();
         }
-        cd_publish_response(result, D_800571A0);
+        cd_publish_response(result, g_cd_ready_result_buf);
         if (VSync(-1) > g_cd_read_state.time + 0x3C) {
             CD_read();
         }
@@ -114,12 +114,12 @@ s32 CD_readsync(s32 mode, u8 *result)
 s32 CD_datasync(s32 mode)
 {
     s32 ret;
-    cd_set_timeout(D_80011654);
+    cd_set_timeout(g_str_cd_com_ready);
     do {
         if (cd_check_timeout() != 0) {
             return -1;
         }
-        if ((*D_800558D8 & 0x01000000) == 0) {
+        if ((*g_spu_attr_zero_1 & 0x01000000) == 0) {
             ret = 0;
             goto done;
         }

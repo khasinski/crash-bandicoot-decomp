@@ -4,9 +4,9 @@
 
 extern volatile u16 *g_snd_tempo;
 typedef struct { s16 pitch; u8 pad[50]; } VoicePitch;
-extern VoicePitch D_800572B0[];
+extern VoicePitch g_spu_vm_voice_pitch[];
 typedef struct { u8 flags; u8 pad[51]; } VoiceFlags;
-extern VoiceFlags D_800572C7[];
+extern VoiceFlags g_spu_vm_voice_auto_flag[];
 
 typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
 extern VoiceVol g_midi_seq_table[];
@@ -30,33 +30,33 @@ void vmNoiseOn(s32 arg0) {
     u32 packed_id;
     SequenceState *temp_v1;
 
-    packed_id = (*(u16 *)&D_8005E56E);
+    packed_id = (*(u16 *)&g_spu_vm_cur_seq_sep_id);
     temp_v1 = g_ss_score_table[packed_id & 255] + (packed_id >> 8);
     left_scale = temp_v1->field_74;
-    temp_lo = (u32)(((left_scale << 7) + left_scale) * D_8005E562) / 127U;
+    temp_lo = (u32)(((left_scale << 7) + left_scale) * g_spu_vm_cur_prog_vol) / 127U;
     right_scale = temp_v1->field_76;
-    temp_lo_2 = (u32)(((right_scale << 7) + right_scale) * D_8005E562) / 127U;
-    temp_lo = (temp_lo * D_8005E565) / 127U;
-    temp_lo_2 = (temp_lo_2 * D_8005E565) / 127U;
+    temp_lo_2 = (u32)(((right_scale << 7) + right_scale) * g_spu_vm_cur_prog_vol) / 127U;
+    temp_lo = (temp_lo * g_spu_vm_cur_tone_vol) / 127U;
+    temp_lo_2 = (temp_lo_2 * g_spu_vm_cur_tone_vol) / 127U;
     control = g_snd_tempo[0x1AA / 2];
-    if ((u8) D_8005E566 < 0x40U) {
-        var_a2 = (u32) (temp_lo_2 * D_8005E566) / 63U;
+    if ((u8) g_spu_vm_cur_seq_pan < 0x40U) {
+        var_a2 = (u32) (temp_lo_2 * g_spu_vm_cur_seq_pan) / 63U;
         var_a1 = temp_lo;
     } else {
         var_a2 = temp_lo_2;
-        var_a1 = (u32) (temp_lo * (0x7F - D_8005E566)) / 63U;
+        var_a1 = (u32) (temp_lo * (0x7F - g_spu_vm_cur_seq_pan)) / 63U;
     }
-    if ((u8) D_8005E563 < 0x40U) {
-        var_a2 = (u32) (var_a2 * D_8005E563) / 63U;
+    if ((u8) g_spu_vm_cur_tone_pan < 0x40U) {
+        var_a2 = (u32) (var_a2 * g_spu_vm_cur_tone_pan) / 63U;
     } else {
-        var_a1 = (u32) (var_a1 * (0x7F - D_8005E563)) / 63U;
+        var_a1 = (u32) (var_a1 * (0x7F - g_spu_vm_cur_tone_pan)) / 63U;
     }
-    if ((u8) D_8005E55D < 0x40U) {
-        var_a2 = (u32) (D_8005E55D * var_a2) / 63U;
+    if ((u8) g_spu_vm_cur_prog_pan < 0x40U) {
+        var_a2 = (u32) (g_spu_vm_cur_prog_pan * var_a2) / 63U;
     } else {
-        var_a1 = (u32) (var_a1 * (0x7F - D_8005E55D)) / 63U;
+        var_a1 = (u32) (var_a1 * (0x7F - g_spu_vm_cur_prog_pan)) / 63U;
     }
-    if (D_800583F8 == 1) {
+    if (g_spu_vm_mono_flag == 1) {
         if (var_a1 < var_a2) {
             var_a1 = var_a2;
         } else {
@@ -64,7 +64,7 @@ void vmNoiseOn(s32 arg0) {
         }
     }
     control &= 0xC0FF;
-    control |= ((D_8005E55A - D_8005E568) & 0x3F) << 8;
+    control |= ((g_spu_vm_cur_note - g_spu_vm_cur_tone_center) & 0x3F) << 8;
     g_snd_tempo[0x1AA / 2] = control;
     temp_a0 = arg0 & 0xFF;
     temp_v1_2 = temp_a0 * 0x10;
@@ -78,27 +78,27 @@ void vmNoiseOn(s32 arg0) {
         var_a3 = 0;
         var_a2_2 = 1 << (temp_a0 - 0x10);
     }
-    D_800572B0[arg0 & 0xFF].pitch = 0xA;
+    g_spu_vm_voice_pitch[arg0 & 0xFF].pitch = 0xA;
     var_a1_2 = 0;
     if (gp_spawn_count != 0) {
         do {
-            D_800572C7[var_a1_2].flags &= 1;
+            g_spu_vm_voice_auto_flag[var_a1_2].flags &= 1;
             var_a1_2++;
         } while (var_a1_2 < gp_spawn_count);
     }
-    D_800572C7[arg0 & 0xFF].flags = 2;
-    temp_v0_2 = var_a3 | D_8005724C;
-    D_8005724C = temp_v0_2;
-    temp_a0_2 = var_a2_2 | D_80057254;
-    D_80057254 = temp_a0_2;
-    D_80061A68 &= ~temp_v0_2;
-    D_80061A70 &= ~temp_a0_2;
-    if (D_8005E56C & 4) {
-        D_8005725C |= var_a3;
-        D_80057264 |= var_a2_2;
+    g_spu_vm_voice_auto_flag[arg0 & 0xFF].flags = 2;
+    temp_v0_2 = var_a3 | g_spu_vm_key_on_lo;
+    g_spu_vm_key_on_lo = temp_v0_2;
+    temp_a0_2 = var_a2_2 | g_spu_vm_key_on_hi;
+    g_spu_vm_key_on_hi = temp_a0_2;
+    g_spu_vm_active_mask_lo &= ~temp_v0_2;
+    g_spu_vm_active_mask_hi &= ~temp_a0_2;
+    if (g_spu_vm_cur_tone_mode & 4) {
+        g_spu_vm_noise_mask_lo |= var_a3;
+        g_spu_vm_noise_mask_hi |= var_a2_2;
     } else {
-        D_8005725C &= ~var_a3;
-        D_80057264 &= ~var_a2_2;
+        g_spu_vm_noise_mask_lo &= ~var_a3;
+        g_spu_vm_noise_mask_hi &= ~var_a2_2;
     }
     g_snd_tempo[0x194 / 2] = var_a3;
     g_snd_tempo[0x196 / 2] = var_a2_2;

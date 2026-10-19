@@ -2,10 +2,10 @@
 /* GNU_AS_G: 0 */
 #include "common.h"
 typedef struct {u8 bytes[4];} BufferToken;
-extern BufferToken D_8005796C;
-extern BufferToken D_80057970[];
+extern BufferToken g_pbak_seed_val;
+extern BufferToken g_pbak_frame_cursor[];
 void *Gpu_RoundTicks(void) {
-BufferToken *base=D_80057970;
+BufferToken *base=g_pbak_frame_cursor;
  (void)frame_counter;
- *(base-2)=D_8005796C; return base-2;
+ *(base-2)=g_pbak_seed_val; return base-2;
 }

@@ -14,7 +14,7 @@ void Ns_PageDecRef(ResourceSlot *slot)
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
             Ns_PageDelete(slot);
-            D_8005C91C.active_count -= 1;
+            g_ns_virtual_page_pool.active_count -= 1;
         }
     }
 }

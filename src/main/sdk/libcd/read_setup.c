@@ -29,8 +29,8 @@ s32 cd_read_retry(s32 arg0, s32 arg1, s32 arg2) {
     g_cd_read_state.buffer = arg1;
     g_cd_read_state.state = 8;
     g_cd_read_state.word20 = g_cd_sync_cb;
-    g_cd_read_state.word24 = D_800555A4;
-    if (D_800555B0 & 0xE0) {
+    g_cd_read_state.word24 = g_cd_ready_cb;
+    if (g_cd_read_sectors & 0xE0) {
         CD_cw(9, 0, 0, 0);
     }
     CD_sync(0, 0);

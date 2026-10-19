@@ -8,7 +8,7 @@ typedef union FormatFlags {
     struct {u8 flags; u8 sign; u8 reserved[2];} bytes;
 } FormatFlags;
 typedef struct FormatSpec {FormatFlags flags; s32 width; s32 precision;} FormatSpec;
-extern FormatSpec D_800538DC;
+extern FormatSpec g_sprintf_thousands_table;
 
 s32 BIOS_StrLen(const char *);
 void *BIOS_MemChr(const void *,s32,s32);
@@ -61,7 +61,7 @@ s32 sprintf(s8 *arg0, s8 *arg1, ...) {
     if (var_a1 != 0) {minus=0x2D;plus=0x2B;space=0x20;
 loop_2:
         if (var_a1 != 0x25) goto block_108; {
-            format = D_800538DC;alternate=0x23;zero=0x30;
+            format = g_sprintf_thousands_table;alternate=0x23;zero=0x30;
 loop_4:
             temp_a0 = arg1;
             arg1 = temp_a0 + 1;
@@ -262,10 +262,10 @@ block_44:
                 format.flags.bits = (u32)temp_v1_9;
                 /* fallthrough */
             case 12:
-                var_a3 = D_80010F14;
+                var_a3 = g_str_hex_digits_lower;
                 goto block_79;
             case 44:
-                var_a3 = D_80010F28;
+                var_a3 = g_str_hex_digits_upper;
 block_79:
                 temp_v1_9 = arguments;
                 arguments = temp_v1_9 + 1;

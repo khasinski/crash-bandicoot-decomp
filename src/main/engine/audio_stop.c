@@ -12,15 +12,15 @@ void SsSepSetVol(s16, s16, s16, s16);                /* extern */
 void SsVabClose(s16);                               /* extern */
 
 /* Export the real small-common channel identifier. */
-asm(".globl D_80056658");
-s16 D_80056658;
+asm(".globl gp_midi_vab_id_2");
+s16 gp_midi_vab_id_2;
 
 void Midi_Close(s16 arg0, s32 arg1) {
     if (arg0 != -1) {
         SsSepClose(arg0);
     }
-    if ((arg1 != 0) && (D_80056658 != -1)) {
-        SsVabClose(D_80056658);
+    if ((arg1 != 0) && (gp_midi_vab_id_2 != -1)) {
+        SsVabClose(gp_midi_vab_id_2);
     }
 }
 
@@ -48,7 +48,7 @@ s32 Midi_Control(AudioChannel *record, s32 action, s32 arg) {
         case 4:
             record->left_volume = arg >> 16;
             record->right_volume = arg;
-            for (i = (D_8005665C >= 2); i < D_8005665C; i++) {
+            for (i = (gp_midi_open_seq_cnt >= 2); i < gp_midi_open_seq_cnt; i++) {
                 SsSepSetVol(gp_midi_vol, record->channel, record->left_volume, record->right_volume);
             }
             break;

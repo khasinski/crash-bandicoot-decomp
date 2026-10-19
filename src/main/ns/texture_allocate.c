@@ -68,7 +68,7 @@ s32 Ns_TexturePageAllocate(void)
         {
             for (j = 0; j < zone->count; j++)
             {
-                id = *((u32 *) (((u32) D_800580B8) + offset));
+                id = *((u32 *) (((u32) g_ns_tex_hash_table) + offset));
                 ref = zone->refs[j];
                 if (ref & 1)
                 {

@@ -118,7 +118,7 @@ void Gfx_TransformFragment(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *a
     uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (arg2 & 0x80)) << 8);
     poly->clut = ((arg2 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
     poly->tpage = tpage | (arg2 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-    uv_ptr = &((UvPair9398 *)D_80051774)[w1 >> 22];
+    uv_ptr = &((UvPair9398 *)g_wgeo_tex_anim_masks)[w1 >> 22];
     v = uv_ptr->lo;
     uv1 = uv_ptr->hi;
     poly->uv0 = v + uv_base;
@@ -254,7 +254,7 @@ void Gfx_TransformFontChar(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, R
     uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (arg3 & 0x80)) << 8);
     poly->clut = ((arg3 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
     poly->tpage = tpage | (arg3 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-    uv_ptr = &((UvPair9398 *)D_80051774)[w1 >> 22];
+    uv_ptr = &((UvPair9398 *)g_wgeo_tex_anim_masks)[w1 >> 22];
     v = uv_ptr->lo;
     uv1 = uv_ptr->hi;
     poly->uv0 = v + uv_base;

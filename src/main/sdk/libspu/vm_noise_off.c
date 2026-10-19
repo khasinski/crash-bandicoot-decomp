@@ -8,15 +8,15 @@ typedef struct {
     u16 voice_off_hi;
 } SpuPorts;
 extern SpuPorts *g_snd_tempo;
-extern u8 D_800572B0[];
-extern u8 D_800572C7[];
+extern u8 g_spu_vm_voice_pitch[];
+extern u8 g_spu_vm_voice_auto_flag[];
 void vmNoiseOff(s32 arg0) {
     s32 offset;
     SpuPorts *ports;
     offset = (arg0 & 0xFF) * 0x34;
-    D_800572C7[offset] = 0;
+    g_spu_vm_voice_auto_flag[offset] = 0;
     ports = g_snd_tempo;
-    *(u16 *)(D_800572B0 + offset) = 0;
+    *(u16 *)(g_spu_vm_voice_pitch + offset) = 0;
     ports->voice_off_lo = 0;
     ports->voice_off_hi = 0;
 }

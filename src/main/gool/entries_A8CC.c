@@ -61,12 +61,12 @@ void Gfx_TransformWorldsDark(s32 arg0)
                 _zero = 2;
             }
             ((Sp *)0x1F800000)->a = gp_fade_step << 4;
-            ((Sp *)0x1F800000)->b = D_80056444 << 4;
-            ((Sp *)0x1F800000)->c = D_80056448 << 4;
+            ((Sp *)0x1F800000)->b = gp_shader_color_g << 4;
+            ((Sp *)0x1F800000)->c = gp_shader_color_b << 4;
             ((Sp *)0x1F800000)->d = gp_ripple_amp;
             ((Sp *)0x1F800000)->e = gp_ripple_freq << 4;
-            ((Sp *)0x1F800000)->f = D_80056454 << 4;
-            ((Sp *)0x1F800000)->g = D_80056458 << 4;
+            ((Sp *)0x1F800000)->f = gp_shader_tint_r << 4;
+            ((Sp *)0x1F800000)->g = gp_shader_tint_g << 4;
             _h = gp_lightning_state;
             do { } while (0);
             _hdr = g_ns_page_pool[0];
@@ -89,6 +89,6 @@ void Gfx_TransformWorldsDark(s32 arg0)
             }
             *(&sp24) = _flag;
         }
-        Gte_RTransformWorldsDark(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774, sp20, sp24);
+        Gte_RTransformWorldsDark(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), g_wgeo_tex_anim_masks, sp20, sp24);
     }
 }

@@ -8,29 +8,29 @@ s32 BIOS_Printf(const char *, ...);
 s32 SetIntrMask(s32);
 
 
-extern volatile s32 D_80054B60[];
+extern volatile s32 g_gpu_queue_enabled[];
 
 
 void set_alarm(void)
 {
-    D_80054B84 = VSync(-1) + 240;
-    D_80054B88 = 0;
+    g_gpu_alarm_active = VSync(-1) + 240;
+    g_gpu_alarm_timeout_cnt = 0;
 }
 
 s32 get_alarm(void)
 {
-    if (VSync(-1) > D_80054B84 || D_80054B88++ > 0xF0000) {
+    if (VSync(-1) > g_gpu_alarm_active || g_gpu_alarm_timeout_cnt++ > 0xF0000) {
         *g_gpu_stat_reg;
-        BIOS_Printf(D_80011350, (g_gpu_q_write - g_gpu_q_read) & 0x3F, *g_gpu_stat_reg, *D_80054B4C, *D_80054B44);
-        BIOS_Printf(D_80011384, D_80054B60[0], D_80054B64, D_80054B68);
-        D_80054B80 = SetIntrMask(0);
+        BIOS_Printf(g_str_timeout_init, (g_gpu_q_write - g_gpu_q_read) & 0x3F, *g_gpu_stat_reg, *g_gpu_dma2_chcr_reg, *g_gpu_dma2_madr_reg);
+        BIOS_Printf(g_str_timeout_init_func_08x_08x_08x, g_gpu_queue_enabled[0], g_gpu_alarm_deadline, g_gpu_alarm_counters);
+        g_gpu_reset_cnt = SetIntrMask(0);
         g_gpu_q_read = 0;
         g_gpu_q_write = g_gpu_q_read;
-        *D_80054B4C = 0x401;
-        *D_80054B5C |= 0x800;
+        *g_gpu_dma2_chcr_reg = 0x401;
+        *g_gpu_dpcr_reg |= 0x800;
         *g_gpu_stat_reg = 0x02000000;
         *g_gpu_stat_reg = 0x01000000;
-        SetIntrMask(D_80054B80);
+        SetIntrMask(g_gpu_reset_cnt);
         return -1;
     }
     return 0;

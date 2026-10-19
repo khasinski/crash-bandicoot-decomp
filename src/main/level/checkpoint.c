@@ -62,17 +62,17 @@ typedef struct LevelSave {
 } LevelSave;
 
 extern SaveObj *gp_crash_obj[2];
-extern u32 D_800619A0[];
-extern SaveVec D_80061A24;
-s32 D_800564A0 = 0;
+extern u32 g_checkpoint_id_2[];
+extern SaveVec g_checkpoint_spawn_trans;
+s32 gp_checkpoint_zone_id = 0;
 extern s32 gp_pbak_frame_idx;
 
 extern s32 g_view_proj;
-extern struct { s32 v, pad; } D_800566E8;
+extern struct { s32 v, pad; } gp_level_unused_1;
 extern u32 g_fade_counter;
 typedef struct { s32 v, pad; } WordView;
-extern WordView D_800618A0;
-extern WordView D_80061A3C;
+extern WordView g_level_restart_fade_cnt;
+extern WordView g_level_frame_accum;
 
 void Gool_SendToColliders(void *, s32, s32, s32, s32);
 ZoneEntry *Ns_Lookup(u32 *);
@@ -98,8 +98,8 @@ void Level_SaveState(SaveObj *obj, LevelSave *save, s32 flag)
     if (!(obj->status_b & 0x200)) {
         save->transform.trans = obj->transform.trans;
     }
-    if (D_800619A0[0] != -1 && D_800619A0[0] != 0) {
-        save->transform.trans = D_80061A24;
+    if (g_checkpoint_id_2[0] != -1 && g_checkpoint_id_2[0] != 0) {
+        save->transform.trans = g_checkpoint_spawn_trans;
     }
     save->transform.rot.x = 0;
     save->transform.rot.y = 0;
@@ -128,10 +128,10 @@ void Level_Restart(LevelSave *save)
     SaveObj *player;
     s32 i;
 
-    D_8006197C[0] = 0;
+    g_checkpoint_clear_flag[0] = 0;
     if (save->level_id != g_ns_page_pool[0]->level_id) {
         gp_pbak_frame_idx = -2;
-        D_800564A0 = 1;
+        gp_checkpoint_zone_id = 1;
         return;
     }
     Gool_SendToColliders(NULL, 0x1300, 0, 0, 0);
@@ -150,13 +150,13 @@ void Level_Restart(LevelSave *save)
     }
     level_position.zone = NULL;
     SetGeomScreen(g_view_proj);
-    if (D_800564A0) {
+    if (gp_checkpoint_zone_id) {
         for (i = 0; i < sizeof(g_spawns) / sizeof(u32); i++) {
             g_spawns[i] = save->flags38[i];
         }
-        if (D_800619A0[0] != -1) {
-            g_spawns[D_800619A0[0] >> 8] &= ~2;
-            g_spawns[D_800619A0[0] >> 8] |= 8;
+        if (g_checkpoint_id_2[0] != -1) {
+            g_spawns[g_checkpoint_id_2[0] >> 8] &= ~2;
+            g_spawns[g_checkpoint_id_2[0] >> 8] |= 8;
         }
         for (i = 0; i < 0x130; i++) {
             g_spawns[i] &= ~1;
@@ -164,10 +164,10 @@ void Level_Restart(LevelSave *save)
     }
     zone_eid = save->zone_eid;
     zone = (ZoneEntry *)Ns_Open(&zone_eid, 1, 1);
-    Level_Update((ResourceEntry *)zone, zone->items[save->path_idx + ((ZoneHeader *)zone->items[0])->path_index], save->progress, !D_800564A0);
+    Level_Update((ResourceEntry *)zone, zone->items[save->path_idx + ((ZoneHeader *)zone->items[0])->path_index], save->progress, !gp_checkpoint_zone_id);
     Ns_Close(&zone_eid, 1);
     if (gp_crash_obj[0] == NULL) {
-        GOOL_CreateObject(D_80060DE8, 0, 0, 0, 0, 1);
+        GOOL_CreateObject(g_gool_obj_list_5, 0, 0, 0, 0, 1);
     }
     gp_crash_obj[0]->transform = save->transform;
     player = gp_crash_obj[0];
@@ -184,22 +184,22 @@ void Level_Restart(LevelSave *save)
         player->unk78 = NULL;
     }
     g_draw_stamp = 0;
-    D_80061894 = 0;
-    D_800566E8.v = 0;
+    g_cam_mat_dirty_flag = 0;
+    gp_level_unused_1.v = 0;
     g_fade_counter = 0xFFFF;
-    if (!D_800564A0) {
-        D_800618A0.v += 0x100;
+    if (!gp_checkpoint_zone_id) {
+        g_level_restart_fade_cnt.v += 0x100;
         if (save->flag34) {
-            D_80061A3C.v = 0;
+            g_level_frame_accum.v = 0;
         } else {
-            D_80061A3C.v += 0x100;
+            g_level_frame_accum.v += 0x100;
         }
     }
     Level_InitMisc(0);
-    if (D_800564A0) {
+    if (gp_checkpoint_zone_id) {
         g_death_count[0] = save->unk4F8;
-        D_800564A0 = 0;
-        if (D_800619A0[0] != -1) {
+        gp_checkpoint_zone_id = 0;
+        if (g_checkpoint_id_2[0] != -1) {
             g_death_count[0] -= 0x100;
         }
     }

@@ -234,7 +234,7 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
                 obj->status_b &= ~0x10000000;
             }
         } else {
-            obj->unkFC = D_80060E04[0];
+            obj->unkFC = g_level_zone_flags[0];
             if ((obj->status_b & 0x10) && gp_crash_obj->unkFC == obj->unkFC) {
                 Gool_ObjectControlDir(obj);
             }
@@ -248,7 +248,7 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
             }
             sp = obj->sp;
             wait_entry = *(sp - 1);
-            if (D_80060E04[0] - (wait_entry & 0xFFFFFF) >= (wait_entry >> 24)) {
+            if (g_level_zone_flags[0] - (wait_entry & 0xFFFFFF) >= (wait_entry >> 24)) {
                 obj->sp = sp - 1;
                 res = GOOL_InterpretObject(obj, 4, 0);
                 if (res >= -0xFE) {
@@ -391,7 +391,7 @@ void Gool_ObjectTransform(GoolObj *obj) {
                     200 << shift,
                     obj->cam_zoom + (0x800 - g_view_proj.distance / 2),
                     Gpu_GetCurPrimsTail(),
-                    D_80051774);
+                    g_wgeo_tex_anim_masks);
             }
         }
         break;

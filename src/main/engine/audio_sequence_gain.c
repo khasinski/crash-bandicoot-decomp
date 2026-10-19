@@ -10,15 +10,15 @@ void Midi_ResetSeqVol(s16 gain) {
     s32 scaled_gain;
     s32 index;
 
-    D_80056648 = gain;
-    index = D_8005665C >= 2;
+    gp_midi_seq_gain = gain;
+    index = gp_midi_open_seq_cnt >= 2;
     scaled_gain = gain >> 7;
-    if (index < D_8005665C) {
+    if (index < gp_midi_open_seq_cnt) {
         s32 volume = scaled_gain;
         do {
-            channel = D_80056EBC[index].channel;
+            channel = g_midi_channel_states[index].channel;
             SsSepSetVol(gp_midi_vol, channel, volume, volume);
             index += 1;
-        } while (index < D_8005665C);
+        } while (index < gp_midi_open_seq_cnt);
     }
 }

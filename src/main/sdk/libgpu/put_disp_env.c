@@ -30,9 +30,9 @@ typedef struct {
     u8 reverse;
     u8 pad[15];
 } GpuReverseState;
-extern volatile GpuReverseState D_80054A6F;
+extern volatile GpuReverseState g_gpu_reverse_flag;
 
-extern volatile GpuDisplayEnv D_80054AD8;
+extern volatile GpuDisplayEnv g_gpu_cur_dispenv;
 
 s32 GetVideoMode(void);
 s32 get_dx(GpuRect *rect);
@@ -47,17 +47,17 @@ GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
 
     mode = 0x08000000;
     if (g_gpu_debug_level.debug >= 2) {
-        g_gpu_ot_status(D_80011338, env);
+        g_gpu_ot_status(g_str_put_disp_env_putdispenv_08x_n, env);
     }
 
     g_gpu_ctl->ctl10(((u32)(g_gpu_mode.version - 1) < 2)
         ? ((((env->display.y & 0xFFF) << 12) | (get_dx(&env->display) & 0xFFF)) | 0x05000000)
         : ((((env->display.y & 0x3FF) << 10) | (env->display.x & 0x3FF)) | 0x05000000));
 
-    if (D_80054AD8.screen.x != env->screen.x ||
-        D_80054AD8.screen.y != env->screen.y ||
-        D_80054AD8.screen.w != env->screen.w ||
-        D_80054AD8.screen.h != env->screen.h) {
+    if (g_gpu_cur_dispenv.screen.x != env->screen.x ||
+        g_gpu_cur_dispenv.screen.y != env->screen.y ||
+        g_gpu_cur_dispenv.screen.w != env->screen.w ||
+        g_gpu_cur_dispenv.screen.h != env->screen.h) {
         env->pad12 = GetVideoMode();
         hx1 = 0x260 + env->screen.x * 10;
         vy1 = env->screen.y + (env->pad12 ? 0x13 : 0x10);
@@ -73,11 +73,11 @@ GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
         g_gpu_ctl->ctl10(0x07000000 | ((vy2 & 0x3FF) << 10) | (vy1 & 0x3FF));
     }
 
-    if (*(s32 *)&D_80054AD8.interlaced != *(s32 *)&env->interlaced ||
-        D_80054AD8.display.x != env->display.x ||
-        D_80054AD8.display.y != env->display.y ||
-        D_80054AD8.display.w != env->display.w ||
-        D_80054AD8.display.h != env->display.h) {
+    if (*(s32 *)&g_gpu_cur_dispenv.interlaced != *(s32 *)&env->interlaced ||
+        g_gpu_cur_dispenv.display.x != env->display.x ||
+        g_gpu_cur_dispenv.display.y != env->display.y ||
+        g_gpu_cur_dispenv.display.w != env->display.w ||
+        g_gpu_cur_dispenv.display.h != env->display.h) {
         s32 small_h;
 
         env->pad12 = GetVideoMode();
@@ -90,7 +90,7 @@ GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
         if (env->interlaced) {
             mode |= 0x20;
         }
-        if (D_80054A6F.reverse) {
+        if (g_gpu_reverse_flag.reverse) {
             mode |= 0x80;
         }
         if (env->display.w >= 0x119) {
@@ -111,7 +111,7 @@ GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
         g_gpu_ctl->ctl10(mode);
     }
 
-    BIOS_MemCpy(&D_80054AD8, env, 0x14);
+    BIOS_MemCpy(&g_gpu_cur_dispenv, env, 0x14);
     return env;
 }
 

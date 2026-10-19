@@ -16,8 +16,8 @@ u16 *restartIntr(void)
     if (*g_event_handlers == 0) {
         HookEntryInt(&g_event_handlers[0x1C]);
         *g_event_handlers = 1;
-        *D_800549C4 = D_80053966;
-        *D_800549C8 = D_80053968;
+        *g_intr_i_mask_reg = g_intr_saved_mask;
+        *g_intr_dpcr_reg = g_intr_dma_saved_dpcr;
         ExitCriticalSection();
         result = g_event_handlers;
     } else {

@@ -29,7 +29,7 @@ s32 SpuClearReverbWorkArea(u32 region) {
 
     saved_transfer_flag = 0;
     restore_mode = 0;
-    if ((region >= 0xAU) || (table_base = D_80055DAC, region_entry = table_base + region, (_SpuIsInAllocateArea_(*region_entry) != 0))) {
+    if ((region >= 0xAU) || (table_base = g_spu_reverb_preset_params, region_entry = table_base + region, (_SpuIsInAllocateArea_(*region_entry) != 0))) {
         return -1;
     }
     if (region == 0) {
@@ -40,15 +40,15 @@ s32 SpuClearReverbWorkArea(u32 region) {
         remaining = (0x10000 - region_address) << g_spu_trans_mode;
         transfer_address = region_address << g_spu_trans_mode;
     }
-    previous_mode = D_800558FC;
+    previous_mode = g_spu_reverb_depth_l;
     if (previous_mode == 1) {
-        D_800558FC = 0;
+        g_spu_reverb_depth_l = 0;
         restore_mode = 1;
     }
     more_blocks = 1;
-    if (D_80055918 != 0) {
-        saved_transfer_flag = D_80055918;
-        D_80055918 = 0;
+    if (g_spu_dma_done_cb != 0) {
+        saved_transfer_flag = g_spu_dma_done_cb;
+        g_spu_dma_done_cb = 0;
     }
     last_block = remaining < 0x401U;
     do {
@@ -60,16 +60,16 @@ s32 SpuClearReverbWorkArea(u32 region) {
         }
         _spu_t(2, transfer_address);
         _spu_t(1);
-        _spu_t(3, D_800559A8, block_size);
-        remaining = finish_chunk(remaining, D_800559A0);
+        _spu_t(3, g_spu_reverb_param_studio_b, block_size);
+        remaining = finish_chunk(remaining, g_spu_dma_done_callback);
         transfer_address += 0x400;
         last_block = remaining < 0x401U;
     } while (more_blocks != 0);
     if (restore_mode != 0) {
-        D_800558FC = previous_mode;
+        g_spu_reverb_depth_l = previous_mode;
     }
     if (saved_transfer_flag != 0) {
-        D_80055918 = saved_transfer_flag;
+        g_spu_dma_done_cb = saved_transfer_flag;
     }
     return 0;
 }

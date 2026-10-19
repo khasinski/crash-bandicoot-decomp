@@ -9,20 +9,20 @@ void SpuVmKeyOffNow();
 void SpuVmFlush(void);
 extern volatile u8 *g_snd_tempo;
 
-extern s32 D_8005778C;
+extern s32 g_spu_reverb_attr;
 
 
-extern u8 D_800572AC[];
-extern u8 D_800572AE[];
-extern u8 D_800572B0[];
-extern u8 D_800572B2[];
-extern u8 D_800572B4[];
-extern u8 D_800572B6[];
-extern u8 D_800572BA[];
+extern u8 g_spu_vm_voice_table[];
+extern u8 g_spu_vm_voice_age[];
+extern u8 g_spu_vm_voice_pitch[];
+extern u8 g_spu_vm_voice_envx[];
+extern u8 g_spu_vm_voice_vol[];
+extern u8 g_spu_vm_voice_pan[];
+extern u8 g_spu_vm_voice_seq_sep[];
 
-extern u8 D_800572BE[];
-extern u8 D_800572C0[];
-extern u8 D_800572C7[];
+extern u8 g_spu_vm_voice_tone_prog[];
+extern u8 g_spu_vm_voice_tone_idx[];
+extern u8 g_spu_vm_voice_auto_flag[];
 
 extern u16 g_midi_seq_table[];
 void SpuVmInit(s32 arg0) {
@@ -33,8 +33,8 @@ void SpuVmInit(s32 arg0) {
     u16 *temp_a1;
 
     SsSetMono(0);
-    D_80057EF0 = 0;
-    SpuInitMalloc(0x20, &D_800571C4);
+    g_spu_vm_damper_mask = 0;
+    SpuInitMalloc(0x20, &g_spu_vm_malloc_buf);
     index = 0;
     do {
         g_midi_seq_table[(index & 0xFFFF)] = 0;
@@ -45,7 +45,7 @@ void SpuVmInit(s32 arg0) {
         g_card_ev_table[(index & 0xFFFF)] = 0;
         index += 1;
     } while ((u32) (index & 0xFFFF) < 0x18U);
-    D_80060CE8 = 0;
+    g_vab_open_count = 0;
     index = 0;
     do {
         g_midi_tracks[(index & 0xFFFF)] = 0;
@@ -62,27 +62,27 @@ void SpuVmInit(s32 arg0) {
         do {
             register_offset = (index & 0xFFFF) * 8;
             temp_v0 = (index & 0xFFFF) * 0x34;
-            *(s16 *)(D_800572AE + temp_v0) = 0x18;
-            *(s16 *)(D_800572AC + temp_v0) = 0xFF;
-            D_800572C7[temp_v0] = 0;
-            *(s16 *)(D_800572B0 + temp_v0) = 0;
-            *(s16 *)(D_800572B2 + temp_v0) = 0;
-            *(s16 *)(D_800572BA + temp_v0) = -1;
-            *(s16 *)(D_800572BC + temp_v0) = 0;
-            *(s16 *)(D_800572BE + temp_v0) = 0;
-            *(s16 *)(D_800572C0 + temp_v0) = 0xFF;
-            *(s16 *)(D_800572B4 + temp_v0) = 0;
-            D_800572B6[temp_v0] = 0x40;
-            *(s16 *)(D_800572C8 + temp_v0) = 0;
-            *(s16 *)(D_800572CA + temp_v0) = 0;
-            *(s16 *)(D_800572CC + temp_v0) = 0;
-            *(s16 *)(D_800572CE + temp_v0) = 0;
-            *(s16 *)(D_800572D4 + temp_v0) = 0;
-            *(s16 *)(D_800572D6 + temp_v0) = 0;
-            *(s16 *)(D_800572D8 + temp_v0) = 0;
-            *(s16 *)(D_800572DA + temp_v0) = 0;
-            *(s16 *)(D_800572DC + temp_v0) = 0;
-            *(s16 *)(D_800572D0 + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_age + temp_v0) = 0x18;
+            *(s16 *)(g_spu_vm_voice_table + temp_v0) = 0xFF;
+            g_spu_vm_voice_auto_flag[temp_v0] = 0;
+            *(s16 *)(g_spu_vm_voice_pitch + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_envx + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_seq_sep + temp_v0) = -1;
+            *(s16 *)(g_spu_vm_voice_prog + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_tone_prog + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_tone_idx + temp_v0) = 0xFF;
+            *(s16 *)(g_spu_vm_voice_vol + temp_v0) = 0;
+            g_spu_vm_voice_pan[temp_v0] = 0x40;
+            *(s16 *)(g_spu_vm_voice_auto_vol_cnt + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_vol_step + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_vol_cur + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_vol_dst + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_pan_step + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_pan_cur + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_pan_dst + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_pan_start + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_vol_start + temp_v0) = 0;
+            *(s16 *)(g_spu_vm_voice_auto_pan_cnt + temp_v0) = 0;
             temp_a1 = (u16 *)(((register_offset & 0xFFFF) * 2) + (u32)g_snd_tempo);
             temp_a1[0] = 0;
             temp_a1[1] = 0;
@@ -90,22 +90,22 @@ void SpuVmInit(s32 arg0) {
             temp_a1[2] = 0x1000;
             temp_a1[4] = 0x80FF;
             temp_a1[5] = 0x4000;
-            D_8005E572[0] = index;
+            g_spu_vm_last_voice[0] = index;
             SpuVmKeyOffNow(1);
             index += 1;
             } while ((u32) (index & 0xFFFF) < (u8) gp_spawn_count);
     }
-    D_8005724C = 0;
-    D_80057254 = 0;
-    D_80061A68 = 0;
-    D_8005725C = 0;
-    D_80057264 = 0;
-    D_8005778C = 0;
-    D_80057794 = 0x3FFF;
-    D_80057796 = 0x3FFF;
-    D_80057790 = 0;
-    D_8005E710 = 0;
-    D_800583F8 = 0;
-    D_8005CFC4 = 0x80;
+    g_spu_vm_key_on_lo = 0;
+    g_spu_vm_key_on_hi = 0;
+    g_spu_vm_active_mask_lo = 0;
+    g_spu_vm_noise_mask_lo = 0;
+    g_spu_vm_noise_mask_hi = 0;
+    g_spu_reverb_attr = 0;
+    g_spu_reverb_depth_left = 0x3FFF;
+    g_spu_reverb_depth_right = 0x3FFF;
+    g_spu_reverb_mode_cur = 0;
+    g_spu_vm_flush_cond = 0;
+    g_spu_vm_mono_flag = 0;
+    g_vab_cur_prog_count = 0x80;
     SpuVmFlush();
 }

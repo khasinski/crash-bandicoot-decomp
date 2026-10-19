@@ -1,5 +1,5 @@
 {
   "src/main/engine/gte_render.c": {
-    "func_80034520": [4224, 4]
+    "g_rcnt_ticks": [4224, 4]
   }
 }

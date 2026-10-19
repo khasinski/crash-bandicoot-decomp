@@ -21,7 +21,7 @@ u8 SsSetReservedVoice(s32 count) {
         do {
             bit = 1 << voice;
             voice += 1;
-            D_80056274 |= bit;
+            g_spu_vm_max_voice |= bit;
         } while (voice < 0x18);
     }
     return gp_spawn_count;

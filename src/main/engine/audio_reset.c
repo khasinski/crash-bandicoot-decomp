@@ -65,8 +65,8 @@ void Audio_Init(void) {
         g_voices[i].b3 = 0;
     }
     SsInit();
-    SsSetTableSize(D_80056EE4, 1, 2);
-    SpuInitMalloc(0, D_80056670);
+    SsSetTableSize(g_ss_seq_attr_table, 1, 2);
+    SpuInitMalloc(0, gp_spu_malloc_rec);
     attr.mask = 3;
     attr.volume_left = 0x3FFF;
     attr.volume_right = 0x3FFF;
@@ -105,8 +105,8 @@ void Audio_Init(void) {
         break;
     }
     Audio_SetVoiceMVol((g_cur_map_level[0] * 0x3FFF) >> 8);
-    D_80056660 = 0x3FFF;
-    D_80056664 = 0;
+    gp_spu_master_vol = 0x3FFF;
+    gp_midi_fade_step = 0;
     SsSetMVol(0x7F, 0x7F);
-    D_8005666C = 0;
+    gp_midi_default_rvol = 0;
 }

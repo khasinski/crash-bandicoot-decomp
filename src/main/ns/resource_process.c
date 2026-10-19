@@ -8,9 +8,9 @@ typedef ResourceHeader Header;
 typedef ResourceSlot Slot;
 typedef ResourceBucket Bucket;
 typedef ResourceHandler Handler;
-extern Slot D_8005C554[];
+extern Slot g_ns_physical_pages[];
 extern Slot g_slst_buf0[];
-extern Handler D_800514EC[];
+extern Handler g_ns_page_free_sentinel[];
 GpuRect gp_ns_StringTable = { 0, 0, 0x100, 0x80 };
 
 void LoadImage(GpuRect *, Header *);
@@ -38,7 +38,7 @@ u8 *Ns_PageUpdateEntries(s32 index) {
             }
             bucket->entry = (u32)entry;
             request->references++;
-            callback = D_800514EC[entry->kind].callback;
+            callback = g_ns_page_free_sentinel[entry->kind].callback;
             i++;
             if (callback)
                 callback(entry);
@@ -83,12 +83,12 @@ u8 *Ns_PageUpdateEntries(s32 index) {
             }
             if (i == 0) {
                 if (request->header->kind == 4)
-                    D_8005728C[slot->word08] = bucket->id;
+                    g_ns_recent_page_eids[slot->word08] = bucket->id;
                 else
-                    D_8005728C[slot->word08] = 0x6396347F;
+                    g_ns_recent_page_eids[slot->word08] = 0x6396347F;
             }
             bucket->entry = (u32)((((s32)data - (s32)request->header + (s32)slot->base) * 4) | 0x80000002);
-            callback = D_800514EC[entry->kind].callback;
+            callback = g_ns_page_free_sentinel[entry->kind].callback;
             i++;
             if (callback)
                 callback(entry);

@@ -15,10 +15,10 @@ void CD_init(void) {
 
     var_v1 = g_cd_read_state;
     var_v0 = 9;
-    D_800555A4 = 0;
+    g_cd_ready_cb = 0;
     g_cd_sync_cb = 0;
-    D_800555B4 = 0;
-    D_800555B0 = 0;
+    g_cd_read_buf_ptr = 0;
+    g_cd_read_sectors = 0;
     do {
         *var_v1 = 0;
         var_v0 -= 1;

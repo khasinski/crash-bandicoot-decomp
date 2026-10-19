@@ -4,9 +4,9 @@
 /* GCC_VERSION: 2.6.3 */
 
 extern volatile u8 g_gpu_mode[];
-extern u8 D_80054A6F;
-extern volatile s16 D_80054A70[];
-extern volatile s16 D_80054A72[];
+extern u8 g_gpu_reverse_flag;
+extern volatile s16 g_gpu_vram_max_w[];
+extern volatile s16 g_gpu_vram_max_h[];
 
 u32 get_mode(s32 dfe, s32 dtd, s32 tpage);
 u32 get_cs(s16 x, s16 y);
@@ -34,8 +34,8 @@ void SetDrawEnv(u32 *packet, GpuDrawing *drawing)
         rect.y = env->clip.y;
         rect.w = env->clip.w;
         rect.h = env->clip.h;
-        rect.w = (rect.w < 0) ? 0 : ({ s32 max_x = D_80054A70[0] - 1; (rect.w > max_x) ? max_x : rect.w; });
-        rect.h = (rect.h < 0) ? 0 : ({ s32 max_y = D_80054A72[0] - 1; (rect.h > max_y) ? max_y : rect.h; });
+        rect.w = (rect.w < 0) ? 0 : ({ s32 max_x = g_gpu_vram_max_w[0] - 1; (rect.w > max_x) ? max_x : rect.w; });
+        rect.h = (rect.h < 0) ? 0 : ({ s32 max_y = g_gpu_vram_max_h[0] - 1; (rect.h > max_y) ? max_y : rect.h; });
 
         if ((rect.x & 0x3F) || (rect.w & 0x3F)) {
             rect.x -= env->offset_x;
@@ -79,8 +79,8 @@ u32 get_mode(s32 dfe, s32 dtd, s32 tpage)
 
 u32 get_cs(s16 x, s16 y)
 {
-    x = (x < 0) ? 0 : ({ s32 max_x = D_80054A70[0] - 1; (x > max_x) ? max_x : x; });
-    y = (y < 0) ? 0 : ({ s32 max_y = D_80054A72[0] - 1; (y > max_y) ? max_y : y; });
+    x = (x < 0) ? 0 : ({ s32 max_x = g_gpu_vram_max_w[0] - 1; (x > max_x) ? max_x : x; });
+    y = (y < 0) ? 0 : ({ s32 max_y = g_gpu_vram_max_h[0] - 1; (y > max_y) ? max_y : y; });
 
     if ((u32)(g_gpu_mode[0] - 1) < 2) {
         return 0xE3000000 | ((y & 0xFFF) << 12) | (x & 0xFFF);
@@ -90,8 +90,8 @@ u32 get_cs(s16 x, s16 y)
 
 u32 get_ce(s16 x, s16 y)
 {
-    x = (x < 0) ? 0 : ({ s32 max_x = D_80054A70[0] - 1; (x > max_x) ? max_x : x; });
-    y = (y < 0) ? 0 : ({ s32 max_y = D_80054A72[0] - 1; (y > max_y) ? max_y : y; });
+    x = (x < 0) ? 0 : ({ s32 max_x = g_gpu_vram_max_w[0] - 1; (x > max_x) ? max_x : x; });
+    y = (y < 0) ? 0 : ({ s32 max_y = g_gpu_vram_max_h[0] - 1; (y > max_y) ? max_y : y; });
 
     if ((u32)(g_gpu_mode[0] - 1) < 2) {
         return 0xE4000000 | ((y & 0xFFF) << 12) | (x & 0xFFF);
@@ -127,12 +127,12 @@ s32 get_dx(GpuRect *rect)
 {
     switch (g_gpu_mode[0]) {
     case 1:
-        if (D_80054A6F) {
+        if (g_gpu_reverse_flag) {
             return 0x400 - rect->x - rect->w;
         }
         return rect->x;
     case 2:
-        return D_80054A6F ? 0x400 - rect->x - rect->w / 2 : rect->x / 2;
+        return g_gpu_reverse_flag ? 0x400 - rect->x - rect->w / 2 : rect->x / 2;
     default:
         return rect->x;
     }

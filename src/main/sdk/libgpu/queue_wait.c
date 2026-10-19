@@ -14,7 +14,7 @@ s32 _sync(s32 poll) {
             _exeque();
             if (get_alarm() != 0) return -1;
         }
-        while ((*D_80054B4C & 0x01000000) || !(*g_gpu_stat_reg & 0x04000000)) {
+        while ((*g_gpu_dma2_chcr_reg & 0x01000000) || !(*g_gpu_stat_reg & 0x04000000)) {
             if (get_alarm() != 0) return -1;
         }
         return 0;
@@ -23,7 +23,7 @@ s32 _sync(s32 poll) {
     if (pending != 0) {
         _exeque();
     }
-    if ((*D_80054B4C & 0x01000000) || !(*g_gpu_stat_reg & 0x04000000)) {
+    if ((*g_gpu_dma2_chcr_reg & 0x01000000) || !(*g_gpu_stat_reg & 0x04000000)) {
         if (pending == 0) return 1;
         return pending;
     }

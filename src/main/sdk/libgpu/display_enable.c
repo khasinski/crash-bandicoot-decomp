@@ -12,7 +12,7 @@ void SetDispMask(s32 enabled) {
     u32 command;
     GpuApi *api;
     u8 *display;
-    if (state->debug >= 2) g_gpu_ot_status(D_80011244,enabled);
+    if (state->debug >= 2) g_gpu_ot_status(g_str_display_enable_setdispmask_d_n,enabled);
     display = state->display;
     if (!enabled) memset(display,-1,20);
     api = g_gpu_ctl;

@@ -53,7 +53,7 @@ void Card_Update(void)
     case 4: Card_Check(); break;
     }
     engine_flag_shadow[0] = Card_GetFlags();
-    D_80061980 = gp_card->word08;
+    g_card_prev_state = gp_card->word08;
 }
 
 s32 Card_PollSoftEvent(void), Card_WaitHardEvent(void), Card_ResetRetryCount(s32);
@@ -135,7 +135,7 @@ s32 Card_Load(void)
     result = Card_PollSoftEvent();
     switch (result) {
     case 0:
-        count = Card_CountFiles(D_80056574, ((EngineDirectoryState *)gp_card)->records);
+        count = Card_CountFiles(gp_str_card_dev_bu00, ((EngineDirectoryState *)gp_card)->records);
         Card_SortEntries(((EngineDirectoryState *)gp_card)->records, count);
         if (count > 0 || ++((EngineDirectoryState *)gp_card)->empty_scan_count >= 11) {
             Card_ClearFlags(2);
@@ -276,7 +276,7 @@ void Card_PartReadImages(void)
         return;
     }
     cur_rec = ((EngineDirectoryStateView *)gp_card)->record_cursor;
-    sprintf(path, D_8005657C, D_80056574,
+    sprintf(path, gp_str_card_concat_fmt, gp_str_card_dev_bu00,
         ((EngineDirectoryStateView *)gp_card)->records[cur_rec].bytes);
     if (ENGINE_CARD_SCAN_RETRY((descriptor = open(path, 1)) >= 0, &request))
         return;
@@ -303,7 +303,7 @@ void Card_PartReadImages(void)
             block.header.title);
     } else {
         __builtin_memcpy(((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C,
-            D_80010E58, 13);
+            g_str_card_damaged_slot, 13);
     }
     Card_StrToUpper((u8 *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C);
     if (invalid) {
@@ -320,7 +320,7 @@ void Card_PartReadImages(void)
     }
     for (i = 0; i < blocks; i++) {
         char part_str[80];
-        sprintf(part_str, D_80010E68, i + 1, blocks);
+        sprintf(part_str, g_str_card_part_d_of_d, i + 1, blocks);
         Gfx_FormatCardString(((WordView *)&g_card_icon)->v, (slot_idx + i) << 8,
             i == 0 ? (char *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C : part_str,
             0x28, 1);
@@ -329,14 +329,14 @@ void Card_PartReadImages(void)
         for (i = 0; i < blocks; i++) {
             for (j = 0; j < 3; j++) {
                 s32 img_idx = j < ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].word04 ? j : 0;
-                Gfx_BlitCardIcon(1, ((UWordView *)&D_800619D0)->v, ((slot_idx + i) * 3 + j) << 8,
+                Gfx_BlitCardIcon(1, ((UWordView *)&g_card_icon_vram_xy)->v, ((slot_idx + i) * 3 + j) << 8,
                     j == 0 ? block.header.palette : NULL,
                     images[img_idx]);
             }
         }
     }
-    D_800619D4[slot_idx] = 0;
-    D_800619D4[slot_idx] = ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].word04 << 1;
+    g_card_slot_valid_flags[slot_idx] = 0;
+    g_card_slot_valid_flags[slot_idx] = ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].word04 << 1;
     if (((EngineDirectoryStateView *)gp_card)->slots[slot_idx].word00 != 0) {
         if (!invalid) {
             j = 0;
@@ -347,23 +347,23 @@ void Card_PartReadImages(void)
             } while (j < 30);
             if (j == 30) {
                 ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].word00 = 0;
-                D_800619D4[slot_idx] |= 0x10;
+                g_card_slot_valid_flags[slot_idx] |= 0x10;
             } else {
-                D_800619D4[slot_idx] |= 8;
-                D_800619D4[slot_idx] |= *(s32 *)&block << 5;
+                g_card_slot_valid_flags[slot_idx] |= 8;
+                g_card_slot_valid_flags[slot_idx] |= *(s32 *)&block << 5;
             }
         }
     }
     if (invalid) {
-        D_800619D4[slot_idx] |= 0x20000;
+        g_card_slot_valid_flags[slot_idx] |= 0x20000;
     }
-    D_800619D4[slot_idx] |= 1;
+    g_card_slot_valid_flags[slot_idx] |= 1;
     Card_Close(&descriptor);
     if (!invalid) {
         for (j = 1; j < blocks; j++) {
             ((EngineDirectoryStateView *)gp_card)->slots[slot_idx + j] =
                 ((EngineDirectoryStateView *)gp_card)->slots[slot_idx];
-            D_800619D4[slot_idx + j] = D_800619D4[slot_idx];
+            g_card_slot_valid_flags[slot_idx + j] = g_card_slot_valid_flags[slot_idx];
         }
     }
     ((EngineDirectoryStateView *)gp_card)->record_cursor++;
@@ -521,7 +521,7 @@ void Card_PartWrite(s32 mode)
     request.pending = (s32 *)&gp_file_is_new;
     request.path = path;
     if (slot != NULL && slot->word00 == 0) {
-        sprintf(path, D_8005657C, D_80056574,
+        sprintf(path, gp_str_card_concat_fmt, gp_str_card_dev_bu00,
             ((EngineDirectoryState *)gp_card)->records[slot->record_index].bytes);
         if (mode == 6) {
             VSync(20);
@@ -538,7 +538,7 @@ void Card_PartWrite(s32 mode)
         mode = 7;
     }
     if (slot != NULL && slot->word00 != 0) {
-        sprintf(path, D_8005657C, D_80056574,
+        sprintf(path, gp_str_card_concat_fmt, gp_str_card_dev_bu00,
             ((EngineDirectoryState *)gp_card)->records[slot->record_index].bytes);
     } else {
         counter = ((EngineDirectoryState *)gp_card)->record_count - 1;
@@ -551,7 +551,7 @@ void Card_PartWrite(s32 mode)
             }
         }
         if (index >= 100) index = 99;
-        sprintf(path, D_80010E78, D_80056574, D_80010E88, index, gp_save_id);
+        sprintf(path, g_str_card_date_dash_fmt, gp_str_card_dev_bu00, g_str_card_bascus_94900, index, gp_save_id);
     }
     if (slot == NULL || slot->word00 == 0) {
         if (mode == 7) {
@@ -559,7 +559,7 @@ void Card_PartWrite(s32 mode)
             if (!ENGINE_CARD_WRITE_RETRY(
                     (descriptor = open(path, 0x10200)) >= 0,
                     &request, counter)) {
-                BIOS_Printf(D_80010E98, descriptor);
+                BIOS_Printf(g_str_card_file_descriptor_is_d, descriptor);
                 Card_Close(&descriptor);
                 gp_file_is_new = 1;
                 Card_SetState(8);
@@ -576,11 +576,11 @@ void Card_PartWrite(s32 mode)
     block.header.magic[1] = 'C';
     block.header.icons = 0x13;
     block.header.blocks = 1;
-    sprintf(block.header.title, D_80010EB0, D_80061974);
+    sprintf(block.header.title, g_str_card_title_fmt, g_card_save_pct);
     Card_AsciiToShiftJis(block.header.title, 32);
-    Gfx_BlitCardIcon(2, D_800619D0, 0x2D00, block.header.palette, images[0]);
-    Gfx_BlitCardIcon(2, D_800619D0, 0x2D00, NULL, images[1]);
-    Gfx_BlitCardIcon(2, D_800619D0, 0x2E00, NULL, images[2]);
+    Gfx_BlitCardIcon(2, g_card_icon_vram_xy, 0x2D00, block.header.palette, images[0]);
+    Gfx_BlitCardIcon(2, g_card_icon_vram_xy, 0x2D00, NULL, images[1]);
+    Gfx_BlitCardIcon(2, g_card_icon_vram_xy, 0x2E00, NULL, images[2]);
     if (ENGINE_CARD_WRITE_RETRY(
             BIOS_Write(descriptor, &block, 128) == 128, &request, counter)) return;
     for (index = 0; index < 3; index++) {
@@ -605,7 +605,7 @@ void Card_PartWrite(s32 mode)
 #undef ENGINE_CARD_WRITE_RETRY
 
 /* Word views of the runtime values serialised in the save record. */
-extern u32 D_80061910[];
+extern u32 g_stereo_disabled[];
 extern u32 g_cur_map_level[];
 extern u32 g_levels_unlocked[];
 u32 Card_Checksum(u8 *, u32);
@@ -618,16 +618,16 @@ void Card_SaveGlobals(EngineSaveRecord *record)
 
     for (index = sizeof(*record) - 1; index >= 0; index--)
         ((u8 *)record)[index] = 0;
-    record->word00 = g_item_pool2[0] | (D_80061A10[0] << 5)
-        | (D_80061A14[0] << 10);
+    record->word00 = g_item_pool2[0] | (g_key_count_2[0] << 5)
+        | (g_tawna_round_done[0] << 10);
     record->word04 = g_item_pool2[0];
     record->word08 = g_new_gem_flag[0];
-    record->word0C = D_8006190C[0];
-    record->word10 = D_80061910[0];
+    record->word0C = g_saved_item_pool2_hi[0];
+    record->word10 = g_stereo_disabled[0];
     record->word14 = g_cur_map_level[0];
     record->word18 = g_levels_unlocked[0];
-    record->word1C = D_80061988[0];
-    settings = D_800619AC[0];
+    record->word1C = g_saved_gem_pool_lo[0];
+    settings = g_audio_mode_flags[0];
     record->word24 = 0;
     record->word20 = settings;
     record->checksum = Card_Checksum((u8 *)record, sizeof(*record));
@@ -646,15 +646,15 @@ inline s32 Card_LoadGlobals(EngineSaveRecord *record)
         level = record->word04;
         g_item_pool2[0] = level;
         g_new_gem_flag[0] = record->word08;
-        D_8006190C[0] = record->word0C;
-        D_80061910[0] = record->word10;
+        g_saved_item_pool2_hi[0] = record->word0C;
+        g_stereo_disabled[0] = record->word10;
         g_cur_map_level[0] = record->word14;
         g_levels_unlocked[0] = record->word18;
-        D_80061988[0] = record->word1C;
+        g_saved_gem_pool_lo[0] = record->word1C;
         settings = record->word20;
-        D_800619AC[0] = settings;
-        D_80061948[0] = level;
-        D_800618DC[0] = level;
+        g_audio_mode_flags[0] = settings;
+        g_next_level_id[0] = level;
+        g_saved_level_id[0] = level;
         return 1;
     }
 }
@@ -700,7 +700,7 @@ s32 Card_PartReadGlobals(void)
         Card_SetState(0);
         return 0;
     }
-    sprintf(path, D_8005657C, D_80056574,
+    sprintf(path, gp_str_card_concat_fmt, gp_str_card_dev_bu00,
         ((EngineDirectoryState *)gp_card)->records[slot->record_index].bytes);
     if (ENGINE_CARD_RETRY(
             (descriptor = open(path, 1)) >= 0, &request)) return 0;
@@ -743,9 +743,9 @@ void Card_Format(void) {
     s32 ready;
     s32 state;
     /* Preserve the retail counter samples around the BIOS call. */
-    (void)D_80034520;
-    ready = BIOS_Format(D_80056574);
-    (void)D_80034520;
+    (void)g_rcnt_ticks;
+    ready = BIOS_Format(gp_str_card_dev_bu00);
+    (void)g_rcnt_ticks;
     if (ready == 1) {
         Card_ClearFlags(2);
         state = 4;
@@ -840,7 +840,7 @@ void Card_ResetHardEvent(void) {
 s32 BIOS_StrNCmp(const char *, const char *, s32);                      /* extern */
 
 s32 Card_EntryNameIs949(const char *arg0) {
-    return BIOS_StrNCmp(D_80010E88, arg0, 0xC) == 0;
+    return BIOS_StrNCmp(g_str_card_bascus_94900, arg0, 0xC) == 0;
 }
 
 char *BIOS_StrCpy(char *, const char *);
@@ -856,7 +856,7 @@ s32 Card_CountFiles(const char *path, EngineDirectoryRecord *entries)
     EngineDirectoryRecord *found;
 
     BIOS_StrCpy(pattern, path);
-    BIOS_StrCat(pattern, D_80056584);
+    BIOS_StrCat(pattern, gp_str_card_wildcard);
     count = 0;
     found = firstfile(pattern, entries);
     while (entries == found) {
@@ -880,9 +880,9 @@ void Card_SortEntries(EngineDirectoryRecord *entries, s32 count)
 
     for (i = 0; i < count; i++) {
         entry_name = (char *)&entries[i];
-        is_crash = BIOS_StrNCmp(D_80010E88, entry_name, 12) == 0;
+        is_crash = BIOS_StrNCmp(g_str_card_bascus_94900, entry_name, 12) == 0;
         for (j = i + 1; j < count; j++) {
-            match = BIOS_StrNCmp(D_80010E88, (char *)&entries[j], 12) == 0;
+            match = BIOS_StrNCmp(g_str_card_bascus_94900, (char *)&entries[j], 12) == 0;
             if (!is_crash) {
                 if (match) {
                     continue;
@@ -918,10 +918,10 @@ void Card_Close(s32 *arg0) {
 }
 
 void Card_WaitTicks(u32 ticks) {
-    u32 start = D_80034520;
+    u32 start = g_rcnt_ticks;
     /* Preserve the retail unsigned subtraction order. */
     do {
-    } while ((u32)(start - D_80034520) < ticks);
+    } while ((u32)(start - g_rcnt_ticks) < ticks);
 }
 
 void Card_StrToUpper(u8 *arg0) {
@@ -962,7 +962,7 @@ s32 Card_ResetParts(s32 flags)
 
     gp_card->word08 = 0;
     gp_card->word14 = 0;
-    for (index = 14; index >= 0; index--) D_800619D4[index] = 0;
+    for (index = 14; index >= 0; index--) g_card_slot_valid_flags[index] = 0;
     Card_SetFlags(flags);
     return 0;
 }
@@ -973,7 +973,7 @@ void Card_InitEmptyStrings(void)
 {
     s32 channel;
     for (channel = 0; channel < 15; channel++) {
-        Gfx_FormatCardString(g_card_icon, channel << 8, D_80056588, 0x28, 1);
+        Gfx_FormatCardString(g_card_icon, channel << 8, gp_str_card_empty, 0x28, 1);
     }
 }
 
@@ -982,7 +982,7 @@ s32 Card_SetFlags(s32 arg0) {
 
     temp_a0 = arg0 | gp_card->word04;
     gp_card->word04 = temp_a0;
-    D_80061978 = temp_a0;
+    g_card_icon_count = temp_a0;
     return 0;
 }
 
@@ -1010,7 +1010,7 @@ static inline s32 engine_set_mode(s32 mode)
 activate:
         flags = gp_card->word04 | 1;
         gp_card->word04 = flags;
-        D_80061978 = flags;
+        g_card_icon_count = flags;
     }
     return 0;
 }
@@ -1077,17 +1077,17 @@ void Card_ResetStateAndFlags(s32 flags)
 
     gp_card->word08 = 0;
     gp_card->word14 = 0;
-    for (index = 14; index >= 0; index--) D_800619D4[index] = 0;
+    for (index = 14; index >= 0; index--) g_card_slot_valid_flags[index] = 0;
     Card_SetFlags(0);
     engine_set_mode(0);
     value = flags | (gp_card->word04 & ~63);
     gp_card->word04 = value;
-    D_80061978 = value;
+    g_card_icon_count = value;
 }
 
 /* Six-byte state copied as an unaligned record in retail. */
 typedef EngineByteRecord ByteRecord;
-extern ByteRecord D_80056590;
+extern ByteRecord gp_str_card_invalid_tag;
 extern ByteRecord g_card_filename;
 
 void Card_ResetStateAndFlags(s32);
@@ -1099,8 +1099,8 @@ s32 Card_Alloc(void)
     gp_card = state;
     if (gp_card_new_device != 0) {
         state->word04 |= 0x10;
-        D_80061978 = state->word04;
-        sprintf((char *)&g_card_filename, (char *)&D_80056590);
+        g_card_icon_count = state->word04;
+        sprintf((char *)&g_card_filename, (char *)&gp_str_card_invalid_tag);
     } else {
         state->word04 &= ~0x10;
     }
@@ -1210,7 +1210,7 @@ s32 Card_StartWriteNamedPart(void)
 }
 
 s32 Card_InvalidateFilename(void) {
-    g_card_filename = D_80056590;
+    g_card_filename = gp_str_card_invalid_tag;
     return 0;
 }
 
@@ -1223,7 +1223,7 @@ s32 Card_CheckNewDevice(void)
     if (gp_card ? (gp_card->word04 & 16) : gp_card_new_device) {
         return 1;
     }
-    if (BIOS_StrCmp((char *)&g_card_filename, (char *)&D_80056590) == 0) {
+    if (BIOS_StrCmp((char *)&g_card_filename, (char *)&gp_str_card_invalid_tag) == 0) {
         return 1;
     }
 

@@ -22,7 +22,7 @@ void _spu_FsetRXX(s32, u32, s32);
 
 
 
-extern SpuReverbRegisters D_80055DFC[];
+extern SpuReverbRegisters g_spu_reverb_reg_offsets[];
 
 s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
 {
@@ -52,7 +52,7 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
             mode &= ~0x100;
             clear_mode = 1;
         }
-        if ((u32)mode >= 0xA || _SpuIsInAllocateArea_(D_80055DAC[mode]) != 0) {
+        if ((u32)mode >= 0xA || _SpuIsInAllocateArea_(g_spu_reverb_preset_params[mode]) != 0) {
             return -1;
         }
         set_mode = 1;
@@ -62,24 +62,24 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
             s32 i = 0x43;
             s32 idx = *(volatile s32 *)&g_spu_rev_param;
             u8 *src;
-            D_80055958 = D_80055DAC[idx];
-            src = (u8 *)&D_80055DFC[idx];
+            g_spu_reverb_param_room = g_spu_reverb_preset_params[idx];
+            src = (u8 *)&g_spu_reverb_reg_offsets[idx];
             do {
                 *dst++ = *src++;
             } while (--i != -1);
         }
         switch (g_spu_rev_param) {
         case 7:
-            D_8005596C = 0x7F;
-            D_80055968 = 0x7F;
+            g_spu_reverb_mask_hi_cur = 0x7F;
+            g_spu_reverb_mask_lo_cur = 0x7F;
             break;
         case 8:
-            D_8005596C = 0;
-            D_80055968 = 0x7F;
+            g_spu_reverb_mask_hi_cur = 0;
+            g_spu_reverb_mask_lo_cur = 0x7F;
             break;
         default:
-            D_8005596C = 0;
-            D_80055968 = 0;
+            g_spu_reverb_mask_hi_cur = 0;
+            g_spu_reverb_mask_lo_cur = 0;
             break;
         }
     }
@@ -91,15 +91,15 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
             if (set_mode == 0) {
                 u8 *dst = (u8 *)&param;
                 s32 i = 0x43;
-                u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&g_spu_rev_param];
+                u8 *src = (u8 *)&g_spu_reverb_reg_offsets[*(volatile s32 *)&g_spu_rev_param];
                 do {
                     *dst++ = *src++;
                 } while (--i != -1);
                 param.mask = 0x0C011C00;
             }
-            D_80055968 = arg0->delay;
-            param.values[10] = ((D_80055968 << 13) / 127) - param.values[0];
-            delay_offset = (D_80055968 << 12) / 127;
+            g_spu_reverb_mask_lo_cur = arg0->delay;
+            param.values[10] = ((g_spu_reverb_mask_lo_cur << 13) / 127) - param.values[0];
+            delay_offset = (g_spu_reverb_mask_lo_cur << 12) / 127;
             param.values[11] = delay_offset - param.values[1];
             param.values[12] = delay_offset + param.values[13];
             param.values[16] = delay_offset + param.values[17];
@@ -107,7 +107,7 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
             param.values[27] = delay_offset + param.values[29];
             break;
         default:
-            D_80055968 = 0;
+            g_spu_reverb_mask_lo_cur = 0;
             break;
         }
     }
@@ -120,7 +120,7 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
                 if (set_delay == 0) {
                     u8 *dst = (u8 *)&param;
                     s32 i = 0x43;
-                    u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&g_spu_rev_param];
+                    u8 *src = (u8 *)&g_spu_reverb_reg_offsets[*(volatile s32 *)&g_spu_rev_param];
                     do {
                         *dst++ = *src++;
                     } while (--i != -1);
@@ -129,11 +129,11 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
                     param.mask |= 0x80;
                 }
             }
-            D_8005596C = arg0->feedback;
-            param.values[7] = (D_8005596C * 33024) / 127;
+            g_spu_reverb_mask_hi_cur = arg0->feedback;
+            param.values[7] = (g_spu_reverb_mask_hi_cur * 33024) / 127;
             break;
         default:
-            D_8005596C = 0;
+            g_spu_reverb_mask_hi_cur = 0;
             break;
         }
     }
@@ -148,18 +148,18 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
     }
     if (all || (mask & 2)) {
         g_spu_RXX[0xC2] = arg0->depth_left;
-        D_80055964 = arg0->depth_left;
+        g_spu_reverb_vl_cur = arg0->depth_left;
     }
     if (all || (mask & 4)) {
         g_spu_RXX[0xC3] = arg0->depth_right;
-        D_80055966 = arg0->depth_right;
+        g_spu_reverb_vr_cur = arg0->depth_right;
     }
     if (0) {
 clear_depth:
         g_spu_RXX[0xC2] = 0;
         g_spu_RXX[0xC3] = 0;
-        D_80055964 = 0;
-        D_80055966 = 0;
+        g_spu_reverb_vl_cur = 0;
+        g_spu_reverb_vr_cur = 0;
     }
     if (set_mode || set_delay || set_feedback) {
         _spu_setReverbAttr(&param);
@@ -168,7 +168,7 @@ clear_depth:
         SpuClearReverbWorkArea(g_spu_rev_param);
     }
     if (set_mode) {
-        _spu_FsetRXX(0xD1, D_80055958, 0);
+        _spu_FsetRXX(0xD1, g_spu_reverb_param_room, 0);
         if (was_on) {
             ctrl = g_spu_RXX[0xD5];
             ctrl |= 0x80;

@@ -37,8 +37,8 @@ void SsSetMono(s32);
 s32 SpuMalloc(s32);
 
 
-extern VabHdr *D_80057EB0[];
-extern ProgAtr *D_80057E70[];
+extern VabHdr *g_vab_master_vol_table[];
+extern ProgAtr *g_vab_prog_tables[];
 
 s16 SsVabOpenHeadWithMode(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
     u32 vag_len[256];
@@ -67,12 +67,12 @@ s16 SsVabOpenHeadWithMode(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
         found:
             g_midi_tracks[i] = 1;
             var_s2 = i;
-            D_80060CE8 += 1;
+            g_vab_open_count += 1;
         } else {
             if (g_midi_tracks[vabid] == 0) {
                 g_midi_tracks[vabid] = 1;
                 var_s2 = vabid;
-                D_80060CE8 += 1;
+                g_vab_open_count += 1;
             }
         }
     } else {
@@ -85,42 +85,42 @@ check_s2:
         return -1;
     }
     ptr = addr;
-    D_80057EB0[var_s2] = (VabHdr *)ptr;
+    g_vab_master_vol_table[var_s2] = (VabHdr *)ptr;
     ptr += 0x20;
-    vab_hdr = D_80057EB0[var_s2];
+    vab_hdr = g_vab_master_vol_table[var_s2];
     if (((u32)vab_hdr->form >> 8) != 0x564142) {
         g_midi_tracks[var_s2] = 0;
         SsSetMono(0);
-        D_80060CE8 -= 1;
+        g_vab_open_count -= 1;
         return -1;
     }
     if ((vab_hdr->form & 0xFF) == 0x70) {
         if (vab_hdr->ver < 5) {
-            D_8005CFC4 = 0x40;
+            g_vab_cur_prog_count = 0x40;
         } else {
-            D_8005CFC4 = 0x80;
+            g_vab_cur_prog_count = 0x80;
         }
     } else {
-        D_8005CFC4 = 0x40;
+        g_vab_cur_prog_count = 0x40;
     }
-    if (vab_hdr->ps > D_8005CFC4) {
+    if (vab_hdr->ps > g_vab_cur_prog_count) {
         g_midi_tracks[var_s2] = 0;
         SsSetMono(0);
-        D_80060CE8 -= 1;
+        g_vab_open_count -= 1;
         return -1;
     }
-    D_80057E70[var_s2] = (ProgAtr *)ptr;
+    g_vab_prog_tables[var_s2] = (ProgAtr *)ptr;
     prog_ptr = (ProgAtr *)ptr;
-    ptr += D_8005CFC4 * 0x10;
+    ptr += g_vab_cur_prog_count * 0x10;
     var_s0 = 0;
-    for (i = 0; i < D_8005CFC4; i++) {
+    for (i = 0; i < g_vab_cur_prog_count; i++) {
         prog_ptr[i].reserved1 = var_s0;
         if (prog_ptr[i].tones != 0) {
             var_s0 += 1;
             var_a3 = i;
         }
     }
-    D_80057EF8[var_s2] = ptr;
+    g_vab_tone_tables[var_s2] = ptr;
     var_s0 = 0;
     ptr += vab_hdr->ps << 9;
     num_vags = vab_hdr->vs;
@@ -136,13 +136,13 @@ check_s2:
         }
         ptr += 2;
     }
-    D_80060D30[var_s2] = ptr;
+    g_vab_vh_ptrs[var_s2] = ptr;
     if (mode == 0) {
         var_a3 = SpuMalloc(var_s0);
         if (var_a3 == -1) {
             g_midi_tracks[var_s2] = 0;
             SsSetMono(0);
-            D_80060CE8 -= 1;
+            g_vab_open_count -= 1;
             return -1;
         }
     } else {
@@ -151,10 +151,10 @@ check_s2:
     if ((u32)(var_a3 + var_s0) > 0x80000U) {
         g_midi_tracks[var_s2] = 0;
         SsSetMono(0);
-        D_80060CE8 -= 1;
+        g_vab_open_count -= 1;
         return -1;
     }
-    D_80060CF0[var_s2] = var_a3;
+    g_vab_spu_addrs[var_s2] = var_a3;
     var_s0 = 0;
     for (i = 0; i <= num_vags; i++) {
         var_s0 += vag_len[i];
@@ -164,7 +164,7 @@ check_s2:
             prog_ptr[i / 2].reserved3 = (var_a3 + var_s0) >> 3;
         }
     }
-    D_80060CA8[var_s2] = var_s0;
+    g_vab_body_sizes[var_s2] = var_s0;
     g_midi_tracks[var_s2] = 2;
     return var_s2;
 }

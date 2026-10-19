@@ -93,10 +93,10 @@ valid:
                     g_spu_RXX[(voice * 8) + 2] = (u16) attr->field_14;
                 }
                 if ((all_fields != 0) || (field_mask & 0x40)) {
-                    D_80055970[voice] = attr->field_18;
+                    g_spu_pitch_scale_tab[voice] = attr->field_18;
                 }
                 if ((all_fields != 0) || ((field_mask & 0x20) != 0)) {
-                    base_note = D_80055970[voice];
+                    base_note = g_spu_pitch_scale_tab[voice];
                     note = attr->field_16;
                     g_spu_RXX[word_index + 2] = _spu_note2pitch(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
                 }

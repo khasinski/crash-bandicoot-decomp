@@ -1,5 +1,5 @@
 #include "common.h"
-extern void *D_8005C540;
+extern void *g_ns_nsd_header;
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -59,10 +59,10 @@ s32 Ns_ReadSectorAsync(CdResourceSlot *slot, s32 count)
     if (slot->word0E != 0) {
         sectors = (count << 5) - slot->word0C;
         buf = slot->header + (slot->word0C << 11);
-        pos = D_8005C548 + (((CdResourceHash *)D_8005C540)->words420[id >> 1] >> 6);
+        pos = g_ns_nsf_base_sector + (((CdResourceHash *)g_ns_nsd_header)->words420[id >> 1] >> 6);
     } else {
         sectors = count << 5;
-        pos = D_8005C548 + ((CdResourceHash *)D_8005C540)->word418 + ((id >> 1) << 5);
+        pos = g_ns_nsf_base_sector + ((CdResourceHash *)g_ns_nsd_header)->word418 + ((id >> 1) << 5);
         buf = slot->header;
     }
     CdIntToPos(pos, loc);

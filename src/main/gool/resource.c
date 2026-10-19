@@ -10,7 +10,7 @@
 ZoneEntry *Ns_Lookup(u32 *);
 void Gool_ZoneObjectsTerminate(void *);
 extern s32 g_doctor_cortex_obj;
-extern s32 D_80061A64;
+extern s32 g_mdat_title_str_ptr;
 
 s32 Level_ZdatOnLoad(ZoneEntry *zone)
 {
@@ -53,8 +53,8 @@ void Level_MdatOnLoad2(ObjectView *object)
     u8 *resource = object->resource;
     if (!(*(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) & 1)) {
         g_doctor_cortex_obj = 0;
-        D_80061A64 = 0;
-        D_80061A60[0] = 0x19000;
+        g_mdat_title_str_ptr = 0;
+        g_spu_reverb_addr[0] = 0x19000;
         *(u32 *)(resource + CRASH_OFFSETOF(GoolResourceState, flags2DC)) |= 3;
     }
 }

@@ -16,11 +16,11 @@ s32 SpuSetReverbDepth(SpuVolumeAttrs *arg0) {
     temp_a2 = temp_a1 == 0;
     if ((temp_a2 != 0) || (temp_a1 & 2)) {
         g_spu_RXX[0xC2] = (u16) arg0->volume08;
-        D_80055964 = arg0->volume08;
+        g_spu_reverb_vl_cur = arg0->volume08;
     }
     if ((temp_a2 != 0) || (temp_a1 & 4)) {
         g_spu_RXX[0xC3] = (u16) arg0->volume0A;
-        D_80055966 = arg0->volume0A;
+        g_spu_reverb_vr_cur = arg0->volume0A;
     }
     return 0;
 }

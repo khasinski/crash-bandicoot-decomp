@@ -21,39 +21,39 @@ typedef struct {
     StateCallback slot18;
 } Dispatch;
 
-extern Dispatch *D_800549BC;
+extern Dispatch *g_intr_ctrl_ptr;
 
 s32 ResetCallback(void)
 {
-    return D_800549BC->slot0C();
+    return g_intr_ctrl_ptr->slot0C();
 }
 
 IrqHandler InterruptCallback(s32 index, IrqHandler callback)
 {
-    return D_800549BC->slot08(index, callback);
+    return g_intr_ctrl_ptr->slot08(index, callback);
 }
 
 s32 DMACallback(s32 arg0, s32 arg1)
 {
-    return D_800549BC->slot04(arg0, arg1);
+    return g_intr_ctrl_ptr->slot04(arg0, arg1);
 }
 
 s32 VSyncCallback(s32 arg0)
 {
-    return D_800549BC->slot14(0, arg0);
+    return g_intr_ctrl_ptr->slot14(0, arg0);
 }
 
 s32 VSyncCallbacks(s32 arg0, s32 arg1)
 {
-    return D_800549BC->slot14(arg0, arg1);
+    return g_intr_ctrl_ptr->slot14(arg0, arg1);
 }
 
 u16 *StopCallback(void)
 {
-    return D_800549BC->slot10();
+    return g_intr_ctrl_ptr->slot10();
 }
 
 u16 *RestartCallback(void)
 {
-    return D_800549BC->slot18();
+    return g_intr_ctrl_ptr->slot18();
 }

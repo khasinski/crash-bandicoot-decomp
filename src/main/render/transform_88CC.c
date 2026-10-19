@@ -43,13 +43,13 @@ typedef struct ResourceEntry88CC {
     ZoneHeader88CC *data;
 } ResourceEntry88CC;
 
-extern u8 D_80057844[];
+extern u8 g_m_wgeo_view[];
 
 extern u8 g_m_color[];
 extern s32 g_view_proj[];
 extern s32 g_cur_lid_ro[];
 
-extern GoolObj88CC *D_800618CC[];
+extern GoolObj88CC *g_shader_obj_color_scale[];
 extern GoolObj88CC *gp_crash_obj[];
 extern ResourceEntry88CC *g_pads[];
 
@@ -58,7 +58,7 @@ void SetTransMatrix(void *);
 void RotTrans(void *, void *, void *);
 void Gte_RProjectBound(void *, void *, void *, void *);
 s32 SquareRoot0(s32);
-void func_8003913C(void *, void *, void *, void *);
+void Gte_RCalcObjectRotMatrix(void *, void *, void *, void *);
 void Gte_RCalcObjectMatrices(void *, void *, void *, void *);
 
 typedef struct Matrix88CC {
@@ -97,11 +97,11 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
     if (arg4 != NULL) {
         *arg4 = 0;
     }
-    SetRotMatrix(D_80057844);
+    SetRotMatrix(g_m_wgeo_view);
     SetTransMatrix(g_cams);
-    sp10[0] = (arg2->vectors.trans[0] - (*D_80057888)) >> 8;
-    sp10[1] = (arg2->vectors.trans[1] - (*D_8005788C)) >> 8;
-    sp10[2] = (arg2->vectors.trans[2] - (*D_80057890)) >> 8;
+    sp10[0] = (arg2->vectors.trans[0] - (*g_cam_eye_x)) >> 8;
+    sp10[1] = (arg2->vectors.trans[1] - (*g_cam_eye_y)) >> 8;
+    sp10[2] = (arg2->vectors.trans[2] - (*g_cam_eye_z)) >> 8;
     RotTrans(sp10, sp18.t, &sp88);
 
     if (!((*g_cur_lid_ro) & 0x10000)) {
@@ -149,7 +149,7 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
             case 2:
                 dst = (u16 *)&arg2->light;
                 src = header->light_src;
-                diff = sp18.t[2] - (*D_800618B8);
+                diff = sp18.t[2] - (*g_title_fade_mask);
                 if (diff > 0) {
                     diff <<= 3;
                     if (diff > 0x7FFF) {
@@ -175,10 +175,10 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
                 break;
             case 4:
                 light = &arg2->light;
-                if ((*D_800618CC) != NULL) {
-                    tx = (*D_800618CC)->vectors.trans[0];
-                    ty = (*D_800618CC)->vectors.trans[1];
-                    tz = (*D_800618CC)->vectors.trans[2];
+                if ((*g_shader_obj_color_scale) != NULL) {
+                    tx = (*g_shader_obj_color_scale)->vectors.trans[0];
+                    ty = (*g_shader_obj_color_scale)->vectors.trans[1];
+                    tz = (*g_shader_obj_color_scale)->vectors.trans[2];
                 } else {
                     tx = (*gp_crash_obj)->vectors.trans[0];
                     ty = (*gp_crash_obj)->vectors.trans[1];
@@ -204,8 +204,8 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
                 oz = arg2->vectors.trans[2];
                 dz = (oz - tz) >> 8;
                 dist = SquareRoot0(dx * dx + dy * dy + dz * dz);
-                if (D_80056470 <= 0) {
-                    D_80056470 = 1;
+                if (gp_shader_depth_cue_flag <= 0) {
+                    gp_shader_depth_cue_flag = 1;
                 }
                 if (dist <= 0) {
                     dist = 1;
@@ -220,9 +220,9 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
                 ox = (ox * atten) >> 8;
                 oy = (oy * atten) >> 8;
                 oz = (oz * atten) >> 8;
-                ox /= D_80056470;
-                oy /= D_80056470;
-                oz /= D_80056470;
+                ox /= gp_shader_depth_cue_flag;
+                oy /= gp_shader_depth_cue_flag;
+                oz /= gp_shader_depth_cue_flag;
                 if (ox > 0x1770) {
                     ox = 0x1770;
                 }
@@ -255,7 +255,7 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
                 if (arg3 != 0) {
                     dst = (u16 *)&arg2->light;
                     src3 = header->light_src;
-                    diff = sp18.t[2] - (*D_800618B8);
+                    diff = sp18.t[2] - (*g_title_fade_mask);
                     if (diff > 0) {
                         diff >>= 2;
                         if (diff >= 0x6D61) {
@@ -272,7 +272,7 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
                         dst[i3] = val3;
                     }
                 } else {
-                    val3 = (sp18.t[2] - (*D_800618B8)) / 200;
+                    val3 = (sp18.t[2] - (*g_title_fade_mask)) / 200;
                     *arg4 = val3;
                     if (val3 < 0) {
                         *arg4 = 0;
@@ -292,7 +292,7 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
         }
     }
     if (arg3 != 0) {
-        func_8003913C(g_m_color, arg1, vectors, &arg2->light);
+        Gte_RCalcObjectRotMatrix(g_m_color, arg1, vectors, &arg2->light);
     } else {
         Gte_RCalcObjectMatrices(g_m_color, arg1, vectors, &arg2->light);
     }

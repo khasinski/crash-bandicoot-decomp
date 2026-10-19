@@ -11,7 +11,7 @@ void _spu_FiDMA(void) {
     s32 poll_count;
     volatile u16 *registers;
 
-    if (D_80055930 == 0) {
+    if (g_spu_reverb_work_sizes == 0) {
         delay_value = 13;
         for (delay_count = 0; delay_count < 240; delay_count++) {
             delay_value *= 3;
@@ -30,8 +30,8 @@ void _spu_FiDMA(void) {
     poll_count = 0;
     while ((registers[0xD5] & 0x30) && ++poll_count < 0xF01) {
     }
-    if (D_80055918 != NULL) {
-        D_80055918();
+    if (g_spu_dma_done_cb != NULL) {
+        g_spu_dma_done_cb();
     } else {
         BIOS_DeliverEvent(0xF0000009, 0x20);
     }

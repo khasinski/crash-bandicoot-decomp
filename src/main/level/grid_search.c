@@ -96,7 +96,7 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern SubWorkspace D_8005CFEC;
+extern SubWorkspace g_solid_wall_plot_buf;
 
 ZoneEntry *Ns_Lookup(u32 *);
 s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
@@ -222,7 +222,7 @@ s32 Solid_ReplotWalls(s32 set, s32 mode, ZqVec *v, SubObj *obj)
 
     i = 0;
     count = 0;
-    ws = &D_8005CFEC;
+    ws = &g_solid_wall_plot_buf;
     for (; i < ws->count; i++) {
         node = &ws->nodes[i];
         if (node->flags == 0) {
@@ -287,7 +287,7 @@ s32 Solid_StopAtWalls(ZqVec *v, s32 gx, s32 gz, s32 *out_x, s32 *out_z, SubObj *
     s8 *p;
 
 start:
-    p = D_80052A34;
+    p = g_solid_grid_search_order;
     if (Solid_TestWallCell(gx, gz) || (((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000)) {
         *out_x = gx;
         *out_z = gz;
@@ -357,7 +357,7 @@ start:
         && (obj->unk78 == NULL || *obj->unk78->unk20->header != 0x22)) {
         if (Solid_ReplotWalls(0, 0, v, obj)) {
             Solid_ReplotWalls(1, 1, v, obj);
-            Solid_PlotObjWalls(v, obj, &D_8005CFEC, 0);
+            Solid_PlotObjWalls(v, obj, &g_solid_wall_plot_buf, 0);
         }
         res = Solid_StopAtWalls(v, gx, gz, out_x, out_z, obj, 0x100);
         return res;

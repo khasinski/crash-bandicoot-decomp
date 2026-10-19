@@ -28,14 +28,14 @@ s32 ratan2(s32 x, s32 y) {
         } else {
             x = (x << 0xA) / y;
         }
-        angle = D_80054D1C[x];
+        angle = g_gte_atan_lut[x];
     } else {
         if (y & 0x7FE00000) {
             x = y / (x >> 0xA);
         } else {
             x = (y << 0xA) / x;
         }
-        angle = 0x400 - D_80054D1C[x];
+        angle = 0x400 - g_gte_atan_lut[x];
     }
     if (negative_y != 0) {
         angle = 0x800 - angle;

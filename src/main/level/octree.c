@@ -498,17 +498,17 @@ u32 Zone_FindNearestObjectNode2(SubObj *obj, ZqVec *va)
     if (res != 0) {
         if (hit_box) {
             offset = ((SubObj *)res)->offset138;
-            dy = obj->trans.y - D_80057868;
+            dy = obj->trans.y - g_cam_trans_y;
             if (dy > 0) {
                 offset -= dy >> 12;
             }
             obj->parent->offset138 = get_offset_base(obj) + offset;
         } else {
             idx = (res & 0x3C00) >> 10;
-            obj->parent->offset138 = get_offset_base(obj) + (idx >= 0 ? D_80052CA4[idx] : -1);
+            obj->parent->offset138 = get_offset_base(obj) + (idx >= 0 ? g_cam_zoom_presets[idx] : -1);
         }
     } else {
-        obj->parent->offset138 = get_offset_base(obj) + D_80052CA4[0];
+        obj->parent->offset138 = get_offset_base(obj) + g_cam_zoom_presets[0];
     }
     return res;
 }

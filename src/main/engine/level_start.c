@@ -5,11 +5,11 @@ void Solid_TransSmoothStopAtSolid(s32, s32, s32);                           /* e
 void Shader_ParamsUpdate(s32);                                 /* extern */
 extern s32 *g_ns_page_pool;
 
-extern Node D_80060DD0;
-extern Node *D_800618AC;
+extern Node g_gool_obj_list_3;
+extern Node *g_level_pause_menu_obj;
 
 extern s32 g_key_count;
-extern s32 D_800619BC;
+extern s32 g_pad_debug_override;
 extern s32 g_cam_rot_xz;
 
 void Level_InitMisc(s32 arg0) {
@@ -22,14 +22,14 @@ void Level_InitMisc(s32 arg0) {
     switch (temp_v0) {
     case 23:
         if (arg0 != 0) {
-            D_800618AC = GOOL_CreateObject(&D_80060DD0, 0x27, 4, 0, 0, 1);
+            g_level_pause_menu_obj = GOOL_CreateObject(&g_gool_obj_list_3, 0x27, 4, 0, 0, 1);
         }
         break;
     case 20:
     case 22:
         var_a1 = 0x17;
         if (arg0 != 0) {
-            root = &D_80060DD0;
+            root = &g_gool_obj_list_3;
             var_a2 = 6;
             goto create_object;
         }
@@ -37,7 +37,7 @@ void Level_InitMisc(s32 arg0) {
     case 5:
         var_a1 = 9;
         if (arg0 != 0) {
-            root = &D_80060DD0;
+            root = &g_gool_obj_list_3;
             var_a2 = 4;
             goto create_object;
         }
@@ -46,7 +46,7 @@ void Level_InitMisc(s32 arg0) {
     case 46:
         var_a1 = 0x35;
         if (arg0 != 0) {
-            root = &D_80060DD0;
+            root = &g_gool_obj_list_3;
             var_a2 = 0xD;
 create_object:
             GOOL_CreateObject(root, var_a1, var_a2, 0, 0, 1);
@@ -59,21 +59,21 @@ create_object:
         Shader_ParamsUpdate(1);
         break;
     default:
-        D_800618AC = 0;
+        g_level_pause_menu_obj = 0;
         break;
     }
-    D_80061998[0] = 1;
+    g_level_first_spawn_flag[0] = 1;
     g_death_count[0] = 0;
-    D_80061990 = 0;
+    g_cam_goal_stop_flag = 0;
     g_level_count = 0;
-    if (D_80061A30 != 2) {
-        D_800619BC = 0;
+    if (g_pbak_frame_step != 2) {
+        g_pad_debug_override = 0;
     }
     g_key_count = 0;
     Solid_TransSmoothStopAtSolid(0, 0, 0);
-    D_80061A38 = 0x20;
-    D_8005DFEC = 0;
-    if (D_800618D0 != 0x600) {
+    g_gpu_max_frame_ticks = 0x20;
+    g_level_misc_init_zero = 0;
+    if (g_game_substate != 0x600) {
         g_cam_rot_xz = 0x120;
     }
 }

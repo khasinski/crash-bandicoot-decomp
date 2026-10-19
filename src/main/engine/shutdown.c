@@ -44,7 +44,7 @@ typedef struct {
     PadSlot slots[2];
 } PadState;
 
-extern PadState D_8005E718;
+extern PadState g_pad_driver_state;
 
 s32 Core_Init(void)
 {
@@ -63,8 +63,8 @@ s32 Core_Init(void)
     Card_Init();
     EnterCriticalSection();
     StopRCnt(0xF2000002);
-    D_80056708 = OpenEvent(0xF2000002, 2, 0x1000, RIncTickCount);
-    EnableEvent(D_80056708);
+    gp_rcnt2_event = OpenEvent(0xF2000002, 2, 0x1000, RIncTickCount);
+    EnableEvent(gp_rcnt2_event);
     SetRCnt(0xF2000002, 0x1000, 0x1000);
     StartRCnt(0xF2000002);
     ExitCriticalSection();
@@ -72,7 +72,7 @@ s32 Core_Init(void)
     Math_Sranda2();
     g_ns.draw_skip = 0;
     for (i = 0; i < 4; i++) {
-        D_8005728C[i] = 0x6396347F;
+        g_ns_recent_page_eids[i] = 0x6396347F;
     }
     for (i = 0; i < 16; i++) {
         g_slst_buf0[i].word18 = 0x6396347F;
@@ -94,15 +94,15 @@ s32 Core_Kill(void)
     ResetGraph(3);
     EnterCriticalSection();
     StopRCnt(0xF2000002);
-    DisableEvent(D_80056708);
-    CloseEvent(D_80056708);
+    DisableEvent(gp_rcnt2_event);
+    CloseEvent(gp_rcnt2_event);
     ExitCriticalSection();
     return -0xFF;
 }
 
 void Pad_Init(s32 count)
 {
-    PadState *state = &D_8005E718;
+    PadState *state = &g_pad_driver_state;
     s32 i;
 
     state->count = count;
@@ -110,7 +110,7 @@ void Pad_Init(s32 count)
         state->slots[i].word10 = 0;
         state->slots[i].word08 = 0;
         state->slots[i].word04 = 0;
-        D_8005E718.slots[i].word00 = 0;
+        g_pad_driver_state.slots[i].word00 = 0;
         PadInit(i);
     }
 }
@@ -143,16 +143,16 @@ u32 PadRead(s32);
 extern DemoInput *gp_cur_pbak_header;
 extern DemoRecording *gp_cur_pbak_frame;
 extern DemoBufferView *g_db_cur[];
-extern PlaybackState D_800619BC;
+extern PlaybackState g_pad_debug_override;
 
 void Pad_Update(void)
 {
     s32 i = 0;
     s32 arg[4];
 
-    if (D_8005E718.count > 0) {
+    if (g_pad_driver_state.count > 0) {
         do {
-            PadSlot *slot = &D_8005E718.slots[i];
+            PadSlot *slot = &g_pad_driver_state.slots[i];
             u32 raw;
             u32 buttons;
 
@@ -173,8 +173,8 @@ void Pad_Update(void)
                 slot->word04 &= ~0x2000;
             }
             if (i == 0) {
-                if (D_800619BC.playback_mode != 2) {
-                    if (D_800619BC.playback_mode == 3) {
+                if (g_pad_debug_override.playback_mode != 2) {
+                    if (g_pad_debug_override.playback_mode == 3) {
                         slot->word04 = 0;
                     }
                 } else {
@@ -188,18 +188,18 @@ void Pad_Update(void)
                     gp_cur_pbak_header++;
                     if ((pressed & 0x9F0) || gp_cur_pbak_header >= &gp_cur_pbak_frame->inputs[gp_cur_pbak_frame->count]) {
                         arg[0] = 0;
-                        if ((player = D_800619BC.player) != 0) {
+                        if ((player = g_pad_debug_override.player) != 0) {
                             Gool_ExecStateCode(0, player, 0xE00, 1, arg);
-                            D_800619BC.playback_mode = 3;
+                            g_pad_debug_override.playback_mode = 3;
                         } else {
-                            D_800619BC.playback_mode = 0;
+                            g_pad_debug_override.playback_mode = 0;
                         }
                     }
                 }
             }
             slot->word00 = ~slot->word08 & slot->word04 & 0xF9FF;
             i++;
-        } while (i < D_8005E718.count);
+        } while (i < g_pad_driver_state.count);
     }
 }
 

@@ -3,8 +3,8 @@
 
 void SsSetMono(s32 arg0) {
     if (arg0 == 1) {
-        D_80055914 = 0;
+        g_spu_trans_start_addr = 0;
         return;
     }
-    D_80055914 = 1;
+    g_spu_trans_start_addr = 1;
 }

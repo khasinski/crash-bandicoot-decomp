@@ -9,7 +9,7 @@ s16 SpuVmGetSeqVol(s16 arg0, u16 *arg1, u16 *arg2) {
 
     phase.channel = (arg0 & 0xFF00) >> 8;
     temp_v0 = &g_ss_score_table[arg0 & 255][phase.channel];
-    phase.packed_id = (u16 *)&D_8005E56E;
+    phase.packed_id = (u16 *)&g_spu_vm_cur_seq_sep_id;
     *phase.packed_id = arg0;
     *arg1 = temp_v0->field_74;
     *arg2 = temp_v0->field_76;

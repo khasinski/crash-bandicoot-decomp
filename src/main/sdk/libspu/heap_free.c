@@ -9,7 +9,7 @@ void SpuFree(u32 address)
 {
     s32 i;
 
-    for (i = 0; i < D_8005593C; i++) {
+    for (i = 0; i < g_spu_tsa_shadow; i++) {
         if (g_spu_memList[i].address & 0x40000000) {
             break;
         }

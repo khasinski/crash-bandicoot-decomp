@@ -20,7 +20,7 @@ typedef struct {
 
 typedef void (*ContCallback)(s16, s16, u8, ToneAttributes, s16, u8);
 
-extern ContCallback D_800583A4[];
+extern ContCallback g_ss_nrpn_attr_fn_00[];
 
 s32 SsUtGetProgAtr(s16, s16, ProgramAttributes *);
 s32 SsUtGetVagAtr(s16, s16, s32, ToneAttributes *);
@@ -90,10 +90,10 @@ void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
     if (state->field_2A == 2) {
         if (state->field_16 == 0x10) {
             for (i = 0; i < prog_attr.tones; i++) {
-                D_800583A4[state->field_15](state->field_4C, state->field_2C[index], i, tone_attr, state->field_15, value);
+                g_ss_nrpn_attr_fn_00[state->field_15](state->field_4C, state->field_2C[index], i, tone_attr, state->field_15, value);
             }
         } else {
-            D_800583A4[state->field_15](state->field_4C, state->field_2C[index], state->field_16, tone_attr, state->field_15, value);
+            g_ss_nrpn_attr_fn_00[state->field_15](state->field_4C, state->field_2C[index], state->field_16, tone_attr, state->field_15, value);
         }
         state->field_88 = _SsReadDeltaValue(sequence, channel);
         state->field_2A = 0;

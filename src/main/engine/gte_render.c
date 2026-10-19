@@ -28,7 +28,7 @@ void RIncTickCount(void)
     engine_counter[0]++;
 }
 
-HANDWRITTEN_ASM("src/main/engine/gte_asm", func_80034520);
+HANDWRITTEN_ASM("src/main/engine/gte_asm", g_rcnt_ticks);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", RSqrMagnitude2);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", RSqrMagnitude3);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", Gte_RTransformSvtx);
@@ -51,7 +51,7 @@ HANDWRITTEN_ASM("src/main/engine/gte_asm", Solid_RFindFloorY);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", Solid_RFindCeilY);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", sin);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", cos);
-HANDWRITTEN_ASM("src/main/engine/gte_asm", func_8003913C);
+HANDWRITTEN_ASM("src/main/engine/gte_asm", Gte_RCalcObjectRotMatrix);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", Gte_RCalcObjectMatrices);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", Gte_RCalcSpriteRotMatrix);
 HANDWRITTEN_ASM("src/main/engine/gte_asm", Gte_RTransformSprite);

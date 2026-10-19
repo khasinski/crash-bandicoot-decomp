@@ -8,7 +8,7 @@ static __inline__ s32 Ns_AlphaNumIndex(u8 ch)
 {
     s32 index;
     for (index = 0; index < 0x40; index++) {
-        if (D_80051728[index] == ch)
+        if (g_eid_charset_table[index] == ch)
             return index;
     }
     if (ch == 0x2D)
@@ -33,7 +33,7 @@ __inline__ s32 Ns_Atoi(u32 type, u8 *text) {
             alphabet_index = 0;
             character = *cursor;
 search_packed_character:
-            if (D_80051728[alphabet_index] == character) {
+            if (g_eid_charset_table[alphabet_index] == character) {
                 packed |= alphabet_index;
             } else {
                 alphabet_index += 1;

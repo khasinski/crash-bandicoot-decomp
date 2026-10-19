@@ -15,7 +15,7 @@ s32 note2pitch2(s32 arg0, s32 arg1) {
     u16 var_v1;
     u8 *temp_v1;
 
-    temp_v1 = (u8 *)(((D_8005E564 + (D_8005E55F * 0x10)) << 5) + g_ns_vpage_pool);
+    temp_v1 = (u8 *)(((g_spu_vm_cur_tone_idx + (g_spu_vm_cur_prog_tones * 0x10)) << 5) + g_ns_vpage_pool);
     var_v0 = (arg1 & 0xFFFF) + temp_v1[5];
     var_a2 = 0;
     if (var_v0 < 0) {
@@ -30,7 +30,7 @@ s32 note2pitch2(s32 arg0, s32 arg1) {
     note = (u32)arg0 + 0x3C;
     temp_v0 = var_a2 + (note - temp_v1[4]);
     temp_v0_2 = (temp_v0 / 12) - 5;
-    var_v1 = D_80056278[((temp_v0 % 12) * 0x10) + (s16) var_a0];
+    var_v1 = g_spu_vm_reverb_mask_hi[((temp_v0 % 12) * 0x10) + (s16) var_a0];
     if (temp_v0_2 > 0) {
         var_v1 <<= temp_v0_2;
     } else if (temp_v0_2 < 0) {

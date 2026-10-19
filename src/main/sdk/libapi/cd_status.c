@@ -3,5 +3,5 @@
 
 
 u8 CdStatus(void) {
-    return D_800555B0;
+    return g_cd_read_sectors;
 }

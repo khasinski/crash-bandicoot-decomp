@@ -76,13 +76,13 @@ void _SsSndTempo(s16 arg0, s16 arg1) {
             state->field_11 = 0xB0;
             status = *state->field_4++;
             status &= 0xFF;
-            D_80058370(sequence_index, channel_index, status);
+            g_ss_fn_control_change(sequence_index, channel_index, status);
             break;
         case 0xC0:
             state->field_11 = 0xC0;
             status = *state->field_4++;
             status &= 0xFF;
-            D_80058364(sequence_index, channel_index, status);
+            g_ss_fn_note_off(sequence_index, channel_index, status);
             break;
         case 0xE0:
             state->field_11 = 0xE0;
@@ -92,7 +92,7 @@ void _SsSndTempo(s16 arg0, s16 arg1) {
             state->field_11 = 0xFF;
             state->field_12 = status & 0xF;
             status = *state->field_4++;
-            D_8005836C(sequence_index, channel_index, status);
+            g_ss_fn_meta_event(sequence_index, channel_index, status);
             break;
         }
     } else {
@@ -103,17 +103,17 @@ void _SsSndTempo(s16 arg0, s16 arg1) {
             g_Snd_FnTable[0](sequence_index, channel_index, status, vel);
             break;
         case 0xB0:
-            D_80058370(sequence_index, channel_index, status);
+            g_ss_fn_control_change(sequence_index, channel_index, status);
             break;
         case 0xC0:
-            D_80058364(sequence_index, channel_index, status);
+            g_ss_fn_note_off(sequence_index, channel_index, status);
             break;
         case 0xE0:
         pitch_bend:
-            D_80058368(sequence_index, channel_index);
+            g_ss_fn_pitch_bend(sequence_index, channel_index);
             break;
         case 0xFF:
-            D_8005836C(sequence_index, channel_index, status);
+            g_ss_fn_meta_event(sequence_index, channel_index, status);
             break;
         }
     }

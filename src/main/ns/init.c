@@ -112,8 +112,8 @@ s32 Ns_Init(NsState *ns, s32 level)
         ns->page_map[i] = (ResourceSlot *)-18;
     }
     for (i = 0; i < 21; i++) {
-        if (D_800514E0[i].init) {
-            D_800514E0[i].init();
+        if (g_ns_bootstrap_ldat[i].init) {
+            g_ns_bootstrap_ldat[i].init();
         }
     }
 
@@ -140,7 +140,7 @@ s32 Ns_Init(NsState *ns, s32 level)
         ns->pool.slots[i].header = NULL;
         ns->pool.slots[i].references = 0;
     }
-    BIOS_Printf(D_80010064, ns->physical_count);
+    BIOS_Printf(g_str_init_inited_and_allocated_d, ns->physical_count);
 
     /* Texture pages: VRAM as a 4x4 grid of 256x128 blocks. Pages 0-3 hold the
      * display buffer and 4-7 the draw buffer; a page still loaded from the
@@ -218,23 +218,23 @@ s32 Ns_Init(NsState *ns, s32 level)
     }
     /* Keep instrument pages whose entries are still present. */
     for (i = 0; i < 8; i++) {
-        if (D_8005728C[i] != 0x6396347F && g_spu_slots[i].word06 == 4) {
-            entry = ns_lookup(D_8005728C[i]);
+        if (g_ns_recent_page_eids[i] != 0x6396347F && g_spu_slots[i].word06 == 4) {
+            entry = ns_lookup(g_ns_recent_page_eids[i]);
             if ((s32)entry >= -0xFE) {
-                D_8005728C[i] = 0x6396347F;
+                g_ns_recent_page_eids[i] = 0x6396347F;
             } else {
                 g_ns.page_map[(s32)entry->entry >> 1] = &g_spu_slots[i];
                 g_spu_slots[i].state = 20;
                 g_spu_slots[i].id = entry->entry;
-                g_spu_slots[i].word18 = D_8005728C[i];
+                g_spu_slots[i].word18 = g_ns_recent_page_eids[i];
                 entry->entry = 0x80000002;
             }
         }
     }
 
     for (i = 0; i < 21; i++) {
-        if (D_800514E0[i].init_pages) {
-            D_800514E0[i].init_pages();
+        if (g_ns_bootstrap_ldat[i].init_pages) {
+            g_ns_bootstrap_ldat[i].init_pages();
         }
     }
     return -0xFF;
@@ -252,8 +252,8 @@ s32 Ns_Kill(NsState *ns)
         return -0xFF;
     }
     for (i = 0; i < 21; i++) {
-        if (D_800514E0[i].kill) {
-            D_800514E0[i].kill();
+        if (g_ns_bootstrap_ldat[i].kill) {
+            g_ns_bootstrap_ldat[i].kill();
         }
     }
     for (i = 0; i < ns->physical_count; i++) {

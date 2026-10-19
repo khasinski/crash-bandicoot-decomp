@@ -34,7 +34,7 @@ typedef struct {
 } SvmCur;
 
 extern SvmCur g_midi_sep;
-extern VoiceU16 D_800572B2[];
+extern VoiceU16 g_spu_vm_voice_envx[];
 
 
 void _SpuVmSetNoiseVoice(s32, s32);
@@ -45,18 +45,18 @@ void SpuVmDoAllocate(void) {
 
     g_midi_sep.unk1C = g_midi_sep.unk1A * 8;
     g_midi_sep.unk1E = (g_midi_sep.unk7 << 4) + g_midi_sep.unkC;
-    D_800572B2[g_midi_sep.unk1A].value = 0x7FFF;
+    g_spu_vm_voice_envx[g_midi_sep.unk1A].value = 0x7FFF;
     for (var_t0 = 0; var_t0 < 0x10; var_t0++) {
-        D_80060D70[var_t0] &= ~(1 << g_midi_sep.unk1A);
+        g_spu_vm_seq_voice_mask[var_t0] &= ~(1 << g_midi_sep.unk1A);
     }
     if ((g_midi_sep.unk18 & 1) > 0) {
-        D_8005E58E[g_midi_sep.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xC);
+        g_spu_vm_alloc_prog_attr[g_midi_sep.unk1C] = *(u16 *)(g_vab_cur_prog_table + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xC);
         g_card_ev_table[g_midi_sep.unk1A] |= 8;
     } else {
-        D_8005E58E[g_midi_sep.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xE);
+        g_spu_vm_alloc_prog_attr[g_midi_sep.unk1C] = *(u16 *)(g_vab_cur_prog_table + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xE);
         g_card_ev_table[g_midi_sep.unk1A] |= 8;
     }
-    D_8005E590[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x10);
-    D_8005E592[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x12) + D_80057EF0;
+    g_spu_vm_alloc_adsr1[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x10);
+    g_spu_vm_alloc_adsr2[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x12) + g_spu_vm_damper_mask;
     g_card_ev_table[g_midi_sep.unk1A] |= 0x30;
 }

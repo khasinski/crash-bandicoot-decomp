@@ -18,7 +18,7 @@ void _spu_writeByIO(u16 *arg0, u32 arg1)
     total = arg1;
     stat = g_spu_RXX[0xD7] & 0x7FF;
     ptr = arg0;
-    g_spu_RXX[0xD3] = D_800558E0;
+    g_spu_RXX[0xD3] = g_spu_adsr_dummy_1;
     delay_value = 13;
     for (delay_count = 0; delay_count < 240; delay_count++) {
         delay_value *= 3;
@@ -38,10 +38,10 @@ void _spu_writeByIO(u16 *arg0, u32 arg1)
         for (delay_count = 0; delay_count < 240; delay_count++) {
             delay_value *= 3;
         }
-        D_800558DC = 0;
+        g_spu_attr_zero_3 = 0;
         while (g_spu_RXX[0xD7] & 0x400) {
-            if (++D_800558DC > 0x1388) {
-                BIOS_Printf(D_80011660, D_80011680);
+            if (++g_spu_attr_zero_3 > 0x1388) {
+                BIOS_Printf(g_str_cd_ack_err, g_str_fifo_write_wait_wrdy_h_l);
                 break;
             }
         }
@@ -58,10 +58,10 @@ void _spu_writeByIO(u16 *arg0, u32 arg1)
     ctrl = g_spu_RXX[0xD5];
     ctrl &= 0xFFCF;
     g_spu_RXX[0xD5] = ctrl;
-    D_800558DC = 0;
+    g_spu_attr_zero_3 = 0;
     while ((g_spu_RXX[0xD7] & 0x7FF) != stat) {
-        if (++D_800558DC > 0x1388) {
-            BIOS_Printf(D_80011660, D_80011694);
+        if (++g_spu_attr_zero_3 > 0x1388) {
+            BIOS_Printf(g_str_cd_ack_err, g_str_fifo_write_wait_dmaf_clear_w);
             break;
         }
     }

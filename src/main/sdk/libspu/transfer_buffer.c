@@ -15,8 +15,8 @@ u32 SpuWrite(s32 arg0,u32 arg1) {
         var_s0 = 0x7F000;
     }
     _spu_write(arg0,var_s0);
-    if (D_80055918 == 0) {
-        D_80055914 = 0;
+    if (g_spu_dma_done_cb == 0) {
+        g_spu_trans_start_addr = 0;
     }
     return var_s0;
 }

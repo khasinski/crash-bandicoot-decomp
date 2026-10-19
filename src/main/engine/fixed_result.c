@@ -10,10 +10,10 @@ s32 Solid_BinfInit(void)
     s32 i;
 
     gp_grid_rows = (s32 *)0x1F800100;
-    D_800566AC = (u32 *)0x1F800180;
-    D_8005670C = (u32 *)0x1F800380;
+    gp_solid_scratch_grid = (u32 *)0x1F800180;
+    gp_solid_scratch_workspace = (u32 *)0x1F800380;
     for (i = 0; i < 32; i++) {
-        D_8005670C[i] = D_80052CF4[i];
+        gp_solid_scratch_workspace[i] = g_solid_binf_default_header[i];
     }
     return -255;
 }

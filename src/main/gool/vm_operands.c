@@ -105,12 +105,12 @@ s32 *Gool_TranslateOutGop(GoolObjView *obj, u32 gop, s32 mode)
                     return &obj->fp[Gool_SignShift(gop, 7)];
                 }
             } else {
-                ptr = (GoolExecView *)&gp_obj_zone_colors[D_8005648C = !D_8005648C];
+                ptr = (GoolExecView *)&gp_obj_zone_colors[gp_gool_out_vec_toggle = !gp_gool_out_vec_toggle];
                 *(s32 *)ptr = Gool_SignShift(gop, 8) << 4;
                 return (s32 *)ptr;
             }
         } else {
-            ptr = (GoolExecView *)&gp_obj_zone_colors[D_8005648C = !D_8005648C];
+            ptr = (GoolExecView *)&gp_obj_zone_colors[gp_gool_out_vec_toggle = !gp_gool_out_vec_toggle];
             *(s32 *)ptr = Gool_SignShift(gop, 9) << 8;
             return (s32 *)ptr;
         }

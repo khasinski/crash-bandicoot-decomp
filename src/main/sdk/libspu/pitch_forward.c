@@ -30,7 +30,7 @@ s32 _spu_note2pitch(s32 base_note, s32 base_fine, s32 note, s32 fine) {
         fraction = 0;
     }
     semitone = carry + (60 - base_note + note);
-    pitch = D_800560A4[((s16)(semitone % 12) << 4) + (s16)fraction];
+    pitch = g_spu_semitone_pitch_tab[((s16)(semitone % 12) << 4) + (s16)fraction];
     octave_shift = (semitone / 12) - 5;
     if (octave_shift > 0) {
         pitch <<= octave_shift;

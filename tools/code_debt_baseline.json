@@ -9,8 +9,8 @@
   "negative_pointer_indexing": 0,
   "raw_gte_inline_asm": 0,
   "raw_offset_dereferences": 0,
-  "raw_symbol_references": 2296,
+  "raw_symbol_references": 0,
   "register_pins": 0,
   "sdata_size_hacks": 0,
-  "unnamed_function_symbols": 4
+  "unnamed_function_symbols": 0
 }

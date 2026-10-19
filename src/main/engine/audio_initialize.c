@@ -19,22 +19,22 @@ void Midi_Init(void) {
     u32 gain;
 
     SsSetTickMode(1);
-    index = D_8005665C >= 2;
+    index = gp_midi_open_seq_cnt >= 2;
     gain = ((u32)g_levels_unlocked[0] * 0x3FFFU) >> 8;
-    D_80056648 = (s16) gain;
+    gp_midi_seq_gain = (s16) gain;
     scaled_gain = (s32) (gain << 0x10) >> 0x17;
-    if (index < D_8005665C) {
+    if (index < gp_midi_open_seq_cnt) {
         s32 volume = scaled_gain;
         do {
-            channel = D_80056EBC[index].channel;
+            channel = g_midi_channel_states[index].channel;
             SsSepSetVol(gp_midi_vol, channel, volume, volume);
             index += 1;
-        } while (index < D_8005665C);
+        } while (index < gp_midi_open_seq_cnt);
     }
-    D_80056650 = 0x6396347F;
+    gp_midi_loaded_eid = 0x6396347F;
     gp_card_chan = 0;
     gp_midi_vol = -1;
-    D_80056658 = -1;
+    gp_midi_vab_id_2 = -1;
     if (g_levels_unlocked[0] == 0) {
         voice_limit = 8;
     } else if (g_cur_map_level[0] == 0) {
@@ -81,6 +81,6 @@ void Midi_Init(void) {
             break;
         }
     }
-    D_80056668 = voice_limit;
-    SsSetReservedVoice(*(u8 *)&D_80056668);
+    gp_sfx_voice_limit = voice_limit;
+    SsSetReservedVoice(*(u8 *)&gp_sfx_voice_limit);
 }

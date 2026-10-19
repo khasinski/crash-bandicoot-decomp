@@ -130,13 +130,13 @@ typedef struct ResourceHandler {
 } ResourceHandler;
 
 /* Shared owners confirmed by the lookup, allocation and unref units.
- * Offset aliases and the ambiguously typed D_8005CFBC table stay local. */
+ * Offset aliases and the ambiguously typed g_ns_page_status_map table stay local. */
 extern ResourceEntry *g_pads;
 extern ResourceSlot g_slst_buf0[];
-extern ResourceBucket **D_8005C530;
-extern ResourceBucket *D_8005C534;
-extern ResourceHashMetadata *D_8005C540;
-extern ResourcePool D_8005C91C;
+extern ResourceBucket **g_ns_hash_buckets;
+extern ResourceBucket *g_ns_entry_table;
+extern ResourceHashMetadata *g_ns_nsd_header;
+extern ResourcePool g_ns_virtual_page_pool;
 
 s32 Ns_EIDType(ResourceHandle *handle);
 s32 Ns_StringToEID(u8 *name);

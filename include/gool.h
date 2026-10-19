@@ -86,6 +86,6 @@ GoolRuntimeObject *GOOL_TestObjectStateFlags(GoolRuntimeObject *, u32 flags);
 void Gool_ObjectColorByZone(GoolDefaultsObject *object, s32 mode);
 void Level_MdatOnLoad2(ObjectView *object);
 void Zone_TerminateObjects(ObjectView *object);
-void sub_80027A08(GoolRuntimeObject *object, s32 index, s32 fallback);
+void Cam_SetObjectZoom(GoolRuntimeObject *object, s32 index, s32 fallback);
 
 #endif

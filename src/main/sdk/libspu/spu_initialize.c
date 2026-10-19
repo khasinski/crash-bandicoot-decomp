@@ -6,7 +6,7 @@
 void SpuVmInit(s32);              /* extern */
 
 typedef void (*SequenceCallback)();
-extern SequenceCallback D_80060498[];
+extern SequenceCallback g_ss_mark_callbacks[];
 
 void _SsInit(void) {
     u16 *defaults;
@@ -22,7 +22,7 @@ void _SsInit(void) {
 
     registers = (volatile u16 *)0x1F801C00;
     index = 0;
-    defaults = D_80056228;
+    defaults = g_ss_zero_reverb_attr;
     do {
         count = 0;
         source = defaults;
@@ -39,7 +39,7 @@ write_voice_register:
     } while (index < 0x18);
     registers = (volatile u16 *)0x1F801D80;
     register_index = 0;
-    source = D_80056238;
+    source = g_ss_default_common_attr;
     do {
         global_value = *source;
         source += 1;
@@ -49,7 +49,7 @@ write_voice_register:
     } while (register_index < 0x10);
     SpuVmInit(0x18);
     count = 0;
-    row = D_80060498;
+    row = g_ss_mark_callbacks;
     do {
         index = 0xF;
         slot = row + 15;
@@ -64,6 +64,6 @@ clear_callback:
         row += 16;
     } while (count < 0x20);
     g_spawns_base = 0x3C;
-    D_8005E548 = 0;
-    D_8005C520 = 0;
+    g_ss_open_seq_mask = 0;
+    g_ss_callback_busy = 0;
 }

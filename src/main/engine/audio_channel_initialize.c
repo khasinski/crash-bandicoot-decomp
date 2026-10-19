@@ -6,9 +6,9 @@
 void SsSepSetVol();
 
 void Midi_SeqInit(AudioChannel *record, s32 packed_volume, s32 channel) {
-    if (D_8005665C >= 2 && channel == 1) {
-        record->right_volume = (u16) D_8005666C;
-        record->left_volume = (u16) D_8005666C;
+    if (gp_midi_open_seq_cnt >= 2 && channel == 1) {
+        record->right_volume = (u16) gp_midi_default_rvol;
+        record->left_volume = (u16) gp_midi_default_rvol;
     } else {
         record->left_volume = packed_volume >> 16;
         record->right_volume = packed_volume;

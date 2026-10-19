@@ -19,7 +19,7 @@ s32 SpuRGetAllKeysStatus(s32 first,s32 last,u8 *output) {
         cursor=(u8 *)(voice+(u32)output);
         do {
             level=((volatile VoiceRegisters *)g_spu_RXX)[voice].registers[6];
-            if((on<<voice)&D_800559A4) {
+            if((on<<voice)&g_spu_irq_callback) {
                 if(level)*cursor=on;else *cursor=silent;
             } else if(level)*cursor=off;else *cursor=0;
             voice++;
@@ -37,7 +37,7 @@ void SpuGetAllKeysStatus(u8 *output) {
     u16 level;
     do {
         level=((volatile VoiceRegisters *)g_spu_RXX)[voice].registers[6];
-        if((on<<voice)&D_800559A4) {
+        if((on<<voice)&g_spu_irq_callback) {
             if(level)*cursor=on;else *cursor=silent;
         } else if(level)*cursor=off;else *cursor=0;
         voice++;

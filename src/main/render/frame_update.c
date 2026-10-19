@@ -25,13 +25,13 @@ typedef struct {
     u8 bytes[4];
 } BufferToken;
 
-extern BufferToken D_80057968[];
-extern BufferToken D_8005796C;
+extern BufferToken g_pbak_header_byte_0[];
+extern BufferToken g_pbak_seed_val;
 extern struct { s32 v, pad; } gp_next_lid;
 extern u32 g_cur_lid_ro;
 extern u32 g_fade_counter;
 extern s32 g_cam_rot_xz[];
-extern s32 D_8005C54C[];
+extern s32 g_ns_load_done_flag[];
 extern struct { RenderBufferFull *buf; } g_db_cur;
 extern RenderBufferFull *g_db_prev;
 extern RenderBufferFull *g_ot_cur;
@@ -77,11 +77,11 @@ void *PutDrawEnv(GpuDrawing *);
 void DrawOTag(u32 *);
 void Gpu_RResetOT(void *, s32);
 
-static __inline__ BufferToken *func_80016E28_inline(void)
+static __inline__ BufferToken *Gpu_RoundTicks_inline(void)
 {
-    D_80057968[0] = D_8005796C;
+    g_pbak_header_byte_0[0] = g_pbak_seed_val;
     (void)frame_counter;
-    return &D_80057968[0];
+    return &g_pbak_header_byte_0[0];
 }
 
 void Gpu_Update(void)
@@ -89,19 +89,19 @@ void Gpu_Update(void)
     BufferToken *token;
     RenderBufferFull *swap;
 
-    token = func_80016E28_inline();
+    token = Gpu_RoundTicks_inline();
     if (gp_next_lid.v == 0 && (g_cur_lid_ro & 0x1000)) {
         g_draw_stamp++;
     }
     if (g_cam_rot_xz[0] != 0) {
         if (g_cam_rot_xz[0] > 0) {
-            g_cam_rot_xz[0] -= D_80061A38;
+            g_cam_rot_xz[0] -= g_gpu_max_frame_ticks;
             Gpu_DrawOverlay(g_cam_rot_xz[0]);
         } else if (g_cam_rot_xz[0] >= -2) {
             Gpu_DrawOverlay(0x100);
             g_cam_rot_xz[0] = -1;
         } else {
-            g_cam_rot_xz[0] += D_80061A38;
+            g_cam_rot_xz[0] += g_gpu_max_frame_ticks;
             Gpu_DrawOverlay(g_cam_rot_xz[0] + 0x100);
             if (g_cam_rot_xz[0] == 0 && !(g_cur_lid_ro & 0x200000)) {
                 g_cam_rot_xz[0] = -2;
@@ -119,12 +119,12 @@ void Gpu_Update(void)
     Audio_Update();
     g_db_prev->word80 = frame_counter;
     DrawSync(0);
-    if (D_80061A30 == 0) {
+    if (g_pbak_frame_step == 0) {
         g_box_count = frame_counter - g_db_prev->word7C;
     } else {
         g_box_count = 0x11;
     }
-    if (D_8005C54C[0] == 0) {
+    if (g_ns_load_done_flag[0] == 0) {
         swap = g_db_prev;
         g_db_cur.buf = swap;
         g_db_prev = g_ot_cur;
@@ -152,7 +152,7 @@ void Gpu_Update(void)
         gp_rcnt_stopped = 0;
     }
     EnterCriticalSection();
-    if (D_80061A30 == 2) {
+    if (g_pbak_frame_step == 2) {
         frame_counter = *gp_cur_pbak_header;
     }
     g_db_prev->word7C = frame_counter;
@@ -160,10 +160,10 @@ void Gpu_Update(void)
     g_db_cur.buf->word84 = Gfx_TgeoGetTexinfoArray(g_db_prev->word7C - g_db_cur.buf->word7C);
     PutDispEnv(&g_db_cur.buf->display);
     PutDrawEnv(&g_db_prev->drawing);
-    if (D_8005C54C[0] > 0) {
-        D_8005C54C[0]--;
+    if (g_ns_load_done_flag[0] > 0) {
+        g_ns_load_done_flag[0]--;
     }
-    if (D_8005C54C[0] == 0) {
+    if (g_ns_load_done_flag[0] == 0) {
         DrawOTag(g_db_prev->ordering_table);
     }
     g_ot_cur->word78 = g_ot_cur->word74;

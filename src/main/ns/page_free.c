@@ -3,7 +3,7 @@
 #include "common.h"
 #include "ns.h"
 
-extern ResourceHandler D_800514EC[];
+extern ResourceHandler g_ns_page_free_sentinel[];
 extern s32 gp_pause_B_pressed;
 
 s32 Ns_PageUpdate(ResourceSlot *slot, s32 arg1);
@@ -45,7 +45,7 @@ s32 Ns_PageFree(ResourceSlot *request)
                 id_pointer += 2;
                 bucket++;
             }
-            release = D_800514EC[entry->kind].release;
+            release = g_ns_page_free_sentinel[entry->kind].release;
             i++;
             if (release != NULL) {
                 release(entry);

@@ -3,7 +3,7 @@
 
 /* Handwritten function */
 
-glabel func_8003913C
+glabel Gte_RCalcObjectRotMatrix
     /* 2993C 8003913C 801F013C */  lui        $at, (0x1F80003C >> 16)
     /* 29940 80039140 000030AC */  sw         $s0, (0x1F800000 & 0xFFFF)($at)
     /* 29944 80039144 040031AC */  sw         $s1, (0x1F800004 & 0xFFFF)($at)
@@ -735,4 +735,4 @@ glabel func_8003913C
     /* 2A3C8 80039BC8 38003E8C */  lw         $fp, (0x1F800038 & 0xFFFF)($at)
     /* 2A3CC 80039BCC 0800E003 */  jr         $ra
     /* 2A3D0 80039BD0 00000000 */   nop
-endlabel func_8003913C
+endlabel Gte_RCalcObjectRotMatrix

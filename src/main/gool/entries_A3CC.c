@@ -129,7 +129,7 @@ void Gfx_TransformWorldsFog(s32 arg0)
                 *(u32 *)(base + i) = (sp1C << 16) | sp18;
             }
         }
-        Gte_RTransformWorldsFog(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774);
+        Gte_RTransformWorldsFog(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), g_wgeo_tex_anim_masks);
     }
 }
 

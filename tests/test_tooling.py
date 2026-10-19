@@ -167,7 +167,7 @@ class ToolingTests(unittest.TestCase):
 
     def test_asm_and_macro_changes_rebuild_c_object(self):
         for dependency, source in (
-            ('src/main/engine/gte_asm/func_8003913C.s',
+            ('src/main/engine/gte_asm/Gte_RCalcObjectRotMatrix.s',
              'src/main/engine/gte_render.c'),
             (str(ROOT / 'include/gte_macros.inc'), 'src/main/libc/malloc.c'),
         ):

@@ -2,5 +2,5 @@
 /* GCC_VERSION: 2.6.3 */
 
 u16 GetIntrMask(void) {
-    return *D_800549C4;
+    return *g_intr_i_mask_reg;
 }

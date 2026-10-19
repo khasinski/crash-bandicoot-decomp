@@ -178,7 +178,7 @@ void Gfx_UpdateCamMatrices(u32 *arg0)
             uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (t3 & 0x80)) << 8);
             poly->clut = ((t3 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
             poly->tpage = tpage | (t3 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-            uv_ptr = &((UvEntry9DCC *)D_80051774)[w1 >> 22];
+            uv_ptr = &((UvEntry9DCC *)g_wgeo_tex_anim_masks)[w1 >> 22];
             xy = uv_ptr->lo;
             z = uv_ptr->hi;
             poly->uv0 = xy + uv_base;

@@ -156,25 +156,25 @@ s32 Gool_ObjectColors(GoolObj *obj) {
 
     switch (obj->invincibility_state) {
     case 6:
-        if (D_80060E04[0] - obj->invincibility_time >= 0x10U) {
+        if (g_level_zone_flags[0] - obj->invincibility_time >= 0x10U) {
             obj->invincibility_state = 0;
             obj->status_b |= 0x80;
         }
         break;
     case 7:
-        if (D_80060E04[0] - obj->invincibility_time >= 0x10U || (obj->status_a & 1)) {
+        if (g_level_zone_flags[0] - obj->invincibility_time >= 0x10U || (obj->status_a & 1)) {
             obj->invincibility_state = 0;
             obj->status_b |= 0x80;
         }
         break;
     case 4:
-        if (D_80060E04[0] - obj->invincibility_time >= 0x3DU) {
+        if (g_level_zone_flags[0] - obj->invincibility_time >= 0x3DU) {
             obj->invincibility_state = 0;
             Gool_ObjectColorByZone(obj, 1);
         }
         /* fallthrough */
     case 3:
-        if (obj->invincibility_state == 3 && D_80060E04[0] - obj->invincibility_time >= 0x1C4U) {
+        if (obj->invincibility_state == 3 && g_level_zone_flags[0] - obj->invincibility_time >= 0x1C4U) {
             obj->invincibility_state = 0;
             Gool_ObjectColorByZone(obj, 1);
         } else if (obj->invincibility_state == 4) {
@@ -185,7 +185,7 @@ s32 Gool_ObjectColors(GoolObj *obj) {
         }
         /* fallthrough */
     case 5:
-        if (obj->invincibility_state == 5 && D_80060E04[0] - obj->invincibility_time >= 0x25BU) {
+        if (obj->invincibility_state == 5 && g_level_zone_flags[0] - obj->invincibility_time >= 0x25BU) {
             obj->invincibility_state = 0;
             Gool_ObjectColorByZone(obj, 1);
         }
@@ -336,9 +336,9 @@ typedef struct GoolTimeState {
 
 extern GoolMoveParams g_accel_states[];
 extern GoolDirEntry g_move_states[];
-extern s32 D_80057930[];
+extern s32 g_cam_dir_rot_y[];
 extern GoolTimeState *g_db_cur[];
-extern u8 D_8005CFEC[];
+extern u8 g_solid_wall_plot_buf[];
 
 s32 sin(s32);
 s32 cos(s32);
@@ -364,7 +364,7 @@ void Gool_ObjectPhysics(GoolObj *obj) {
     s32 diff;
     s32 cos_val;
 
-    if ((obj->status_b & 0x80) && D_800618D0 == 0x100) {
+    if ((obj->status_b & 0x80) && g_game_substate == 0x100) {
         params = &g_accel_states[0];
         if (obj->state_flags & 4) {
             params = &g_accel_states[1];
@@ -385,10 +385,10 @@ void Gool_ObjectPhysics(GoolObj *obj) {
         if (state_flags & 0x10) {
             params = &g_accel_states[3];
         }
-        dir_idx = (D_8005E720[0] & 0xF000) >> 12;
+        dir_idx = (g_gool_pad_buttons[0] & 0xF000) >> 12;
         speed_scale = g_move_states[dir_idx].speed_scale;
         if (g_move_states[dir_idx].dir != 8) {
-            target_rot = (g_move_states[dir_idx].angle + D_80057930[0]) & 0xFFF;
+            target_rot = (g_move_states[dir_idx].angle + g_cam_dir_rot_y[0]) & 0xFFF;
             diff = ABS(target_rot - obj->unkB4);
             if (diff > 0x800) {
                 diff = 0x1000 - diff;
@@ -448,7 +448,7 @@ void Gool_ObjectPhysics(GoolObj *obj) {
         saved_trans = *(GoolVec3 *)obj->vectors.trans;
         if (obj->status_b & 8) {
             obj->event = 0xFF;
-            Solid_TransSmoothStopAtSolid(obj, (s32 *)&vel, D_8005CFEC);
+            Solid_TransSmoothStopAtSolid(obj, (s32 *)&vel, g_solid_wall_plot_buf);
         } else {
             obj->vectors.trans[0] += vel.x;
             obj->vectors.trans[1] += vel.y;
@@ -470,7 +470,7 @@ void Gool_ObjectPhysics(GoolObj *obj) {
             if (obj->vectors.trans[1] <= obj->floor_y) {
                 obj->vectors.trans[1] = obj->floor_y;
                 obj->status_a |= 1;
-                obj->floor_time = D_80060E04[0];
+                obj->floor_time = g_level_zone_flags[0];
                 if (obj->unkA8 < 0) {
                     obj->floor_vel_y = obj->unkA8;
                     obj->unkA8 = 0;

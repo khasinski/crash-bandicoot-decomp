@@ -181,7 +181,7 @@ static __inline__ s32 ns_cd_read(PageSlot *slot, s32 count)
     return -0xFF;
 }
 
-PageSlot *NS_13B30(PageSlot *slot)
+PageSlot *Ns_PageTranslate(PageSlot *slot)
 {
     s32 state = (s16)slot->state;
     s32 count = slot->word1C;
@@ -250,7 +250,7 @@ loop:
         } else if (!ns_cd_check(1)) {
             break;
         }
-        NS_13B30(slot);
+        Ns_PageTranslate(slot);
         if (id != -1 && slot != slot->slot) {
             Ns_PageUpdate(slot + 1, id);
         }
@@ -274,7 +274,7 @@ loop:
         if (CdSync(1, 0) != 2 && id == -1) {
             break;
         }
-        next_slot = NS_13B30(slot);
+        next_slot = Ns_PageTranslate(slot);
         g_ns.wordA84 = (s32)slot;
         ns_cd_read(next_slot, slot->word1C);
         slot = next_slot;
@@ -293,7 +293,7 @@ loop:
                 break;
             }
         finish_cd:
-            NS_13B30(slot);
+            Ns_PageTranslate(slot);
             g_ns.wordA84 = 0;
         } else {
         abort_cd:

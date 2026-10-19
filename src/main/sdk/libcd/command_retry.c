@@ -10,12 +10,12 @@ typedef void (*CdCallback)(s32, u8 *);
 s32 CdControl(u8 command, u8 *params, u8 *result) {
     s32 retries = 3;
     s32 code = command & 0xff;
-    s32 *table = D_80055520;
+    s32 *table = g_cd_com_param_len_tab;
     CdCallback saved_callback = g_cd_sync_cb;
     s32 *command_flags = &table[code];
     s32 status = 0;
     do {
-        if ((code == 0x10) && !((*(u8 *)&D_800555B0) & 0x20)) {
+        if ((code == 0x10) && !((*(u8 *)&g_cd_read_sectors) & 0x20)) {
             retries--;
             CD_flush();
         } else {
@@ -39,12 +39,12 @@ done:
 s32 CdControlF(u8 command, u8 *params) {
     s32 retries = 3;
     s32 code = command & 0xff;
-    s32 *table = D_80055520;
+    s32 *table = g_cd_com_param_len_tab;
     CdCallback saved_callback = g_cd_sync_cb;
     s32 *command_flags = &table[code];
     s32 status = 0;
     do {
-        if ((code == 0x10) && !((*(u8 *)&D_800555B0) & 0x20)) {
+        if ((code == 0x10) && !((*(u8 *)&g_cd_read_sectors) & 0x20)) {
             retries--;
             CD_flush();
         } else {
@@ -68,13 +68,13 @@ done:
 s32 CdControlB(u8 command, u8 *params, u8 *result) {
     s32 retries = 3;
     s32 code = command & 0xff;
-    s32 *table = D_80055520;
+    s32 *table = g_cd_com_param_len_tab;
     CdCallback saved_callback = g_cd_sync_cb;
     s32 *command_flags = &table[code];
     s32 status;
     s32 success;
     do {
-        if (code == 0x10 && !((*(u8 *)&D_800555B0) & 0x20)) {
+        if (code == 0x10 && !((*(u8 *)&g_cd_read_sectors) & 0x20)) {
             retries--;
             CD_flush();
             status = -1;

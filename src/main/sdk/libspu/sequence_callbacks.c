@@ -2,8 +2,8 @@
 
 
 void _SsTrapIntrVSync(void) {
-    if (D_80056264 != 0) {
-        D_80056264();
+    if (g_ss_vsync_prev_cb != 0) {
+        g_ss_vsync_prev_cb();
     }
-    D_80056260();
+    g_ss_tick_cb();
 }

@@ -6,11 +6,11 @@
 s32 BIOS_Printf(const char *, ...), puts(const char *, ...);
 
 extern volatile u8 *g_cd_reg0[];
-extern volatile u8 *D_80055868[];
-extern volatile u8 *D_80055870[];
-extern volatile s8 *D_8005586C[];
+extern volatile u8 *g_cd_reg1_ptr[];
+extern volatile u8 *g_cd_reg3_ptr[];
+extern volatile s8 *g_cd_reg2_ptr[];
 extern volatile u8 g_cd_status[];
-extern volatile u8 D_8005587D;
+extern volatile u8 g_cd_in_callback;
 
 /* The SDK uses both scalar and array views of these event bytes. */
 
@@ -36,19 +36,19 @@ s32 getintr(void)
     u8 sampled;
 
     *g_cd_reg0[0] = 1;
-    sampled = *D_80055870[0] & 7;
+    sampled = *g_cd_reg3_ptr[0] & 7;
     interrupt = sampled;
     errors = 0;
     if (interrupt == 0) return 0;
-    while (interrupt != (*D_80055870[0] & 7)) {
-        interrupt = *D_80055870[0] & 7;
+    while (interrupt != (*g_cd_reg3_ptr[0] & 7)) {
+        interrupt = *g_cd_reg3_ptr[0] & 7;
     }
     write = response;
     count = 0;
 read_response:
     if (*g_cd_reg0[0] & 0x20) {
         count++;
-        *write = *D_80055868[0];
+        *write = *g_cd_reg1_ptr[0];
         write++;
         if (count < 8) goto read_response;
     }
@@ -63,58 +63,58 @@ read_response:
         } while (count < 8);
     }
     *g_cd_reg0[0] = 1;
-    *D_80055870[0] = 7;
-    *D_8005586C[0] = 7;
-    if ((interrupt & 0xFF) != 3 || D_80055764[D_800555C1[0]] != 0) {
-        if (!(D_800555B0 & 0x10) && (response[0] & 0x10)) D_800555B8++;
+    *g_cd_reg3_ptr[0] = 7;
+    *g_cd_reg2_ptr[0] = 7;
+    if ((interrupt & 0xFF) != 3 || g_cd_ack_counters_b[g_cd_com_flags_tab[0]] != 0) {
+        if (!(g_cd_read_sectors & 0x10) && (response[0] & 0x10)) g_cd_read_retry_max++;
         status = response[0] & status_mask;
         errors = status & 0x1D;
-        D_800555B0 = status;
-        D_800555B4 = response[1];
+        g_cd_read_sectors = status;
+        g_cd_read_buf_ptr = response[1];
     }
     if ((interrupt & 0xFF) == 5) {
-        puts(D_80011524);
-        if (D_800555AC > 0)
-            BIOS_Printf(D_80011530, D_800555C4[D_800555C1[0]], D_800555B0, D_800555B4);
+        puts(g_str_interrupt_dispatch_diskerror);
+        if (g_cd_read_pos > 0)
+            BIOS_Printf(g_str_interrupt_dispatch_com_s_code_02x, g_cd_com_str_ptrs[g_cd_com_flags_tab[0]], g_cd_read_sectors, g_cd_read_buf_ptr);
     }
     switch (interrupt) {
     case 3:
         if (errors) {
             g_cd_status[0] = 5;
-            cd_publish_response(D_80057198, response);
+            cd_publish_response(g_cd_sync_result_buf, response);
             return 2;
         }
-        if (D_80055664[D_800555C1[0]]) {
+        if (g_cd_ack_counters_a[g_cd_com_flags_tab[0]]) {
             g_cd_status[0] = 3;
-            cd_publish_response(D_80057198, response);
+            cd_publish_response(g_cd_sync_result_buf, response);
             return 1;
         }
         g_cd_status[0] = 2;
-        cd_publish_response(D_80057198, response);
+        cd_publish_response(g_cd_sync_result_buf, response);
         return 2;
     case 2:
         cd_sync_status = errors ? 5 : 2;
-        cd_publish_response(D_80057198, response);
+        cd_publish_response(g_cd_sync_result_buf, response);
         return 2;
     case 1:
-        D_8005587D = errors ? 5 : 1;
-        cd_publish_response(D_800571A0, response);
+        g_cd_in_callback = errors ? 5 : 1;
+        cd_publish_response(g_cd_ready_result_buf, response);
         return 4;
     case 4:
-        D_8005587E = 4;
-        cd_ready_status[0] = D_8005587E;
-        cd_publish_response(D_800571A8, response);
-        cd_publish_response(D_800571A0, response);
+        g_cd_sense_result_buf = 4;
+        cd_ready_status[0] = g_cd_sense_result_buf;
+        cd_publish_response(g_cd_intr_result_buf, response);
+        cd_publish_response(g_cd_ready_result_buf, response);
         return 4;
     case 5:
-        D_8005587D = 5;
-        g_cd_status[0] = D_8005587D;
-        cd_publish_response(D_80057198, response);
-        cd_publish_response(D_800571A0, response);
+        g_cd_in_callback = 5;
+        g_cd_status[0] = g_cd_in_callback;
+        cd_publish_response(g_cd_sync_result_buf, response);
+        cd_publish_response(g_cd_ready_result_buf, response);
         return 6;
     default:
-        puts(D_8001154C);
-        BIOS_Printf(D_80011560, (s32)interrupt);
+        puts(g_str_interrupt_dispatch_cdrom_unknown_intr);
+        BIOS_Printf(g_str_interrupt_dispatch_d_n, (s32)interrupt);
         return -1;
     }
 }

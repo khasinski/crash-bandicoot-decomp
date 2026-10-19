@@ -4,5 +4,5 @@ void PAD_dr(void);
 
 s32 PadRead(void) {
     PAD_dr();
-    return ~D_80057054;
+    return ~g_pad_mode_state;
 }

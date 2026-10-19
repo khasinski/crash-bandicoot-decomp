@@ -42,26 +42,26 @@ s32 Midi_OpenAndPlay(s32 *arg0) {
     s32 arg3;
     s32 is_new;
 
-    is_new = (D_80056658 == -1);
-    if (D_8005666C != 0) {
+    is_new = (gp_midi_vab_id_2 == -1);
+    if (gp_midi_default_rvol != 0) {
         return -1;
     }
     if (gp_card_chan == 1) {
-        if (D_80056650 != 0x6396347F) {
+        if (gp_midi_loaded_eid != 0x6396347F) {
             SsSepClose(gp_midi_vol);
-            sp10 = D_80056650;
+            sp10 = gp_midi_loaded_eid;
             Ns_Close(&sp10, 1);
         }
         if (*arg0 != 0x6396347F) {
             entry = Ns_Open(arg0, 1, 1);
-            D_80056650 = entry->id;
+            gp_midi_loaded_eid = entry->id;
             for (i = 0; i < 7; i++) {
                 if (entry->header->refs[i] != 0x6396347F) {
                     Ns_Open(&entry->header->refs[i], 0, 1);
                 }
             }
         } else {
-            D_80056650 = *arg0;
+            gp_midi_loaded_eid = *arg0;
             return 0;
         }
     }
@@ -76,31 +76,31 @@ s32 Midi_OpenAndPlay(s32 *arg0) {
         }
     }
     gp_card_chan = 3;
-    D_8005665C = entry->header->count;
-    if (D_80056658 == -1) {
+    gp_midi_open_seq_cnt = entry->header->count;
+    if (gp_midi_vab_id_2 == -1) {
         Ns_Open(&entry->header->bank_ref, 1, 1);
-        D_80056658 = SsVabFakeHead(entry->vh, -1, (D_8005CFB0[0] << 16) | 0x2000);
-        if (D_80056658 == -1) {
+        gp_midi_vab_id_2 = SsVabFakeHead(entry->vh, -1, (g_ns_audio_bank_idx[0] << 16) | 0x2000);
+        if (gp_midi_vab_id_2 == -1) {
             BIOS_Abs(-1);
         }
-        D_80056658 = SsVabFakeBody(D_80056658);
-        if (D_80056658 == -1) {
+        gp_midi_vab_id_2 = SsVabFakeBody(gp_midi_vab_id_2);
+        if (gp_midi_vab_id_2 == -1) {
             BIOS_Abs(-1);
         }
         SsStart();
     }
-    gp_midi_vol = SsSepOpen(entry->sep, D_80056658, D_8005665C);
+    gp_midi_vol = SsSepOpen(entry->sep, gp_midi_vab_id_2, gp_midi_open_seq_cnt);
     if (gp_midi_vol == -1) {
         BIOS_Abs(-1);
     }
-    for (i = 0; i < D_8005665C; i++) {
+    for (i = 0; i < gp_midi_open_seq_cnt; i++) {
         if (is_new) {
-            s32 vol = (s16)D_80056648 >> 7;
-            Midi_SeqInit(&D_80056EBC[i], vol | (vol << 16), i, arg3);
+            s32 vol = (s16)gp_midi_seq_gain >> 7;
+            Midi_SeqInit(&g_midi_channel_states[i], vol | (vol << 16), i, arg3);
         } else {
-            Midi_SeqInit(&D_80056EBC[i], 0, i, arg3);
-            SsSepSetCrescendo(gp_midi_vol, D_80056EBC[i].channel, (s16)D_80056648 >> 7, 30);
+            Midi_SeqInit(&g_midi_channel_states[i], 0, i, arg3);
+            SsSepSetCrescendo(gp_midi_vol, g_midi_channel_states[i].channel, (s16)gp_midi_seq_gain >> 7, 30);
         }
     }
-    return Midi_Control(D_80056EBC, 0, 0);
+    return Midi_Control(g_midi_channel_states, 0, 0);
 }

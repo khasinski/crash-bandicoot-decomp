@@ -14,9 +14,9 @@ s32 note2pitch(void) {
     u32 var_v1_2;
     s32 var_a0;
 
-    var_a0 = D_8005E569;
-    note = (u32)D_8005E55A + 0x3C;
-    temp_v1 = note - D_8005E568;
+    var_a0 = g_spu_vm_cur_tone_shift;
+    note = (u32)g_spu_vm_cur_note + 0x3C;
+    temp_v1 = note - g_spu_vm_cur_tone_center;
     if ((s32) var_a0 < 0) {
         var_a0 += 7;
     }
@@ -28,7 +28,7 @@ s32 note2pitch(void) {
     }
     semitone_index = remainder * 0x10;
     semitone_index += var_v1_2 & 0xFFFF;
-    var_v1 = D_80056278[semitone_index];
+    var_v1 = g_spu_vm_reverb_mask_hi[semitone_index];
     temp_v0 = quotient - 5;
     if (temp_v0 > 0) {
         var_v1 <<= temp_v0;

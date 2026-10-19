@@ -20,14 +20,14 @@ void SsSeqCalledTbyT(void) {
     s32 var_s0;
     s32 var_s2;
 
-    if (D_8005C520 == 1) {
+    if (g_ss_callback_busy == 1) {
         return;
     }
-    D_8005C520 = 1;
+    g_ss_callback_busy = 1;
     SpuVmFlush();
-    for (var_s2 = 0; var_s2 < D_80060C98; var_s2++) {
-        if ((1 << var_s2) & D_8005E548) {
-            for (var_s0 = 0; var_s0 < D_80060CA0; var_s0++) {
+    for (var_s2 = 0; var_s2 < g_ss_seq_max; var_s2++) {
+        if ((1 << var_s2) & g_ss_open_seq_mask) {
+            for (var_s0 = 0; var_s0 < g_ss_sep_max; var_s0++) {
                 if (g_ss_score_table[var_s2][var_s0].field_90 & 1) {
                     _SsSndPlay(var_s2, var_s0);
                     if (g_ss_score_table[var_s2][var_s0].field_90 & 0x10) {
@@ -56,7 +56,7 @@ void SsSeqCalledTbyT(void) {
             }
         }
     }
-    D_8005C520 = 0;
+    g_ss_callback_busy = 0;
 }
 
 void _SsSndCrescendo(s16 arg0, s16 arg1) {

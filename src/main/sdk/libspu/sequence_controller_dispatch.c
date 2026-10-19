@@ -4,16 +4,16 @@
 typedef void (*ControllerCallback)(s16,s16,u8);
 typedef void (*ResetCallback)(s16,s16);
 typedef void (*EventCallback)();
-extern ControllerCallback D_80058378;
-extern ControllerCallback D_8005837C;
-extern ControllerCallback D_80058380;
-extern ControllerCallback D_80058384;
-extern ControllerCallback D_80058388;
-extern ControllerCallback D_8005838C;
-extern ControllerCallback D_80058390;
-extern ControllerCallback D_80058394;
-extern ControllerCallback D_80058398;
-extern ResetCallback D_8005839C;
+extern ControllerCallback g_ss_cc_data_entry;
+extern ControllerCallback g_ss_cc_main_vol;
+extern ControllerCallback g_ss_cc_panpot;
+extern ControllerCallback g_ss_cc_damper;
+extern ControllerCallback g_ss_cc_nrpn_lsb;
+extern ControllerCallback g_ss_cc_nrpn_msb;
+extern ControllerCallback g_ss_cc_rpn_lsb;
+extern ControllerCallback g_ss_cc_rpn_msb;
+extern ControllerCallback g_ss_cc_reverb;
+extern ResetCallback g_ss_cc_reset_all;
 s32 _SsReadDeltaValue(s16,s16);
 void _SsGetSeqData(sequence,channel,controller)
 s16 sequence,channel;
@@ -28,22 +28,22 @@ u8 controller;
     value=*cursor;
     switch(controller) {
     case 0: state->field_4C=value;state->field_88=_SsReadDeltaValue(sequence_index,channel_index);return;
-    case 6: D_80058378(sequence_index,channel_index,value);goto done;
-    case 7: D_8005837C(sequence_index,channel_index,value);goto done;
-    case 10: D_80058380(sequence_index,channel_index,value);goto done;
+    case 6: g_ss_cc_data_entry(sequence_index,channel_index,value);goto done;
+    case 7: g_ss_cc_main_vol(sequence_index,channel_index,value);goto done;
+    case 10: g_ss_cc_panpot(sequence_index,channel_index,value);goto done;
     /* Controller 11 uses slot 9: 0x80058360 + 9 * 4 = 0x80058384. */
     case 11: ((ControllerCallback)g_Snd_FnTable[9])(sequence_index,channel_index,value);goto done;
-    case 64: D_80058384(sequence_index,channel_index,value);goto done;
-    case 91: D_80058398(sequence_index,channel_index,value);goto done;
-    case 98: D_80058388(sequence_index,channel_index,value);goto done;
-    case 99: D_8005838C(sequence_index,channel_index,value);goto done;
-    case 100: D_80058390(sequence_index,channel_index,value);goto done;
-    case 101: D_80058394(sequence_index,channel_index,value);goto done;
+    case 64: g_ss_cc_damper(sequence_index,channel_index,value);goto done;
+    case 91: g_ss_cc_reverb(sequence_index,channel_index,value);goto done;
+    case 98: g_ss_cc_nrpn_lsb(sequence_index,channel_index,value);goto done;
+    case 99: g_ss_cc_nrpn_msb(sequence_index,channel_index,value);goto done;
+    case 100: g_ss_cc_rpn_lsb(sequence_index,channel_index,value);goto done;
+    case 101: g_ss_cc_rpn_msb(sequence_index,channel_index,value);goto done;
     case 121: goto reset;
     default: goto read_delta;
     }
 reset:
-    D_8005839C(sequence_index,channel_index);
+    g_ss_cc_reset_all(sequence_index,channel_index);
     goto done;
 read_delta:
     state->field_88=_SsReadDeltaValue(sequence,channel);

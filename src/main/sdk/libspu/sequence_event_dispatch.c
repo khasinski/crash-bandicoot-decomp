@@ -25,18 +25,18 @@ loop:
     if (i < 3000) {
         goto loop;
     }
-    flag_p = &D_80056268;
+    flag_p = &g_ss_started_flag;
     *flag_p = 0;
-    D_80056269 = 0;
-    D_80056264 = 0;
-    D_8005626A = 6;
+    g_ss_vblank_flag = 0;
+    g_ss_vsync_prev_cb = 0;
+    g_ss_max_programs = 6;
     rcnt = 0xF2000002;
-    switch (D_80056258) {
+    switch (g_ss_ticks_per_sec) {
     case 0:
-        D_8005626A = 0x7F;
+        g_ss_max_programs = 0x7F;
         return;
     case 5:
-        D_8005626A = 0;
+        g_ss_max_programs = 0;
         if (arg0 == 0) {
             *flag_p = 1;
         } else {
@@ -52,7 +52,7 @@ loop:
         break;
     default:
         {
-            struct { s32 val; u8 pad[9]; u8 flag_d; } *p = (void *)&D_8005625C;
+            struct { s32 val; u8 pad[9]; u8 flag_d; } *p = (void *)&g_ss_tick_mode_cur;
             s32 tmp;
             if (*(s32 *)p != 0) {
                 return;
@@ -76,20 +76,20 @@ loop:
         }
         break;
     }
-    if (D_80056268 != 0) {
+    if (g_ss_started_flag != 0) {
         EnterCriticalSection();
-        VSyncCallback(D_80056260);
+        VSyncCallback(g_ss_tick_cb);
     } else {
         EnterCriticalSection();
         ResetRCnt(rcnt);
         SetRCnt(rcnt, target, 0x1000);
-        if (D_8005626A == 0) {
-            D_80056264 = InterruptCallback(0, 0);
-            InterruptCallback(D_8005626A, _SsTrapIntrVSync);
-        } else if (D_80056269 == 0) {
-            InterruptCallback(D_8005626A, D_80056260);
+        if (g_ss_max_programs == 0) {
+            g_ss_vsync_prev_cb = InterruptCallback(0, 0);
+            InterruptCallback(g_ss_max_programs, _SsTrapIntrVSync);
+        } else if (g_ss_vblank_flag == 0) {
+            InterruptCallback(g_ss_max_programs, g_ss_tick_cb);
         } else {
-            InterruptCallback(D_8005626A, _SsSeqCalledTbyT_1per2);
+            InterruptCallback(g_ss_max_programs, _SsSeqCalledTbyT_1per2);
         }
     }
     ExitCriticalSection();

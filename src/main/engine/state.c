@@ -57,39 +57,39 @@ typedef EngineMode25State State;
 /* Real zero-initialized storage at 0x80056678..0x800566C4.
  * Unidentified words retain address names; the two typed owners are shared
  * with object_defaults and update_request. */
-asm(".globl gp_title_not_seen, D_8005667C, D_80056680, D_80056684, D_80056688, gp_save_id, gp_file_is_new, D_80056694, D_80056698, D_8005669C, D_800566A0, D_800566A4, gp_cur_pbak_header, D_800566AC, D_800566B0, gp_crash_obj, gp_level_entry, D_800566BC, gp_card_chan");
+asm(".globl gp_title_not_seen, gp_title_unused_0, gp_title_unused_1, gp_title_unused_2, gp_title_unused_3, gp_save_id, gp_file_is_new, gp_bios_gte_patch_target, gp_gte_patch_handler, gp_title_unused_4, gp_title_unused_5, gp_title_unused_6, gp_cur_pbak_header, gp_solid_scratch_grid, gp_next_level_ldat_eid, gp_crash_obj, gp_level_entry, gp_slst_poly_list_b, gp_card_chan");
 s32 gp_title_not_seen;
-u32 D_8005667C;
-u32 D_80056680;
-u32 D_80056684;
-u32 D_80056688;
+u32 gp_title_unused_0;
+u32 gp_title_unused_1;
+u32 gp_title_unused_2;
+u32 gp_title_unused_3;
 u32 gp_save_id;
 u32 gp_file_is_new;
-u32 D_80056694;
-u32 D_80056698;
-u32 D_8005669C;
-u32 D_800566A0;
-u32 D_800566A4;
+u32 gp_bios_gte_patch_target;
+u32 gp_gte_patch_handler;
+u32 gp_title_unused_4;
+u32 gp_title_unused_5;
+u32 gp_title_unused_6;
 u32 gp_cur_pbak_header;
-u32 D_800566AC;
-u32 D_800566B0;
+u32 gp_solid_scratch_grid;
+u32 gp_next_level_ldat_eid;
 GoolDefaultsObject *gp_crash_obj;
-u32 gp_level_entry, D_800566BC;
+u32 gp_level_entry, gp_slst_poly_list_b;
 s32 gp_card_chan;
 
 /* Real engine globals in retail address order, 0x800566C4..0x800566FC.
  * The state and grid pointers retain their recovered pointer types. */
-asm(".globl gp_edesc_s_end_io, gp_edesc_s_error, gp_edesc_s_timeout, gp_edesc_s_newdev, D_800566D4, D_800566D8, D_800566DC, gp_title, D_800566E4, D_800566E8, gp_edesc_h_end_io, gp_edesc_h_error, gp_grid_rows, gp_edesc_h_timeout, gp_edesc_h_newdev");
+asm(".globl gp_edesc_s_end_io, gp_edesc_s_error, gp_edesc_s_timeout, gp_edesc_s_newdev, gp_dark_target_x, gp_dark_target_y, gp_dark_target_z, gp_title, gp_level_unused_0, gp_level_unused_1, gp_edesc_h_end_io, gp_edesc_h_error, gp_grid_rows, gp_edesc_h_timeout, gp_edesc_h_newdev");
 s32 gp_edesc_s_end_io;
 s32 gp_edesc_s_error;
 s32 gp_edesc_s_timeout;
 s32 gp_edesc_s_newdev;
-s32 D_800566D4;
-s32 D_800566D8;
-s32 D_800566DC;
+s32 gp_dark_target_x;
+s32 gp_dark_target_y;
+s32 gp_dark_target_z;
 State *gp_title;
-s32 D_800566E4;
-s32 D_800566E8;
+s32 gp_level_unused_0;
+s32 gp_level_unused_1;
 s32 gp_edesc_h_end_io;
 s32 gp_edesc_h_error;
 s32 *gp_grid_rows;
@@ -111,7 +111,7 @@ s32 Title_Init(void)
     return 0;
 }
 
-extern volatile s32 D_800618D4;
+extern volatile s32 g_island_cam_state;
 s32 Title_LoadState(void);
 
 
@@ -129,11 +129,11 @@ s32 Title_LoadNextState(void)
     if (gp_pbak_mode == 25) {
         g_fade_counter[0] = (g_fade_counter[0] & 0xFFFE3FF0) | 0x20000;
         if (request == 0) {
-            value = D_800618D0;
+            value = g_game_substate;
             switch (value) {
             case 0: case 0x100: case 0x300: case 0x400:
-                (gp_title)->word35D0 = (gp_title)->word35D4 = D_800618D4;
-                selection = D_8006194C[0];
+                (gp_title)->word35D0 = (gp_title)->word35D4 = g_island_cam_state;
+                selection = g_title_menu_selection[0];
                 (gp_title)->word3598 = 1;
                 (gp_title)->word35A4 = selection;
                 (gp_title)->word35A0 = selection;
@@ -146,7 +146,7 @@ s32 Title_LoadNextState(void)
                 reset_state = gp_title;
                 value = 12;
 set_value:
-                D_800618D4 = value;
+                g_island_cam_state = value;
                 reset_state->word35D4 = value;
                 reset_state->word35D0 = value;
                 value = 1;
@@ -154,7 +154,7 @@ set_value:
                 break;
             }
         } else {
-            D_800618D4 = 10;
+            g_island_cam_state = 10;
             requested_state = gp_title;
             requested_state->word35D4 = 10;
             requested_state->word35D0 = 10;
@@ -272,13 +272,13 @@ s32 Title_LoadState(void) {
         mode = 1;
         break;
     case 15:
-        if (D_800618DC[0] == 99 || D_800618DC[0] < 10) {
-            if (D_800618DC[0] == 9) {
+        if (g_saved_level_id[0] == 99 || g_saved_level_id[0] < 10) {
+            if (g_saved_level_id[0] == 9) {
                 ref = Ns_StringToEID(gp_island_1b_zone_name);
             } else {
                 ref = Ns_StringToEID(gp_island_1a_zone_name);
             }
-        } else if (D_800618DC[0] < 18 || D_800618DC[0] >= 50) {
+        } else if (g_saved_level_id[0] < 18 || g_saved_level_id[0] >= 50) {
             ref = Ns_StringToEID(gp_island_2_zone_name);
         } else {
             ref = Ns_StringToEID(gp_island_3_zone_name);
@@ -293,14 +293,14 @@ s32 Title_LoadState(void) {
     if (mode == 0) {
         Title_LoadScreen(&ref, 0);
     }
-    D_8006193C[0] = 0;
+    g_gfx_debug_flag[0] = 0;
     g_item_pool1[0] = 0;
     switch (gp_title->word35D0) {
     case 1:
     case 2:
     case 3:
     case 4:
-        D_800618B8[0] = ~gp_title->word35D0;
+        g_title_fade_mask[0] = ~gp_title->word35D0;
         break;
     case 5:
     case 6:
@@ -312,7 +312,7 @@ s32 Title_LoadState(void) {
         Title_LoadScreen(&ref, mode);
         break;
     default:
-        D_800618B8[0] = 0;
+        g_title_fade_mask[0] = 0;
         gp_title->word359C = 1;
         break;
     }
@@ -333,7 +333,7 @@ s32 Title_LoadState(void) {
         gp_title->word08 = gp_title->word10 << 4;
         for (i = 0; i < header[3]; i++) {
             typedef struct { u8 pad00[0x18]; s16 max_level; } MapItemHeader;
-            if ((u32)((MapItemHeader *)list->items[i + 2])->max_level <= D_80061948[0]) {
+            if ((u32)((MapItemHeader *)list->items[i + 2])->max_level <= g_next_level_id[0]) {
                 Gool_ObjectSpawn(list, i);
             }
         }
@@ -365,7 +365,7 @@ void *LIBC_Malloc(u32);
 void DrawSync(s32);
 void Gpu_FillDisplay(void);
 extern RenderBuffer *g_db_prev;
-extern s32 D_8005C54C;
+extern s32 g_ns_load_done_flag;
 
 typedef struct EngineGpuRect {
     s16 x, y, w, h;
@@ -390,8 +390,8 @@ s32 Title_Loading(s32 level, u8 *image, NsDirectory *dir)
     s32 col;
 
     if (dir->word40C && dir->word410 && dir->word414
-        && D_800618D0 != 0x600 && D_800618D0 != 0x200 && D_800618D0 != 0x500
-        && (D_800618D0 != 0 || level != 25)) {
+        && g_game_substate != 0x600 && g_game_substate != 0x200 && g_game_substate != 0x500
+        && (g_game_substate != 0 || level != 25)) {
         buf = LIBC_Malloc(0x4000);
         DrawSync(0);
         clut = (u16 *)image;
@@ -419,7 +419,7 @@ s32 Title_Loading(s32 level, u8 *image, NsDirectory *dir)
             }
             Gpu_SwapBuffers();
         }
-        D_8005C54C = 2;
+        g_ns_load_done_flag = 2;
         LIBC_Free(buf);
     }
     return -255;
@@ -445,7 +445,7 @@ void Title_LoadSingleTile(EngineTileCell *cell)
     }
 }
 
-extern s32 D_800618BC[];
+extern s32 g_title_tile_load_cnt[];
 extern s32 g_cam_rot_xz;
 void Gool_ExecStateCode(s32, s32, s32, s32, s32 *);
 
@@ -454,14 +454,14 @@ __inline__ void Title_RequestState(s32 mode)
 {
     s32 zero;
 
-    if (gp_next_lid && D_800618BC[0]) {
+    if (gp_next_lid && g_title_tile_load_cnt[0]) {
         zero = 0;
-        Gool_ExecStateCode(0, D_800618BC[0], 0xC00, 1, &zero);
+        Gool_ExecStateCode(0, g_title_tile_load_cnt[0], 0xC00, 1, &zero);
         gp_use_cd = -1;
         gp_next_lid = 0;
     }
     g_cam_rot_xz = -256;
-    D_800618D4 = mode;
+    g_island_cam_state = mode;
     gp_title->word35D4 = mode;
     gp_title->word3598 = 5;
 }
@@ -567,8 +567,8 @@ s32 Title_Update(GpuPacketTag *ot)
         Title_LoadState();
         return 0;
     }
-    if (D_800618D4 != gp_title->word35D4) {
-        Title_RequestState(D_800618D4);
+    if (g_island_cam_state != gp_title->word35D4) {
+        Title_RequestState(g_island_cam_state);
     }
     return 0;
 }

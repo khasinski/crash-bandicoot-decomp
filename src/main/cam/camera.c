@@ -63,27 +63,27 @@ typedef struct CamLevelView {
 /* Camera offsets (z, zoom, x pan, y pan) and their seek directions; only this
  * unit addresses them through $gp. */
 s32 gp_cam_speed = -0x12C00;
-s32 D_800564A8 = 0x6A400;
-s32 D_800564AC = 0;
-s32 D_800564B0 = 0;
-s32 D_800564B4 = 0x3E800;
-s32 D_800564B8 = 0;
+s32 gp_cam_follow_dist_max = 0x6A400;
+s32 gp_cam_follow_vel_x = 0;
+s32 gp_cam_follow_vel_y = 0;
+s32 gp_cam_follow_dist_min = 0x3E800;
+s32 gp_cam_follow_vel_z = 0;
 
 /* .sbss owned by this unit: camera speed along the path and death-cam state. */
-asm(".globl D_800565C0");
-s32 D_800565C0;
-asm(".globl D_800565C4");
-s32 D_800565C4;
-asm(".globl D_800565C8");
-s32 D_800565C8;
-asm(".globl D_800565CC");
-s32 D_800565CC;
-asm(".globl D_800565D0");
-s32 D_800565D0;
-asm(".globl D_800565D4");
-s32 D_800565D4;
-asm(".globl D_800565D8");
-s32 D_800565D8;
+asm(".globl gp_cam_follow_state");
+s32 gp_cam_follow_state;
+asm(".globl gp_cam_death_rot_x");
+s32 gp_cam_death_rot_x;
+asm(".globl gp_cam_death_rot_y");
+s32 gp_cam_death_rot_y;
+asm(".globl gp_cam_death_rot_z");
+s32 gp_cam_death_rot_z;
+asm(".globl gp_cam_death_pan_x");
+s32 gp_cam_death_pan_x;
+asm(".globl gp_cam_death_pan_y");
+s32 gp_cam_death_pan_y;
+asm(".globl gp_cam_death_pan_z");
+s32 gp_cam_death_pan_z;
 
 /* View of the global state object at g_pause_state (camera fields only). */
 typedef struct CamGlobals {
@@ -112,7 +112,7 @@ extern ZonePath *g_pad2_state;
 
 extern void *gp_crash_obj;    /* the player object */
 extern s32 g_gool_pads;      /* pad buttons pressed this frame */
-extern s32 D_80057864;
+extern s32 g_cam_trans_x;
 extern CamLevelView *g_ns_page_pool;
 
 ZoneEntry *Ns_Lookup(u32 *);
@@ -144,7 +144,7 @@ void Cam_AdjustProgress(s32 delta, CamCandidate *cam)
 
     if (cam->flags & 2) {
         if (cam->next_path != NULL
-            && ((progress = delta + D_80057920) >> 8) >= g_pad2_state->length) {
+            && ((progress = delta + g_cam_path_progress) >> 8) >= g_pad2_state->length) {
             progress = (progress - (g_pad2_state->length << 8)) - 1;
             if (!(cam->relation & 2)) {
                 progress = -progress;
@@ -152,10 +152,10 @@ void Cam_AdjustProgress(s32 delta, CamCandidate *cam)
             Level_Update(cam->next_path->zone, cam->next_path,
                           MIN(cam->progress, progress + cam->entrance), 0);
         } else {
-            Level_Update(level_position.zone, g_pad2_state, delta + D_80057920, 0);
+            Level_Update(level_position.zone, g_pad2_state, delta + g_cam_path_progress, 0);
         }
     } else {
-        if (cam->next_path != NULL && (progress = D_80057920) - delta < 0) {
+        if (cam->next_path != NULL && (progress = g_cam_path_progress) - delta < 0) {
             progress = delta - progress;
             if (!(cam->relation & 2)) {
                 progress = -progress;
@@ -164,7 +164,7 @@ void Cam_AdjustProgress(s32 delta, CamCandidate *cam)
             Level_Update(cam->next_path->zone, cam->next_path,
                           MAX(cam->progress, progress), 0);
         } else {
-            Level_Update(level_position.zone, g_pad2_state, D_80057920 - delta, 0);
+            Level_Update(level_position.zone, g_pad2_state, g_cam_path_progress - delta, 0);
         }
     }
 }
@@ -383,23 +383,23 @@ void Cam_Follow(CamObject *obj, s32 flags)
     snap_pan = 1;
 
     header_flags = ((ZoneHeader *)level_position.zone->data)->flags;
-    if ((header_flags & 0x80) || D_800564A8 < 0x32000) {
+    if ((header_flags & 0x80) || gp_cam_follow_dist_max < 0x32000) {
         if (header_flags & 0x8000) {
-            D_800564AC = 1;
+            gp_cam_follow_vel_x = 1;
         } else {
-            D_800564AC = 0;
+            gp_cam_follow_vel_x = 0;
         }
-    } else if (D_8005E720[0] & 0x1000) {
-        D_800564AC = 0;
-    } else if (D_8005E720[0] & 0x4000) {
-        D_800564AC = 1;
+    } else if (g_gool_pad_buttons[0] & 0x1000) {
+        gp_cam_follow_vel_x = 0;
+    } else if (g_gool_pad_buttons[0] & 0x4000) {
+        gp_cam_follow_vel_x = 1;
     }
-    if (D_8005E720[0] & 0x8000) {
-        D_800564B0 = 0;
-    } else if (D_8005E720[0] & 0x2000) {
-        D_800564B0 = 1;
+    if (g_gool_pad_buttons[0] & 0x8000) {
+        gp_cam_follow_vel_y = 0;
+    } else if (g_gool_pad_buttons[0] & 0x2000) {
+        gp_cam_follow_vel_y = 1;
     }
-    if (D_800564AC) {
+    if (gp_cam_follow_vel_x) {
         if (g_ns_page_pool->level_id == 3) {
             gp_cam_speed += 0x3200;
             if (gp_cam_speed > 0x4B000) {
@@ -419,20 +419,20 @@ void Cam_Follow(CamObject *obj, s32 flags)
     }
     if (((ZoneHeader *)level_position.zone->data)->flags & 0x4000) {
         if (level_position.path->direction_x) {
-            if (D_800564B0) {
-                D_800564B8 = (D_800564B8 + 0x6400
+            if (gp_cam_follow_vel_y) {
+                gp_cam_follow_vel_z = (gp_cam_follow_vel_z + 0x6400
                               > (level_position.path->direction_x > 0 ? 0x4B000 : 0))
                     ? (level_position.path->direction_x > 0 ? 0x4B000 : 0)
-                    : D_800564B8 + 0x6400;
+                    : gp_cam_follow_vel_z + 0x6400;
             } else {
-                D_800564B8 = (D_800564B8 - 0x6400
+                gp_cam_follow_vel_z = (gp_cam_follow_vel_z - 0x6400
                               < (level_position.path->direction_x < 0 ? -0x4B000 : 0))
                     ? (level_position.path->direction_x < 0 ? -0x4B000 : 0)
-                    : D_800564B8 - 0x6400;
+                    : gp_cam_follow_vel_z - 0x6400;
             }
         }
     } else {
-        D_800564B8 = 0;
+        gp_cam_follow_vel_z = 0;
     }
 
     /* A linked path running up/down sets the pan, one running in depth the
@@ -459,24 +459,24 @@ void Cam_Follow(CamObject *obj, s32 flags)
     if (new_zoom && (level_position.progress >> 8) >= 11
         && (level_position.progress >> 8) < level_position.path->length - 10) {
         if (snap_zoom) {
-            D_800564A8 = new_zoom;
+            gp_cam_follow_dist_max = new_zoom;
         } else {
-            D_800564A8 = Gool_Seek(D_800564A8, new_zoom, 0x1900);
+            gp_cam_follow_dist_max = Gool_Seek(gp_cam_follow_dist_max, new_zoom, 0x1900);
         }
     }
-    total_zoom = D_800564A8 + gp_cam_speed + obj->cam_zoom;
+    total_zoom = gp_cam_follow_dist_max + gp_cam_speed + obj->cam_zoom;
     if (new_pan) {
         if (snap_pan) {
-            D_800564B4 = new_pan;
+            gp_cam_follow_dist_min = new_pan;
         } else {
-            D_800564B4 = Gool_Seek(D_800564B4, new_pan, 0x6400);
+            gp_cam_follow_dist_min = Gool_Seek(gp_cam_follow_dist_min, new_pan, 0x6400);
         }
     }
 
     /* Candidate on the current path. */
     direction = level_position.path->direction_z;
-    cams[count].pan_x = D_800564B8;
-    cams[count].pan_y = D_800564B4;
+    cams[count].pan_x = gp_cam_follow_vel_z;
+    cams[count].pan_y = gp_cam_follow_dist_min;
     cams[count].zoom = total_zoom;
     if (direction) {
         trans.x = obj->trans.x;
@@ -484,8 +484,8 @@ void Cam_Follow(CamObject *obj, s32 flags)
         trans.z = obj->trans.z;
         found = Cam_GetProgress2(&trans, level_position.path, &cams[count], 0, 0);
     } else {
-        trans.x = obj->trans.x + D_800564B8;
-        trans.y = obj->trans.y + D_800564B4;
+        trans.x = obj->trans.x + gp_cam_follow_vel_z;
+        trans.y = obj->trans.y + gp_cam_follow_dist_min;
         trans.z = total_zoom + obj->trans.z;
         found = Cam_GetProgress(&trans, level_position.path, &cams[count], 0, 0);
     }
@@ -501,7 +501,7 @@ void Cam_Follow(CamObject *obj, s32 flags)
 
     /* Candidates on the linked paths, measured through the shared end. */
     for (i = 0; i < level_position.path->neighbor_count; i++) {
-        if ((level_position.path->neighbors[i].goal & 4) && (*(u32 *)D_80060E04) - D_80061990 > 15) {
+        if ((level_position.path->neighbors[i].goal & 4) && (*(u32 *)g_level_zone_flags) - g_cam_goal_stop_flag > 15) {
             continue;
         }
         if (!(level_position.path->neighbors[i].relation & flags)) {
@@ -515,8 +515,8 @@ void Cam_Follow(CamObject *obj, s32 flags)
         } else {
             not_same = 1;
         }
-        cams[count].pan_x = D_800564B8;
-        cams[count].pan_y = D_800564B4;
+        cams[count].pan_x = gp_cam_follow_vel_z;
+        cams[count].pan_y = gp_cam_follow_dist_min;
         cams[count].zoom = total_zoom;
         direction = path->direction_z;
         if (direction) {
@@ -526,8 +526,8 @@ void Cam_Follow(CamObject *obj, s32 flags)
             found = Cam_GetProgress2(&trans, path, &cams[count],
                                   level_position.path->neighbors[i].goal, not_same);
         } else {
-            trans.x = obj->trans.x + D_800564B8;
-            trans.y = y + D_800564B4;
+            trans.x = obj->trans.x + gp_cam_follow_vel_z;
+            trans.y = y + gp_cam_follow_dist_min;
             trans.z = total_zoom + obj->trans.z;
             found = Cam_GetProgress(&trans, path, &cams[count],
                                   level_position.path->neighbors[i].goal, not_same);
@@ -578,16 +578,16 @@ void Cam_Follow(CamObject *obj, s32 flags)
     if (nearest->delta * level_position.path->node_distance <= 30000) {
         /* Close enough: jump there. */
         Level_Update(nearest->path->zone, nearest->path, nearest->progress, 0);
-        D_800565C0 = nearest->delta;
+        gp_cam_follow_state = nearest->delta;
     } else {
         if (nearest->delta <= 0x200) {
-            D_800565C0 = nearest->delta / 2;
+            gp_cam_follow_state = nearest->delta / 2;
         } else if (nearest->delta >= 0x500) {
-            D_800565C0 = MIN(nearest->delta / 2 + 0x100, D_800565C0 + 0x100);
+            gp_cam_follow_state = MIN(nearest->delta / 2 + 0x100, gp_cam_follow_state + 0x100);
         } else {
-            D_800565C0 = 0x200;
+            gp_cam_follow_state = 0x200;
         }
-        Cam_AdjustProgress(D_800565C0, nearest);
+        Cam_AdjustProgress(gp_cam_follow_state, nearest);
     }
 }
 
@@ -635,7 +635,7 @@ s32 Cam_Update(void)
             if (!(((ZoneHeader *)level_position.zone->data)->flags & 0x1000)) {
                 cam_globals.game_state = 0;
             }
-            if ((D_80057920 >> 8) + 1 < g_pad2_state->length && !skip) {
+            if ((g_cam_path_progress >> 8) + 1 < g_pad2_state->length && !skip) {
                 goto advance;
             }
             if (g_pad2_state->neighbor_count == 0) {
@@ -652,7 +652,7 @@ s32 Cam_Update(void)
             }
             Level_Update((ResourceEntry *)zone, target, target_progress, 0);
             if (!(((ZoneHeader *)g_pads->data)->flags & 0x1000)) {
-                Level_SaveState(gp_crash_obj, &D_80057974, 1);
+                Level_SaveState(gp_crash_obj, &g_checkpoint_save_state, 1);
             }
             if (!skip) {
                 return 1;
@@ -660,7 +660,7 @@ s32 Cam_Update(void)
         } while (g_pad2_state->cam_mode == 1 || g_pad2_state->cam_mode == 3);
         return 1;
     advance:
-        Level_Update(g_pads, g_pad2_state, D_80057920 + 0x100, 0);
+        Level_Update(g_pads, g_pad2_state, g_cam_path_progress + 0x100, 0);
         return 1;
     case 8:
         side = cam_globals.island_state & 3;
@@ -672,7 +672,7 @@ s32 Cam_Update(void)
             }
         }
         if (side & 1) {
-            if ((D_80057920 >> 8) + 1 >= g_pad2_state->length) {
+            if ((g_cam_path_progress >> 8) + 1 >= g_pad2_state->length) {
                 if (index != -1) {
                     zone = Ns_Lookup(&((ZoneHeader *)g_pads->data)
                                               ->neighbors[g_pad2_state->neighbors[index].zone]);
@@ -686,10 +686,10 @@ s32 Cam_Update(void)
                     Level_Update((ResourceEntry *)zone, target, target_progress, 0);
                 }
             } else {
-                Level_Update(g_pads, g_pad2_state, D_80057920 + 0x100, 0);
+                Level_Update(g_pads, g_pad2_state, g_cam_path_progress + 0x100, 0);
             }
         } else {
-            if ((D_80057920 >> 8) - 1 < 0) {
+            if ((g_cam_path_progress >> 8) - 1 < 0) {
                 if (index != -1) {
                     zone = Ns_Lookup(&((ZoneHeader *)g_pads->data)
                                               ->neighbors[g_pad2_state->neighbors[index].zone]);
@@ -703,7 +703,7 @@ s32 Cam_Update(void)
                     Level_Update((ResourceEntry *)zone, target, target_progress, 0);
                 }
             } else {
-                Level_Update(g_pads, g_pad2_state, D_80057920 - 0x100, 0);
+                Level_Update(g_pads, g_pad2_state, g_cam_path_progress - 0x100, 0);
             }
         }
         if (g_pad2_state->cam_mode != 8) {
@@ -725,7 +725,7 @@ s32 Cam_Update(void)
             angle = -(cam_globals.island_rot & 0xFFF);
             break;
         default:
-            angle = Gool_AngDiff(D_80057874, cam_globals.island_rot);
+            angle = Gool_AngDiff(g_cam_rot_y, cam_globals.island_rot);
             if (ABS(angle) >= 0x17) {
                 angle = SIGN(angle);
             } else {
@@ -734,7 +734,7 @@ s32 Cam_Update(void)
             break;
         }
         next_path = g_pad2_state;
-        next_progress = D_80057920;
+        next_progress = g_cam_path_progress;
         do {
             ZoneHeader *header;
             s32 goal;
@@ -800,11 +800,11 @@ s32 Cam_Update(void)
                 progress = next_progress;
                 break;
             }
-        } while (next_path != g_pad2_state || (next_progress >> 8) != (D_80057920 >> 8));
+        } while (next_path != g_pad2_state || (next_progress >> 8) != (g_cam_path_progress >> 8));
         if (cam_globals.island_state == -1) {
             cam_globals.island_state = state;
         }
-        if (path != NULL && (path != g_pad2_state || progress != D_80057920)) {
+        if (path != NULL && (path != g_pad2_state || progress != g_cam_path_progress)) {
             Level_Update(path->zone, path, progress, 0);
         }
         return 1;
@@ -841,46 +841,46 @@ s32 Cam_Death(s32 *arg0)
     v3.z = (obj->scale.z * header->scale_z) >> 12;
     p = &v1;
     Gool_Transform(&v2, &obj->trans, &obj->rot, &v3, p);
-    dx = (D_80057864 - p->x) >> 8;
-    dz = (D_8005786C - p->z) >> 8;
-    dy = (D_80057868 - p->y) >> 8;
+    dx = (g_cam_trans_x - p->x) >> 8;
+    dz = (g_cam_trans_z - p->z) >> 8;
+    dy = (g_cam_trans_y - p->y) >> 8;
     dist_xz = SquareRoot0(dx * dx + dz * dz);
     angle = ratan2(-dx, -dz) + 0x800;
     if (*arg0 < 9) {
         if (*arg0 == 0) {
-            D_800565C8 = Gool_AngDiff(D_80057874, angle) / 9;
+            gp_cam_death_rot_y = Gool_AngDiff(g_cam_rot_y, angle) / 9;
         }
-        D_800565D8 = dist_xz << 8;
-        D_800565D0 = 0;
-        D_800565D4 = angle;
-        D_800565C4 = 0x16;
-        D_80057874 += D_800565C8;
+        gp_cam_death_pan_z = dist_xz << 8;
+        gp_cam_death_pan_x = 0;
+        gp_cam_death_pan_y = angle;
+        gp_cam_death_rot_x = 0x16;
+        g_cam_rot_y += gp_cam_death_rot_y;
         (*arg0)++;
     }
-    if (Gool_AngDiff(D_80057870, -ratan2(dy, dist_xz)) >= 0x72) {
-        D_800565CC = cam_globals.death_pan_speed;
+    if (Gool_AngDiff(g_cam_rot_x, -ratan2(dy, dist_xz)) >= 0x72) {
+        gp_cam_death_rot_z = cam_globals.death_pan_speed;
     } else {
-        D_800565CC = cam_globals.death_pan_speed / 2;
+        gp_cam_death_rot_z = cam_globals.death_pan_speed / 2;
     }
-    D_80057870 = Gool_ObjectRotate(D_80057870, -ratan2(dy, dist_xz), D_800565CC, 0);
-    cam_pos = (CamVec *)&D_80057864;
+    g_cam_rot_x = Gool_ObjectRotate(g_cam_rot_x, -ratan2(dy, dist_xz), gp_cam_death_rot_z, 0);
+    cam_pos = (CamVec *)&g_cam_trans_x;
     if (cam_globals.display_flags & 0x40000) {
-        D_800565D0 += D_800565C4;
-        D_80057874 += D_800565C4;
+        gp_cam_death_pan_x += gp_cam_death_rot_x;
+        g_cam_rot_y += gp_cam_death_rot_x;
     }
-    D_80057868 = Gool_Seek(D_80057868, p->y + 0x1D4C0, 0x19000);
-    D_800565D8 = Gool_Seek(dist_xz << 8, 0x2AB98, cam_globals.death_zoom_speed);
+    g_cam_trans_y = Gool_Seek(g_cam_trans_y, p->y + 0x1D4C0, 0x19000);
+    gp_cam_death_pan_z = Gool_Seek(dist_xz << 8, 0x2AB98, cam_globals.death_zoom_speed);
     x = p->x;
-    y = D_80057868;
+    y = g_cam_trans_y;
     z = p->z;
     v4.x = 0;
     v4.y = 0;
-    v4.z = D_800565D8;
+    v4.z = gp_cam_death_pan_z;
     v5.x = x;
     v5.y = y;
     v5.z = z;
     v6.x = 0;
-    v6.y = D_800565D4 + D_800565D0;
+    v6.y = gp_cam_death_pan_y + gp_cam_death_pan_x;
     v6.z = 0;
     Gool_Transform(&v4, &v5, &v6, NULL, cam_pos);
     return -0xFF;

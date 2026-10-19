@@ -18,13 +18,13 @@ s32 SpuMalloc(s32 size) {
     u32 temp_size;
     u32 block_size;
 
-    if (D_80055954 == 0) {
+    if (g_spu_reverb_mode_type == 0) {
         rev_size = 0;
     } else {
-        rev_size = (0x10000 - D_80055958) << g_spu_trans_mode;
+        rev_size = (0x10000 - g_spu_reverb_param_room) << g_spu_trans_mode;
     }
-    if (size & ~D_80055910) {
-        temp = size + D_80055910;
+    if (size & ~g_spu_key_stat_mask) {
+        temp = size + g_spu_key_stat_mask;
     } else {
         temp = size;
     }
@@ -34,7 +34,7 @@ s32 SpuMalloc(s32 size) {
         found = 0;
     } else {
         _spu_gcSPU();
-        for (; i < D_8005593C; i++) {
+        for (; i < g_spu_tsa_shadow; i++) {
             if ((g_spu_memList[i].address & 0x40000000) ||
                 ((g_spu_memList[i].address & 0x80000000) && (g_spu_memList[i].size >= (u32)size))) {
                 found = i;
@@ -46,7 +46,7 @@ s32 SpuMalloc(s32 size) {
         return -1;
     }
     if (g_spu_memList[found].address & 0x40000000) {
-        if ((found < D_8005593C) && ((g_spu_memList[found].size - rev_size) >= (u32)size)) {
+        if ((found < g_spu_tsa_shadow) && ((g_spu_memList[found].size - rev_size) >= (u32)size)) {
             g_spu_alloc_num = found + 1;
             g_spu_memList[g_spu_alloc_num].address = ((g_spu_memList[found].address & 0x0FFFFFFF) + size) | 0x40000000;
             g_spu_memList[g_spu_alloc_num].size = g_spu_memList[found].size - size;
@@ -59,7 +59,7 @@ s32 SpuMalloc(s32 size) {
     }
     block_size = g_spu_memList[found].size;
     if ((u32)size < block_size) {
-        if (g_spu_alloc_num < D_8005593C) {
+        if (g_spu_alloc_num < g_spu_tsa_shadow) {
             u32 new_addr = g_spu_memList[found].address + size;
             temp_addr = g_spu_memList[g_spu_alloc_num].address;
             temp_size = g_spu_memList[g_spu_alloc_num].size;

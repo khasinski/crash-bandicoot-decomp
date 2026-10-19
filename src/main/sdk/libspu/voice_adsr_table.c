@@ -16,7 +16,7 @@ typedef struct {
     u8 pad2A[10];
 } VoiceStruct;
 
-extern VoiceStruct D_800572AC[];
+extern VoiceStruct g_spu_vm_voice_table[];
 extern u16 *g_snd_tempo;
 
 
@@ -29,37 +29,37 @@ void SpuVmFlush(void) {
     u32 Mask2;
     u32 mask = 0;
 
-    D_8005E744 = (D_8005E744 + 1) & 0xF;
-    D_80060D70[D_8005E744] = 0;
+    g_spu_vm_flush_tick = (g_spu_vm_flush_tick + 1) & 0xF;
+    g_spu_vm_seq_voice_mask[g_spu_vm_flush_tick] = 0;
     for (i = 0; i < gp_spawn_count; i++) {
-        D_800572AC[i].unk6 = g_snd_tempo[i * 8 + 6];
-        if (D_800572AC[i].unk6 == 0) {
-            D_80060D70[D_8005E744] |= (1 << i);
+        g_spu_vm_voice_table[i].unk6 = g_snd_tempo[i * 8 + 6];
+        if (g_spu_vm_voice_table[i].unk6 == 0) {
+            g_spu_vm_seq_voice_mask[g_spu_vm_flush_tick] |= (1 << i);
         }
     }
-    if (D_8005E710 == 0) {
+    if (g_spu_vm_flush_cond == 0) {
         Mask2 = 0xFFFFFFFF;
         for (i = 0; i < 15; i++) {
-            Mask2 &= D_80060D70[i];
+            Mask2 &= g_spu_vm_seq_voice_mask[i];
         }
         for (i = 0; i < gp_spawn_count; i++) {
             if (Mask2 & (1 << i)) {
-                if (D_800572AC[i].unk1B == 2) {
+                if (g_spu_vm_voice_table[i].unk1B == 2) {
                     _SpuVmSetNoiseVoice(0, 0xFFFFFF);
                 }
-                D_800572AC[i].unk1B = 0;
+                g_spu_vm_voice_table[i].unk1B = 0;
             }
         }
     }
     i = 0;
-    D_8005724C &= ~D_80061A68;
-    D_80057254 &= ~D_80061A70;
+    g_spu_vm_key_on_lo &= ~g_spu_vm_active_mask_lo;
+    g_spu_vm_key_on_hi &= ~g_spu_vm_active_mask_hi;
     for (i = 0; i < 24; i++) {
-        if (D_800572AC[i].unk1C != 0) {
-            D_8005E708(i);
+        if (g_spu_vm_voice_table[i].unk1C != 0) {
+            g_spu_vm_flush_cb_b(i);
         }
-        if (D_800572AC[i].unk28 != 0) {
-            D_8005E550(i);
+        if (g_spu_vm_voice_table[i].unk28 != 0) {
+            g_spu_vm_flush_cb_a(i);
         }
     }
     for (i = 0; i < 24; i++) {
@@ -79,18 +79,18 @@ void SpuVmFlush(void) {
         }
         g_card_ev_table[i] = 0;
     }
-    g_snd_tempo[0xC6] = D_80061A68;
-    g_snd_tempo[0xC7] = D_80061A70;
-    g_snd_tempo[0xC4] = D_8005724C;
-    g_snd_tempo[0xC5] = D_80057254;
+    g_snd_tempo[0xC6] = g_spu_vm_active_mask_lo;
+    g_snd_tempo[0xC7] = g_spu_vm_active_mask_hi;
+    g_snd_tempo[0xC4] = g_spu_vm_key_on_lo;
+    g_snd_tempo[0xC5] = g_spu_vm_key_on_hi;
     if (gp_spawn_count < 24) {
         mask = (g_snd_tempo[0xCD] << 16) | g_snd_tempo[0xCC];
-        mask &= D_80056274;
+        mask &= g_spu_vm_max_voice;
     }
-    D_80061A68 = 0;
-    D_80061A70 = 0;
-    D_8005724C = 0;
-    D_80057254 = 0;
-    g_snd_tempo[0xCC] = D_8005725C | mask;
-    g_snd_tempo[0xCD] = D_80057264 | (mask >> 16);
+    g_spu_vm_active_mask_lo = 0;
+    g_spu_vm_active_mask_hi = 0;
+    g_spu_vm_key_on_lo = 0;
+    g_spu_vm_key_on_hi = 0;
+    g_snd_tempo[0xCC] = g_spu_vm_noise_mask_lo | mask;
+    g_snd_tempo[0xCD] = g_spu_vm_noise_mask_hi | (mask >> 16);
 }

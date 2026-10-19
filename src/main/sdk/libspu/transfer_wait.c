@@ -9,21 +9,21 @@ s32 TestEvent(s32);
 s32 SpuIsTransferCompleted(s32 blocking) {
     s32 completed;
 
-    if ((D_8005594C == 1) || (D_80055914 == 1)) {
+    if ((g_spu_transfer_mode_cur == 1) || (g_spu_trans_start_addr == 1)) {
         return 1;
     }
-    completed = TestEvent(D_800559A0);
+    completed = TestEvent(g_spu_dma_done_callback);
     if (blocking == 1) {
         if (completed == 0) {
             do {
-            } while (TestEvent(D_800559A0) == 0);
+            } while (TestEvent(g_spu_dma_done_callback) == 0);
         }
         completed = 1;
         goto record_completion;
     }
     if (completed == 1) {
 record_completion:
-        D_80055914 = completed;
+        g_spu_trans_start_addr = completed;
     }
     return completed;
 }

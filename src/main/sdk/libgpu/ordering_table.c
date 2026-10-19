@@ -4,7 +4,7 @@ extern u8 g_gpu_debug_level;
 
 
 u32 *ClearOTag(u32 *ot,s32 count) {
-    if (g_gpu_debug_level >= 2) g_gpu_ot_status(D_800112C0,ot,count);
+    if (g_gpu_debug_level >= 2) g_gpu_ot_status(g_str_ordering_table_clearotag_08x_d_n,ot,count);
     count--;
     if (count) {
         u32 address_mask = 0x00ffffff;
@@ -20,6 +20,6 @@ u32 *ClearOTag(u32 *ot,s32 count) {
             ot = next;
         } while (count);
     }
-    *ot = (u32)&D_80054B28 & 0x00ffffff;
+    *ot = (u32)&g_gpu_ot_clear_step & 0x00ffffff;
     return ot;
 }

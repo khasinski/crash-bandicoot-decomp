@@ -6,17 +6,17 @@ typedef void (*Callback)();
 s32 BIOS_Printf(const char *, ...);
 s32 _SsInitSoundSep(s16, s16, s16, u8 *);
 
-extern Callback D_80058378;
-extern Callback D_8005837C;
-extern Callback D_80058380;
-extern Callback D_80058384;
-extern Callback D_80058388;
-extern Callback D_8005838C;
-extern Callback D_80058390;
-extern Callback D_80058394;
-extern Callback D_80058398;
-extern Callback D_8005839C;
-extern Callback D_800583A4;
+extern Callback g_ss_cc_data_entry;
+extern Callback g_ss_cc_main_vol;
+extern Callback g_ss_cc_panpot;
+extern Callback g_ss_cc_damper;
+extern Callback g_ss_cc_nrpn_lsb;
+extern Callback g_ss_cc_nrpn_msb;
+extern Callback g_ss_cc_rpn_lsb;
+extern Callback g_ss_cc_rpn_msb;
+extern Callback g_ss_cc_reverb;
+extern Callback g_ss_cc_reset_all;
+extern Callback g_ss_nrpn_attr_fn_00;
 
 void Cd_Stub_01();
 void Cd_Stub_02();
@@ -65,57 +65,57 @@ s16 SsSepOpen(s32 data_address, s16 mode, s16 channel_count) {
     s32 cursor;
 
     cursor = data_address;
-    if (D_8005E548 == -1) {
-        BIOS_Printf(D_80011728);
+    if (g_ss_open_seq_mask == -1) {
+        BIOS_Printf(g_str_ss_sep_open_err);
 failed:
         return -1;
     }
     candidate_id = 0;
     found = 0;
     g_Snd_FnTable[0] = &_SsNoteOn;
-    D_80058364 = &_SsNoteOff;
-    D_8005836C = &_SsGetMetaEvent;
-    D_80058368 = &_SsSetPitchBend;
-    D_80058370 = &_SsGetSeqData;
-    D_80058374 = &_SsSetProgramChange;
-    D_8005837C = &_SsContModulation;
-    D_80058380 = &_SsContPortaTime;
-    D_80058384 = &_SsContPortamento;
-    D_80058388 = &_SsContNrpn1;
-    D_8005838C = &_SsContNrpn2;
-    D_80058390 = &_SsContRpn1;
-    D_80058394 = &_SsContRpn2;
-    D_80058398 = &_SsContResetAll;
-    D_8005839C = &_SsContDataEntry;
-    D_80058378 = &_SsSetControlChange;
-    D_800583A4 = &Cd_Stub_01;
-    D_800583A8 = &Cd_Stub_02;
-    D_800583AC = &Cd_Stub_03;
-    D_800583B0 = &Cd_Stub_04;
-    D_800583B4 = &Cd_Stub_05;
-    D_800583B8 = &Cd_Stub_06;
-    D_800583BC = &Cd_Stub_07;
-    D_800583C0 = &Cd_Stub_08;
-    D_800583C4 = &Cd_Stub_09;
-    D_800583C8 = &Cd_Stub_10;
-    D_800583CC = &Cd_Stub_11;
-    D_800583D0 = &Cd_Stub_12;
-    D_800583D4 = &Cd_Stub_13;
-    D_800583D8 = &Cd_Stub_14;
-    D_800583DC = &Cd_Stub_15;
-    D_800583E0 = &Cd_Stub_16;
-    D_800583E4 = &Cd_Stub_17;
-    D_800583E8 = &Cd_Stub_18;
-    D_800583EC = &Cd_Stub_19;
-    D_800583F0 = &Cd_Stub_20;
+    g_ss_fn_note_off = &_SsNoteOff;
+    g_ss_fn_meta_event = &_SsGetMetaEvent;
+    g_ss_fn_pitch_bend = &_SsSetPitchBend;
+    g_ss_fn_control_change = &_SsGetSeqData;
+    g_ss_fn_program_change = &_SsSetProgramChange;
+    g_ss_cc_main_vol = &_SsContModulation;
+    g_ss_cc_panpot = &_SsContPortaTime;
+    g_ss_cc_damper = &_SsContPortamento;
+    g_ss_cc_nrpn_lsb = &_SsContNrpn1;
+    g_ss_cc_nrpn_msb = &_SsContNrpn2;
+    g_ss_cc_rpn_lsb = &_SsContRpn1;
+    g_ss_cc_rpn_msb = &_SsContRpn2;
+    g_ss_cc_reverb = &_SsContResetAll;
+    g_ss_cc_reset_all = &_SsContDataEntry;
+    g_ss_cc_data_entry = &_SsSetControlChange;
+    g_ss_nrpn_attr_fn_00 = &Cd_Stub_01;
+    g_ss_nrpn_attr_fn_01 = &Cd_Stub_02;
+    g_ss_nrpn_attr_fn_02 = &Cd_Stub_03;
+    g_ss_nrpn_attr_fn_03 = &Cd_Stub_04;
+    g_ss_nrpn_attr_fn_04 = &Cd_Stub_05;
+    g_ss_nrpn_attr_fn_05 = &Cd_Stub_06;
+    g_ss_nrpn_attr_fn_06 = &Cd_Stub_07;
+    g_ss_nrpn_attr_fn_07 = &Cd_Stub_08;
+    g_ss_nrpn_attr_fn_08 = &Cd_Stub_09;
+    g_ss_nrpn_attr_fn_09 = &Cd_Stub_10;
+    g_ss_nrpn_attr_fn_10 = &Cd_Stub_11;
+    g_ss_nrpn_attr_fn_11 = &Cd_Stub_12;
+    g_ss_nrpn_attr_fn_12 = &Cd_Stub_13;
+    g_ss_nrpn_attr_fn_13 = &Cd_Stub_14;
+    g_ss_nrpn_attr_fn_14 = &Cd_Stub_15;
+    g_ss_nrpn_attr_fn_15 = &Cd_Stub_16;
+    g_ss_nrpn_attr_fn_16 = &Cd_Stub_17;
+    g_ss_nrpn_attr_fn_17 = &Cd_Stub_18;
+    g_ss_nrpn_attr_fn_18 = &Cd_Stub_19;
+    g_ss_nrpn_attr_fn_19 = &Cd_Stub_20;
     do {
-        if (!((1 << candidate_id) & D_8005E548)) {
+        if (!((1 << candidate_id) & g_ss_open_seq_mask)) {
             sequence_id = candidate_id;
             found = 1;
         }
         candidate_id += 1;
     } while ((found & 255) == 0);
-    D_8005E548 |= 1 << sequence_id;
+    g_ss_open_seq_mask |= 1 << sequence_id;
     channel = 0;
     if (channel_count > 0) {
         do {

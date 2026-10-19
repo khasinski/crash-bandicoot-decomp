@@ -148,7 +148,7 @@ void Gfx_LoadWorlds(u8 *arg0, u32 *arg1, GoolObj *arg2) {
             arg2->vectors.scale[0],
             arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),
             Gpu_GetCurPrimsTail(),
-            D_80051774,
+            g_wgeo_tex_anim_masks,
             0);
     }
 }
@@ -184,7 +184,7 @@ void Gfx_TransformCvtx(u8 *arg0, u32 *arg1, GoolObj *arg2) {
             arg2->vectors.scale[0],
             arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),
             Gpu_GetCurPrimsTail(),
-            D_80051774,
+            g_wgeo_tex_anim_masks,
             sp28);
     }
 }

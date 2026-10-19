@@ -7,7 +7,7 @@
 u16 SetIntrMask(u16 arg0) {
     u16 temp_v0;
 
-    temp_v0 = *D_800549C4;
-    *D_800549C4 = arg0;
+    temp_v0 = *g_intr_i_mask_reg;
+    *g_intr_i_mask_reg = arg0;
     return temp_v0;
 }

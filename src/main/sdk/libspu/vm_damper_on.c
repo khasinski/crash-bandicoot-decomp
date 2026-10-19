@@ -3,5 +3,5 @@
 
 
 void SpuVmDamperOn(void) {
-    D_80057EF0 = 2;
+    g_spu_vm_damper_mask = 2;
 }

@@ -30,7 +30,7 @@ typedef struct {
     s32 slot18;
 } Dispatch;
 
-extern Dispatch *D_800549BC;
+extern Dispatch *g_intr_ctrl_ptr;
 
 void intr_memclr(void *, s32);
 s32 setjmp(void *);
@@ -45,8 +45,8 @@ void *startIntr(void) {
     void *result;
 
     if (g_event_handlers.initialized == 0) {
-        *D_800549C0 = *D_800549C4 = 0;
-        *D_800549C8 = 0x33333333;
+        *g_intr_i_stat_reg = *g_intr_i_mask_reg = 0;
+        *g_intr_dpcr_reg = 0x33333333;
         intr_memclr(&g_event_handlers, sizeof(IntrState) / 4);
         if (setjmp(g_event_handlers.context) != 0) {
             trapIntr();
@@ -54,9 +54,9 @@ void *startIntr(void) {
         g_event_handlers.context[1] = (u32)&g_event_handlers.stack[0x3EC];
         HookEntryInt(g_event_handlers.context);
         g_event_handlers.initialized = 1;
-        D_800549BC->slot14 = startIntrVSync();
-        D_800549BC->slot04 = startIntrDMA();
-        _96_remove(D_800549BC);
+        g_intr_ctrl_ptr->slot14 = startIntrVSync();
+        g_intr_ctrl_ptr->slot04 = startIntrDMA();
+        _96_remove(g_intr_ctrl_ptr);
         ExitCriticalSection();
         result = &g_event_handlers;
     } else {

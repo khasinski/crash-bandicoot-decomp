@@ -8,8 +8,8 @@ void trapIntrVSync(void),trapIntrDMA(void);
 Callback setIntrVSync(s32,Callback),setIntrDMA(s32,Callback);
 void rcnt_memclr(Callback *,s32),dma_memclr(Callback *,s32);
 Registrar startIntrDMA(void) {
-    dma_memclr(D_800549FC, 8);
-    *D_800549F8 = 0;
+    dma_memclr(g_dma_cb_slots, 8);
+    *g_dma_dicr_reg = 0;
     InterruptCallback(3, &trapIntrDMA);
     return &setIntrDMA;
 }

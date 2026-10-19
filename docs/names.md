@@ -141,7 +141,7 @@ All 365 Naughty Dog game functions in `SCUS_949.00`, ordered by VRAM address and
 | `0x8001384C` | 54w | `func_8001384C` | **`Ns_ReadSectorAsync`** | `NSReadSectorAsync` | `ns/cd.c` | `C` | Seek and start async `CdRead` into physical page buffer (`c1:ns.c`) |
 | `0x80013924` | 19w | `func_80013924` | **`Ns_PageOnComplete`** | `NSPageOnComplete` | `ns/cd.c` | `C` | Transition physical page state after async CD read completes (`c1:ns.c`) |
 | `0x80013970` | 112w | `func_80013970` | **`Ns_PageDecompress`** | `NSPageDecompress` | `ns/page_4170.c` | `C` | `c1:ns.c` `NSPageDecompress` |
-| `0x80013B30` | 25w | `NS_13B30` | **`Ns_PageTranslate`** | `NSPageTranslate` | `ns/page_4170.c` | `C` | `c1:ns.c` `NSPageTranslate` |
+| `0x80013B30` | 25w | `Ns_PageTranslate` | **`Ns_PageTranslate`** | `NSPageTranslate` | `ns/page_4170.c` | `C` | `c1:ns.c` `NSPageTranslate` |
 | `0x80013B94` | 109w | `func_80013B94` | **`Ns_PageInitAlloc`** | `NSPageInitAlloc` | `ns/page_alloc.c` | `C` | Partition page memory pool into physical and virtual page slots (`NS_13B94`) |
 | `0x80013D48` | 299w | `func_80013D48` | **`Ns_PageUpdate`** | `NSPageUpdate` | `ns/page_4170.c` | `C` | `c1:ns.c` `NSPageUpdate` |
 | `0x800141F4` | 106w | `func_800141F4` | **`Ns_PageAllocate`** | `NSPageAllocate` | `ns/page_4170.c` | `C` | `c1:ns.c` `NSPageAllocate` |
@@ -319,7 +319,7 @@ All 365 Naughty Dog game functions in `SCUS_949.00`, ordered by VRAM address and
 | `0x80026DD4` | 135w | `func_80026DD4` | **`Zone_FindNeighbor`** | `ZoneFindNeighbor` | `level/zone_query.c` | `C` | get the neighbor zone of the given zone which contains a given point |
 | `0x80026FF0` | 511w | `func_80026FF0` | **`Zone_FindNode`** | `ZoneFindNode` | `level/zone_query.c` | `C` | find the point of intersection between a zone octree and a ray and return the node which contains the point of intersection |
 | `0x800277EC` | 135w | `func_800277EC` | **`Zone_ReboundVector`** | `ZoneReboundVector` | `level/zone_query.c` | `C` | get the rebound direction of a given vector within the current zone or neighbor using `ZoneFindNode` |
-| `0x80027A08` | 17w | `func_80027A08` | **`sub_80027A08`** | `sub_80027A08` | `engine/field138.c` | `C` | `c1:level.c` `sub_80027A08` |
+| `0x80027A08` | 17w | `func_80027A08` | **`Cam_SetObjectZoom`** | `Cam_SetObjectZoom` | `engine/field138.c` | `C` | `c1:level.c` `Cam_SetObjectZoom` |
 | `0x80027A4C` | 94w | `func_80027A4C` | **`Zone_ColorsScale`** | `ZoneColorsScale` | `level/light.c` | `C` | scale input `gool_colors` by the given red, green, and blue percentages |
 | `0x80027BC4` | 207w | `func_80027BC4` | **`Zone_ColorsScaleByNode`** | `ZoneColorsScaleByNode` | `level/light.c` | `C` | scale input `gool_colors` per the given node subtype |
 | `0x80027F00` | 20w | `func_80027F00` | **`Zone_ColorSeek`** | `ZoneColorSeek` | `math/step_halfword.c` | `C` | seek input int16 color component by step amount |
@@ -426,28 +426,28 @@ All 365 Naughty Dog game functions in `SCUS_949.00`, ordered by VRAM address and
 |---|---:|---|---|---|---|---|---|
 | `0x8002F858` | 27w | `func_8002F858` | **`Cd_ReadSectors`** | `CdReadSectors` | `engine/cd_read.c` | `C` | `c1:psx/cdr.c` `CdReadSectors` |
 | `0x8002F8C4` | 283w | `func_8002F8C4` | **`Cd_ReadFileSys`** | `CdReadFileSys` | `engine/cd_dir.c` | `C` | `c1:psx/cdr.c` `CdReadFileSys` |
-| `0x8002FD30` | 2w | `func_8002FD30` | **`Cd_Stub_01`** | `CdStub_01` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD38` | 2w | `func_8002FD38` | **`Cd_Stub_02`** | `CdStub_02` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD40` | 2w | `func_8002FD40` | **`Cd_Stub_03`** | `CdStub_03` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD48` | 2w | `func_8002FD48` | **`Cd_Stub_04`** | `CdStub_04` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD50` | 2w | `func_8002FD50` | **`Cd_Stub_05`** | `CdStub_05` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD58` | 2w | `func_8002FD58` | **`Cd_Stub_06`** | `CdStub_06` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD60` | 2w | `func_8002FD60` | **`Cd_Stub_07`** | `CdStub_07` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD68` | 2w | `func_8002FD68` | **`Cd_Stub_08`** | `CdStub_08` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD70` | 2w | `func_8002FD70` | **`Cd_Stub_09`** | `CdStub_09` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD78` | 2w | `func_8002FD78` | **`Cd_Stub_10`** | `CdStub_10` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD80` | 2w | `func_8002FD80` | **`Cd_Stub_11`** | `CdStub_11` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD88` | 2w | `func_8002FD88` | **`Cd_Stub_12`** | `CdStub_12` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD90` | 2w | `func_8002FD90` | **`Cd_Stub_13`** | `CdStub_13` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FD98` | 2w | `func_8002FD98` | **`Cd_Stub_14`** | `CdStub_14` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDA0` | 2w | `func_8002FDA0` | **`Cd_Stub_15`** | `CdStub_15` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDA8` | 2w | `func_8002FDA8` | **`Cd_Stub_16`** | `CdStub_16` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDB0` | 2w | `func_8002FDB0` | **`Cd_Stub_17`** | `CdStub_17` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDB8` | 2w | `func_8002FDB8` | **`Cd_Stub_18`** | `CdStub_18` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDC0` | 2w | `func_8002FDC0` | **`Cd_Stub_19`** | `CdStub_19` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDC8` | 2w | `func_8002FDC8` | **`Cd_Stub_20`** | `CdStub_20` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDD0` | 2w | `func_8002FDD0` | **`Cd_Stub_21`** | `CdStub_21` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
-| `0x8002FDD8` | 2w | `func_8002FDD8` | **`Cd_Stub_22`** | `CdStub_22` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`D_800583A4..D_800583F0`) for unused CC/NRPN handlers |
+| `0x8002FD30` | 2w | `func_8002FD30` | **`Cd_Stub_01`** | `CdStub_01` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD38` | 2w | `func_8002FD38` | **`Cd_Stub_02`** | `CdStub_02` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD40` | 2w | `func_8002FD40` | **`Cd_Stub_03`** | `CdStub_03` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD48` | 2w | `func_8002FD48` | **`Cd_Stub_04`** | `CdStub_04` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD50` | 2w | `func_8002FD50` | **`Cd_Stub_05`** | `CdStub_05` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD58` | 2w | `func_8002FD58` | **`Cd_Stub_06`** | `CdStub_06` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD60` | 2w | `func_8002FD60` | **`Cd_Stub_07`** | `CdStub_07` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD68` | 2w | `func_8002FD68` | **`Cd_Stub_08`** | `CdStub_08` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD70` | 2w | `func_8002FD70` | **`Cd_Stub_09`** | `CdStub_09` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD78` | 2w | `func_8002FD78` | **`Cd_Stub_10`** | `CdStub_10` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD80` | 2w | `func_8002FD80` | **`Cd_Stub_11`** | `CdStub_11` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD88` | 2w | `func_8002FD88` | **`Cd_Stub_12`** | `CdStub_12` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD90` | 2w | `func_8002FD90` | **`Cd_Stub_13`** | `CdStub_13` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FD98` | 2w | `func_8002FD98` | **`Cd_Stub_14`** | `CdStub_14` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDA0` | 2w | `func_8002FDA0` | **`Cd_Stub_15`** | `CdStub_15` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDA8` | 2w | `func_8002FDA8` | **`Cd_Stub_16`** | `CdStub_16` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDB0` | 2w | `func_8002FDB0` | **`Cd_Stub_17`** | `CdStub_17` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDB8` | 2w | `func_8002FDB8` | **`Cd_Stub_18`** | `CdStub_18` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDC0` | 2w | `func_8002FDC0` | **`Cd_Stub_19`** | `CdStub_19` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDC8` | 2w | `func_8002FDC8` | **`Cd_Stub_20`** | `CdStub_20` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDD0` | 2w | `func_8002FDD0` | **`Cd_Stub_21`** | `CdStub_21` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
+| `0x8002FDD8` | 2w | `func_8002FDD8` | **`Cd_Stub_22`** | `CdStub_22` | `engine/noop_entries.c` | `C` | No-op stub (`jr $ra`); registered in `SsSepOpen` (`g_ss_nrpn_attr_fn_00..g_ss_nrpn_attr_fn_19`) for unused CC/NRPN handlers |
 
 ### 4.15 Spatial Audio & SPU Voice Engine (`audio.c` — `0x8002FDE0..0x80030D97`) (10 functions)
 
@@ -967,7 +967,7 @@ All 460 Sony PsyQ SDK library functions linked into `SCUS_949.00`, matched again
 | `0x8004970C` | 58w | `func_8004970C` | **`_SsInit`** | `LIBSND.A:ssinit.o` | `Global` | `sdk/libspu/spu_initialize.c` | Initialize `LIBSND` voice manager (`SpuVmInit`) and score tables |
 | `0x800497F4` | 12w | `func_800497F4` | **`SsInit`** | `LIBSND.A:ssinit_c.o` | `Global` | `sdk/libspu/func_800497F4.c` | Cold-start `LIBSND` (`ResetCallback`, `SpuInit`, `_SsInit`) |
 | `0x80049824` | 8w | `func_80049824` | **`SpuInit`** | `LIBSPU.A:s_i.o` | `Global` | `sdk/libspu/func_80049824.c` | Cold-start SPU (`_SpuInit(0)`) |
-| `0x80049844` | 215w | `func_80049844` | **`SsSepOpen`** | `LIBSND.A:sepinit.o` | `Global` | `sdk/libspu/sequence_open.c` | Register `Snd_FnTable` (`D_80058360..D_800583F0`) and open multi-track SEP sequence |
+| `0x80049844` | 215w | `func_80049844` | **`SsSepOpen`** | `LIBSND.A:sepinit.o` | `Global` | `sdk/libspu/sequence_open.c` | Register `Snd_FnTable` (`D_80058360..g_ss_nrpn_attr_fn_19`) and open multi-track SEP sequence |
 | `0x80049BA0` | 32w | `func_80049BA0` | **`_SsSetProgramChange`** | `LIBSND.A:seqread.o` | `Global` | `sdk/libspu/sequence_value_read.c` | SMF/SEP Program Change (`0xC0`) event handler |
 | `0x80049C20` | 272w | `func_80049C20` | **`_SsSetControlChange`** | `LIBSND.A:seqread.o` | `Global` | `sdk/libspu/sequence_event_note_on.c` | SMF/SEP Control Change (`0xB0`) dispatcher via `Snd_FnTable` |
 | `0x8004A060` | 50w | `func_8004A060` | **`_SsContModulation`** | `LIBSND.A:seqread.o` | `Global` | `sdk/libspu/sequence_event_velocity.c` | CC#1 Modulation Depth handler |

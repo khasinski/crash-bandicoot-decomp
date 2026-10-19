@@ -10,6 +10,6 @@ void SpuSetTransferMode(s32 mode)
     case 1: enabled = 1; break;
     default: enabled = 0; break;
     }
-    D_8005594C = mode;
-    D_800558FC = enabled;
+    g_spu_transfer_mode_cur = mode;
+    g_spu_reverb_depth_l = enabled;
 }

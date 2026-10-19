@@ -28,7 +28,7 @@ typedef struct LvlColorState {
 extern LvlCamera lvl_camera;
 extern LvlColorState lvl_color;
 extern s32 g_doctor_cortex_obj[];
-extern s32 D_80061A64[];
+extern s32 g_mdat_title_str_ptr[];
 
 /* SLST polygon id lists: current, and the two buffers swapped per step. */
 extern void *gp_level_entry;
@@ -134,14 +134,14 @@ void Level_Update(ResourceEntry *zone, ZonePath *path, s32 progress, u32 flags)
              * it into (length - 1) - pt, which retail does not have. */
             if (path != level_position.path || __builtin_abs(steps) > pt
                 || __builtin_abs(steps) > path->length - (next = pt + 1)) {
-                tmp = D_800566BC;
-                D_800566BC = D_80056700;
-                D_80056700 = tmp;
+                tmp = gp_slst_poly_list_b;
+                gp_slst_poly_list_b = gp_slst_poly_list_a;
+                gp_slst_poly_list_a = tmp;
                 if (pt < path->length / 2) {
-                    gp_level_entry = Slst_Update(slst->items[0], gp_level_entry, D_80056700, 1);
+                    gp_level_entry = Slst_Update(slst->items[0], gp_level_entry, gp_slst_poly_list_a, 1);
                     pt = 0;
                 } else {
-                    gp_level_entry = Slst_Update(slst->items[path->length], gp_level_entry, D_80056700, 0);
+                    gp_level_entry = Slst_Update(slst->items[path->length], gp_level_entry, gp_slst_poly_list_a, 0);
                     pt = path->length - 1;
                 }
             } else {
@@ -149,14 +149,14 @@ void Level_Update(ResourceEntry *zone, ZonePath *path, s32 progress, u32 flags)
             }
             steps = (progress >> 8) - pt;
             while (steps != 0) {
-                tmp = D_800566BC;
-                D_800566BC = D_80056700;
-                D_80056700 = tmp;
+                tmp = gp_slst_poly_list_b;
+                gp_slst_poly_list_b = gp_slst_poly_list_a;
+                gp_slst_poly_list_a = tmp;
                 if (steps > 0) {
                     steps--;
-                    gp_level_entry = Slst_Update(slst->items[++pt], gp_level_entry, D_80056700, 1);
+                    gp_level_entry = Slst_Update(slst->items[++pt], gp_level_entry, gp_slst_poly_list_a, 1);
                 } else {
-                    gp_level_entry = Slst_Update(slst->items[pt--], gp_level_entry, D_80056700, 0);
+                    gp_level_entry = Slst_Update(slst->items[pt--], gp_level_entry, gp_slst_poly_list_a, 0);
                     steps++;
                 }
             }
@@ -173,8 +173,8 @@ void Level_Update(ResourceEntry *zone, ZonePath *path, s32 progress, u32 flags)
         flag = 1;
         cur_header = NULL;
         header = (ZoneHeader *)((ZoneEntry *)zone)->items[0];
-        D_80061998[0] = 0;
-        if (D_800618D0 == 0x600) {
+        g_level_first_spawn_flag[0] = 0;
+        if (g_game_substate == 0x600) {
             if (flags & 2) {
                 flag = 1;
             } else {
@@ -221,8 +221,8 @@ void Level_Update(ResourceEntry *zone, ZonePath *path, s32 progress, u32 flags)
             neighbor_header = (ZoneHeader *)neighbor->items[0];
             if (!(neighbor_header->display_flags & 1)) {
                 g_doctor_cortex_obj[0] = 0;
-                D_80061A64[0] = 0;
-                D_80061A60[0] = 0x19000;
+                g_mdat_title_str_ptr[0] = 0;
+                g_spu_reverb_addr[0] = 0x19000;
                 neighbor_header->display_flags |= 3;
             }
             if (flag) {

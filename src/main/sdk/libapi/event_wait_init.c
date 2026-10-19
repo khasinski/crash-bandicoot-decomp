@@ -6,9 +6,9 @@ void ChangeClearPAD(s32);                                 /* extern */
 void ResetCallback();                                  /* extern */
 
 void PadInit(s32 arg0) {
-    D_8005E33C = arg0;
-    D_80057054 = -1;
+    g_pad_init_mode = arg0;
+    g_pad_mode_state = -1;
     ResetCallback();
-    PAD_init(0x20000001, &D_80057054);
+    PAD_init(0x20000001, &g_pad_mode_state);
     ChangeClearPAD(0);
 }

@@ -306,7 +306,7 @@ void Solid_PlotWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws)
             p1--;
         } while (i >= 0);
         i = 0x7F;
-        p2 = &D_800566AC[0x7F];
+        p2 = &gp_solid_scratch_grid[0x7F];
         do {
             *p2 = 0;
             i--;

@@ -18,12 +18,12 @@ s32 _spu_t(s32 mode, ...)
     switch (mode) {
     case 2:
         val = va_arg(ap, u32);
-        g_spu_RXX[0xD3] = D_800558E0 = val >> g_spu_trans_mode;
+        g_spu_RXX[0xD3] = g_spu_adsr_dummy_1 = val >> g_spu_trans_mode;
         break;
     case 1:
-        D_80055930 = 0;
+        g_spu_reverb_work_sizes = 0;
         i = 0;
-        while (g_spu_RXX[0xD3] != D_800558E0) {
+        while (g_spu_RXX[0xD3] != g_spu_adsr_dummy_1) {
             if (++i > 0xF00) {
                 return -2;
             }
@@ -33,9 +33,9 @@ s32 _spu_t(s32 mode, ...)
         g_spu_RXX[0xD5] = ctrl;
         break;
     case 0:
-        D_80055930 = 1;
+        g_spu_reverb_work_sizes = 1;
         i = 0;
-        while (g_spu_RXX[0xD3] != D_800558E0) {
+        while (g_spu_RXX[0xD3] != g_spu_adsr_dummy_1) {
             if (++i > 0xF00) {
                 return -2;
             }
@@ -45,26 +45,26 @@ s32 _spu_t(s32 mode, ...)
         g_spu_RXX[0xD5] = ctrl;
         break;
     case 3:
-        ctrl = (D_80055930 == 1) ? 0x30 : 0x20;
+        ctrl = (g_spu_reverb_work_sizes == 1) ? 0x30 : 0x20;
         i = 0;
         while ((g_spu_RXX[0xD5] & 0x30) != ctrl) {
             if (++i > 0xF00) {
                 return -2;
             }
         }
-        if (D_80055930 == 1) {
-            *D_800558F8 = (*D_800558F8 & 0xF0FFFFFF) | 0x22000000;
+        if (g_spu_reverb_work_sizes == 1) {
+            *g_spu_reverb_type = (*g_spu_reverb_type & 0xF0FFFFFF) | 0x22000000;
         } else {
-            *D_800558F8 = (*D_800558F8 & 0xF0FFFFFF) | 0x20000000;
+            *g_spu_reverb_type = (*g_spu_reverb_type & 0xF0FFFFFF) | 0x20000000;
         }
         val = va_arg(ap, u32);
-        D_80055934 = val;
+        g_spu_dma_mode_val = val;
         val = va_arg(ap, u32);
-        D_80055938 = (val / 64) + ((val & 0x3F) != 0);
-        *D_800558E8 = D_80055934;
-        *D_800558EC = (D_80055938 << 16) | 0x10;
-        cmd = (D_80055930 == 1) ? 0x01000200 : 0x01000201;
-        *D_800558F0 = cmd;
+        g_spu_dma_dir_val = (val / 64) + ((val & 0x3F) != 0);
+        *g_spu_trans_dir = g_spu_dma_mode_val;
+        *g_spu_in_transfer = (g_spu_dma_dir_val << 16) | 0x10;
+        cmd = (g_spu_reverb_work_sizes == 1) ? 0x01000200 : 0x01000201;
+        *g_spu_irq_enabled = cmd;
         break;
     }
     return 0;

@@ -9,7 +9,7 @@ extern s32 gp_cur_pbak_frame;
 void Pbak_Init(void)
 {
     gp_cur_pbak_frame = 0;
-    D_80061A30 = 0;
+    g_pbak_frame_step = 0;
 }
 
 void Pbak_Kill(void)

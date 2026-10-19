@@ -40,7 +40,7 @@ typedef struct ResourceItem {
     void *item2;
 } ResourceItem;
 
-extern s32 D_80057864;
+extern s32 g_cam_trans_x;
 extern s16 g_m_light;
 
 extern struct {
@@ -48,7 +48,7 @@ extern struct {
     s32 level_id;
 } *g_ns_page_pool;
 
-extern s32 D_800618D4;
+extern s32 g_island_cam_state;
 
 ResourceItem *Ns_Lookup(void *);
 void Gfx_FreezeMapTextures(s32, s32);
@@ -72,15 +72,15 @@ void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0)
         } else {
             trans = (s32 *)(i * 64 + (s32)arg0);
             trans += 2;
-            trans[0] = (g_m_light * (v[0] = wgeo->x - (D_80057864 >> 8))
-                      + D_80057806 * (v[1] = wgeo->y - (D_80057868 >> 8))
-                      + D_80057808 * (v[2] = wgeo->z - (D_8005786C >> 8))) >> 12;
-            trans[1] = (D_8005780A * v[0]
-                      + D_8005780C * v[1]
-                      + D_8005780E * v[2]) >> 12;
-            trans[2] = (D_80057810 * v[0]
-                      + D_80057812 * v[1]
-                      + D_80057814 * v[2]) >> 12;
+            trans[0] = (g_m_light * (v[0] = wgeo->x - (g_cam_trans_x >> 8))
+                      + g_m_light_01 * (v[1] = wgeo->y - (g_cam_trans_y >> 8))
+                      + g_m_light_02 * (v[2] = wgeo->z - (g_cam_trans_z >> 8))) >> 12;
+            trans[1] = (g_m_light_10 * v[0]
+                      + g_m_light_11 * v[1]
+                      + g_m_light_12 * v[2]) >> 12;
+            trans[2] = (g_m_light_20 * v[0]
+                      + g_m_light_21 * v[1]
+                      + g_m_light_22 * v[2]) >> 12;
         }
         arg0->worlds[i].wgeo = wgeo;
         arg0->worlds[i].item1 = entry->item1;
@@ -90,7 +90,7 @@ void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0)
             arg0->worlds[i].tpages[j] = Ns_Lookup(&wgeo->tpages[j]);
         }
     }
-    if (g_ns_page_pool->level_id == 0x19 && D_800618D4 == 0xF) {
-        Gfx_FreezeMapTextures(g_gem_count, D_800619B8);
+    if (g_ns_page_pool->level_id == 0x19 && g_island_cam_state == 0xF) {
+        Gfx_FreezeMapTextures(g_gem_count, g_title_fog_freeze_flag);
     }
 }

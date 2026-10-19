@@ -109,13 +109,13 @@ extern LevelDesc *g_ns_page_pool[];
 s32 gp_cur_zone = 0;
 s32 gp_cur_path = 1;
 
-extern s32 D_800566E8[];
+extern s32 gp_level_unused_1[];
 extern s32 g_fade_counter[];
 extern s32 g_cur_lid_ro[];
 
-extern u32 D_800566B0[2];
-extern u8 D_80057968[];
-extern u32 D_80057970[];
+extern u32 gp_next_level_ldat_eid[2];
+extern u8 g_pbak_header_byte_0[];
+extern u32 g_pbak_frame_cursor[];
 extern u32 engine_counter[];
 extern s32 gp_next_lid[];
 
@@ -125,38 +125,38 @@ s32 Level_LdatInit(void)
     s32 mode;
     ZoneEntry *zone;
 
-    D_80061A30 = 0;
-    if (*D_8005C538[0] != 0x6396347F) {
-        D_800566E4 = 0;
-        D_800566E8[0] = 0;
+    g_pbak_frame_step = 0;
+    if (*g_ns_ldat_ptr[0] != 0x6396347F) {
+        gp_level_unused_0 = 0;
+        gp_level_unused_1[0] = 0;
         g_fade_counter[0] = 0xFFFF;
         g_cur_lid_ro[0] = 0xFFFF;
         BIOS_MemSet(g_spawns, 0, 0x4C0);
         progress = 0;
         GOOL_InitLevelSpawns(g_ns_page_pool[0]->unk4);
-        mode = (D_8005C52C[0] == 0x11 || D_8005C52C[0] == 0x1E) ? 2 : 1;
+        mode = (g_ns_cur_level_id[0] == 0x11 || g_ns_cur_level_id[0] == 0x1E) ? 2 : 1;
         Gfx_InitMatrices();
-        if (D_8005C52C[0] == 0x19 && D_800618D0 == 0x200 && gp_cur_path == 0) {
+        if (g_ns_cur_level_id[0] == 0x19 && g_game_substate == 0x200 && gp_cur_path == 0) {
             g_ns_page_pool[0]->eid = Ns_StringToEID(gp_cur_progress);
         }
         if (gp_cur_zone == 1) {
-            g_ns_page_pool[0]->eid = D_80057998[0];
+            g_ns_page_pool[0]->eid = g_pbak_start_zone_eid[0];
             gp_cur_zone = 0;
-            g_ns_page_pool[0]->path_idx = D_8005799C[0];
-            progress = D_800579A0[0];
+            g_ns_page_pool[0]->path_idx = g_pbak_start_path_idx[0];
+            progress = g_pbak_start_progress[0];
         }
         zone = (ZoneEntry *)Ns_Open(&g_ns_page_pool[0]->eid, 1, mode);
-        D_800566B0[0] = 0x6396347F;
+        gp_next_level_ldat_eid[0] = 0x6396347F;
         level_position.zone = NULL;
         level_position.path = NULL;
         level_position.progress = 0;
-        D_80057968[0] = 0;
-        D_80057969[0] = 0;
-        D_8005796A[0] = 0;
-        D_8005796B[0] = 0;
-        D_80057970[0] = engine_counter[0];
-        if (D_800618D0 == 0x600) {
-            Pbak_Choose(D_800566B0);
+        g_pbak_header_byte_0[0] = 0;
+        g_pbak_header_byte_1[0] = 0;
+        g_pbak_header_byte_2[0] = 0;
+        g_pbak_header_byte_3[0] = 0;
+        g_pbak_frame_cursor[0] = engine_counter[0];
+        if (g_game_substate == 0x600) {
+            Pbak_Choose(gp_next_level_ldat_eid);
         }
         Level_Update(zone, zone->items[g_ns_page_pool[0]->path_idx + ((ZoneHeader *)zone->items[0])->path_index], progress, 0);
         Ns_Close(&g_ns_page_pool[0]->eid, 1);

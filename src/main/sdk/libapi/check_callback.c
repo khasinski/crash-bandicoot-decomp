@@ -2,5 +2,5 @@
 /* GCC_VERSION: 2.6.3 */
 
 u16 CheckCallback(void) {
-    return D_80053936;
+    return g_intr_in_callback;
 }

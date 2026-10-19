@@ -43,7 +43,7 @@ typedef struct EngineMode25State {
     u16 word3560, word3562, word3564, word3566;
     EngineDrawModePacket draw_modes[4];
     s32 word3598, word359C;
-    /* Title_LoadNextState copies the word at D_8006194C into both fields.
+    /* Title_LoadNextState copies the word at g_title_menu_selection into both fields.
      * The instructions establish word width, not pointer semantics. */
     u32 word35A0, word35A4;
     u8 pad35A8[0x28];

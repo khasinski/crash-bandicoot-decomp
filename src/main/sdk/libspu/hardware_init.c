@@ -16,15 +16,15 @@ s32 _spu_init(s32 arg0) {
     s32 voice;
     volatile u16 *registers;
 
-    *D_800558F4 |= 0xB0000;
+    *g_spu_reverb_reserved |= 0xB0000;
     g_spu_RXX[0xC0] = 0;
     g_spu_RXX[0xC1] = 0;
     g_spu_RXX[0xD5] = 0;
     delay_value = 0xD;
     delay_count = 0;
-    D_800558FC = 0;
-    D_80055900 = 0;
-    D_800558E0 = 0;
+    g_spu_reverb_depth_l = 0;
+    g_spu_reverb_delay = 0;
+    g_spu_adsr_dummy_1 = 0;
     if (delay_count < 0xF0) {
         do {
             delay_value *= 3;
@@ -33,21 +33,21 @@ s32 _spu_init(s32 arg0) {
     }
     g_spu_RXX[0xC0] = 0;
     g_spu_RXX[0xC1] = 0;
-    D_800558DC = 0;
+    g_spu_attr_zero_3 = 0;
     if (g_spu_RXX[0xD7] & 0x7FF) {
 loop_3:
-        poll_count = D_800558DC + 1;
-        D_800558DC = poll_count;
+        poll_count = g_spu_attr_zero_3 + 1;
+        g_spu_attr_zero_3 = poll_count;
         if (poll_count >= 0x1389) {
-            BIOS_Printf(D_80011660, D_80011670);
+            BIOS_Printf(g_str_cd_ack_err, g_str_hardware_init_wait_reset);
         } else if (g_spu_RXX[0xD7] & 0x7FF) {
             goto loop_3;
         }
     }
-    D_80055904 = 2;
+    g_spu_voice_bit_lo = 2;
     g_spu_trans_mode = 3;
-    D_8005590C = 8;
-    D_80055910 = 7;
+    g_spu_reverb_master_on = 8;
+    g_spu_key_stat_mask = 7;
     g_spu_RXX[0xD6] = 4;
     g_spu_RXX[0xC2] = 0;
     g_spu_RXX[0xC3] = 0;
@@ -64,8 +64,8 @@ loop_3:
         g_spu_RXX[0xD9] = 0;
         g_spu_RXX[0xDA] = 0;
         g_spu_RXX[0xDB] = 0;
-        D_800558E0 = 0x200;
-        _spu_writeByIO(D_80055920, 0x10);
+        g_spu_adsr_dummy_1 = 0x200;
+        _spu_writeByIO(g_spu_zero_block, 0x10);
         registers = g_spu_RXX;
         for (voice=0; voice<24; voice++) {
             registers[voice * 8 + 0] = 0;
@@ -112,9 +112,9 @@ loop_3:
             delay_value *= 3;
         }
     }
-    D_80055914 = 1;
+    g_spu_trans_start_addr = 1;
     g_spu_RXX[0xD5] = 0xC000;
-    D_80055918 = 0;
-    D_8005591C = 0;
+    g_spu_dma_done_cb = 0;
+    g_spu_irq_cb = 0;
     return 0;
 }

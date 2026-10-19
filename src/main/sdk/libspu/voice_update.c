@@ -4,15 +4,15 @@
 
 s32 SpuVmVSetUp(s16,s16);
 typedef struct { s16 value; u8 pad[50]; } VoiceWord;
-extern VoiceWord D_800572B4[];
-extern VoiceWord D_800572BA[];
-extern VoiceWord D_800572BE[];
-extern VoiceWord D_800572C0[];
-extern VoiceWord D_800572C2[];
+extern VoiceWord g_spu_vm_voice_vol[];
+extern VoiceWord g_spu_vm_voice_seq_sep[];
+extern VoiceWord g_spu_vm_voice_tone_prog[];
+extern VoiceWord g_spu_vm_voice_tone_idx[];
+extern VoiceWord g_spu_vm_voice_vab_id[];
 typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
 
 extern VoiceVol g_midi_seq_table[];
-extern u8 *D_8005CFDC;
+extern u8 *g_vab_cur_master_vol;
 
 
 s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
@@ -34,7 +34,7 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
     var_s6 = 0;
     temp_s2 = g_ss_score_table[arg0 & 255] + (((u32)(arg0 << 0x10)) >> 24);
     SpuVmVSetUp(arg1, arg2);
-    D_8005E56E = arg0;
+    g_spu_vm_cur_seq_sep_id = arg0;
     if (arg4 == 0) {
         arg4 = 1;
     }
@@ -42,15 +42,15 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
         arg3 = 1;
     }
     for (var_t2 = 0; var_t2 < gp_spawn_count; var_t2++) {
-        if ((D_800572BA[var_t2].value == arg0) && (D_800572BE[var_t2].value == arg2) && (D_800572C2[var_t2].value == arg1)) {
+        if ((g_spu_vm_voice_seq_sep[var_t2].value == arg0) && (g_spu_vm_voice_tone_prog[var_t2].value == arg2) && (g_spu_vm_voice_vab_id[var_t2].value == arg1)) {
             if ((temp_s2->gains[temp_s2->field_12] != (arg3 & 0xFFFF)) && (temp_s2->gains[temp_s2->field_12] == 0)) {
                 temp_s2->gains[temp_s2->field_12] = 1;
             }
-            temp_lo = (D_800572B4[var_t2].value * (arg3 & 0xFFFF)) / 127;
-            master_volume = D_8005CFDC[0x18];
+            temp_lo = (g_spu_vm_voice_vol[var_t2].value * (arg3 & 0xFFFF)) / 127;
+            master_volume = g_vab_cur_master_vol[0x18];
             temp_lo_2 = ((s32)temp_lo * ((master_volume << 14) - master_volume)) / 16129;
-            temp_lo = temp_lo_2 * D_8005CFCC[arg2 * 16 + 1];
-            temp_a0_2 = D_800572C0[var_t2].value;
+            temp_lo = temp_lo_2 * g_vab_cur_prog_table[arg2 * 16 + 1];
+            temp_a0_2 = g_spu_vm_voice_tone_idx[var_t2].value;
             temp_lo = ((u32)temp_lo * g_ns_vpage_pool[((arg2 * 16 + temp_a0_2) << 5) + 2]) / 16129U;
             temp_lo_2 = (u32) (temp_lo * temp_s2->field_74) / 127U;
             var_t1 = (u32) (temp_lo * temp_s2->field_76) / 127U;
@@ -61,7 +61,7 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             } else {
                 var_a1 = (u32) (temp_lo_2 * (0x7F - temp_v1_3)) / 63U;
             }
-            temp_v1_4 = D_8005CFCC[D_800572BE[var_t2].value * 16 + 4];
+            temp_v1_4 = g_vab_cur_prog_table[g_spu_vm_voice_tone_prog[var_t2].value * 16 + 4];
             if (temp_v1_4 < 0x40U) {
                 var_t1 = (u32) (var_t1 * temp_v1_4) / 63U;
             } else {
@@ -78,7 +78,7 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             } else {
                 var_a1 = (u32) (var_a1 * (0x7F - temp_v1_5)) / 63U;
             }
-            if (D_800583F8 == 1) {
+            if (g_spu_vm_mono_flag == 1) {
                 if (var_a1 < var_t1) {
                     var_a1 = var_t1;
                 } else {

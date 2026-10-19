@@ -50,31 +50,31 @@ typedef struct SaveObj {
 extern SaveObj *gp_crash_obj;
 
 extern s32 gp_next_lid;
-extern SaveObj *D_800618CC;
+extern SaveObj *g_shader_obj_color_scale;
 
 
-s32 D_800564C8 = -1;
+s32 gp_shader_prev_mode = -1;
 s32 gp_octree_root = 0;
 
-static s32 D_800565EC;
-static s32 D_800565F0;
-static s32 D_800565F4;
-static s32 D_800565F8;
-static s32 D_800565FC;
-static s32 D_80056600;
-static s32 D_80056604;
-static s32 D_80056608;
-static s32 D_8005660C;
-static s32 D_80056610;
-static s32 D_80056614;
-static s32 D_80056618;
-static s32 D_8005661C;
-static s32 D_80056620;
-static s32 D_80056624;
-static s32 D_80056628;
-static s32 D_8005662C;
-static s32 D_80056630;
-static s32 D_80056634[2];
+static s32 gp_shader_param_0;
+static s32 gp_shader_param_1;
+static s32 gp_shader_param_2;
+static s32 gp_shader_param_3;
+static s32 gp_shader_param_4;
+static s32 gp_shader_param_5;
+static s32 gp_shader_param_6;
+static s32 gp_shader_param_7;
+static s32 gp_shader_param_8;
+static s32 gp_shader_param_9;
+static s32 gp_shader_param_10;
+static s32 gp_shader_param_11;
+static s32 gp_shader_param_12;
+static s32 gp_shader_param_13;
+static s32 gp_shader_param_14;
+static s32 gp_shader_param_15;
+static s32 gp_shader_param_16;
+static s32 gp_shader_param_17;
+static s32 gp_shader_param_vec[2];
 
 void Gfx_TransformWorldsRipple(s32);
 s32 Math_Randb(s32);
@@ -86,21 +86,21 @@ void Shader_ParamsUpdateRipple(s32 arg0)
     switch (g_ns_page_pool[0]->level_id) {
     case 0xF:
     case 0x18:
-        D_80056474 = 0xA;
-        D_80056478 = 0x7F;
+        gp_shader_ripple_speed = 0xA;
+        gp_shader_ripple_amp = 0x7F;
         break;
     case 0x17:
-        D_80056474 = 0xA;
-        D_80056478 = 0x7F;
+        gp_shader_ripple_speed = 0xA;
+        gp_shader_ripple_amp = 0x7F;
         break;
     case 0x24:
     case 0x33:
-        D_80056474 = 4;
-        D_80056478 = 0x7F;
+        gp_shader_ripple_speed = 4;
+        gp_shader_ripple_amp = 0x7F;
         break;
     default:
-        D_80056474 = 1;
-        D_80056478 = 0x17;
+        gp_shader_ripple_speed = 1;
+        gp_shader_ripple_amp = 0x17;
         break;
     }
     if (arg0 != 0) {
@@ -118,54 +118,54 @@ void Shader_ParamsUpdate(s32 arg0)
     if (arg0 != 0) {
         gp_ripple_amp = 0x800;
         gp_ripple_freq = 0xFF;
-        D_80056454 = 0xFF;
-        D_80056458 = 0xFF;
+        gp_shader_tint_r = 0xFF;
+        gp_shader_tint_g = 0xFF;
         gp_lightning_state = 0x800;
         gp_fade_step = 0;
-        D_80056444 = 0;
-        D_80056448 = 0;
+        gp_shader_color_g = 0;
+        gp_shader_color_b = 0;
         gp_octree_root = 0;
-        D_800564C8 = -1;
+        gp_shader_prev_mode = -1;
         switch (g_ns_page_pool[0]->level_id) {
         case 0x21:
             gp_ripple_amp = 0;
             gp_ripple_freq = 0xC8;
-            D_80056454 = 0x50;
-            D_80056458 = 0;
+            gp_shader_tint_r = 0x50;
+            gp_shader_tint_g = 0;
             break;
         case 0x20:
         case 0x23:
             gp_ripple_amp = 0;
             gp_lightning_state = 0x640;
-            D_80056600 = 0xA5;
-            D_80056604 = 0x5A;
-            D_80056608 = 0x64;
-            D_8005660C = 0xFF;
-            D_80056610 = 0x4B;
-            D_80056614 = 0;
-            D_800565F4 = 0xA5;
-            D_800565F8 = 0x5A;
-            D_800565FC = 0x64;
+            gp_shader_param_5 = 0xA5;
+            gp_shader_param_6 = 0x5A;
+            gp_shader_param_7 = 0x64;
+            gp_shader_param_8 = 0xFF;
+            gp_shader_param_9 = 0x4B;
+            gp_shader_param_10 = 0;
+            gp_shader_param_2 = 0xA5;
+            gp_shader_param_3 = 0x5A;
+            gp_shader_param_4 = 0x64;
             break;
         case 5:
             gp_ripple_amp = 0;
             gp_ripple_freq = 0xEE;
-            D_80056454 = 0xEE;
-            D_80056458 = 0x3C;
+            gp_shader_tint_r = 0xEE;
+            gp_shader_tint_g = 0x3C;
             break;
         case 0x13:
             gp_ripple_amp = 0;
             gp_ripple_freq = 0;
-            D_80056454 = 0xF0;
-            D_80056458 = 0xFF;
+            gp_shader_tint_r = 0xF0;
+            gp_shader_tint_g = 0xFF;
             break;
         case 0xA:
         case 0x1C:
         case 0x1D:
             gp_ripple_amp = 0;
             gp_ripple_freq = 0xFF;
-            D_80056454 = 0x64;
-            D_80056458 = 0;
+            gp_shader_tint_r = 0x64;
+            gp_shader_tint_g = 0;
             break;
         case 3:
         case 6:
@@ -173,81 +173,81 @@ void Shader_ParamsUpdate(s32 arg0)
         case 0x37:
             gp_ripple_amp = 0;
             gp_ripple_freq = 0xFF;
-            D_80056454 = 0x2B;
-            D_80056458 = 0xB;
+            gp_shader_tint_r = 0x2B;
+            gp_shader_tint_g = 0xB;
             break;
         case 0x28:
         case 0x2A:
-            D_80056618 = 0;
+            gp_shader_param_11 = 0;
             gp_dark_cone_rot = 0;
-            D_80056464 = 0xA;
-            D_80056624 = 0xFFF;
-            D_80056630 = 0x7D0;
-            D_8005646C = -0x36B0;
+            gp_shader_dark_radius = 0xA;
+            gp_shader_param_14 = 0xFFF;
+            gp_shader_param_17 = 0x7D0;
+            gp_shader_dark_z_bias = -0x36B0;
             break;
         }
     } else {
         switch (g_ns_page_pool[0]->level_id) {
         case 0x28:
         case 0x2A:
-            if ((v1 = (s32)D_800618CC) != 0) {
-                D_800566D4 = ((SaveObj *)v1)->transform.trans.x;
-                D_800566D8 = ((SaveObj *)v1)->transform.trans.y;
-                D_800566DC = ((SaveObj *)v1)->transform.trans.z;
+            if ((v1 = (s32)g_shader_obj_color_scale) != 0) {
+                gp_dark_target_x = ((SaveObj *)v1)->transform.trans.x;
+                gp_dark_target_y = ((SaveObj *)v1)->transform.trans.y;
+                gp_dark_target_z = ((SaveObj *)v1)->transform.trans.z;
             } else {
-                D_800566D4 = gp_crash_obj->transform.trans.x;
-                D_800566D8 = gp_crash_obj->transform.trans.y;
-                D_800566DC = gp_crash_obj->transform.trans.z;
+                gp_dark_target_x = gp_crash_obj->transform.trans.x;
+                gp_dark_target_y = gp_crash_obj->transform.trans.y;
+                gp_dark_target_z = gp_crash_obj->transform.trans.z;
             }
             v1 = g_pause_obj;
             if (v1 != 0) {
-                if (v1 != D_80056618) {
-                    D_8005661C = -0x1F40;
-                    D_80056620 = -0x1F4;
-                    D_80056628 = 0x4B;
-                    D_8005662C = -0x4B;
+                if (v1 != gp_shader_param_11) {
+                    gp_shader_param_12 = -0x1F40;
+                    gp_shader_param_13 = -0x1F4;
+                    gp_shader_param_15 = 0x4B;
+                    gp_shader_param_16 = -0x4B;
                 }
             } else {
-                if (D_80056618 != 0) {
-                    D_8005661C = 0xFFF;
-                    D_80056620 = 0x64;
-                    D_80056628 = 0x7D0;
-                    D_8005662C = 0x14;
+                if (gp_shader_param_11 != 0) {
+                    gp_shader_param_12 = 0xFFF;
+                    gp_shader_param_13 = 0x64;
+                    gp_shader_param_15 = 0x7D0;
+                    gp_shader_param_16 = 0x14;
                 }
             }
-            D_80056618 = v1;
-            if (D_80056624 != D_8005661C) {
-                if ((D_80056624 < D_8005661C && D_80056624 + D_80056620 >= D_8005661C) ||
-                    (D_80056624 > D_8005661C && D_80056624 + D_80056620 <= D_8005661C)) {
-                    D_80056620 = 0;
-                    D_80056624 = D_8005661C;
+            gp_shader_param_11 = v1;
+            if (gp_shader_param_14 != gp_shader_param_12) {
+                if ((gp_shader_param_14 < gp_shader_param_12 && gp_shader_param_14 + gp_shader_param_13 >= gp_shader_param_12) ||
+                    (gp_shader_param_14 > gp_shader_param_12 && gp_shader_param_14 + gp_shader_param_13 <= gp_shader_param_12)) {
+                    gp_shader_param_13 = 0;
+                    gp_shader_param_14 = gp_shader_param_12;
                 } else {
-                    D_80056624 += D_80056620;
+                    gp_shader_param_14 += gp_shader_param_13;
                 }
             }
-            if (D_80056630 != D_80056628) {
-                if ((D_80056630 < D_80056628 && D_80056630 + D_8005662C >= D_80056628) ||
-                    (D_80056630 > D_80056628 && D_80056630 + D_8005662C <= D_80056628)) {
-                    D_8005662C = 0;
-                    D_80056630 = D_80056628;
+            if (gp_shader_param_17 != gp_shader_param_15) {
+                if ((gp_shader_param_17 < gp_shader_param_15 && gp_shader_param_17 + gp_shader_param_16 >= gp_shader_param_15) ||
+                    (gp_shader_param_17 > gp_shader_param_15 && gp_shader_param_17 + gp_shader_param_16 <= gp_shader_param_15)) {
+                    gp_shader_param_16 = 0;
+                    gp_shader_param_17 = gp_shader_param_15;
                 } else {
-                    D_80056630 += D_8005662C;
+                    gp_shader_param_17 += gp_shader_param_16;
                 }
             }
-            D_80056468 = D_80056624;
-            D_80056470 = D_80056630;
+            gp_shader_dark_intensity = gp_shader_param_14;
+            gp_shader_depth_cue_flag = gp_shader_param_17;
             break;
         case 0x21:
             switch (gp_octree_root) {
             case 0:
-                D_800565EC = Math_Randb(1000);
-                D_800565F0 = (D_800565EC - gp_lightning_state) / 4;
-                gp_lightning_state += D_800565F0;
+                gp_shader_param_0 = Math_Randb(1000);
+                gp_shader_param_1 = (gp_shader_param_0 - gp_lightning_state) / 4;
+                gp_lightning_state += gp_shader_param_1;
                 break;
             case 1:
             case 2:
             case 3:
-                gp_lightning_state += D_800565F0;
+                gp_lightning_state += gp_shader_param_1;
                 break;
             }
             gp_octree_root = ++gp_octree_root % 4;
@@ -258,11 +258,11 @@ void Shader_ParamsUpdate(s32 arg0)
         case 0x1D:
             switch (gp_octree_root) {
             case 0:
-                D_800565EC = Math_Randb(0x5DC);
-                gp_lightning_state += (D_800565EC - gp_lightning_state) / 2;
+                gp_shader_param_0 = Math_Randb(0x5DC);
+                gp_lightning_state += (gp_shader_param_0 - gp_lightning_state) / 2;
                 break;
             case 1:
-                gp_lightning_state = D_800565EC;
+                gp_lightning_state = gp_shader_param_0;
                 break;
             }
             gp_octree_root = (gp_octree_root + 1) % 2;
@@ -271,18 +271,18 @@ void Shader_ParamsUpdate(s32 arg0)
         case 0x23:
             switch (gp_octree_root) {
             case 0:
-                D_800565EC = Math_Randb(100);
-                D_800565F4 = D_80056600 + (D_8005660C - D_80056600) * D_800565EC / 100;
-                D_800565F8 = D_80056604 + (D_80056610 - D_80056604) * D_800565EC / 100;
-                D_800565FC = D_80056608 + (D_80056614 - D_80056608) * D_800565EC / 100;
-                gp_ripple_freq += (D_800565F4 - gp_ripple_freq) / 2;
-                D_80056454 += (D_800565F8 - D_80056454) / 2;
-                D_80056458 += (D_800565FC - D_80056458) / 2;
+                gp_shader_param_0 = Math_Randb(100);
+                gp_shader_param_2 = gp_shader_param_5 + (gp_shader_param_8 - gp_shader_param_5) * gp_shader_param_0 / 100;
+                gp_shader_param_3 = gp_shader_param_6 + (gp_shader_param_9 - gp_shader_param_6) * gp_shader_param_0 / 100;
+                gp_shader_param_4 = gp_shader_param_7 + (gp_shader_param_10 - gp_shader_param_7) * gp_shader_param_0 / 100;
+                gp_ripple_freq += (gp_shader_param_2 - gp_ripple_freq) / 2;
+                gp_shader_tint_r += (gp_shader_param_3 - gp_shader_tint_r) / 2;
+                gp_shader_tint_g += (gp_shader_param_4 - gp_shader_tint_g) / 2;
                 break;
             case 1:
-                gp_ripple_freq = D_800565F4;
-                D_80056454 = D_800565F8;
-                D_80056458 = D_800565FC;
+                gp_ripple_freq = gp_shader_param_2;
+                gp_shader_tint_r = gp_shader_param_3;
+                gp_shader_tint_g = gp_shader_param_4;
                 break;
             }
             gp_octree_root = (gp_octree_root + 1) % 2;
@@ -291,29 +291,29 @@ void Shader_ParamsUpdate(s32 arg0)
         case 6:
         case 7:
         case 0x37:
-            if (D_80052D74[gp_octree_root] == -1) {
+            if (g_shader_lightning_ramp[gp_octree_root] == -1) {
                 gp_octree_root = 0;
             }
-            gp_lightning_state = D_80052D74[gp_octree_root++];
+            gp_lightning_state = g_shader_lightning_ramp[gp_octree_root++];
             break;
         case 0x13:
-            if (D_80052D74[gp_octree_root] == -1) {
+            if (g_shader_lightning_ramp[gp_octree_root] == -1) {
                 gp_octree_root = 0;
             }
-            gp_lightning_state = D_80052D74[gp_octree_root++] >> 1;
+            gp_lightning_state = g_shader_lightning_ramp[gp_octree_root++] >> 1;
             break;
         case 0x1B:
         case 0x22:
         case 0x2E:
-            if (D_800564C8 != -1) {
-                v2 = D_80053054[D_800564C8][gp_octree_root];
+            if (gp_shader_prev_mode != -1) {
+                v2 = g_shader_color_table_ptrs[gp_shader_prev_mode][gp_octree_root];
                 if (v2 == -1) {
                     *(volatile s32 *)&gp_ripple_amp = 0;
                     gp_lightning_state = 0;
-                    D_800564C8 = -1;
+                    gp_shader_prev_mode = -1;
                 } else {
                     gp_ripple_amp = v2;
-                    gp_lightning_state = D_80053054[D_800564C8][gp_octree_root++];
+                    gp_lightning_state = g_shader_color_table_ptrs[gp_shader_prev_mode][gp_octree_root++];
                 }
             } else {
                 gp_ripple_amp = 0;
@@ -322,27 +322,27 @@ void Shader_ParamsUpdate(s32 arg0)
                     if (g_ns_page_pool[0]->level_id == 0x22 || g_ns_page_pool[0]->level_id == 0x2E) {
                         switch (Math_Randb(3)) {
                         case 0:
-                            D_800564C8 = 5;
+                            gp_shader_prev_mode = 5;
                             break;
                         case 1:
-                            D_800564C8 = 4;
+                            gp_shader_prev_mode = 4;
                             break;
                         case 2:
-                            D_800564C8 = Math_Randb(4);
+                            gp_shader_prev_mode = Math_Randb(4);
                             break;
                         }
                     } else {
-                        D_800564C8 = Math_Randb(6);
+                        gp_shader_prev_mode = Math_Randb(6);
                     }
                     gp_octree_root = 0;
                     if (gp_next_lid == 0 &&
                         (g_ns_page_pool[0]->level_id == 0x1B || g_ns_page_pool[0]->level_id == 0x22 || g_ns_page_pool[0]->level_id == 0x2E) &&
-                        (v3 = frame_counter) - D_80056634[1] > 0x1800) {
-                        __builtin_memcpy(name, D_800564D0, 6);
+                        (v3 = frame_counter) - gp_shader_param_vec[1] > 0x1800) {
+                        __builtin_memcpy(name, gp_str_light_name_tmpl, 6);
                         for (sp18 = 0; sp18 < 1; sp18++) {
-                            D_80056634[sp18 + 1] = D_80056634[sp18];
+                            gp_shader_param_vec[sp18 + 1] = gp_shader_param_vec[sp18];
                         }
-                        D_80056634[0] = v3;
+                        gp_shader_param_vec[0] = v3;
                         name[2] += Math_Randb(3);
                         sp1C = Ns_StringToEID(name);
                         sp18 = (Math_Randb(0x4CC) + 0xD99) >> 3;

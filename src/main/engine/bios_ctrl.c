@@ -5,7 +5,7 @@
 #include "engine_state.h"
 
 extern EngineState *gp_card;
-extern EngineByteRecord D_80056590[];
+extern EngineByteRecord gp_str_card_invalid_tag[];
 extern EngineByteRecord g_card_filename[];
 
 void Card_ResetStateAndFlags(s32);
@@ -14,13 +14,13 @@ s32 Card_CheckNewDevice(void);
 s32 Card_ProbeTimeout(void);
 s32 Card_StartFormat(void);
 
-static __inline__ s32 func_8003D008_inline(void)
+static __inline__ s32 Card_ClearFlag20_inline(void)
 {
     gp_card->word04 &= ~0x20;
     return 0;
 }
 
-static __inline__ s32 func_8003D028_inline(s32 value)
+static __inline__ s32 Card_StartWritePart_inline(s32 value)
 {
     EngineState *state = gp_card;
     s32 result = 0;
@@ -38,7 +38,7 @@ static __inline__ s32 func_8003D028_inline(s32 value)
     return result;
 }
 
-static __inline__ s32 func_8003D3D8_inline(s32 value)
+static __inline__ s32 Card_StartReadPart_inline(s32 value)
 {
     EngineState *state = gp_card;
     s32 result = 0;
@@ -56,13 +56,13 @@ static __inline__ s32 func_8003D3D8_inline(s32 value)
     return result;
 }
 
-static __inline__ s32 func_8003D1B4_inline(void)
+static __inline__ s32 Card_InvalidateFilename_inline(void)
 {
-    g_card_filename[0] = D_80056590[0];
+    g_card_filename[0] = gp_str_card_invalid_tag[0];
     return 0;
 }
 
-static __inline__ s32 func_8003D4AC_inline(void)
+static __inline__ s32 Card_RequestCheck_inline(void)
 {
     s32 result;
     if (gp_card) {
@@ -81,11 +81,11 @@ s32 Card_Control(s32 op, s32 value)
     case 1:
         return 1;
     case 2:
-        return func_8003D008_inline();
+        return Card_ClearFlag20_inline();
     case 3:
-        return func_8003D028_inline(value);
+        return Card_StartWritePart_inline(value);
     case 4:
-        return func_8003D3D8_inline(value);
+        return Card_StartReadPart_inline(value);
     case 5:
         return Card_StartFormat();
     case 6:
@@ -95,9 +95,9 @@ s32 Card_Control(s32 op, s32 value)
     case 8:
         return Card_ProbeTimeout();
     case 9:
-        return func_8003D1B4_inline();
+        return Card_InvalidateFilename_inline();
     case 10:
-        return func_8003D4AC_inline();
+        return Card_RequestCheck_inline();
     default:
         return 1;
     }

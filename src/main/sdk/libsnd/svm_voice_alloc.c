@@ -35,11 +35,11 @@ typedef struct {
 
 extern SvmCur g_midi_sep;
 
-extern VoiceStruct D_800572AC[];
-extern VoiceU16 D_800572AE[];
-extern VoiceU16 D_800572B2[];
-extern VoiceS16 D_800572C4[];
-extern VoiceU8 D_800572C7[];
+extern VoiceStruct g_spu_vm_voice_table[];
+extern VoiceU16 g_spu_vm_voice_age[];
+extern VoiceU16 g_spu_vm_voice_envx[];
+extern VoiceS16 g_spu_vm_voice_prior[];
+extern VoiceU8 g_spu_vm_voice_auto_flag[];
 void _SpuVmSetNoiseVoice(s32, s32);
 
 u8 SpuVmAlloc(void)
@@ -59,25 +59,25 @@ u8 SpuVmAlloc(void)
     var_t4 = g_midi_sep.unkF;
     var_t1 = 0x63;
     for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
-        if ((D_800572C7[var_a3].value == 0) && (D_800572B2[var_a3].value == 0)) {
+        if ((g_spu_vm_voice_auto_flag[var_a3].value == 0) && (g_spu_vm_voice_envx[var_a3].value == 0)) {
             var_s0 = var_a3;
             break;
         }
-        if (D_800572C4[var_a3].value < var_t4) {
-            var_t4 = D_800572C4[var_a3].value;
-            var_t3 = D_800572B2[var_a3].value;
-            var_t0 = D_800572AE[var_a3].value;
+        if (g_spu_vm_voice_prior[var_a3].value < var_t4) {
+            var_t4 = g_spu_vm_voice_prior[var_a3].value;
+            var_t3 = g_spu_vm_voice_envx[var_a3].value;
+            var_t0 = g_spu_vm_voice_age[var_a3].value;
             var_t1 = var_a3;
             var_t2 = 1;
-        } else if (D_800572C4[var_a3].value == var_t4) {
+        } else if (g_spu_vm_voice_prior[var_a3].value == var_t4) {
             var_t2 += 1;
-            if (D_800572B2[var_a3].value < var_t3) {
-                var_t3 = D_800572B2[var_a3].value;
-                var_t0 = D_800572AE[var_a3].value;
+            if (g_spu_vm_voice_envx[var_a3].value < var_t3) {
+                var_t3 = g_spu_vm_voice_envx[var_a3].value;
+                var_t0 = g_spu_vm_voice_age[var_a3].value;
                 var_t1 = var_a3;
-            } else if (D_800572B2[var_a3].value == var_t3) {
-                if (var_t0 < (s16)D_800572AE[var_a3].value) {
-                    var_t0 = D_800572AE[var_a3].value;
+            } else if (g_spu_vm_voice_envx[var_a3].value == var_t3) {
+                if (var_t0 < (s16)g_spu_vm_voice_age[var_a3].value) {
+                    var_t0 = g_spu_vm_voice_age[var_a3].value;
                     var_t1 = var_a3;
                 }
             }
@@ -91,11 +91,11 @@ u8 SpuVmAlloc(void)
     }
     if (var_s0 < gp_spawn_count) {
         for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
-            (D_800572AC + var_a3)->unk2 = D_800572AE[var_a3].value + 1;
+            (g_spu_vm_voice_table + var_a3)->unk2 = g_spu_vm_voice_age[var_a3].value + 1;
         }
-        D_800572AE[var_s0].value = 0;
-        D_800572C4[var_s0].value = g_midi_sep.unkF;
-        if (D_800572C7[var_s0].value == 2) {
+        g_spu_vm_voice_age[var_s0].value = 0;
+        g_spu_vm_voice_prior[var_s0].value = g_midi_sep.unkF;
+        if (g_spu_vm_voice_auto_flag[var_s0].value == 2) {
             _SpuVmSetNoiseVoice(0, 0xFFFFFF);
         }
     }

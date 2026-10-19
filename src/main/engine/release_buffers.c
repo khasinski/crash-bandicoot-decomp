@@ -4,7 +4,7 @@
 
 void LIBC_Free(void *);
 s32 Slst_Kill(void) {
- LIBC_Free(D_80056700);
- LIBC_Free(D_800566BC);
+ LIBC_Free(gp_slst_poly_list_a);
+ LIBC_Free(gp_slst_poly_list_b);
  return -255;
 }

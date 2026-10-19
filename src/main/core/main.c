@@ -62,7 +62,7 @@ typedef struct DrawStampView {
 
 extern NsState g_ns;
 extern s32 gp_pbak_mode;
-extern s32 D_800618BC;
+extern s32 g_title_tile_load_cnt;
 
 void Pad_Update(void);
 void Ns_Open(void *, s32, s32);
@@ -73,7 +73,7 @@ s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, 
 void Core_ObjectsCreate(void)
 {
     Pad_Update();
-    D_800618BC = 0;
+    g_title_tile_load_cnt = 0;
     switch (gp_pbak_mode) {
     case 0x38:
     case 0x39:
@@ -88,9 +88,9 @@ void Core_ObjectsCreate(void)
         Ns_Open(&g_ns.level->eid20, 0, 1);
         break;
     default:
-        D_800618A8 = GOOL_CreateObject(&g_handles, 4, 0, 0, 0, 0);
-        D_800618A4 = GOOL_CreateObject(&g_handles, 4, 1, 0, 0, 0);
-        D_800618C4 = GOOL_CreateObject(&g_handles, 4, 5, 0, 0, 0);
+        g_hud_fruit_obj = GOOL_CreateObject(&g_handles, 4, 0, 0, 0, 0);
+        g_hud_life_obj = GOOL_CreateObject(&g_handles, 4, 1, 0, 0, 0);
+        g_hud_pickup_obj = GOOL_CreateObject(&g_handles, 4, 5, 0, 0, 0);
         Ns_Open(&g_ns.level->eid14, 0, 1);
         Ns_Open(&g_ns.level->eid28, 0, 1);
         Ns_Open(&g_ns.level->eid88, 0, 1);
@@ -106,26 +106,26 @@ void Core_ObjectsCreate(void)
 extern s32 g_gool_pads;
 extern s32 g_key_count;
 extern DrawStampView *g_db_prev;
-extern u32 D_800566B0;
+extern u32 gp_next_level_ldat_eid;
 extern void *gp_crash_obj;
 extern s32 gp_pbak_frame_idx;
 
-extern s32 D_800618A0;
-extern s32 D_80061A3C;
-extern s32 D_800619A0;
+extern s32 g_level_restart_fade_cnt;
+extern s32 g_level_frame_accum;
+extern s32 g_checkpoint_id_2;
 extern s32 g_cur_lid_ro;
 
 /* .sdata owned by this unit (gp-addressed only here). */
 s32 gp_cur_lid = 0;
 s32 gp_next_lid = 0;
 s32 gp_paused = 0x1000;
-s32 D_80056408 = 0x200000;
+s32 gp_ram_size_bytes = 0x200000;
 s32 gp_use_cd = 0;
 
 /* .sbss owned by this unit. */
-asm(".globl gp_rcnt_event, D_800565BC");
+asm(".globl gp_rcnt_event, gp_core_init_done");
 u32 gp_rcnt_event;
-u32 D_800565BC;
+u32 gp_core_init_done;
 
 void Level_InitGlobals(void);
 void Ns_Init(NsState *ns, s32 level);
@@ -181,7 +181,7 @@ void CORE_Loop(s32 level)
                     }
                     gp_use_cd = 1;
                     gp_rcnt_event = engine_counter[0];
-                    D_800565BC = g_db_prev->stamp;
+                    gp_core_init_done = g_db_prev->stamp;
                 }
             } else if (g_pause_state.pause_object != 0) {
                 arg = 0;
@@ -189,7 +189,7 @@ void CORE_Loop(s32 level)
                 g_pause_state.pause_object = 0;
                 gp_use_cd = -1;
                 engine_counter[0] = gp_rcnt_event;
-                g_db_prev->stamp = D_800565BC;
+                g_db_prev->stamp = gp_core_init_done;
             }
         } else {
 not_paused:
@@ -197,13 +197,13 @@ not_paused:
         }
 
         /* 0x6396347F is the null resource ID. */
-        if (gp_crash_obj != 0 && D_800566B0 != 0x6396347F) {
-            Pbak_Play(&D_800566B0);
+        if (gp_crash_obj != 0 && gp_next_level_ldat_eid != 0x6396347F) {
+            Pbak_Play(&gp_next_level_ldat_eid);
         }
 
         /* Game over and continue states return to the map (level 0x19). */
         if (gp_pbak_frame_idx == -1 && g_ns.level->level_id != 0x19
-            && (D_800618D0 == 0x200 || D_800618D0 == 0x300 || D_800618D0 == 0x400)) {
+            && (g_game_substate == 0x200 || g_game_substate == 0x300 || g_game_substate == 0x400)) {
             gp_pbak_frame_idx = 0x19;
         }
         /* Level change; -2 restores the saved level after a bonus round. */
@@ -212,7 +212,7 @@ not_paused:
             level = gp_pbak_frame_idx;
             Gool_SendToColliders(0, 0x2900, 0, 0, 0);
             if (gp_pbak_frame_idx == -2) {
-                level = D_800579A4;
+                level = g_pbak_target_level_id;
                 restore = 1;
                 gp_cur_zone = 1;
             } else {
@@ -222,12 +222,12 @@ not_paused:
             Ns_Kill(&g_ns);
             gp_next_lid = 0;
             if (level == 0x19) {
-                D_800618A0 = 0;
-                D_80061A3C = 0;
+                g_level_restart_fade_cnt = 0;
+                g_level_frame_accum = 0;
                 g_checkpoint_id = 0;
-                D_800618FC = 0;
+                g_level_load_timer = 0;
                 g_mono = 0;
-                D_800619A0 = -1;
+                g_checkpoint_id_2 = -1;
             }
             Ns_Init(&g_ns, level);
             Core_ObjectsCreate();
@@ -235,7 +235,7 @@ not_paused:
                 gp_pbak_frame_idx = -2;
                 Level_SpawnObjects2();
                 gp_pbak_frame_idx = -1;
-                Level_Restart(D_80057974);
+                Level_Restart(g_checkpoint_save_state);
             }
             gp_cur_zone = 0;
         }

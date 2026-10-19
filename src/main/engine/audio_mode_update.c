@@ -6,30 +6,30 @@
 void Midi_Control(AudioChannel *, u32, s32);
 void SsSepSetVol();
 
-extern AudioChannel D_80056ED0[];
+extern AudioChannel g_midi_seq_slot_b[];
 extern s32 g_cur_map_level[];
 extern s32 g_levels_unlocked[];
 
 void Midi_TogglePlayback(s32 request) {
     s32 mode;
 
-    if (D_8005665C >= 2) {
+    if (gp_midi_open_seq_cnt >= 2) {
         mode = request >> 8;
         if (gp_card_chan == 3) {
             if ((mode <= 0) || (mode < 3) || (mode != gp_card_chan)) {
-                Midi_Control(D_80056ED0, 1, 0);
-                Midi_Control(D_80056ED0 - 1, 3, 0);
-                D_8005666C = 0;
+                Midi_Control(g_midi_seq_slot_b, 1, 0);
+                Midi_Control(g_midi_seq_slot_b - 1, 3, 0);
+                gp_midi_default_rvol = 0;
             } else {
                 if ((g_levels_unlocked[0] != 0) || (g_cur_map_level[0] != 0)) {
-                    D_8005666C = 0x3FFF;
+                    gp_midi_default_rvol = 0x3FFF;
                 } else {
-                    D_8005666C = 0;
+                    gp_midi_default_rvol = 0;
                 }
-                Midi_Control(D_80056EBC, 2, 0);
-                Midi_Control(D_80056EBC + 1, 0, 1);
+                Midi_Control(g_midi_channel_states, 2, 0);
+                Midi_Control(g_midi_channel_states + 1, 0, 1);
             }
-            SsSepSetVol(gp_midi_vol, D_80056ED0[0].channel, (s16) D_8005666C, (s16) D_8005666C);
+            SsSepSetVol(gp_midi_vol, g_midi_seq_slot_b[0].channel, (s16) gp_midi_default_rvol, (s16) gp_midi_default_rvol);
         }
     }
 }

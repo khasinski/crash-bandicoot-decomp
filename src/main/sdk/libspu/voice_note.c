@@ -17,17 +17,17 @@ typedef struct {
     u8 gap00[0x12];
     u16 programs;
 } VabHeader;
-extern u8 D_800572AC[];
-extern u8 D_800572AE[];
-extern u8 D_800572B4[];
-extern u8 D_800572B6[];
-extern u8 D_800572BA[];
-extern u8 D_800572BE[];
-extern u8 D_800572C0[];
-extern u8 D_800572C2[];
-extern u8 D_800572C4[];
-extern u8 D_800572C7[];
-extern VabHeader *D_8005CFDC;
+extern u8 g_spu_vm_voice_table[];
+extern u8 g_spu_vm_voice_age[];
+extern u8 g_spu_vm_voice_vol[];
+extern u8 g_spu_vm_voice_pan[];
+extern u8 g_spu_vm_voice_seq_sep[];
+extern u8 g_spu_vm_voice_tone_prog[];
+extern u8 g_spu_vm_voice_tone_idx[];
+extern u8 g_spu_vm_voice_vab_id[];
+extern u8 g_spu_vm_voice_prior[];
+extern u8 g_spu_vm_voice_auto_flag[];
+extern VabHeader *g_vab_cur_master_vol;
 
 /* Shared note context; the sample cursor points 24 bytes into it. */
 extern u8 g_midi_sep[32];
@@ -51,20 +51,20 @@ s32 SpuVmKeyOn(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
         return -1;
     }
     {
-        D_8005E56E = arg0;
-        D_8005E55A = arg3;
-        D_8005E55B = 0;
+        g_spu_vm_cur_seq_sep_id = arg0;
+        g_spu_vm_cur_note = arg3;
+        g_spu_vm_cur_fine = 0;
         if (arg0 == 0x21) {
-            D_8005E55C = (s8) arg4;
+            g_spu_vm_cur_pan = (s8) arg4;
         } else {
-            D_8005E55C = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->field_12]) / 127);
+            g_spu_vm_cur_pan = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->field_12]) / 127);
         }
         g_midi_sep[5] = (s8) arg5;
-        temp_v0 = (arg2 * 0x10) + D_8005CFCC;
-        D_8005E562 = temp_v0[1];
-        D_8005E563 = temp_v0[4];
+        temp_v0 = (arg2 * 0x10) + g_vab_cur_prog_table;
+        g_spu_vm_cur_prog_vol = temp_v0[1];
+        g_spu_vm_cur_tone_pan = temp_v0[4];
         g_midi_sep[0] = temp_v0[0];
-        if ((u8)D_8005E55F >= D_8005CFDC->programs) {
+        if ((u8)g_spu_vm_cur_prog_tones >= g_vab_cur_master_vol->programs) {
             return -1;
         }
         {
@@ -91,27 +91,27 @@ s32 SpuVmKeyOn(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
                         temp_v0_3 = SpuVmAlloc(0);
                         ((s16 *)temp_s0_2)[1] = temp_v0_3;
                         if (temp_v0_3 < (s32) gp_spawn_count) {
-                            *(u8*)(D_800572C7 + (temp_v0_3 * 0x34)) = 1;
-                            *(s16*)(D_800572AE + (((s16 *)temp_s0_2)[1] * 0x34)) = 0;
-                            *(s16*)(D_800572BA + (((s16 *)temp_s0_2)[1] * 0x34)) = arg0;
-                            *(s16*)(D_800572C2 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x17];
-                            *(s16*)(D_800572BC + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x11];
-                            *(s16*)(D_800572BE + (((s16 *)temp_s0_2)[1] * 0x34)) = arg2;
+                            *(u8*)(g_spu_vm_voice_auto_flag + (temp_v0_3 * 0x34)) = 1;
+                            *(s16*)(g_spu_vm_voice_age + (((s16 *)temp_s0_2)[1] * 0x34)) = 0;
+                            *(s16*)(g_spu_vm_voice_seq_sep + (((s16 *)temp_s0_2)[1] * 0x34)) = arg0;
+                            *(s16*)(g_spu_vm_voice_vab_id + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x17];
+                            *(s16*)(g_spu_vm_voice_prog + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x11];
+                            *(s16*)(g_spu_vm_voice_tone_prog + (((s16 *)temp_s0_2)[1] * 0x34)) = arg2;
                             if (arg0 != 0x21) {
-                                *(s16*)(D_800572B4 + (((s16 *)temp_s0_2)[1] * 0x34)) = arg4;
+                                *(s16*)(g_spu_vm_voice_vol + (((s16 *)temp_s0_2)[1] * 0x34)) = arg4;
                             }
-                            *(u8*)(D_800572B6 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s8) arg5;
-                            *(s16*)(D_800572C0 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0xC];
-                            *(s16*)(D_800572B8 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) arg3;
-                            *(s16*)(D_800572C4 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x9];
-                            *(s16*)(D_800572AC + (((s16 *)temp_s0_2)[1] * 0x34)) = *(u16*)temp_s0_2;
+                            *(u8*)(g_spu_vm_voice_pan + (((s16 *)temp_s0_2)[1] * 0x34)) = (s8) arg5;
+                            *(s16*)(g_spu_vm_voice_tone_idx + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0xC];
+                            *(s16*)(g_spu_vm_voice_note + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) arg3;
+                            *(s16*)(g_spu_vm_voice_prior + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x9];
+                            *(s16*)(g_spu_vm_voice_table + (((s16 *)temp_s0_2)[1] * 0x34)) = *(u16*)temp_s0_2;
                             SpuVmDoAllocate();
                             if ((s16) *(u16*)temp_s0_2 == 0xFF) {
                                 vmNoiseOn(((s16 *)temp_s0_2)[1]);
                             } else {
                                 SpuVmKeyOnNow(temp_v0_2 & 0xFF, note2pitch() & 0xFFFF);
                             }
-                            var_s2 |= 1 << D_8005E572[0];
+                            var_s2 |= 1 << g_spu_vm_last_voice[0];
                         } else {
                             var_s2 = -1;
                         }
@@ -133,14 +133,14 @@ s32 SpuVmKeyOff(s16 arg0, s16 arg1, s16 arg2, u16 arg3) {
     count = 0;
     for (i = 0; i < gp_spawn_count; i++) {
         offset = i * 0x34;
-        if (*(s16 *)(D_800572B8 + offset) == arg3) {
-            if (*(s16 *)(D_800572BE + offset) == arg2) {
-                if (*(s16 *)(D_800572BA + offset) == arg0) {
-                    if (*(s16 *)(D_800572C2 + offset) == arg1) {
-                        if (*(s16 *)(D_800572AC + offset) == 0xFF) {
+        if (*(s16 *)(g_spu_vm_voice_note + offset) == arg3) {
+            if (*(s16 *)(g_spu_vm_voice_tone_prog + offset) == arg2) {
+                if (*(s16 *)(g_spu_vm_voice_seq_sep + offset) == arg0) {
+                    if (*(s16 *)(g_spu_vm_voice_vab_id + offset) == arg1) {
+                        if (*(s16 *)(g_spu_vm_voice_table + offset) == 0xFF) {
                             vmNoiseOff(i);
                         } else {
-                            D_8005E572[0] = i;
+                            g_spu_vm_last_voice[0] = i;
                             SpuVmKeyOffNow(0);
                         }
                         count += 1;

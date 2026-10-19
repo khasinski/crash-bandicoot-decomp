@@ -2,6 +2,6 @@
 .set noreorder /* don't insert nops after branches */
 
 /* Writable engine/frame counter word placed in .text immediately after RIncTickCount. */
-dlabel func_80034520
+dlabel g_rcnt_ticks
     /* 24D20 80034520 00000000 */  .word      0x00000000
-enddlabel func_80034520
+enddlabel g_rcnt_ticks

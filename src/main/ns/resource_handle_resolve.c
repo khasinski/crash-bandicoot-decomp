@@ -11,7 +11,7 @@ s32 Ns_Lookup(u32 *reference) {
     if (id & 1) {
         ResourceHandle *slot,*found;
         u32 key = id;
-        slot = *(ResourceHandle **)(((id >> 13) & 0x3FC) + (u32)D_8005C530);
+        slot = *(ResourceHandle **)(((id >> 13) & 0x3FC) + (u32)g_ns_hash_buckets);
         if (slot->id != id) {
             u32 candidate;
             found = slot + 1;

@@ -13,7 +13,7 @@ void *PutDrawEnv(Drawing *arg0) {
     GpuState *state = &g_gpu_debug_level;
 
     if (state->debug >= 2U) {
-        g_gpu_ot_status(D_80011304, arg0);
+        g_gpu_ot_status(g_str_draw_submit_putdrawenv_08x_n, arg0);
     }
     temp_s0 = arg0->packet;
     SetDrawEnv(temp_s0, arg0);
@@ -28,7 +28,7 @@ void DrawOTagEnv(s32 arg0, Drawing *arg1) {
     GpuState *state = &g_gpu_debug_level;
 
     if (state->debug >= 2U) {
-        g_gpu_ot_status(D_8001131C, arg0, arg1);
+        g_gpu_ot_status(g_str_draw_submit_drawotagenv_08x_08x_n, arg0, arg1);
     }
     temp_s0 = arg1->packet;
     SetDrawEnv(temp_s0, arg1);

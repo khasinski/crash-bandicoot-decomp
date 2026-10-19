@@ -125,7 +125,7 @@ typedef struct SubBoxList {
 } SubBoxList;
 
 extern SubBoxList g_obj_bounds;
-extern ZqVec D_800567F8;
+extern ZqVec gp_solid_prev_vel;
 
 void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
 void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
@@ -244,9 +244,9 @@ s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
     vel.y = in_vel->y;
     vel.z = in_vel->z;
     if (gp_wall_cache) {
-        if (ABS(D_800567F8.x - in_vel->x) < 10
-            && ABS(D_800567F8.y - in_vel->y) < 10
-            && ABS(D_800567F8.z - in_vel->z) < 10) {
+        if (ABS(gp_solid_prev_vel.x - in_vel->x) < 10
+            && ABS(gp_solid_prev_vel.y - in_vel->y) < 10
+            && ABS(gp_solid_prev_vel.z - in_vel->z) < 10) {
             vel.x = 0;
             vel.y = in_vel->y;
             vel.z = 0;
@@ -257,9 +257,9 @@ s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
         && ((trans->x - pos.x) >= 0 ? (trans->x - pos.x) < 2 : (pos.x - trans->x) < 2)
         && ((trans->y - pos.y) >= 0 ? (trans->y - pos.y) < 2 : (pos.y - trans->y) < 2)
         && ((trans->z - pos.z) >= 0 ? (trans->z - pos.z) < 2 : (pos.z - trans->z) < 2)) {
-        D_800567F8.x = in_vel->x;
-        D_800567F8.y = in_vel->y;
-        D_800567F8.z = in_vel->z;
+        gp_solid_prev_vel.x = in_vel->x;
+        gp_solid_prev_vel.y = in_vel->y;
+        gp_solid_prev_vel.z = in_vel->z;
         gp_wall_cache = 1;
     } else {
         gp_wall_cache = 0;
@@ -542,7 +542,7 @@ s32 Solid_StopAtFloorZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s
             obj->vel_y = 0;
         }
         obj->status_a |= flags;
-        obj->ground_time = D_80060E04[0];
+        obj->ground_time = g_level_zone_flags[0];
     }
     return res;
 }
@@ -650,7 +650,7 @@ s32 Solid_StopAtZone(SubObj *obj, ZqVec *v)
                 obj->impact_vel_y = obj->vel_y;
                 obj->vel_y = 0;
                 obj->status_a |= 1;
-                obj->ground_time = D_80060E04[0];
+                obj->ground_time = g_level_zone_flags[0];
             }
         }
     } else {

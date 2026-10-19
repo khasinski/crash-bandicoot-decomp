@@ -16,17 +16,17 @@ s32 Ns_EIDType(Request *arg0) {
     temp_a2 = arg0->id;
     var_v1 = 4;
     if (temp_a2 & 1) {
-        D_8005671D = 0;
+        gp_eid_str_term = 0;
         temp_a2 = temp_a2 >> 1;
         do {
-            D_80056718[var_v1] = D_80051728[temp_a2 & 0x3F];
+            gp_eid_str_buf[var_v1] = g_eid_charset_table[temp_a2 & 0x3F];
             var_v1 -= 1;
             temp_a2 = temp_a2 >> 6;
         } while (var_v1 >= 0);
     } else {
-        sprintf(D_80056718, D_80056414, temp_a2);
+        sprintf(gp_eid_str_buf, gp_str_eid_hex_fmt, temp_a2);
     }
-    switch (D_8005671C) {
+    switch (gp_eid_type_char) {
     case 0x56:
         return 1;
     case 0x58:

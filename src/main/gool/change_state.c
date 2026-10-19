@@ -192,7 +192,7 @@ void Gool_UpdateObjects(s32 arg0)
     s32 i;
     s32 *ptr;
 
-    D_80061888 = 0;
+    g_gool_update_clear_flag = 0;
     g_percent_complete = g_draw_stamp;
     gool_update.e04 = (*g_db_prev)->stamp / 34;
     if (gp_crash_obj != NULL) {
@@ -251,7 +251,7 @@ s32 GOOL_ChangeObjectState(GoolObj *arg0, s32 arg1, s32 arg2, s32 *arg3)
     } else {
         *arg0->sp++ = 0;
     }
-    arg0->state_stamp = *D_80060E04;
+    arg0->state_stamp = *g_level_zone_flags;
     if (arg0->tp != NULL && arg0 == *g_savestate) {
         GOOL_CreateObjectStackFrame(arg0, 0, 0xFFFF);
         arg0->pc = arg0->tp;

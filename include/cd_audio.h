@@ -3,18 +3,18 @@
 
 #include "common.h"
 extern volatile u8 *g_cd_reg0;
-extern volatile u8 *D_80055868;
-extern volatile u8 *D_8005586C;
-extern volatile u8 *D_80055870;
+extern volatile u8 *g_cd_reg1_ptr;
+extern volatile u8 *g_cd_reg2_ptr;
+extern volatile u8 *g_cd_reg3_ptr;
 
 static inline s32 CD_WriteVolumeRegisters(u8 *arg0) {
     *g_cd_reg0 = 2;
-    *D_8005586C = arg0[0];
-    *D_80055870 = arg0[1];
+    *g_cd_reg2_ptr = arg0[0];
+    *g_cd_reg3_ptr = arg0[1];
     *g_cd_reg0 = 3;
-    *D_80055868 = arg0[2];
-    *D_8005586C = arg0[3];
-    *D_80055870 = 0x20;
+    *g_cd_reg1_ptr = arg0[2];
+    *g_cd_reg2_ptr = arg0[3];
+    *g_cd_reg3_ptr = 0x20;
     return 0;
 }
 

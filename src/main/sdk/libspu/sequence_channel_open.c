@@ -81,7 +81,7 @@ s32 _SsInitSoundSep(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
         case 0x70:
             temp_s0->field_4 = (u8 *) (arg3 + 6);
             if (arg3[0x5] != 0) {
-                BIOS_Printf(D_8001174C);
+                BIOS_Printf(g_jtbl_ss_meta_event);
                 return -1;
             }
             temp_s0->field_4 = (u8 *) (arg3 + 8);

@@ -9,9 +9,9 @@ s32 _SpuIsInAllocateArea_(s32);
 
 u32 _spu_FsetRXXa(s32 reg,u32 address) {
     u32 units;
-    if (D_80055904 && address % D_8005590C) {
-        address += D_8005590C;
-        address &= ~D_80055910;
+    if (g_spu_voice_bit_lo && address % g_spu_reverb_master_on) {
+        address += g_spu_reverb_master_on;
+        address &= ~g_spu_key_stat_mask;
     }
     units = address >> g_spu_trans_mode;
     switch (reg) {
@@ -35,24 +35,24 @@ s32 SpuSetReverb(s32 mode) {
     u16 ctrl;
     switch (mode) {
     case 0:
-        D_80055950 = 0;
+        g_spu_reverb_work_reserved = 0;
         ctrl = g_spu_RXX[0xD5];
         ctrl &= ~0x80;
         g_spu_RXX[0xD5] = ctrl;
         break;
     case 1:
-        if (D_80055954 != 1 && _SpuIsInAllocateArea_(D_80055958)) {
-            D_80055950 = 0;
+        if (g_spu_reverb_mode_type != 1 && _SpuIsInAllocateArea_(g_spu_reverb_param_room)) {
+            g_spu_reverb_work_reserved = 0;
             ctrl = g_spu_RXX[0xD5];
             ctrl &= ~0x80;
             g_spu_RXX[0xD5] = ctrl;
         } else {
-            D_80055950 = mode;
+            g_spu_reverb_work_reserved = mode;
             ctrl = g_spu_RXX[0xD5];
             ctrl |= 0x80;
             g_spu_RXX[0xD5] = ctrl;
         }
         break;
     }
-    return D_80055950;
+    return g_spu_reverb_work_reserved;
 }

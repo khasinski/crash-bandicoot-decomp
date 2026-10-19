@@ -7,11 +7,11 @@
 typedef ResourceBucket Entry;
 typedef ResourceHashMetadata Metadata;
 Entry *Ns_ProbeSafe(u32 id) {
-    Entry *cursor = D_8005C530[(id >> 15) & 255];
+    Entry *cursor = g_ns_hash_buckets[(id >> 15) & 255];
     if (cursor->id == id) goto done;
     {
-    Metadata *metadata = D_8005C540;
-    Entry *base = D_8005C534;
+    Metadata *metadata = g_ns_nsd_header;
+    Entry *base = g_ns_entry_table;
     s32 count = metadata->count;
     cursor++;
 search:

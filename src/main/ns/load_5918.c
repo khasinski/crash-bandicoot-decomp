@@ -3,7 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-extern ResourceSlot D_8005C554[];
+extern ResourceSlot g_ns_physical_pages[];
 
 ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void Ns_Update(s32 id);
@@ -41,8 +41,8 @@ static __inline__ void ns_pool_active_inc(void)
         (res_slot) = _cand; \
         goto done_label; \
     search_label: \
-        for (_i = 0; _i < D_8005C91C.count; _i++) { \
-            _cand = &D_8005C920[_i]; \
+        for (_i = 0; _i < g_ns_virtual_page_pool.count; _i++) { \
+            _cand = &g_ns_virtual_pages[_i]; \
             if ((s16)_cand->state == 1) { \
                 goto found_label; \
             } \
@@ -95,7 +95,7 @@ ResourceEntry *Ns_Open(u32 *ref, s32 sync, s32 delta)
 
             if (!(addr & 2)) {
                 for (i = 0; i < g_ns.physical_count; i++) {
-                    phys_slot = &D_8005C554[i];
+                    phys_slot = &g_ns_physical_pages[i];
                     header = (s32)phys_slot->header;
                     if (addr >= header && addr < header + 0x10000) {
                         slot = phys_slot;

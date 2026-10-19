@@ -87,8 +87,8 @@ s32 Ns_PageCommitVirtual(ZoneLoadList *load, ResourceSlot *slot)
         (res_slot) = _cand; \
         goto done_label; \
     search_label: \
-        for (_i = 0; _i < D_8005C91C.count; _i++) { \
-            _cand = &D_8005C920[_i]; \
+        for (_i = 0; _i < g_ns_virtual_page_pool.count; _i++) { \
+            _cand = &g_ns_virtual_pages[_i]; \
             if ((s16)_cand->state == 1) { \
                 goto found_label; \
             } \

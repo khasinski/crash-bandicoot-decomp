@@ -3,7 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-extern ResourceSlot D_8005C554[];
+extern ResourceSlot g_ns_physical_pages[];
 
 ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
 void Ns_Update(s32 id);
@@ -114,7 +114,7 @@ static __inline__ ResourceSlot *ns_find_physical(s32 addr)
 
     if (!(addr & 2)) {
         for (i = 0; i < g_ns.physical_count; i++) {
-            slot = &D_8005C554[i];
+            slot = &g_ns_physical_pages[i];
             header = (s32)slot->header;
             if (addr >= header && addr < header + 0x10000) {
                 return slot;

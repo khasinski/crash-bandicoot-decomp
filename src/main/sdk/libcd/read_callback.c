@@ -27,14 +27,14 @@ void cb_read(s32 arg0, void *arg1) {
     }
     if (g_cd_read_state.remaining <= 0) {
         g_cd_sync_cb = g_cd_read_state.word20;
-        D_800555A4 = g_cd_read_state.word24;
+        g_cd_ready_cb = g_cd_read_state.word24;
         CD_cw(9, 0, 0, 0);
-        if (D_800555A8 != NULL) {
+        if (g_cd_data_cb != NULL) {
             var_a0 = 5;
             if (g_cd_read_state.remaining == 0) {
                 var_a0 = 2;
             }
-            D_800555A8(var_a0, arg1);
+            g_cd_data_cb(var_a0, arg1);
         }
     }
 }

@@ -16,13 +16,13 @@ void Solid_PlotWall(s32 x, s32 y) {
         return;
     }
     if (x < 0) {
-        p = &D_800566AC[(y + 32) << 1];
+        p = &gp_solid_scratch_grid[(y + 32) << 1];
         if (*p & (1 << (x + 32))) {
             return;
         }
         *p |= 1 << (x + 32);
     } else {
-        p = &D_800566AC[((y + 32) << 1) + 1];
+        p = &gp_solid_scratch_grid[((y + 32) << 1) + 1];
         if (*p & (1 << x)) {
             return;
         }
@@ -39,11 +39,11 @@ void Solid_PlotWall(s32 x, s32 y) {
     if (x < 0) {
         x = -x;
         for (; i < end; i++, p++) {
-            *p |= D_8005670C[i] << x;
+            *p |= gp_solid_scratch_workspace[i] << x;
         }
     } else {
         for (; i < end; i++, p++) {
-            *p |= D_8005670C[i] >> x;
+            *p |= gp_solid_scratch_workspace[i] >> x;
         }
     }
 }

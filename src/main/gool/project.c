@@ -32,8 +32,8 @@ void RotTrans(SVector *, Vec3 *, s32 *);
 s32 Level_TestBoundIntersection(s32 *, s32 *);
 s32 Math_ApxDist(Vec3 *, Vec3 *);
 
-extern u8 D_80057844[];
-extern s32 D_80057864;
+extern u8 g_m_wgeo_view[];
+extern s32 g_cam_trans_x;
 
 void Gool_Transform(Vec3 *arg0, Vec3 *arg1, Vec3 *arg2, Vec3 *arg3, Vec3 *arg4)
 {
@@ -111,19 +111,19 @@ s32 Gool_Transform2(Vec3 *arg0, Vec3 *arg1, s32 arg2)
     v.y = arg0->y;
     v.z = arg0->z;
     if (arg2 != 0) {
-        SetRotMatrix(D_80057844);
+        SetRotMatrix(g_m_wgeo_view);
     } else {
         SetRotMatrix(g_m_view);
     }
     SetTransMatrix(g_cams);
     if (arg2 != 0) {
-        sv.x = (v.x - D_80057888[0]) >> 8;
-        sv.y = (v.y - D_8005788C[0]) >> 8;
-        sv.z = (v.z - D_80057890[0]) >> 8;
+        sv.x = (v.x - g_cam_eye_x[0]) >> 8;
+        sv.y = (v.y - g_cam_eye_y[0]) >> 8;
+        sv.z = (v.z - g_cam_eye_z[0]) >> 8;
     } else {
-        sv.x = (v.x - D_80057864) >> 8;
-        sv.y = (v.y - D_80057868) >> 8;
-        sv.z = (v.z - D_8005786C) >> 8;
+        sv.x = (v.x - g_cam_trans_x) >> 8;
+        sv.y = (v.y - g_cam_trans_y) >> 8;
+        sv.z = (v.z - g_cam_trans_z) >> 8;
     }
     RotTrans(&sv, arg1, &flag);
     arg1->x <<= 8;
@@ -148,9 +148,9 @@ s32 Gool_Project(Vec3 *arg0, Vec3 *arg1)
     v.z = arg0->z;
     SetRotMatrix(g_m_view);
     SetTransMatrix(g_cams);
-    sv.x = (v.x - D_80057864) >> 8;
-    sv.y = (v.y - D_80057868) >> 8;
-    sv.z = (v.z - D_8005786C) >> 8;
+    sv.x = (v.x - g_cam_trans_x) >> 8;
+    sv.y = (v.y - g_cam_trans_y) >> 8;
+    sv.z = (v.z - g_cam_trans_z) >> 8;
     RotTransPers(&sv, (s16 *)&sxy, &p, &flag);
     arg1->x = (s16)sxy << 8;
     arg1->y = -(sxy >> 16) << 8;

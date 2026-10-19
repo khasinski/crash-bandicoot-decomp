@@ -135,7 +135,7 @@ void Zone_ColorsScaleByNode(s32 idx, LightMat *src, LightMat *dst)
             Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
         } else if (idx >= 0x30) {
             if (idx < 0x40) {
-                Zone_ColorsScale(src, dst, D_80052CB4[idx], D_80052CB4[idx], D_80052CB4[idx]);
+                Zone_ColorsScale(src, dst, g_zone_octree_child_offsets[idx], g_zone_octree_child_offsets[idx], g_zone_octree_child_offsets[idx]);
             } else {
                 Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
             }

@@ -14,7 +14,7 @@ typedef struct {
     u8 bytes[19];
 } FadeTable;
 
-extern FadeTable D_800102C0;
+extern FadeTable g_tile_fade_alpha_table;
 
 void AddPrim(void *, void *);
 void SetPolyF4(void *);
@@ -46,7 +46,7 @@ void Gpu_DrawOverlay(u32 fade) {
     g_db_cur[2]->word78 = (s32)mode_packet + 0xC;
     poly = (GpuPolyF4 *)g_db_cur[2]->word78;
     g_db_cur[2]->word78 = (s32)(poly + 1);
-    table = D_800102C0;
+    table = g_tile_fade_alpha_table;
     if (fade != 0) {
         fade = table.bytes[fade >> 4];
         poly->x0 = -256;

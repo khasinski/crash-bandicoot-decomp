@@ -2,7 +2,7 @@
 /* GNU_AS_G: 4 */
 /* GCC_CPU: 3000 */
 #include "common.h"
-extern s32 D_80061910;
+extern s32 g_stereo_disabled;
 extern s32 g_levels_unlocked;
 extern s32 g_cur_map_level;
 
@@ -95,17 +95,17 @@ typedef struct {
 
 extern LevelHeaderInfo *g_ns_page_pool;
 s32 gp_midi_state = 0x1E;
-asm(".globl gp_sfx_vol, gp_mus_vol, D_80056642, D_80056644");
+asm(".globl gp_sfx_vol, gp_mus_vol, gp_sfx_vol_scaled, gp_mus_vol_scaled");
 s32 gp_sfx_vol;
 s16 gp_mus_vol;
-s16 D_80056642;
-s16 D_80056644;
+s16 gp_sfx_vol_scaled;
+s16 gp_mus_vol_scaled;
 
 extern struct { s32 v, pad; } gp_use_cd;
 extern VoiceEntry g_voices[24];
 
 extern VoiceParams g_audio_voices_end;
-extern u8 D_80056ED0[];
+extern u8 g_midi_seq_slot_b[];
 typedef struct {
     u8 pad00[0x10];
     s32 unk10;
@@ -145,18 +145,18 @@ AudioVolume *Audio_Spatialize(Vec3 *pos, s32 vol) {
     }
     if (dist <= 0x7FFF) {
         gp_mus_vol = vol;
-        D_80056642 = vol;
+        gp_sfx_vol_scaled = vol;
     } else {
         pan = cos(ratan2(z, x)) + 0x1000;
         base_vol = (vol << 15) / dist;
-        if (D_80061910 == 0) {
+        if (g_stereo_disabled == 0) {
             left = (base_vol + base_vol * (0x2000 - pan)) >> 11;
             right = (base_vol + base_vol * pan) >> 11;
         } else {
             left = right = base_vol;
         }
         gp_mus_vol = left >= vol ? vol : (left < 0 ? 0 : left);
-        D_80056642 = right >= vol ? vol : (right < 0 ? 0 : right);
+        gp_sfx_vol_scaled = right >= vol ? vol : (right < 0 ? 0 : right);
     }
     return (AudioVolume *)&gp_mus_vol;
 }
@@ -167,7 +167,7 @@ void Audio_VoiceFree(GoolObjectAudio *obj) {
     VoiceEntry *entry;
 
     if (obj != NULL) {
-        i = D_80056668;
+        i = gp_sfx_voice_limit;
         entry = &g_voices[i];
         for (; i < 24; i++, entry++) {
             if ((entry->params.b3) && entry->params.obj == obj) {
@@ -190,7 +190,7 @@ s32 Audio_VoiceAlloc(void) {
     s32 i;
     s32 left, right, vol;
 
-    best_idx = D_80056668;
+    best_idx = gp_sfx_voice_limit;
     entry = &g_voices[best_idx];
     for (; best_idx < 24; best_idx++, entry++) {
         if (entry->params.priority < min_prio) {
@@ -203,7 +203,7 @@ s32 Audio_VoiceAlloc(void) {
     if (g_audio_voices_end.priority < min_prio) {
         return -1;
     }
-    i = D_80056668;
+    i = gp_sfx_voice_limit;
     entry = &g_voices[i];
     best_idx = -1;
     for (; i < 24; i++, entry++) {
@@ -253,7 +253,7 @@ s32 Audio_VoiceCreate(GoolObjectAudio *obj, u32 arg1, s32 vol) {
             addr = ((u32)res << 1) >> 3;
         }
         entry->params = g_audio_voices_end;
-        entry->params.volume = (vol * D_80056644) >> 14;
+        entry->params.volume = (vol * gp_mus_vol_scaled) >> 14;
         if (entry->params.b6) {
             entry->params.vol_step = (entry->params.target_vol - entry->params.volume) / entry->params.vol_ticks;
         }
@@ -323,7 +323,7 @@ s32 Audio_Control(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
     VoiceEntry *entry;
     VoiceParams *params;
 
-    i = D_80056668;
+    i = gp_sfx_voice_limit;
     entry = &g_voices[i];
     for (; i < 24; i++, entry++) {
         if ((id == 0 || (id == -1 || entry->id == id)) && (id != -1 || entry->params.obj == obj)) {
@@ -446,39 +446,39 @@ void Audio_Update(void) {
         tmp = v << 14;
         tmp -= v;
         tmp >>= 8;
-        D_80056644 = tmp;
+        gp_mus_vol_scaled = tmp;
         v = g_levels_unlocked;
         Midi_ResetSeqVol((s16)((v * 0x3FFF) >> 8));
     }
     if (g_pads != NULL) {
         Midi_Update(g_pads->unk10 + 0x304);
     }
-    if (D_80056664 != 0) {
-        if (D_80056664 < 0 && D_80056660 < -D_80056664) {
-            D_80056660 = 0;
-            D_80056664 = 0;
+    if (gp_midi_fade_step != 0) {
+        if (gp_midi_fade_step < 0 && gp_spu_master_vol < -gp_midi_fade_step) {
+            gp_spu_master_vol = 0;
+            gp_midi_fade_step = 0;
         }
-        if (D_80056664 > 0 && 0x3FFF - D_80056660 < D_80056664) {
-            D_80056660 = 0x3FFF;
-            D_80056664 = 0;
+        if (gp_midi_fade_step > 0 && 0x3FFF - gp_spu_master_vol < gp_midi_fade_step) {
+            gp_spu_master_vol = 0x3FFF;
+            gp_midi_fade_step = 0;
         }
-        D_80056660 += D_80056664;
-        SsSetMVol(D_80056660 >> 7, D_80056660 >> 7);
+        gp_spu_master_vol += gp_midi_fade_step;
+        SsSetMVol(gp_spu_master_vol >> 7, gp_spu_master_vol >> 7);
     }
     if (gp_use_cd.v == 1) {
-        D_80056664 = -0x222;
-        if (D_8005666C != 0 && D_8005665C >= 2 && gp_card_chan == 3) {
-            Midi_Control(D_80056ED0, 2, 0);
+        gp_midi_fade_step = -0x222;
+        if (gp_midi_default_rvol != 0 && gp_midi_open_seq_cnt >= 2 && gp_card_chan == 3) {
+            Midi_Control(g_midi_seq_slot_b, 2, 0);
         }
     }
     if (gp_use_cd.v == -1) {
-        D_80056664 = 0x667;
-        if (D_8005666C != 0 && D_8005665C >= 2 && gp_card_chan == 3) {
-            Midi_Control(D_80056ED0, 3, 0);
+        gp_midi_fade_step = 0x667;
+        if (gp_midi_default_rvol != 0 && gp_midi_open_seq_cnt >= 2 && gp_card_chan == 3) {
+            Midi_Control(g_midi_seq_slot_b, 3, 0);
         }
     }
-    SpuGetAllKeysStatus(D_80056E64);
-    i = D_80056668;
+    SpuGetAllKeysStatus(g_spu_key_statuses);
+    i = gp_sfx_voice_limit;
     entry = &g_voices[i];
     for (; i < 24; i++, entry++) {
         if (entry->params.b3) {
@@ -489,7 +489,7 @@ void Audio_Update(void) {
                 entry->params.b4 = 0;
                 SpuSetKey(1, 1 << i);
             }
-            if (D_80056E64[i] == 3) {
+            if (g_spu_key_statuses[i] == 3) {
                 if (--entry->params.unk0C == 0) {
                     SpuSetKey(0, 1 << i);
                     entry->params.b3 = 0;

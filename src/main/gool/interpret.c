@@ -192,11 +192,11 @@ extern GoolObj *gp_crash_obj;
 
 extern s32 gp_pbak_frame_idx[];
 extern ResourceEntry *g_pads[];
-extern ResourceEntry *D_80057918[];
+extern ResourceEntry *g_cur_zone_ptr[];
 extern s32 g_draw_stamp[];
 extern PadStateView *g_db_cur[];
 extern LevelStateView *g_ns_page_pool[];
-extern GoolObj D_80060DD8;
+extern GoolObj g_gool_obj_list_4;
 
 typedef s32 (*Visitor)(GoolObj *, void *);
 
@@ -352,7 +352,7 @@ static __inline__ s32 Gool_ObjectPopFrame(GoolObj *object, s32 *flags, u32 cur_f
     return -0xFF;
 }
 
-static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *context)
+static __inline__ s32 Gool_FindObject_inline(GoolObj *root, Visitor visitor, void *context)
 {
     GoolObj *child;
     GoolObj *next;
@@ -988,7 +988,7 @@ next_ins:
                             s32 found = 0;
                             do {
                                 ObjectRoot *root = &((ObjectRoot *)g_free_objects)[i++];
-                                found = inline_8001B788((GoolObj *)root, Gool_ObjectHasPidFlags, (void *)*s_ptr);
+                                found = Gool_FindObject_inline((GoolObj *)root, Gool_ObjectHasPidFlags, (void *)*s_ptr);
                             } while (found == 0 && i < 5);
                             *obj->sp++ = found;
                         } else {
@@ -1101,10 +1101,10 @@ next_ins:
                 case 12:
                     switch (subarg) {
                     case 0:
-                        Level_SaveState(obj, D_80057974, 0);
+                        Level_SaveState(obj, g_checkpoint_save_state, 0);
                         break;
                     case 1:
-                        Level_Restart(D_80057974);
+                        Level_Restart(g_checkpoint_save_state);
                         break;
                     case 2:
                         {
@@ -1141,7 +1141,7 @@ next_ins:
                         Cd_Stub_22(*s_ptr);
                         break;
                     case 4:
-                        ((GoolObj *)*s_ptr)->zone = D_80057918[0];
+                        ((GoolObj *)*s_ptr)->zone = g_cur_zone_ptr[0];
                         break;
                     case 5:
                         Midi_ResetFadeStep();
@@ -1179,7 +1179,7 @@ next_ins:
                         query.result = NULL;
                         query.best_dist = 0x7FFFFFFF;
                         query.max_dist = *s_ptr;
-                        inline_8001B788(&D_80060DD8, Gool_FindNearestObject, &query);
+                        Gool_FindObject_inline(&g_gool_obj_list_4, Gool_FindNearestObject, &query);
                         if (query.result != NULL) {
                             *obj->sp++ = (s32)query.result;
                         } else {
@@ -1360,7 +1360,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             obj->anim_seq = (GoolAnimSeq *)((u32)obj->exec->anims + ((ins >> 5) & 0x7FC));
             obj->anim_frame = (ins & 0x7F) << 8;
-            *obj->sp++ = (((ins >> 16) & 0x3F) << 24) | D_80060E04[0];
+            *obj->sp++ = (((ins >> 16) & 0x3F) << 24) | g_level_zone_flags[0];
             switch ((ins >> 22) & 3) {
             case 0:
                 if (obj->scale.x < 0) {
@@ -1392,7 +1392,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
             obj->anim_frame = *d_ptr;
-            *obj->sp++ = (((ins >> 16) & 0x3F) << 24) | D_80060E04[0];
+            *obj->sp++ = (((ins >> 16) & 0x3F) << 24) | g_level_zone_flags[0];
             switch ((ins >> 22) & 3) {
             case 0:
                 if (obj->scale.x < 0) {

@@ -8,7 +8,7 @@ void Ns_Update(s32);
 
 void Ns_Update2(void)
 {
-    D_8005CFC0 = 1;
-    while (D_8005CFA8 != 0)
+    g_ns_update_lock = 1;
+    while (g_ns_pending_io_cnt != 0)
         Ns_Update(-1);
 }

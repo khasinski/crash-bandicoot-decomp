@@ -29,9 +29,9 @@ void _spu_r_(s32 arg0, s16 arg1, s32 arg2) {
     for (delay_count = 0; delay_count < 240; delay_count++) {
         delay_value *= 3;
     }
-    *D_800558F8 = (*D_800558F8 & 0xF0FFFFFF) | 0x22000000;
-    *D_800558E8 = arg0;
-    *D_800558EC = (arg2 << 0x10) | 0x10;
-    D_80055930 = 1;
-    *D_800558F0 = 0x01000200;
+    *g_spu_reverb_type = (*g_spu_reverb_type & 0xF0FFFFFF) | 0x22000000;
+    *g_spu_trans_dir = arg0;
+    *g_spu_in_transfer = (arg2 << 0x10) | 0x10;
+    g_spu_reverb_work_sizes = 1;
+    *g_spu_irq_enabled = 0x01000200;
 }

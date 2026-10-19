@@ -11,9 +11,9 @@ void SsVabClose(s32 requested)
     if ((u16)requested < 16) {
         index = requested;
         if (g_midi_tracks[index] == 1) {
-            SpuFree(D_80060CF0[index]);
+            SpuFree(g_vab_spu_addrs[index]);
             g_midi_tracks[index] = 0;
-            D_80060CE8--;
+            g_vab_open_count--;
         }
     }
 }

@@ -2,7 +2,7 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 typedef void (*SequenceCallback)(s16,s16,u8);
-extern SequenceCallback D_80060498[][16];
+extern SequenceCallback g_ss_mark_callbacks[][16];
 s32 _SsReadDeltaValue(s16,s16);
 void _SsContNrpn1(sequence,channel,value)
 s16 sequence,channel;
@@ -21,7 +21,7 @@ u8 value;
     }
 check_callback:
     if (state->field_16==40) {
-        callback=D_80060498[(s16)sequence][(s16)channel];
+        callback=g_ss_mark_callbacks[(s16)sequence][(s16)channel];
         if(callback) callback(sequence,channel,value);
     }
     state->field_88=_SsReadDeltaValue(sequence,channel);

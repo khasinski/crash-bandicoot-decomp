@@ -3,5 +3,5 @@
 
 
 u8 CdMode(void) {
-    return D_800555C1[0];
+    return g_cd_com_flags_tab[0];
 }

@@ -9,13 +9,13 @@ void SsSetTableSize(void *table, s16 s_max, s16 t_max) {
     s32 i;
     s32 j;
 
-    D_80060C98 = s_max;
-    D_80060CA0 = t_max;
+    g_ss_seq_max = s_max;
+    g_ss_sep_max = t_max;
     for (i = 0; i < s_max; i++) {
         g_ss_score_table[i] = (SequenceState *)table + i * t_max;
     }
-    for (i = 0; i < D_80060C98; i++) {
-        for (j = 0; j < D_80060CA0; j++) {
+    for (i = 0; i < g_ss_seq_max; i++) {
+        for (j = 0; j < g_ss_sep_max; j++) {
             g_ss_score_table[i][j].field_90 = 0;
             g_ss_score_table[i][j].field_3C = 0xFF;
             g_ss_score_table[i][j].field_0 = 0;

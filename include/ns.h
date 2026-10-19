@@ -51,7 +51,7 @@ typedef struct NsFileMap {
     s32 page_sector;
 } NsFileMap;
 
-/* 21 records at D_800514E0; +4 runs before the pages are set up, +8 after. */
+/* 21 records at g_ns_bootstrap_ldat; +4 runs before the pages are set up, +8 after. */
 typedef struct NsSubsystem {
     u32 word00;
     void (*init)(void);
@@ -62,9 +62,9 @@ typedef struct NsSubsystem {
 } NsSubsystem;
 
 extern NsState g_ns;
-extern ResourceSlot D_8005C920[];
+extern ResourceSlot g_ns_virtual_pages[];
 extern NsFileMap g_file_map[];
-extern NsSubsystem D_800514E0[];
+extern NsSubsystem g_ns_bootstrap_ldat[];
 
 s32 Ns_Init(NsState *ns, s32 level);
 s32 Ns_Kill(NsState *ns);
