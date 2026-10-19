@@ -4,7 +4,9 @@
 
 /* Clear the two engine state words; their precise role is still unidentified. */
 
-extern s32 gp_cur_pbak_frame;
+#define CRASH_EXT_ENGINE_RESET
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_RESET
 
 void Pbak_Init(void)
 {

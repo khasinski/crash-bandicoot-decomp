@@ -3,7 +3,6 @@
 #include "common.h"
 #include "resource.h"
 
-extern s16 g_slst_buf1[];
 
 /* Prefer free or inactive slots; otherwise evict a texture absent from the
  * current zone load list. Odd references are IDs, even references are entries.

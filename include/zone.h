@@ -33,7 +33,7 @@ typedef struct ZonePath {
     s16 cam_mode;
     s16 node_distance;
     s16 cam_zoom;
-    u16 pad26[3];
+    u16 reserved_26[3];
     s16 direction_x;
     s16 direction_y;
     s16 direction_z;
@@ -49,21 +49,21 @@ typedef struct ZoneLoadList {
 } ZoneLoadList;
 
 typedef struct ZoneColor {
-    u8 r, g, b, pad;
+    u8 r, g, b, code;
 } ZoneColor;
 
 typedef struct ZoneGfx {
-    u8 pad00[0x1C];
+    u8 reserved_00[0x1C];
     u32 flags;
-    u32 unk20;
-    u8 unk24[8];
+    u32 vram_fill_height;
+    u8 midi_seq_state[8];
     ZoneColor color;
 } ZoneGfx;
 
 /* First item of a zone entry. */
 typedef struct ZoneHeader {
     s32 world_count;
-    u8 pad004[0x200];
+    u8 reserved_004[0x200];
     s32 path_index;
     s32 path_count;
     s32 entity_count;
@@ -76,7 +76,7 @@ typedef struct ZoneHeader {
 } ZoneHeader;
 
 typedef struct ZoneEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     void *items[1];
 } ZoneEntry;
 
@@ -91,4 +91,5 @@ typedef struct LevelPosition {
 
 extern LevelPosition level_position;
 
+extern ZonePath *g_pad2_state;
 #endif

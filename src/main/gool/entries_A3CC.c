@@ -4,26 +4,24 @@
 
 
 typedef struct ZoneFogHeader {
-    u8 pad00[0x2E8];
+    u8 reserved_00[0x2E8];
     s32 depth_offset;
     s32 fog_mode;
 } ZoneFogHeader;
 
 typedef struct ZoneHeader {
-    u8 pad[0x10];
+    u8 reserved[0x10];
     ZoneFogHeader *data;
 } ZoneHeader;
 
 typedef struct NsdHeader {
-    s32 unk0;
+    s32 word_0;
     s32 type;
 } NsdHeader;
 
-extern u16 *gp_level_entry[];
-extern ZoneHeader *g_pads[];
-extern s32 g_view_proj[];
-extern s32 g_draw_stamp[];
-extern NsdHeader *g_ns_page_pool[];
+#define CRASH_EXT_GOOL_ENTRIES_A3CC
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ENTRIES_A3CC
 
 
 static __inline__ void Gfx_GetFar(u32 *arg0, s32 *arg1)
@@ -85,15 +83,15 @@ static __inline__ void Gfx_GetFar(u32 *arg0, s32 *arg1)
     }
 
 typedef struct {
-    u8 pad00[0x1C];
+    u8 reserved_00[0x1C];
     s32 flags;
 } WgeoHeaderView;
 
 typedef struct {
     u32 word0;
-    u32 pad[3];
+    u32 reserved[3];
     WgeoHeaderView *ptr10;
-    u32 pad2[11];
+    u32 reserved_2[11];
 } GoolEntry64;
 
 typedef struct {

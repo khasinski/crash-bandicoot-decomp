@@ -10,53 +10,55 @@ static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 
 
 typedef struct GoolExecView {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     struct {
-        s32 unk00;
-        s32 unk04;
-        s32 unk08;
-        s32 unk0C;
-        s32 unk10;
+        s32 word_00;
+        s32 word_04;
+        s32 word_08;
+        s32 word_0c;
+        s32 word_10;
     } *header;
     u8 *code;
     s32 *data;
     u16 *states;
-    u8 *unk20;
+    u8 *word_20;
 } GoolExecView;
 
 typedef struct GoolObjView {
-    u8 pad00[0x20];
+    u8 reserved_00[0x20];
     GoolExecView *exec;
     GoolExecView *external;
-    u8 pad28[0x38];
+    u8 reserved_28[0x38];
     struct GoolObjView *links[8];
-    u8 pad80[0x48];
+    u8 reserved_80[0x48];
     u32 status_a;
     u32 status_b;
     u32 status_c;
-    u8 padD4[0x8];
+    u8 reserved_d4[0x8];
     s32 *sp;
     u32 *pc;
     s32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    u8 padF8[0x30];
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    u8 reserved_f8[0x30];
     s32 anim_type;
-    u8 pad12C[0x10];
+    u8 reserved_12c[0x10];
     s32 event;
 } GoolObjView;
 
 typedef struct GoolTimeState {
-    u8 pad00[0x84];
-    u32 unk84;
+    u8 reserved_00[0x84];
+    u32 word_84;
 } GoolTimeState;
 
-extern GoolTimeState *g_db_cur[];
+#define CRASH_EXT_GOOL_VM_OPERANDS_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_VM_OPERANDS_0
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->word_84 < 0x67U ? g_db_cur[0]->word_84 : 0x66))) / 1024)
 
 static __inline__ s32 *GoolRegPtr(GoolObjView *obj, u32 reg, s32 mode)
 {
@@ -125,11 +127,11 @@ s32 *Gool_TranslateOutGop(GoolObjView *obj, u32 gop, s32 mode)
 }
 
 typedef struct GoolPad {
-    u32 unk0;
-    u32 unk4;
-    u32 unk8;
-    u32 unkC;
-    u32 unk10;
+    u32 word_0;
+    u32 word_4;
+    u32 word_8;
+    u32 word_c;
+    u32 word_10;
 } GoolPad;
 
 typedef struct GoolDirEntry {
@@ -138,8 +140,9 @@ typedef struct GoolDirEntry {
     s32 speed_scale;
 } GoolDirEntry;
 
-extern GoolPad g_gool_pads[];
-extern GoolDirEntry g_move_states[];
+#define CRASH_EXT_GOOL_VM_OPERANDS_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_VM_OPERANDS_1
 
 s32 Gool_TestControls(u32 arg0, s32 port)
 {
@@ -149,18 +152,18 @@ s32 Gool_TestControls(u32 arg0, s32 port)
     res = 1;
     switch ((arg0 >> 12) & 3) {
     case 1:
-        res = g_gool_pads[port].unk0 & (arg0 & 0xFFF);
+        res = g_gool_pads[port].word_0 & (arg0 & 0xFFF);
         break;
     case 2:
-        res = g_gool_pads[port].unk4 & (arg0 & 0xFFF);
+        res = g_gool_pads[port].word_4 & (arg0 & 0xFFF);
         break;
     case 4:
         dir_test = arg0 & 0xFFF;
-        res = dir_test & (g_gool_pads[port].unk4 | g_gool_pads[port].unk8);
+        res = dir_test & (g_gool_pads[port].word_4 | g_gool_pads[port].word_8);
         break;
     case 3:
         dir_test = arg0 & 0xFFF;
-        res = dir_test & (g_gool_pads[port].unk0 | g_gool_pads[port].unkC);
+        res = dir_test & (g_gool_pads[port].word_0 | g_gool_pads[port].word_c);
         break;
     }
     if (res == 0) {
@@ -171,46 +174,46 @@ s32 Gool_TestControls(u32 arg0, s32 port)
     case 1:
         switch (dir_test) {
         case 9:
-            res = g_gool_pads[port].unk0 & 0x1000;
+            res = g_gool_pads[port].word_0 & 0x1000;
             break;
         case 10:
-            res = g_gool_pads[port].unk0 & 0x2000;
+            res = g_gool_pads[port].word_0 & 0x2000;
             break;
         case 11:
-            res = g_gool_pads[port].unk0 & 0x4000;
+            res = g_gool_pads[port].word_0 & 0x4000;
             break;
         case 12:
-            res = g_gool_pads[port].unk0 & 0x8000;
+            res = g_gool_pads[port].word_0 & 0x8000;
             break;
         default:
-            res = (dir_test == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir)
-               && (dir_test != g_move_states[(g_gool_pads[port].unk8 & 0xF000) >> 12].dir);
+            res = (dir_test == g_move_states[(g_gool_pads[port].word_4 & 0xF000) >> 12].dir)
+               && (dir_test != g_move_states[(g_gool_pads[port].word_8 & 0xF000) >> 12].dir);
             break;
         }
         break;
     case 2:
         switch (dir_test) {
         case 9:
-            res = g_gool_pads[port].unk4 & 0x1000;
+            res = g_gool_pads[port].word_4 & 0x1000;
             break;
         case 10:
-            res = g_gool_pads[port].unk4 & 0x2000;
+            res = g_gool_pads[port].word_4 & 0x2000;
             break;
         case 11:
-            res = g_gool_pads[port].unk4 & 0x4000;
+            res = g_gool_pads[port].word_4 & 0x4000;
             break;
         case 12:
-            res = g_gool_pads[port].unk4 & 0x8000;
+            res = g_gool_pads[port].word_4 & 0x8000;
             break;
         default:
-            res = (dir_test == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir);
+            res = (dir_test == g_move_states[(g_gool_pads[port].word_4 & 0xF000) >> 12].dir);
             break;
         }
         break;
     case 3:
     case 4:
-        res = ((dir_test = (arg0 >> 16) & 0xF) == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir)
-           || (dir_test == g_move_states[(g_gool_pads[port].unk8 & 0xF000) >> 12].dir);
+        res = ((dir_test = (arg0 >> 16) & 0xF) == g_move_states[(g_gool_pads[port].word_4 & 0xF000) >> 12].dir)
+           || (dir_test == g_move_states[(g_gool_pads[port].word_8 & 0xF000) >> 12].dir);
         break;
     }
     dir_test = res;

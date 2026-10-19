@@ -1,8 +1,7 @@
+/* GNU_AS_NO_GP: gp_level_unused_1 */
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 #include "common.h"
-extern s32 g_draw_stamp;
-extern s32 g_view_proj;
 #include "zone.h"
 
 typedef struct {
@@ -13,11 +12,13 @@ typedef struct {
 } LightMat;
 
 typedef struct LevelHeader {
-    s32 unk0;
+    s32 word_0;
     s32 level_id;
 } LevelHeader;
 
-extern LevelHeader *g_ns_page_pool[];
+#define CRASH_EXT_LEVEL_CHECKPOINT_0
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_CHECKPOINT_0
 
 typedef struct SaveVec {
     s32 x, y, z;
@@ -30,24 +31,24 @@ typedef struct SaveTransform {
 } SaveTransform;
 
 typedef struct SaveObj {
-    u8 pad00[0x28];
+    u8 reserved_00[0x28];
     ResourceEntry *entry;
-    u8 pad2C[0x4C];
-    struct SaveObj *unk78;
-    u8 pad7C[4];
+    u8 reserved_2c[0x4C];
+    struct SaveObj *collider;
+    u8 reserved_7c[4];
     SaveTransform transform;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    u8 padB8[0x10];
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    u8 reserved_b8[0x10];
     u32 status_a;
     u32 status_b;
-    u8 padD0[0x54];
-    s32 unk124;
-    u8 pad128[8];
-    s32 unk130;
+    u8 reserved_d0[0x54];
+    s32 word_124;
+    u8 reserved_128[8];
+    s32 word_130;
 } SaveObj;
 
 typedef struct LevelSave {
@@ -58,21 +59,17 @@ typedef struct LevelSave {
     s32 level_id;
     s32 flag34;
     u32 flags38[0x130];
-    s32 unk4F8;
+    s32 word_4f8;
 } LevelSave;
 
-extern SaveObj *gp_crash_obj[2];
-extern u32 g_checkpoint_id_2[];
-extern SaveVec g_checkpoint_spawn_trans;
+#define CRASH_EXT_LEVEL_CHECKPOINT_1
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_CHECKPOINT_1
 s32 gp_checkpoint_zone_id = 0;
-extern s32 gp_pbak_frame_idx;
 
-extern s32 g_view_proj;
-extern struct { s32 v, pad; } gp_level_unused_1;
-extern u32 g_fade_counter;
-typedef struct { s32 v, pad; } WordView;
-extern WordView g_level_restart_fade_cnt;
-extern WordView g_level_frame_accum;
+#define CRASH_EXT_LEVEL_CHECKPOINT_2
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_CHECKPOINT_2
 
 
 void Level_SaveState(SaveObj *obj, LevelSave *save, s32 flag)
@@ -104,7 +101,7 @@ void Level_SaveState(SaveObj *obj, LevelSave *save, s32 flag)
             break;
         }
     }
-    save->unk4F8 = g_death_count[0];
+    save->word_4f8 = g_death_count[0];
     for (i = 0; i < sizeof(g_spawns) / sizeof(u32); i++) {
         save->flags38[i] = g_spawns[i];
     }
@@ -162,32 +159,32 @@ void Level_Restart(LevelSave *save)
     gp_crash_obj[0]->transform = save->transform;
     player = gp_crash_obj[0];
     player->entry = level_position.zone;
-    player->unk130 = 0;
-    player->unkA4 = 0;
-    player->unkA8 = 0;
-    player->unkAC = 0;
-    player->unk124 = 0;
+    player->word_130 = 0;
+    player->vel_x = 0;
+    player->vel_y = 0;
+    player->vel_z = 0;
+    player->word_124 = 0;
     player->status_a = player->status_a;
-    player->unkB4 = player->transform.rot.y;
-    if (player->unk78 != NULL) {
-        player->unk78->unk78 = NULL;
-        player->unk78 = NULL;
+    player->target_rot_y = player->transform.rot.y;
+    if (player->collider != NULL) {
+        player->collider->collider = NULL;
+        player->collider = NULL;
     }
-    g_draw_stamp = 0;
+    g_draw_stamp[0] = 0;
     g_cam_mat_dirty_flag = 0;
-    gp_level_unused_1.v = 0;
+    gp_level_unused_1 = 0;
     g_fade_counter = 0xFFFF;
     if (!gp_checkpoint_zone_id) {
-        g_level_restart_fade_cnt.v += 0x100;
+        g_level_restart_fade_cnt[0] += 0x100;
         if (save->flag34) {
-            g_level_frame_accum.v = 0;
+            g_level_frame_accum = 0;
         } else {
-            g_level_frame_accum.v += 0x100;
+            g_level_frame_accum += 0x100;
         }
     }
     Level_InitMisc(0);
     if (gp_checkpoint_zone_id) {
-        g_death_count[0] = save->unk4F8;
+        g_death_count[0] = save->word_4f8;
         gp_checkpoint_zone_id = 0;
         if (g_checkpoint_id_2[0] != -1) {
             g_death_count[0] -= 0x100;

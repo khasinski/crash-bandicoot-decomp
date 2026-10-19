@@ -1,31 +1,21 @@
 #include "common.h"
-extern s32 g_draw_stamp;
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 
 
-extern struct {
-    u8 pad[0x10];
-    u8 *data;
-} *g_pads;
-
-extern struct {
-    s32 unk0;
-    s32 type;
-} *g_ns_page_pool;
-
-extern void *gp_crash_obj;
-extern void *g_savestate[2];
+#define CRASH_EXT_GOOL_CHANGE_STATE_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_CHANGE_STATE_0
 
 typedef struct {
     u8 type;
-    u8 pad[3];
+    u8 reserved[3];
     u32 eid;
 } GoolAnim;
 
 typedef struct {
-    u8 pad00[0x14];
+    u8 reserved_00[0x14];
     s32 box[6];
     s32 col_x;
     s32 col_y;
@@ -33,7 +23,7 @@ typedef struct {
 } SvtxFrame;
 
 typedef struct {
-    u8 pad00[0x0C];
+    u8 reserved_00[0x0C];
     s32 sp_offset;
 } GoolHeader;
 
@@ -47,7 +37,7 @@ typedef struct {
 } GoolState;
 
 typedef struct {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolHeader *header;
     u32 *code;
     u32 *externs;
@@ -68,12 +58,12 @@ typedef struct {
     GoolExecutable *external;
     void *zone;
     s32 state_idx;
-    u8 pad30[0x60 - 0x30];
+    u8 reserved_30[0x60 - 0x30];
     s32 regs[14];
     s32 scale_x;
     s32 scale_y;
     s32 scale_z;
-    u8 padA4[0xC8 - 0xA4];
+    u8 reserved_a4[0xC8 - 0xA4];
     u32 status_a;
     u32 status_b;
     u32 status_c;
@@ -92,7 +82,7 @@ typedef struct {
     u32 anim_counter;
     GoolAnim *anim_seq;
     u32 anim_frame;
-    u8 pad110[0x120 - 0x110];
+    u8 reserved_110[0x120 - 0x110];
     u32 state_flags;
 } GoolObj;
 
@@ -158,10 +148,9 @@ void Gool_ObjectLocalBound(GoolObj *arg0, s32 *arg1)
     arg0->scale_z = arg1[2];
 }
 
-extern struct {
-    u8 pad[0x7C];
-    u32 stamp;
-} *g_db_prev[2];
+#define CRASH_EXT_GOOL_CHANGE_STATE_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_CHANGE_STATE_1
 
 
 typedef struct GoolUpdateGlobals {
@@ -172,7 +161,9 @@ typedef struct GoolUpdateGlobals {
     s32 e04;
 } GoolUpdateGlobals;
 
-extern GoolUpdateGlobals gool_update;
+#define CRASH_EXT_GOOL_CHANGE_STATE_2
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_CHANGE_STATE_2
 
 void Gool_UpdateObjects(s32 arg0)
 {
@@ -180,7 +171,7 @@ void Gool_UpdateObjects(s32 arg0)
     s32 *ptr;
 
     g_gool_update_clear_flag = 0;
-    g_percent_complete = g_draw_stamp;
+    g_percent_complete = g_draw_stamp[0];
     gool_update.e04 = (*g_db_prev)->stamp / 34;
     if (gp_crash_obj != NULL) {
         i = 0;

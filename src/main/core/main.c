@@ -6,7 +6,6 @@
 
 /* Initialise the runtime, run the game loop for initial level 0x19, then shut down. */
 
-extern s32 gp_pause_B_pressed;
 
 s32 CORE_Main(void)
 {
@@ -20,31 +19,31 @@ s32 CORE_Main(void)
 
 typedef struct ZoneHeaderView {
     s32 word00;
-    u8 pad04[0x2F8];
+    u8 reserved_04[0x2F8];
     u32 flags;
 } ZoneHeaderView;
 
 typedef struct LevelDataView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     s32 level_id;
-    u8 pad08[0xC];
+    u8 reserved_08[0xC];
     s32 eid14;
-    u8 pad18[8];
+    u8 reserved_18[8];
     s32 eid20;
     s32 eid24;
     s32 eid28;
-    u8 pad2C[0x5C];
+    u8 reserved_2c[0x5C];
     s32 eid88;
-    u8 pad8C[0x10];
+    u8 reserved_8c[0x10];
     s32 eid9C;
-    u8 padA0[0x44];
+    u8 reserved_a0[0x44];
     s32 eidE4;
 } LevelDataView;
 
 typedef struct NsState {
-    u8 pad00[0x14];
+    u8 reserved_00[0x14];
     LevelDataView *level;
-    u8 pad18[0xC];
+    u8 reserved_18[0xC];
     s32 draw_skip;
 } NsState;
 
@@ -52,20 +51,20 @@ typedef struct NsState {
  * playback mode at 0x80061A30. The loop addresses all three through one base. */
 
 typedef struct DrawStampView {
-    u8 pad00[0x7C];
+    u8 reserved_00[0x7C];
     u32 stamp;
 } DrawStampView;
 
-extern NsState g_ns;
-extern s32 gp_pbak_mode;
-extern s32 g_title_tile_load_cnt;
+#define CRASH_EXT_CORE_MAIN_0
+#include "core_externs.h"
+#undef CRASH_EXT_CORE_MAIN_0
 
 
 /* Spawn default HUD objects and load the level's initial resource entries. */
 void Core_ObjectsCreate(void)
 {
     Pad_Update();
-    g_title_tile_load_cnt = 0;
+    g_title_tile_load_cnt[0] = 0;
     switch (gp_pbak_mode) {
     case 0x38:
     case 0x39:
@@ -95,17 +94,10 @@ void Core_ObjectsCreate(void)
     }
     Level_InitMisc(1);
 }
-extern s32 g_gool_pads;
-extern s32 g_key_count;
-extern DrawStampView *g_db_prev;
-extern u32 gp_next_level_ldat_eid;
-extern void *gp_crash_obj;
-extern s32 gp_pbak_frame_idx;
+#define CRASH_EXT_CORE_MAIN_1
+#include "core_externs.h"
+#undef CRASH_EXT_CORE_MAIN_1
 
-extern s32 g_level_restart_fade_cnt;
-extern s32 g_level_frame_accum;
-extern s32 g_checkpoint_id_2;
-extern s32 g_cur_lid_ro;
 
 /* .sdata owned by this unit (gp-addressed only here). */
 s32 gp_cur_lid = 0;
@@ -138,7 +130,7 @@ void CORE_Loop(s32 level)
         /* Start toggles pause outside the title, map and intro levels. */
         if ((g_gool_pads & 0x800) && g_pause_state.playback_mode == 0
             && (((id = g_ns.level->level_id) != 0x19 && id != 0x2D && id != 0x38
-                 && g_pause_state.pause_override != -1) || g_key_count > 0)) {
+                 && g_pause_state.pause_override != -1) || g_key_count[0] > 0)) {
             if ((gp_next_lid = 1 - gp_next_lid) != 0) {
                 if (g_pause_state.pause_object == 0) {
                     g_pause_state.pause_object = GOOL_CreateObject(&g_pause_state, 4, 4, 0, 0, 0);
@@ -190,12 +182,12 @@ not_paused:
             Ns_Kill(&g_ns);
             gp_next_lid = 0;
             if (level == 0x19) {
-                g_level_restart_fade_cnt = 0;
+                g_level_restart_fade_cnt[0] = 0;
                 g_level_frame_accum = 0;
                 g_checkpoint_id = 0;
                 g_level_load_timer = 0;
                 g_mono = 0;
-                g_checkpoint_id_2 = -1;
+                g_checkpoint_id_2[0] = -1;
             }
             Ns_Init(&g_ns, level);
             Core_ObjectsCreate();
@@ -225,7 +217,7 @@ not_paused:
         }
         Gfx_UpdateMatrices();
 
-        if (g_cur_lid_ro & 1) {
+        if (g_cur_lid_ro[0] & 1) {
             zone = (ZoneHeaderView *)g_pads->data;
             if (zone->word00 != 0 && gp_cur_lid == 0) {
                 flags = zone->flags;
@@ -251,7 +243,7 @@ not_paused:
         Gpu_Update();
     } while (gp_bonus_return == 0);
 
-    g_cur_lid_ro = 0;
+    g_cur_lid_ro[0] = 0;
     Gpu_Update();
     Gpu_Update();
     Ns_Kill(&g_ns);

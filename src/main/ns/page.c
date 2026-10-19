@@ -3,7 +3,6 @@
 #include "common.h"
 #include "ns.h"
 
-extern s32 gp_pause_B_pressed;
 
 /* Return an item span from adjacent offsets in a nonempty resource page. */
 

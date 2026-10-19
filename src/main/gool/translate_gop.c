@@ -10,41 +10,41 @@ static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 
 
 typedef struct GoolExecView {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     struct {
-        s32 unk00;
-        s32 unk04;
-        s32 unk08;
-        s32 unk0C;
-        s32 unk10;
+        s32 word_00;
+        s32 word_04;
+        s32 word_08;
+        s32 word_0c;
+        s32 word_10;
     } *header;
     u8 *code;
     s32 *data;
     u16 *states;
-    u8 *unk20;
+    u8 *word_20;
 } GoolExecView;
 
 typedef struct GoolObjView {
-    u8 pad00[0x20];
+    u8 reserved_00[0x20];
     GoolExecView *exec;
     GoolExecView *external;
-    u8 pad28[0x38];
+    u8 reserved_28[0x38];
     struct GoolObjView *links[8];
-    u8 pad80[0x48];
+    u8 reserved_80[0x48];
     u32 status_a;
     u32 status_b;
     u32 status_c;
-    u8 padD4[0x8];
+    u8 reserved_d4[0x8];
     s32 *sp;
     u32 *pc;
     s32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    u8 padF8[0x30];
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    u8 reserved_f8[0x30];
     s32 anim_type;
-    u8 pad12C[0x10];
+    u8 reserved_12c[0x10];
     s32 event;
 } GoolObjView;
 

@@ -1,31 +1,27 @@
 #include "common.h"
-extern s32 g_stereo_disabled;
-extern s32 g_levels_unlocked;
-extern s32 g_cur_map_level;
 
 /* GCC_VERSION: 2.6.3 */
                                  /* extern */
                       /* extern */
                                 /* extern */
-extern s32 g_level_restart_fade_cnt;
-extern s32 g_island_cam_state;
+#define CRASH_EXT_ENGINE_SETTINGS_RESET
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_SETTINGS_RESET
 
 
 
-extern s32 g_checkpoint_id_2;
 
-extern s32 g_level_frame_accum;
 
 void Level_InitGlobals(void) {
     g_saved_level_id[0] = 0x63;
     g_pbak_state = -1;
     g_island_cam_state = 7;
-    g_cur_map_level = 0xFF;
-    g_levels_unlocked = 0xFF;
+    g_cur_map_level[0] = 0xFF;
+    g_levels_unlocked[0] = 0xFF;
     g_new_gem_flag[0] = 0x400;
     g_life_count = 0;
     g_saved_item_pool2_hi[0] = 0;
-    g_stereo_disabled = 0;
+    g_stereo_disabled[0] = 0;
     g_item_pool2[0] = 1;
     g_level_globals_init_zero = 0;
     g_level_unused_vec = 0;
@@ -40,7 +36,7 @@ void Level_InitGlobals(void) {
 void Level_ResetGlobals(s32 arg0) {
     if (arg0 != 0) {
         g_level_frame_accum = 0;
-        g_level_restart_fade_cnt = 0;
+        g_level_restart_fade_cnt[0] = 0;
         g_brio_count = 0;
         g_tawna_count = 0;
         g_checkpoint_id = 0;
@@ -48,7 +44,7 @@ void Level_ResetGlobals(s32 arg0) {
         g_mono = 0;
         g_next_level_id[0] = 1;
         g_saved_gem_pool_lo[0] = 0;
-        g_checkpoint_id_2 = -1;
+        g_checkpoint_id_2[0] = -1;
         g_audio_mode_flags[0] = 0;
         g_level_first_spawn_flag[0] = 1;
         g_saved_level_id[0] = 0x63;

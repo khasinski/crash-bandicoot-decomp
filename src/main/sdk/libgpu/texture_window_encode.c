@@ -3,10 +3,9 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern volatile u8 g_gpu_mode[];
-extern u8 g_gpu_reverse_flag;
-extern volatile s16 g_gpu_vram_max_w[];
-extern volatile s16 g_gpu_vram_max_h[];
+#define CRASH_EXT_SDK_LIBGPU_TEXTURE_WINDOW_ENCODE
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_TEXTURE_WINDOW_ENCODE
 
 
 void SetDrawEnv(u32 *packet, GpuDrawing *drawing)

@@ -2,10 +2,9 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern u8 g_spu_vm_voice_pitch[];
-extern u8 g_spu_vm_voice_auto_flag[];
-
-extern u8 *g_vab_cur_master_vol;
+#define CRASH_EXT_SDK_LIBSPU_VOICE_TRIGGER
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_TRIGGER
 
 
 
@@ -33,8 +32,8 @@ void SpuVmKeyOnNow(u8 arg0, u16 arg1) {
     temp_a0 = g_ss_score_table[g_spu_vm_cur_seq_sep_id & 255] + ((u32)(g_spu_vm_cur_seq_sep_id << 16) >> 24);
     var_a3 = var_a2;
     if ((s16) g_spu_vm_cur_seq_sep_id != 0x21) {
-        var_a3 = (u32) (var_a2 * temp_a0->field_74) / 127U;
-        var_a2 = (u32) (var_a2 * temp_a0->field_76) / 127U;
+        var_a3 = (u32) (var_a2 * temp_a0->voll) / 127U;
+        var_a2 = (u32) (var_a2 * temp_a0->volr) / 127U;
     }
     if ((u8) g_spu_vm_cur_seq_pan < 0x40U) {
         var_a2 = (u32) (var_a2 * g_spu_vm_cur_seq_pan) / 63U;

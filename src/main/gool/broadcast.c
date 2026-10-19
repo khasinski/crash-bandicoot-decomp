@@ -1,3 +1,4 @@
+/* GNU_AS_NO_GP: gp_next_lid gp_level_unused_1 gp_next_level_ldat_eid */
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 #include "common.h"
@@ -47,14 +48,14 @@ s32 Gool_SendToColliders2(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, 
 }
 
 typedef struct GoolScriptHeader {
-    u8 pad00[0x14];
+    u8 reserved_00[0x14];
     u8 *code;
 } GoolScriptHeader;
 
 typedef struct GoolStackObj {
-    u8 pad00[0x20];
+    u8 reserved_00[0x20];
     GoolScriptHeader *script;
-    u8 pad24[0xDC - 0x24];
+    u8 reserved_24[0xDC - 0x24];
     u32 *sp;
     u8 *pc;
     u32 *fp;
@@ -84,27 +85,23 @@ s32 Gool_ObjectInterrupt(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
 
 
 typedef struct LevelDesc {
-    s32 unk0;
-    s32 unk4;
+    s32 word_0;
+    s32 word_4;
     u32 eid;
     s32 path_idx;
 } LevelDesc;
 
 
-extern LevelDesc *g_ns_page_pool[];
+#define CRASH_EXT_GOOL_BROADCAST_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_BROADCAST_0
 
 s32 gp_cur_zone = 0;
 s32 gp_cur_path = 1;
 
-extern s32 gp_level_unused_1[];
-extern s32 g_fade_counter[];
-extern s32 g_cur_lid_ro[];
-
-extern u32 gp_next_level_ldat_eid[2];
-extern u8 g_pbak_header_byte_0[];
-extern u32 g_pbak_frame_cursor[];
-extern u32 engine_counter[];
-extern s32 gp_next_lid[];
+#define CRASH_EXT_GOOL_BROADCAST_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_BROADCAST_1
 
 s32 Level_LdatInit(void)
 {
@@ -115,12 +112,12 @@ s32 Level_LdatInit(void)
     g_pbak_frame_step = 0;
     if (*g_ns_ldat_ptr[0] != 0x6396347F) {
         gp_level_unused_0 = 0;
-        gp_level_unused_1[0] = 0;
+        gp_level_unused_1 = 0;
         g_fade_counter[0] = 0xFFFF;
         g_cur_lid_ro[0] = 0xFFFF;
         BIOS_MemSet(g_spawns, 0, 0x4C0);
         progress = 0;
-        GOOL_InitLevelSpawns(g_ns_page_pool[0]->unk4);
+        GOOL_InitLevelSpawns(g_ns_page_pool[0]->word_4);
         mode = (g_ns_cur_level_id[0] == 0x11 || g_ns_cur_level_id[0] == 0x1E) ? 2 : 1;
         Gfx_InitMatrices();
         if (g_ns_cur_level_id[0] == 0x19 && g_game_substate == 0x200 && gp_cur_path == 0) {
@@ -133,7 +130,7 @@ s32 Level_LdatInit(void)
             progress = g_pbak_start_progress[0];
         }
         zone = (ZoneEntry *)Ns_Open(&g_ns_page_pool[0]->eid, 1, mode);
-        gp_next_level_ldat_eid[0] = 0x6396347F;
+        gp_next_level_ldat_eid = 0x6396347F;
         level_position.zone = NULL;
         level_position.path = NULL;
         level_position.progress = 0;
@@ -143,14 +140,14 @@ s32 Level_LdatInit(void)
         g_pbak_header_byte_3[0] = 0;
         g_pbak_frame_cursor[0] = engine_counter[0];
         if (g_game_substate == 0x600) {
-            Pbak_Choose(gp_next_level_ldat_eid);
+            Pbak_Choose(&gp_next_level_ldat_eid);
         }
         Level_Update(zone, zone->items[g_ns_page_pool[0]->path_idx + ((ZoneHeader *)zone->items[0])->path_index], progress, 0);
         Ns_Close(&g_ns_page_pool[0]->eid, 1);
     } else {
-        g_ns_page_pool[0]->unk0 = 0;
+        g_ns_page_pool[0]->word_0 = 0;
     }
-    if (gp_next_lid[0] == 0) {
+    if (gp_next_lid == 0) {
         Shader_ParamsUpdate(1);
         Shader_ParamsUpdateRipple(1);
     }

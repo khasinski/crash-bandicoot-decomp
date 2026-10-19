@@ -4,7 +4,9 @@
 
 /* Pass the matrix at g_m_rot to the two GTE setup routines. */
 
-extern u8 g_m_rot[];
+#define CRASH_EXT_RENDER_GTE
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_GTE
 
 void Gfx_SetGteMatrices(void)
 {

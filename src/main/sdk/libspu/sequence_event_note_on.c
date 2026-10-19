@@ -5,7 +5,6 @@
 
 typedef void (*ContCallback)(s16, s16, u8, ToneAttributes, s16, u8);
 
-extern ContCallback g_ss_nrpn_attr_fn_00[];
 
 
 void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
@@ -13,23 +12,23 @@ void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
     ToneAttributes tone_attr;
     SequenceState *state = g_ss_score_table[sequence] + channel;
     s32 i;
-    u8 index = state->field_12;
+    u8 index = state->channel;
     u16 var;
     s32 var2;
     s32 z;
 
-    SsUtGetProgAtr(state->field_4C, state->field_2C[index], &prog_attr);
-    if (state->field_27 == 1 && state->field_10 == 0) {
-        state->field_28 = value;
-        state->field_10 = 1;
-        state->field_88 = _SsReadDeltaValue(sequence, channel);
+    SsUtGetProgAtr(state->vab_id, state->programs[index], &prog_attr);
+    if (state->rpn2 == 1 && state->nrpn1 == 0) {
+        state->data_entry = value;
+        state->nrpn1 = 1;
+        state->step_counter = _SsReadDeltaValue(sequence, channel);
         return;
     }
-    if (state->field_29 == 2) {
-        if (state->field_14 == 0) {
+    if (state->nrpn_mode == 2) {
+        if (state->nrpn_voice == 0) {
             for (i = 0; i < prog_attr.tones; i++) {
-                SsUtGetVagAtr(state->field_4C, state->field_2C[index], i, &tone_attr);
-                switch (state->field_13) {
+                SsUtGetVagAtr(state->vab_id, state->programs[index], i, &tone_attr);
+                switch (state->rpn_flag) {
                 case 0:
                     /* Force GCC 2.5.7 loop/cse2 to hoist value * 3 into $s3/$fp before combine/jump2 elides block. */
                     z = tone_attr.vol & 1;
@@ -60,24 +59,24 @@ void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
                     tone_attr.center += var;
                     break;
                 }
-                SsUtSetVagAtr(state->field_4C, state->field_2C[index], i, &tone_attr);
+                SsUtSetVagAtr(state->vab_id, state->programs[index], i, &tone_attr);
             }
         }
-        state->field_88 = _SsReadDeltaValue(sequence, channel);
-        state->field_29 = 0;
+        state->step_counter = _SsReadDeltaValue(sequence, channel);
+        state->nrpn_mode = 0;
         return;
     }
-    if (state->field_2A == 2) {
-        if (state->field_16 == 0x10) {
+    if (state->nrpn_count == 2) {
+        if (state->rpn1 == 0x10) {
             for (i = 0; i < prog_attr.tones; i++) {
-                g_ss_nrpn_attr_fn_00[state->field_15](state->field_4C, state->field_2C[index], i, tone_attr, state->field_15, value);
+                g_ss_nrpn_attr_fn_00[state->nrpn2](state->vab_id, state->programs[index], i, tone_attr, state->nrpn2, value);
             }
         } else {
-            g_ss_nrpn_attr_fn_00[state->field_15](state->field_4C, state->field_2C[index], state->field_16, tone_attr, state->field_15, value);
+            g_ss_nrpn_attr_fn_00[state->nrpn2](state->vab_id, state->programs[index], state->rpn1, tone_attr, state->nrpn2, value);
         }
-        state->field_88 = _SsReadDeltaValue(sequence, channel);
-        state->field_2A = 0;
+        state->step_counter = _SsReadDeltaValue(sequence, channel);
+        state->nrpn_count = 0;
         return;
     }
-    state->field_88 = _SsReadDeltaValue(sequence, channel);
+    state->step_counter = _SsReadDeltaValue(sequence, channel);
 }

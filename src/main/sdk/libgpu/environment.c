@@ -44,8 +44,8 @@ GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env, s32 x, s32 y, s32 w, s32 h)
     env->screen.h=0;
     env->rgb24=0;
     env->interlaced=0;
-    env->pad13=0;
-    env->pad12=0;
+    env->reserved=0;
+    env->video_mode=0;
     env->display.h=h;
     return env;
 }

@@ -2,12 +2,13 @@
 /* GCC_CPU: 3000 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-extern void *gp_level_entry;
+#define CRASH_EXT_ENGINE_ALLOCATE_BUFFERS
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_ALLOCATE_BUFFERS
 
-extern s32 gp_pbak_mode;
 
 typedef struct DrawBuffer {
-    s16 unk0;
+    s16 word_0;
     s16 count;
 } DrawBuffer;
 

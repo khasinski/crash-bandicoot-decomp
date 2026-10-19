@@ -17,41 +17,35 @@ typedef struct LightMat88CC {
 
 typedef struct GoolObj88CC {
     s32 kind;
-    s32 unk04;
+    s32 word_04;
     s32 bound[6];
     void *exec;
-    s32 unk24;
+    s32 word_24;
     void *zone;
-    s32 unk2C;
+    s32 word_2c;
     LightMat88CC light;
-    u8 pad60[0x80 - 0x60];
+    u8 reserved_60[0x80 - 0x60];
     GoolVectors vectors;
-    u8 padA4[0xCC - 0xA4];
+    u8 reserved_a4[0xCC - 0xA4];
     s32 status_b;
 } GoolObj88CC;
 
 typedef struct ZoneHeader88CC {
-    u8 pad000[0x2E4];
+    u8 reserved_000[0x2E4];
     s32 light_mode;
     s32 far_clip;
-    u8 pad2EC[0x318 - 0x2EC];
+    u8 reserved_2ec[0x318 - 0x2EC];
     u16 light_src[24];
 } ZoneHeader88CC;
 
 typedef struct ResourceEntry88CC {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     ZoneHeader88CC *data;
 } ResourceEntry88CC;
 
-extern u8 g_m_wgeo_view[];
-
-extern u8 g_m_color[];
-extern s32 g_view_proj[];
-extern s32 g_cur_lid_ro[];
-
-extern GoolObj88CC *g_shader_obj_color_scale[];
-extern GoolObj88CC *gp_crash_obj[];
-extern ResourceEntry88CC *g_pads[];
+#define CRASH_EXT_RENDER_TRANSFORM_88CC
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TRANSFORM_88CC
 
 
 typedef struct Matrix88CC {
@@ -97,7 +91,7 @@ s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s3
     sp10[2] = (arg2->vectors.trans[2] - (*g_cam_eye_z)) >> 8;
     RotTrans(sp10, sp18.t, &sp88);
 
-    if (!((*g_cur_lid_ro) & 0x10000)) {
+    if (!(g_cur_lid_ro[0] & 0x10000)) {
         far_z = (*g_pads)->data->far_clip >> 8;
         sp88 = far_z;
         if (far_z != 0 && sp18.t[2] > far_z) {

@@ -21,14 +21,14 @@ typedef struct ResourceEntry {
  * The first item is at +0x10; subsequent items follow at four-byte intervals.
  * Keep separate from ResourceHeader, whose page-header fields differ. */
 typedef struct ResourceItemListView {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *items[1];
 } ResourceItemListView;
 
 /* The first item's word at +0x204 selects another item in that list.
  * The remainder of this item's layout and its complete size are unknown. */
 typedef struct ResourceItemSelection {
-    u8 pad00[0x204];
+    u8 reserved_00[0x204];
     u32 word204;
 } ResourceItemSelection;
 
@@ -43,21 +43,21 @@ typedef struct ResourceMapMetadata {
  * are copied to GoolActorView.bounds. The data beginning at +0x52C
  * has an unknown length; sizeof this view is not the resource size. */
 typedef struct LevelResourceView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     s32 word04;
-    u8 pad08[4];
+    u8 reserved_08[4];
     s32 word0C;
     u8 bytes10[0x4FC];
     u32 word50C;
     s32 bounds[6];
-    u8 pad528[4];
+    u8 reserved_528[4];
     u8 bytes52C[1];
 } LevelResourceView;
 
 /* The native filter loads +0x18 with lh, then compares its sign-extended
  * value as unsigned. Do not replace this with a word or an unsigned halfword. */
 typedef struct ResourceMapItem {
-    u8 pad00[0x18];
+    u8 reserved_00[0x18];
     s16 word18;
 } ResourceMapItem;
 
@@ -95,7 +95,7 @@ typedef struct ResourceSlot {
 typedef ResourceHandle ResourceBucket;
 
 typedef struct ResourceHashMetadata {
-    u8 pad00[0x404];
+    u8 reserved_00[0x404];
     s32 count;
 } ResourceHashMetadata;
 
@@ -109,15 +109,15 @@ typedef struct ResourcePool {
  * The array still advances by 0x2C. Do not confuse this base with a full slot. */
 typedef struct ResourceSlotStateView {
     s16 state;
-    u8 pad02[0xE];
+    u8 reserved_02[0xE];
     s32 id;
-    u8 pad14[8];
+    u8 reserved_14[8];
     s32 *id_pointer;
-    u8 pad20[0xC];
+    u8 reserved_20[0xC];
 } ResourceSlotStateView;
 
 typedef struct ZoneLoadInfo {
-    u8 pad00[0x234];
+    u8 reserved_00[0x234];
     s32 count;
     u32 word238;
     u32 refs[1];
@@ -147,4 +147,8 @@ void Ns_PageDelete(ResourceSlot *slot);
 ResourceBucket *Ns_Probe(s32 id);
 ResourceBucket *Ns_ProbeSafe(u32 id);
 
+extern ResourceSlot g_spu_slots[8];
+extern ResourceSlot g_ns_physical_pages[];
+extern ResourceHandler g_ns_page_free_sentinel[];
+extern ResourceSlotStateView g_slst_buf1[];
 #endif

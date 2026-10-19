@@ -1,8 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "resource.h"
 typedef ResourceSlotStateView Slot;
-extern ResourceSlot g_spu_slots[8];
-extern Slot g_slst_buf1[];
 
 s32 Ns_TexturePageFree(s32 arg0) {
     s16 temp_v1;

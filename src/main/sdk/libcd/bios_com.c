@@ -9,7 +9,7 @@ typedef struct {
     u8 sync;
     u8 ready;
     u8 data;
-    u8 pad[13];
+    u8 reserved[13];
 } CdStatus;
 
 typedef struct {
@@ -20,11 +20,9 @@ typedef struct {
 
 
 
-extern CdCmdTable g_cd_com_sent_counters;
-extern volatile u8 *g_cd_reg0;
-extern volatile u8 *g_cd_reg1_ptr;
-extern volatile u8 *g_cd_reg2_ptr;
-extern volatile CdStatus g_cd_status;
+#define CRASH_EXT_SDK_LIBCD_BIOS_COM
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_BIOS_COM
 
 
 static inline void cd_set_timeout(const char *name)

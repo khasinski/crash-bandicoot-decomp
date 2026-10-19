@@ -4,9 +4,9 @@
 #include "audio_channels.h"
 /* GNU_AS_G: 8 */
 
-extern AudioChannel g_midi_seq_slot_b[];
-extern s32 g_cur_map_level[];
-extern s32 g_levels_unlocked[];
+#define CRASH_EXT_ENGINE_AUDIO_MODE_UPDATE
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_AUDIO_MODE_UPDATE
 
 void Midi_TogglePlayback(s32 request) {
     s32 mode;

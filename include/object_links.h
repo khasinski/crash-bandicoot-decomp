@@ -5,7 +5,7 @@
 typedef struct Node {
     s32 kind;
     struct Node *word04;
-    u8 pad08[0x5C];
+    u8 reserved_08[0x5C];
     struct Node *parent;
     struct Node *next;
     struct Node *children;
@@ -17,4 +17,5 @@ s32 Gool_ObjectHandleTraverseTreePostorder();
 void Gool_ForEachObjectHandle(Traversal traversal, Visitor visitor, void *context);
 s32 Gool_ObjectTerminate();
 
+extern Node *g_level_pause_menu_obj;
 #endif

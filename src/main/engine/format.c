@@ -8,7 +8,9 @@ typedef union FormatFlags {
     struct {u8 flags; u8 sign; u8 reserved[2];} bytes;
 } FormatFlags;
 typedef struct FormatSpec {FormatFlags flags; s32 width; s32 precision;} FormatSpec;
-extern FormatSpec g_sprintf_thousands_table;
+#define CRASH_EXT_ENGINE_FORMAT
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_FORMAT
 
 
 static __inline__ u32 *next_argument(u32 **arguments){u32 *next=*arguments;*arguments=next+1;return next;}

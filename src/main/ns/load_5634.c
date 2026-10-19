@@ -3,7 +3,6 @@
 #include "ns.h"
 #include "zone.h"
 
-extern ResourceSlot g_ns_physical_pages[];
 
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)

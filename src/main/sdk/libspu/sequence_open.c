@@ -4,17 +4,6 @@
 /* This unit registers addresses; callbacks have different parameter lists. */
 typedef void (*Callback)();
 
-extern Callback g_ss_cc_data_entry;
-extern Callback g_ss_cc_main_vol;
-extern Callback g_ss_cc_panpot;
-extern Callback g_ss_cc_damper;
-extern Callback g_ss_cc_nrpn_lsb;
-extern Callback g_ss_cc_nrpn_msb;
-extern Callback g_ss_cc_rpn_lsb;
-extern Callback g_ss_cc_rpn_msb;
-extern Callback g_ss_cc_reverb;
-extern Callback g_ss_cc_reset_all;
-extern Callback g_ss_nrpn_attr_fn_00;
 
 
 s16 SsSepOpen(void *data_address, s16 mode, s16 channel_count) {
@@ -50,7 +39,7 @@ failed:
     g_ss_cc_reverb = &_SsContResetAll;
     g_ss_cc_reset_all = &_SsContDataEntry;
     g_ss_cc_data_entry = &_SsSetControlChange;
-    g_ss_nrpn_attr_fn_00 = &Cd_Stub_01;
+    g_ss_nrpn_attr_fn_00[0] = &Cd_Stub_01;
     g_ss_nrpn_attr_fn_01 = &Cd_Stub_02;
     g_ss_nrpn_attr_fn_02 = &Cd_Stub_03;
     g_ss_nrpn_attr_fn_03 = &Cd_Stub_04;

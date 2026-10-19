@@ -1,12 +1,10 @@
+/* GNU_AS_NO_GP: gp_pbak_mode */
 /* GCC_VERSION: 2.6.3 */
 /* GCC_CPU: 3000 */
 /* GNU_AS_G: 8 */
 #include "common.h"
 #include "audio_channels.h"
 
-extern s32 gp_pbak_mode[];
-extern s32 g_cur_map_level[];
-extern s32 g_levels_unlocked[];
 
 void Midi_Init(void) {
     s16 channel;
@@ -37,7 +35,7 @@ void Midi_Init(void) {
     } else if (g_cur_map_level[0] == 0) {
         voice_limit = 20;
     } else {
-        switch (gp_pbak_mode[0]) {
+        switch (gp_pbak_mode) {
         case 0x3:
             voice_limit = 0xB;
             break;

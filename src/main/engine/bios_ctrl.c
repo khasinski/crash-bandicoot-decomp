@@ -4,9 +4,9 @@
 
 #include "engine_state.h"
 
-extern EngineState *gp_card;
-extern EngineByteRecord gp_str_card_invalid_tag[];
-extern EngineByteRecord g_card_filename[];
+#define CRASH_EXT_ENGINE_BIOS_CTRL
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_BIOS_CTRL
 
 
 static __inline__ s32 Card_ClearFlag20_inline(void)

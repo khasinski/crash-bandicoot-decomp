@@ -21,7 +21,9 @@ typedef struct {
     StateCallback slot18;
 } Dispatch;
 
-extern Dispatch *g_intr_ctrl_ptr;
+#define CRASH_EXT_SDK_LIBAPI_CALLBACK_DISPATCH
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBAPI_CALLBACK_DISPATCH
 
 s32 ResetCallback(void)
 {

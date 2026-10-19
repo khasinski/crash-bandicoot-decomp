@@ -38,7 +38,7 @@ typedef struct GpuDrawEnv {
 typedef struct GpuDisplayEnv {
     GpuRect display;
     GpuRect screen;
-    u8 interlaced, rgb24, pad12, pad13;
+    u8 interlaced, rgb24, video_mode, reserved;
 } GpuDisplayEnv;
 
 /* PutDrawEnv copies exactly 0x5C bytes, including the command packet. */

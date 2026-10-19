@@ -44,7 +44,7 @@ loop:
         break;
     default:
         {
-            struct { s32 val; u8 pad[9]; u8 flag_d; } *p = (void *)&g_ss_tick_mode_cur;
+            struct { s32 val; u8 reserved[9]; u8 flag_d; } *p = (void *)&g_ss_tick_mode_cur;
             s32 tmp;
             if (*(s32 *)p != 0) {
                 return;

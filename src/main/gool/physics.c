@@ -13,61 +13,61 @@ typedef struct GoolVectors {
 } GoolVectors;
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
-    s32 unk04;
-    s32 unk08;
-    s32 unk0C;
-    s32 unk10;
+    s32 word_00;
+    s32 word_04;
+    s32 word_08;
+    s32 word_0c;
+    s32 word_10;
 } GoolCodeHeader;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     u8 *code;
     u8 *data;
     u16 *states;
-    void *unk20;
+    void *word_20;
     u32 *anims;
 } GoolExecutable;
 
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 typedef struct ResourceEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *data;
-    void *unk14;
+    void *word_14;
 } ResourceEntry;
 
 typedef struct GoolObj {
     s32 kind;
-    s32 unk04;
+    s32 word_04;
     s32 bound[6];
     GoolExecutable *exec;
-    s32 unk24;
+    s32 word_24;
     ResourceEntry *zone;
-    s32 unk2C;
+    s32 word_2c;
     GoolDefaults defaults;
     struct GoolObj *self;
     struct GoolObj *parent;
     struct GoolObj *next;
     struct GoolObj *children;
-    s32 unk70;
+    s32 creator;
     void *player;
-    struct GoolObj *unk78;
-    s32 unk7C;
+    struct GoolObj *collider;
+    s32 interrupter;
     GoolVectors vectors;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    s32 unkB8;
-    s32 unkBC;
-    s32 unkC0;
-    s32 unkC4;
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    s32 target_rot_z;
+    s32 rot_vel_x;
+    s32 rot_vel_y;
+    s32 rot_vel_z;
     u32 status_a;
     u32 status_b;
     u32 status_c;
@@ -76,14 +76,14 @@ typedef struct GoolObj {
     u32 *sp;
     u32 *pc;
     u32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    s32 unkF8;
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    s32 arg0;
+    s32 arg1;
+    s32 arg2;
+    s32 arg3;
     void *anim_seq;
     s32 anim_frame;
     void *entity;
@@ -100,10 +100,10 @@ typedef struct GoolObj {
     s32 event;
     s32 cam_rot_x;
     s32 ang_vel_x;
-    s32 unk148;
+    s32 head_turn;
     s32 voice_id;
-    s32 unk150;
-    s32 unk154;
+    s32 ack_proj;
+    s32 hotspot_size;
     s32 node_id;
 } GoolObj;
 
@@ -114,14 +114,17 @@ typedef struct CamTransformState {
     u8 vec888[0x48];
 } CamTransformState;
 
-extern ResourceEntry *g_pads[];
+#define CRASH_EXT_GOOL_PHYSICS_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PHYSICS_0
 
 typedef struct GoolColor {
     u16 r, g, b;
 } GoolColor;
 
-extern GoolObj * gp_crash_obj;
-extern s32 g_draw_stamp[];
+#define CRASH_EXT_GOOL_PHYSICS_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PHYSICS_1
 
 static __inline__ void Gool_ObjectColorByZone(GoolObj *object, s32 mode) {
     ResourceEntry *entry;
@@ -141,9 +144,9 @@ static __inline__ void Gool_ObjectColorByZone(GoolObj *object, s32 mode) {
         object->defaults = *defaults;
         return;
     case 1:
-        object->defaults.field2A = defaults->field2A;
-        object->defaults.field2C = defaults->field2C;
-        object->defaults.field2E = defaults->field2E;
+        object->defaults.intensity_r = defaults->intensity_r;
+        object->defaults.intensity_g = defaults->intensity_g;
+        object->defaults.intensity_b = defaults->intensity_b;
         return;
     }
 }
@@ -177,9 +180,9 @@ s32 Gool_ObjectColors(GoolObj *obj) {
             obj->invincibility_state = 0;
             Gool_ObjectColorByZone(obj, 1);
         } else if (obj->invincibility_state == 4) {
-            if (obj->unk78 != NULL && obj->unk78->exec->header->unk04 == 0x300) {
+            if (obj->collider != NULL && obj->collider->exec->header->word_04 == 0x300) {
                 sp18 = 0;
-                Gool_ExecStateCode(obj, obj->unk78, 0xA00, 1, &sp18);
+                Gool_ExecStateCode(obj, obj->collider, 0xA00, 1, &sp18);
             }
         }
         /* fallthrough */
@@ -192,21 +195,21 @@ s32 Gool_ObjectColors(GoolObj *obj) {
     case 2:
         rem = (g_draw_stamp[0] % 4) << 8;
         if (rem >= 0x100) {
-            defaults->field2A = 0x47F - rem;
+            defaults->intensity_r = 0x47F - rem;
         } else {
-            defaults->field2A = rem + 0x7F;
+            defaults->intensity_r = rem + 0x7F;
         }
-        defaults->field2C = defaults->field2E = defaults->field2A;
+        defaults->intensity_g = defaults->intensity_b = defaults->intensity_r;
         break;
     case 1:
         break;
     default:
         if (obj == gp_crash_obj && (obj->status_b & 0x4000000)) {
             typedef struct {
-                u8 pad00[0x372];
+                u8 reserved_00[0x372];
                 GoolColor color372;
             } ZoneColorView;
-            *(GoolColor *)&obj->defaults.field2A = ((ZoneColorView *)obj->zone->data)->color372;
+            *(GoolColor *)&obj->defaults.intensity_r = ((ZoneColorView *)obj->zone->data)->color372;
         }
         break;
     }
@@ -232,7 +235,9 @@ typedef struct GoolBoundsGlobals {
     s32 count;
 } GoolBoundsGlobals;
 
-extern GoolBoundsGlobals g_obj_bounds;
+#define CRASH_EXT_GOOL_PHYSICS_2
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PHYSICS_2
 
 void Gool_ObjectControlDir(GoolObj *obj) {
     s32 trans[3];
@@ -296,7 +301,7 @@ void Gool_ObjectControlDir(GoolObj *obj) {
             entry->bound.z2 = trans[2] + obj->bound[3];
         }
     }
-    if (gp_crash_obj->unkFC == obj->unkFC) {
+    if (gp_crash_obj->arg1 == obj->arg1) {
         player_bound.x1 = gp_crash_obj->vectors.trans[0] + gp_crash_obj->bound[0];
         player_bound.y1 = gp_crash_obj->vectors.trans[1] + gp_crash_obj->bound[1];
         player_bound.z1 = gp_crash_obj->vectors.trans[2] + gp_crash_obj->bound[2];
@@ -306,7 +311,7 @@ void Gool_ObjectControlDir(GoolObj *obj) {
         if (Level_TestBoundIntersection(&player_bound, &entry->bound) != 0) {
             Gool_Collide(obj, &entry->bound, gp_crash_obj, &player_bound);
         } else {
-            obj->unk78 = NULL;
+            obj->collider = NULL;
         }
     }
 }
@@ -314,7 +319,7 @@ void Gool_ObjectControlDir(GoolObj *obj) {
 typedef struct GoolMoveParams {
     s32 accel;
     s32 max_speed;
-    s32 unk8;
+    s32 word_8;
     s32 decel;
 } GoolMoveParams;
 
@@ -325,19 +330,17 @@ typedef struct GoolDirEntry {
 } GoolDirEntry;
 
 typedef struct GoolTimeState {
-    u8 pad00[0x84];
-    u32 unk84;
+    u8 reserved_00[0x84];
+    u32 word_84;
 } GoolTimeState;
 
-extern GoolMoveParams g_accel_states[];
-extern GoolDirEntry g_move_states[];
-extern s32 g_cam_dir_rot_y[];
-extern GoolTimeState *g_db_cur[];
-extern u8 g_solid_wall_plot_buf[];
+#define CRASH_EXT_GOOL_PHYSICS_3
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PHYSICS_3
 
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66) * (x))) / 1024)
+#define SCALE_DT(x) (((s32)((g_db_cur[0]->word_84 < 0x67U ? g_db_cur[0]->word_84 : 0x66) * (x))) / 1024)
 #define CLAMP(x, min, max) ((x) >= (max) ? (max) : ((x) < (min) ? (min) : (x)))
 
 void Gool_ObjectPhysics(GoolObj *obj) {
@@ -377,7 +380,7 @@ void Gool_ObjectPhysics(GoolObj *obj) {
         speed_scale = g_move_states[dir_idx].speed_scale;
         if (g_move_states[dir_idx].dir != 8) {
             target_rot = (g_move_states[dir_idx].angle + g_cam_dir_rot_y[0]) & 0xFFF;
-            diff = ABS(target_rot - obj->unkB4);
+            diff = ABS(target_rot - obj->target_rot_y);
             if (diff > 0x800) {
                 diff = 0x1000 - diff;
             }
@@ -385,9 +388,9 @@ void Gool_ObjectPhysics(GoolObj *obj) {
                 cos_val = cos(diff);
                 obj->speed += (SCALE_DT(params->accel) * (cos_val >> 6)) >> 6;
                 if (obj->speed <= 0x100) {
-                    obj->unkB4 = target_rot;
+                    obj->target_rot_y = target_rot;
                 } else if (diff < 0x7C8) {
-                    obj->unkB4 = Gool_ObjectRotate(obj->unkB4, target_rot, 0xF00, NULL);
+                    obj->target_rot_y = Gool_ObjectRotate(obj->target_rot_y, target_rot, 0xF00, NULL);
                 } else {
                     obj->speed -= SCALE_DT(params->decel);
                     if (obj->speed < 0) {
@@ -395,7 +398,7 @@ void Gool_ObjectPhysics(GoolObj *obj) {
                     }
                 }
             } else if (obj->speed <= 0x100 || diff <= 0x400) {
-                obj->unkB4 = target_rot;
+                obj->target_rot_y = target_rot;
                 obj->speed += SCALE_DT(params->accel);
             } else {
                 obj->speed = 0;
@@ -410,29 +413,29 @@ void Gool_ObjectPhysics(GoolObj *obj) {
             }
         }
         speed_scale = (speed_scale * obj->speed) >> 8;
-        obj->unkA4 = ((sin(obj->unkB4) >> 4) * speed_scale) >> 8;
-        obj->unkAC = ((cos(obj->unkB4) >> 4) * speed_scale) >> 8;
+        obj->vel_x = ((sin(obj->target_rot_y) >> 4) * speed_scale) >> 8;
+        obj->vel_z = ((cos(obj->target_rot_y) >> 4) * speed_scale) >> 8;
     }
     if ((obj->status_a & 1) && obj->event != 0x1200) {
         obj->status_a &= ~0x2000;
     }
     obj->status_a &= 0xFFCAA07E;
     if (obj->status_b & 1) {
-        obj->vectors.rot[1] = Gool_ObjectRotate(obj->vectors.rot[1], obj->unkB4, obj->unkB0, obj);
+        obj->vectors.rot[1] = Gool_ObjectRotate(obj->vectors.rot[1], obj->target_rot_y, obj->target_rot_x, obj);
     }
     if (obj->status_b & 0x80000) {
-        obj->vectors.rot[1] = Gool_ObjectRotate2(obj->vectors.rot[1], obj->unkB4, obj->unkB0, obj);
+        obj->vectors.rot[1] = Gool_ObjectRotate2(obj->vectors.rot[1], obj->target_rot_y, obj->target_rot_x, obj);
     }
     if (obj->status_b & 0x2000) {
-        obj->vectors.rot[0] = Gool_ObjectRotate(obj->vectors.rot[0], obj->unkB8, obj->ang_vel_x, NULL);
+        obj->vectors.rot[0] = Gool_ObjectRotate(obj->vectors.rot[0], obj->target_rot_z, obj->ang_vel_x, NULL);
     }
-    if (obj->exec->header->unk00 != 5) {
-        obj->unk78 = NULL;
+    if (obj->exec->header->word_00 != 5) {
+        obj->collider = NULL;
     }
     if (obj->status_b & 0x40) {
-        vel.x = SCALE_DT(obj->unkA4);
-        vel.y = SCALE_DT(obj->unkA8);
-        vel.z = SCALE_DT(obj->unkAC);
+        vel.x = SCALE_DT(obj->vel_x);
+        vel.y = SCALE_DT(obj->vel_y);
+        vel.z = SCALE_DT(obj->vel_z);
         saved_trans = *(GoolVec3 *)obj->vectors.trans;
         if (obj->status_b & 8) {
             obj->event = 0xFF;
@@ -450,29 +453,29 @@ void Gool_ObjectPhysics(GoolObj *obj) {
             }
         }
         if (obj->status_b & 0x1000) {
-            obj->unkA4 = CLAMP(obj->unkA4, -obj->unkB8, obj->unkB8);
-            obj->unkA8 = CLAMP(obj->unkA8, -obj->unkB8, obj->unkB8);
-            obj->unkAC = CLAMP(obj->unkAC, -obj->unkB8, obj->unkB8);
+            obj->vel_x = CLAMP(obj->vel_x, -obj->target_rot_z, obj->target_rot_z);
+            obj->vel_y = CLAMP(obj->vel_y, -obj->target_rot_z, obj->target_rot_z);
+            obj->vel_z = CLAMP(obj->vel_z, -obj->target_rot_z, obj->target_rot_z);
         }
         if (obj->status_b & 0x4000) {
             if (obj->vectors.trans[1] <= obj->floor_y) {
                 obj->vectors.trans[1] = obj->floor_y;
                 obj->status_a |= 1;
                 obj->floor_time = g_level_zone_flags[0];
-                if (obj->unkA8 < 0) {
-                    obj->floor_vel_y = obj->unkA8;
-                    obj->unkA8 = 0;
+                if (obj->vel_y < 0) {
+                    obj->floor_vel_y = obj->vel_y;
+                    obj->vel_y = 0;
                 }
             }
         }
     }
     if (obj->status_b & 0x20) {
-        obj->unkA8 -= (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66) * 4000;
-        if (obj->unkA8 < -0x2EE000) {
-            obj->unkA8 = -0x2EE000;
+        obj->vel_y -= (g_db_cur[0]->word_84 < 0x67U ? g_db_cur[0]->word_84 : 0x66) * 4000;
+        if (obj->vel_y < -0x2EE000) {
+            obj->vel_y = -0x2EE000;
         }
     }
-    if ((obj->status_b & 0x10) && gp_crash_obj->unkFC != obj->unkFC &&
+    if ((obj->status_b & 0x10) && gp_crash_obj->arg1 != obj->arg1 &&
         Math_OutOfRange(obj, obj->vectors.trans, gp_crash_obj->vectors.trans, 0x7D000, 0xAF000, 0x7D000) == 0) {
         Gool_ObjectControlDir(obj);
     }

@@ -5,16 +5,14 @@
 /* Known fields and the 0xAC stride are recovered from retail loads/stores. */
 typedef char SoundStateStride[(sizeof(SequenceState) == 0xAC) ? 1 : -1];
 typedef struct { u8 bytes[0x19]; } Master;
-extern u8 g_spu_vm_voice_vol[];
-extern u8 g_spu_vm_voice_seq_sep[];
-extern u8 g_spu_vm_voice_tone_idx[];
-extern u8 g_midi_seq_table[];
+#define CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOLUME_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOLUME_0
 typedef struct { s16 program; u8 rest[50]; } ProgramVoice;
 typedef struct { u8 pan; u8 rest[51]; } PanVoice;
-extern ProgramVoice g_spu_vm_voice_tone_prog[];
-extern PanVoice g_spu_vm_voice_pan[];
-
-extern Master *g_vab_cur_master_vol;
+#define CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOLUME_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOLUME_1
 
 
 s16 SpuVmSetSeqVol(s16 arg0, u16 arg1, u16 arg2, s16 arg3) {
@@ -38,13 +36,13 @@ s16 SpuVmSetSeqVol(s16 arg0, u16 arg1, u16 arg2, s16 arg3) {
 
     temp_t2 = g_ss_score_table[arg0 & 0xFF] + ((u32) (arg0 << 0x10) >> 0x18);
     g_spu_vm_cur_seq_sep_id = arg0;
-    *(u16 *)(void *)&temp_t2->field_74 = arg1;
-    temp_t2->field_76 = arg2;
-    if ((u16) *(u16 *)(void *)&temp_t2->field_74 >= 0x80U) {
-        *(u16 *)(void *)&temp_t2->field_74 = 0x7FU;
+    *(u16 *)(void *)&temp_t2->voll = arg1;
+    temp_t2->volr = arg2;
+    if ((u16) *(u16 *)(void *)&temp_t2->voll >= 0x80U) {
+        *(u16 *)(void *)&temp_t2->voll = 0x7FU;
     }
-    if ((u16) temp_t2->field_76 >= 0x80U) {
-        temp_t2->field_76 = 0x7FU;
+    if ((u16) temp_t2->volr >= 0x80U) {
+        temp_t2->volr = 0x7FU;
     }
     if (arg3 == 1) {
         var_t3 = 0;
@@ -59,14 +57,14 @@ s16 SpuVmSetSeqVol(s16 arg0, u16 arg1, u16 arg2, s16 arg3) {
                 s16 *right_shadow = left_shadow + 1;
                 temp_a1 = var_t3 * 0x34;
                 if (*(u16 *)(g_spu_vm_voice_seq_sep + temp_a1) == seq_key) {
-                    scaled_velocity = ((s32) (*(s16 *)(g_spu_vm_voice_vol + temp_a1) * temp_t2->gains[temp_t2->field_12]) / volume_max);
+                    scaled_velocity = ((s32) (*(s16 *)(g_spu_vm_voice_vol + temp_a1) * temp_t2->gains[temp_t2->channel]) / volume_max);
                     scaled_velocity = (s32)(g_vab_cur_master_vol->bytes[0x18] * (((u32)scaled_velocity << 14) - (u32)scaled_velocity)) / volume_square;
                     temp_v1 = g_spu_vm_voice_tone_prog[var_t3].program * 0x10;
                     scaled_velocity *= g_vab_cur_prog_table[temp_v1 + 1];
                     temp_a1_2 = *(s16 *)(g_spu_vm_voice_tone_idx + temp_a1);
                     temp_lo = (u32)(scaled_velocity * g_ns_vpage_pool[((temp_v1 + temp_a1_2) << 5) + 2]) / (u32)volume_square;
-                    temp_lo_2 = (u32) (temp_lo * *(u16 *)(void *)&temp_t2->field_74) / (u32)volume_max;
-                    temp_lo_3 = (u32) (temp_lo * temp_t2->field_76) / (u32)volume_max;
+                    temp_lo_2 = (u32) (temp_lo * *(u16 *)(void *)&temp_t2->voll) / (u32)volume_max;
+                    temp_lo_3 = (u32) (temp_lo * temp_t2->volr) / (u32)volume_max;
                     temp_v1_2 = g_ns_vpage_pool[(temp_a1_2 << 5) + 3];
                     if (temp_v1_2 < 0x40U) {
                         var_a1 = temp_lo_2;

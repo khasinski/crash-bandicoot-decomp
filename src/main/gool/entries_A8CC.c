@@ -11,25 +11,23 @@ typedef struct ZoneFogHeader {
 } ZoneFogHeader;
 
 typedef struct ZoneHeader {
-    u8 pad[0x10];
+    u8 reserved[0x10];
     ZoneFogHeader *data;
 } ZoneHeader;
 
 typedef struct NsdHeader {
-    s32 unk0;
+    s32 word_0;
     s32 type;
 } NsdHeader;
 
 typedef struct {
-    u8 pad[0x48];
+    u8 reserved[0x48];
     s32 a, b, c, d, e, f, g, h;
 } Sp;
 
-extern u16 *gp_level_entry[];
-extern ZoneHeader *g_pads[];
-extern s32 g_view_proj[];
-extern s32 g_draw_stamp[];
-extern NsdHeader *g_ns_page_pool[];
+#define CRASH_EXT_GOOL_ENTRIES_A8CC
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ENTRIES_A8CC
 
 
 void Gfx_TransformWorldsDark(s32 arg0)

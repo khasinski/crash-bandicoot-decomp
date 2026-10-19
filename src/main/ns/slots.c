@@ -6,7 +6,7 @@
 
 void Ns_KillPage(u8 *table, s32 index)
 {
-    s16 *field = (s16 *)(table + index * 0x2C + 0x30);
-    if (*field)
-        *field = 0;
+    s16 *slot_state = (s16 *)(table + index * 0x2C + 0x30);
+    if (*slot_state)
+        *slot_state = 0;
 }

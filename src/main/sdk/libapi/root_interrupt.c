@@ -15,7 +15,9 @@ typedef struct {
     u32 stack[0x3F0];
 } IntrState;
 
-extern IntrState g_event_handlers;
+#define CRASH_EXT_SDK_LIBAPI_ROOT_INTERRUPT
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBAPI_ROOT_INTERRUPT
 
 
 void trapIntr(void)

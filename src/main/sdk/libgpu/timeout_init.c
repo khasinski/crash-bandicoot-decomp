@@ -5,7 +5,9 @@
 /* Establish the GPU operation timeout and reset its polling counter. */
 
 
-extern volatile s32 g_gpu_queue_enabled[];
+#define CRASH_EXT_SDK_LIBGPU_TIMEOUT_INIT
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_TIMEOUT_INIT
 
 
 void set_alarm(void)

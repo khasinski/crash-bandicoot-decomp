@@ -1,5 +1,4 @@
 #include "common.h"
-extern s32 *gp_grid_rows;
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */

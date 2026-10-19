@@ -5,10 +5,10 @@ void _SsContDataEntry(s16 sequence,s16 channel) {
     SequenceState *state=g_ss_score_table[sequence]+channel;
     SsUtReverbOff();
     SpuVmDamperOff();
-    state->field_2C[state->field_12]=state->field_12;
-    state->field_13=0;
-    state->field_14=0;
-    state->gains[state->field_12]=127;
-    state->field_17[state->field_12]=64;
-    state->field_88=_SsReadDeltaValue(sequence,channel);
+    state->programs[state->channel]=state->channel;
+    state->rpn_flag=0;
+    state->nrpn_voice=0;
+    state->gains[state->channel]=127;
+    state->panpot[state->channel]=64;
+    state->step_counter=_SsReadDeltaValue(sequence,channel);
 }

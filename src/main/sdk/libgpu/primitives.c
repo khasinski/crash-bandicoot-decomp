@@ -113,25 +113,25 @@ void SetLineG2(GpuPacketHeader *packet)
 typedef struct GpuLineF3 {
     GpuPacketHeader header;
     u32 v[3];
-    u32 pad;
+    u32 term;
 } GpuLineF3;
 
 typedef struct GpuLineG3 {
     GpuPacketHeader header;
     u32 v[5];
-    u32 pad;
+    u32 term;
 } GpuLineG3;
 
 typedef struct GpuLineF4 {
     GpuPacketHeader header;
     u32 v[4];
-    u32 pad;
+    u32 term;
 } GpuLineF4;
 
 typedef struct GpuLineG4 {
     GpuPacketHeader header;
     u32 v[7];
-    u32 pad;
+    u32 term;
 } GpuLineG4;
 
 typedef struct GpuMaskPacket {
@@ -144,7 +144,7 @@ void SetLineF3(GpuLineF3 *packet)
     u32 terminator=0x55555555;
     packet->header.length=5;
     packet->header.command=0x48;
-    packet->pad=terminator;
+    packet->term=terminator;
 }
 
 void SetLineG3(GpuLineG3 *packet)
@@ -152,7 +152,7 @@ void SetLineG3(GpuLineG3 *packet)
     u32 terminator=0x55555555;
     packet->header.length=7;
     packet->header.command=0x58;
-    packet->pad=terminator;
+    packet->term=terminator;
 }
 
 void SetLineF4(GpuLineF4 *packet)
@@ -160,7 +160,7 @@ void SetLineF4(GpuLineF4 *packet)
     u32 terminator=0x55555555;
     packet->header.length=6;
     packet->header.command=0x4C;
-    packet->pad=terminator;
+    packet->term=terminator;
 }
 
 void SetLineG4(GpuLineG4 *packet)
@@ -168,7 +168,7 @@ void SetLineG4(GpuLineG4 *packet)
     u32 terminator=0x55555555;
     packet->header.length=9;
     packet->header.command=0x5C;
-    packet->pad=terminator;
+    packet->term=terminator;
 }
 
 void SetBlockFill(GpuPacketHeader *packet)

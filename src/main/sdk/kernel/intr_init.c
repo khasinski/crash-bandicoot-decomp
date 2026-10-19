@@ -18,7 +18,9 @@ typedef struct {
     u32 stack[0x400];
 } IntrState;
 
-extern IntrState g_event_handlers;
+#define CRASH_EXT_SDK_KERNEL_INTR_INIT_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_KERNEL_INTR_INIT_0
 
 typedef struct {
     u32 word00;
@@ -30,7 +32,9 @@ typedef struct {
     s32 slot18;
 } Dispatch;
 
-extern Dispatch *g_intr_ctrl_ptr;
+#define CRASH_EXT_SDK_KERNEL_INTR_INIT_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_KERNEL_INTR_INIT_1
 
 
 void *startIntr(void) {

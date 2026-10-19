@@ -1,17 +1,12 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 #include "common.h"
+#include "render.h"
 
 
-extern u16 *gp_level_entry[];
-extern struct {
-    u8 pad[0x10];
-    u8 *data;
-} *g_pads[];
-extern s32 g_view_proj[];
-extern s32 g_draw_stamp[];
-
-extern void * gp_crash_obj;
+#define CRASH_EXT_GOOL_ENTRIES_AAE0_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ENTRIES_AAE0_0
 
 typedef struct {
     u32 words[5];
@@ -44,20 +39,20 @@ void Gfx_TransformWorldsDark2(s32 arg0)
         *(s32 *)0x1F800058 = gp_shader_dark_radius;
         *(s32 *)0x1F80005C = gp_shader_dark_intensity;
         *(s32 *)0x1F800060 = gp_shader_dark_z_bias;
-        Gte_RTransformWorldsDark2(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), g_wgeo_tex_anim_masks);
+        Gte_RTransformWorldsDark2(gp_level_entry[0], arg0, 0x800 - (g_view_proj.distance / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), g_wgeo_tex_anim_masks);
     }
 }
 
 typedef struct {
-    u32 pad00[3];
+    u32 reserved_00[3];
     u32 count;
 } WgeoSubHeader;
 
 typedef struct {
-    u32 pad00[3];
+    u32 reserved_00[3];
     s32 item_count;
     WgeoSubHeader *sub;
-    u32 pad14[2];
+    u32 reserved_14[2];
     u16 *list;
 } WgeoEntry;
 
@@ -244,12 +239,12 @@ void Gfx_BlitCardIcon(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 
 typedef struct GoolObj {
     s32 header;
-    u8 pad04[0x60 - 0x04];
+    u8 reserved_04[0x60 - 0x04];
     struct GoolObj *self;
     void *parent;
     struct GoolObj *sibling;
     struct GoolObj *child;
-    u8 pad70[0x25C - 0x70];
+    u8 reserved_70[0x25C - 0x70];
 } GoolObj;
 
 typedef struct GoolAllocGlobals {
@@ -262,10 +257,9 @@ typedef struct GoolAllocGlobals {
     s32 e04;
 } GoolAllocGlobals;
 
-extern GoolAllocGlobals gool_alloc;
-extern GoolObj * volatile g_player[];
-extern s32 g_gool_obj_list_7[];
-extern void *g_savestate[];
+#define CRASH_EXT_GOOL_ENTRIES_AAE0_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ENTRIES_AAE0_1
 
 s32 GOOL_InitAllocTable(void)
 {

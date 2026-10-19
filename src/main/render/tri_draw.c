@@ -3,16 +3,18 @@
 #include "common.h"
 #include "gpu.h"
 #include "gte.h"
-extern s32 g_draw_stamp;
 
-extern s32 g_view_proj;
+#define CRASH_EXT_RENDER_TRI_DRAW_0
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TRI_DRAW_0
 typedef struct PrimBuf9398 {
-    u8 pad00[0x78];
+    u8 reserved_00[0x78];
     void *prim_ptr;
 } PrimBuf9398;
 
-extern PrimBuf9398 *g_ot_cur;
-extern s32 g_view_proj;
+#define CRASH_EXT_RENDER_TRI_DRAW_1
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TRI_DRAW_1
 
 typedef struct Vert9DCC {
     u32 v0;
@@ -25,32 +27,32 @@ typedef struct Tri9DCC {
 } Tri9DCC;
 
 typedef struct Group9DCC {
-    s32 unk00;
+    s32 word_00;
     volatile s32 trx;
     s32 try;
     s32 trz;
-    s32 unk10;
+    s32 word_10;
     u8 *tris;
     u8 *verts;
     u8 *tex_tab;
-    u8 pad20[0x20];
+    u8 reserved_20[0x20];
 } Group9DCC;
 
 typedef struct ZoneEntry9DCC {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *header;
 } ZoneEntry9DCC;
 
 typedef struct SortList9DCC {
     u16 count;
-    u16 pad02;
+    u16 reserved_02;
     u16 entries[1];
 } SortList9DCC;
 
 typedef struct UvEntry9DCC {
     u32 lo;
     u16 hi;
-    u16 pad06;
+    u16 reserved_06;
 } UvEntry9DCC;
 
 typedef struct PolyGT3_9DCC {
@@ -66,7 +68,7 @@ typedef struct PolyGT3_9DCC {
     u32 color2;
     u32 xy2;
     u16 uv2;
-    u16 pad26;
+    u16 reserved_26;
 } PolyGT3_9DCC;
 
 typedef struct PolyG3_9DCC {
@@ -79,8 +81,9 @@ typedef struct PolyG3_9DCC {
     u32 xy2;
 } PolyG3_9DCC;
 
-extern ZoneEntry9DCC *g_pads;
-extern SortList9DCC *gp_level_entry;
+#define CRASH_EXT_RENDER_TRI_DRAW_2
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TRI_DRAW_2
 
 
 void Gfx_UpdateCamMatrices(u32 *arg0)
@@ -111,7 +114,7 @@ void Gfx_UpdateCamMatrices(u32 *arg0)
     s32 sz1;
     s32 temp;
     PolyG3_9DCC *poly_g3;
-    s32 pad[2];
+    s32 reserved[2];
 
     groups = (Group9DCC *)(g_pads->header + 4);
     ot_idx = 0x7FF;
@@ -166,7 +169,7 @@ void Gfx_UpdateCamMatrices(u32 *arg0)
             poly->color2 = vtx2->v0;
             if (tri_w1 & 0x1E) {
                 a0 = (tri_w1 & 0x1E) | 1;
-                w1 = ((u32 *)xy)[1 + (((g_draw_stamp >> ((tri_w1 >> 5) & 7)) + (tri_w0 & 0x1F)) & a0)];
+                w1 = ((u32 *)xy)[1 + (((g_draw_stamp[0] >> ((tri_w1 >> 5) & 7)) + (tri_w0 & 0x1F)) & a0)];
             } else {
                 w1 = ((u32 *)xy)[1];
             }

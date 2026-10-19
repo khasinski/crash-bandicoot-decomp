@@ -4,10 +4,9 @@
 #include "common.h"
 
 
-extern u8 g_spu_vm_voice_seq_sep[];
-extern u8 g_spu_vm_voice_tone_prog[];
-extern u8 g_spu_vm_voice_tone_idx[];
-extern u8 g_spu_vm_voice_vab_id[];
+#define CRASH_EXT_SDK_LIBSPU_SEQUENCE_PITCH_BEND
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_SEQUENCE_PITCH_BEND
 
 
 

@@ -1,6 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
 #include "render.h"
-extern s32 g_draw_stamp;
 typedef GpuDrawing Drawing;
 typedef GpuTile Tile;
 
@@ -10,8 +9,9 @@ typedef struct {
     RenderBuffer buffers[2];
 } RenderSystem;
 
-extern RenderSystem g_context;
-extern s32 gp_pbak_mode;
+#define CRASH_EXT_ENGINE_DISPLAY_CLEAR
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_DISPLAY_CLEAR
 
 
 __inline__ void Gpu_ClearVRAM(void) {
@@ -52,7 +52,7 @@ void Gpu_Init(void) {
     s32 i;
     RenderBuffer *buffer;
 
-    g_draw_stamp = 0;
+    g_draw_stamp[0] = 0;
     ResetGraph(0);
     SetGraphDebug(0);
     Gpu_ClearVRAM();
@@ -60,7 +60,7 @@ void Gpu_Init(void) {
     for (i = 0; i < g_context.count; i++) {
         buffer = &g_context.buffers[i];
         buffer->word00 = i;
-        *(s32 *)&buffer->pad7C[0] = 0;
+        *(s32 *)&buffer->meta[0] = 0;
         SetDefDispEnv(&buffer->display, i << 9, 0, 512, 240);
         SetDefDrawEnv(&buffer->drawing.env, i << 9, 12, 512, 216);
         buffer->drawing.env.offset_x = (i << 9) + 256;
@@ -73,8 +73,8 @@ void Gpu_Init(void) {
         if (i == 1) {
             g_context.active[1] = buffer;
         }
-        *(s32 *)&buffer->pad7C[0] = frame_counter;
-        *(s32 *)&buffer->pad7C[8] = 0x22;
+        *(s32 *)&buffer->meta[0] = frame_counter;
+        *(s32 *)&buffer->meta[8] = 0x22;
     }
     PutDispEnv(&g_context.active[0]->display);
     PutDrawEnv(&g_context.active[1]->drawing);

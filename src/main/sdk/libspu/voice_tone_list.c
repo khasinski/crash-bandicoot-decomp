@@ -1,7 +1,9 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-extern u8 g_midi_sep[];
+#define CRASH_EXT_SDK_LIBSPU_VOICE_TONE_LIST
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_TONE_LIST
 s32 SpuVmSelectToneAndVag(u8 *tones,u8 *channels) {
     u8 count=0;
     u8 tone=0;

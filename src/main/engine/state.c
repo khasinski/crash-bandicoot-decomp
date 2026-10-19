@@ -1,7 +1,7 @@
 #define CRASH_STATE_GLOBALS_OWNER
+#define CRASH_ENGINE_STATE_STORAGE
 #include "common.h"
 #include "engine_ticks.h"
-#define CRASH_ENGINE_STATE_STORAGE
 #include "engine_state.h"
 #include "resource.h"
 #include "gool.h"
@@ -84,7 +84,6 @@ s32 *gp_grid_rows;
 s32 gp_edesc_h_timeout;
 s32 gp_edesc_h_newdev;
 
-extern s32 gp_pbak_mode;
 s32 Title_Init(void)
 {
     State *state;
@@ -96,13 +95,17 @@ s32 Title_Init(void)
     return 0;
 }
 
-extern volatile s32 g_island_cam_state;
+#define CRASH_EXT_ENGINE_STATE_0
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_0
 
 
 /* Apply a pending mode request and initialise the recovered mode-state words. */
 s32 Title_LoadNextState(void)
 {
-    extern s32 g_fade_counter[];
+#define CRASH_EXT_ENGINE_STATE_1
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_1
     s32 request;
     u32 value;
     EngineMode25State *reset_state, *requested_state;
@@ -149,15 +152,13 @@ set_value:
     return 0;
 }
 
-extern s32 gp_next_lid;
-extern s32 gp_use_cd;
-extern ResourceSlotStateView g_slst_buf1[];
-
 /* Change mode flags, recycle pending texture slots 8..14, and initialise
  * the item selected by the resource metadata before releasing the reference. */
 void Title_LoadScreen(s32 *reference, s32 mode)
 {
-    extern s32 g_fade_counter[];
+#define CRASH_EXT_ENGINE_STATE_2
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_2
     s32 index;
     ResourceItemListView *resource;
     gp_next_lid = 0;
@@ -189,9 +190,10 @@ void Title_LoadScreen(s32 *reference, s32 mode)
 
 #include "ns.h"
 #include "render.h"
-extern s32 g_key_count[];
 s32 Title_LoadState(void) {
-    extern s32 g_fade_counter[];
+#define CRASH_EXT_ENGINE_STATE_3
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_3
     char buf[32];
     s32 ref;
     s32 mode;
@@ -306,7 +308,7 @@ s32 Title_LoadState(void) {
         gp_title->word04 = gp_title->word0C << 4;
         gp_title->word08 = gp_title->word10 << 4;
         for (i = 0; i < header[3]; i++) {
-            typedef struct { u8 pad00[0x18]; s16 max_level; } MapItemHeader;
+            typedef struct { u8 reserved_00[0x18]; s16 max_level; } MapItemHeader;
             if ((u32)((MapItemHeader *)list->items[i + 2])->max_level <= g_next_level_id[0]) {
                 Gool_ObjectSpawn(list, i);
             }
@@ -322,7 +324,6 @@ void Title_KillObjectsAndEntries(void)
         Title_LoadEntries(gp_title->word35D0, 0, -1);
 }
 
-extern s32 gp_pbak_mode;
 s32 Title_Kill(void)
 {
     if(gp_title != NULL) LIBC_Free(gp_title);
@@ -334,8 +335,9 @@ s32 Title_Kill(void)
 #include "ns.h"
 #include "render.h"
 
-extern RenderBuffer *g_db_prev;
-extern s32 g_ns_load_done_flag;
+#define CRASH_EXT_ENGINE_STATE_4
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_4
 
 typedef struct EngineGpuRect {
     s16 x, y, w, h;
@@ -387,7 +389,7 @@ s32 Title_Loading(s32 level, u8 *image, NsDirectory *dir)
             }
             Gpu_SwapBuffers();
         }
-        g_ns_load_done_flag = 2;
+        g_ns_load_done_flag[0] = 2;
         LIBC_Free(buf);
     }
     return -255;
@@ -412,9 +414,9 @@ void Title_LoadSingleTile(EngineTileCell *cell)
         )->items[cell->tile_y] + 4);
     }
 }
-
-extern s32 g_title_tile_load_cnt[];
-extern s32 g_cam_rot_xz;
+#define CRASH_EXT_ENGINE_STATE_5
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_5
 
 /* Finish the pending object request before selecting the next mode. */
 __inline__ void Title_RequestState(s32 mode)
@@ -439,12 +441,10 @@ typedef struct EngineSprt16 {
     u16 clut;
 } EngineSprt16;
 
-extern u32 g_cur_lid_ro;
-
 
 s32 Title_Update(GpuPacketTag *ot)
 {
-    char pad[32];
+    char reserved[32];
     s32 row;
     s32 col;
     EngineTileCell *cell;
@@ -456,7 +456,9 @@ s32 Title_Update(GpuPacketTag *ot)
         gp_title->word35A4 = 0;
         gp_title->word35A0 = 0;
     case 1: {
-        extern s32 g_fade_counter[];
+#define CRASH_EXT_ENGINE_STATE_6
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_6
         g_cam_rot_xz = 0x120;
         g_fade_counter[0] |= 0xC;
         gp_title->word3598 = 6;
@@ -472,7 +474,7 @@ s32 Title_Update(GpuPacketTag *ot)
         g_cam_rot_xz = 0x120;
         break;
     }
-    if ((g_cur_lid_ro & 0x20000) && gp_title->word359C) {
+    if ((g_cur_lid_ro[0] & 0x20000) && gp_title->word359C) {
         row = 0;
         cell = gp_title->cells;
         do {
@@ -507,7 +509,9 @@ s32 Title_Update(GpuPacketTag *ot)
         if (g_cam_rot_xz == 0) {
             gp_title->word3598 = 7;
             {
-                extern s32 g_fade_counter[1];
+#define CRASH_EXT_ENGINE_STATE_7
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_STATE_7
                 g_fade_counter[0] &= ~0xC;
             }
             Gpu_DrawOverlay(0xFF);

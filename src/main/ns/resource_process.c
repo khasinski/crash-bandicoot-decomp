@@ -8,9 +8,6 @@ typedef ResourceHeader Header;
 typedef ResourceSlot Slot;
 typedef ResourceBucket Bucket;
 typedef ResourceHandler Handler;
-extern Slot g_ns_physical_pages[];
-extern Slot g_slst_buf0[];
-extern Handler g_ns_page_free_sentinel[];
 GpuRect gp_ns_StringTable = { 0, 0, 0x100, 0x80 };
 
 

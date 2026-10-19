@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -21,7 +20,7 @@ typedef struct ZqRect {
 typedef struct ZqZoneRect {
     s32 x, y, z;
     s32 w, h, d;
-    u32 unk18;
+    u32 word_18;
     u16 root;
     s16 max_depth_x;
     s16 max_depth_y;
@@ -29,12 +28,12 @@ typedef struct ZqZoneRect {
 } ZqZoneRect;
 
 typedef struct LevelStateView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     s32 level_id;
 } LevelStateView;
 
 typedef struct SubExec {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     struct {
         s32 type;
         s32 category;
@@ -42,40 +41,40 @@ typedef struct SubExec {
 } SubExec;
 
 typedef struct SubObj {
-    u8 pad00[8];
+    u8 reserved_00[8];
     ZqBound bound;
-    SubExec *unk20;
-    u8 pad24[4];
+    SubExec *word_20;
+    u8 reserved_24[4];
     ResourceEntry *entry;
-    u8 pad2C[0x64 - 0x2C];
+    u8 reserved_2c[0x64 - 0x2C];
     struct SubObj *parent;
-    u8 pad68[0x78 - 0x68];
-    struct SubObj *unk78;
-    u8 pad7C[4];
+    u8 reserved_68[0x78 - 0x68];
+    struct SubObj *collider;
+    u8 reserved_7c[4];
     ZqVec trans;
-    u8 pad8C[0xA8 - 0x8C];
+    u8 reserved_8c[0xA8 - 0x8C];
     s32 vel_y;
-    u8 padAC[0xC8 - 0xAC];
+    u8 reserved_ac[0xC8 - 0xAC];
     u32 status_a;
     u32 status_b;
     u32 status_c;
-    u8 padD4[0xFC - 0xD4];
-    u32 unkFC;
-    u8 pad100[0x110 - 0x100];
-    u16 *unk110;
-    u8 pad114[0x120 - 0x114];
+    u8 reserved_d4[0xFC - 0xD4];
+    u32 arg1;
+    u8 reserved_100[0x110 - 0x100];
+    u16 *word_110;
+    u8 reserved_114[0x120 - 0x114];
     u32 flags120;
-    u8 pad124[4];
+    u8 reserved_124[4];
     s32 anim_state;
-    u8 pad12C[4];
+    u8 reserved_12c[4];
     u32 ground_time;
     s32 impact_vel_y;
     s32 offset138;
     s32 event;
-    u8 pad140[0x148 - 0x140];
-    s32 unk148;
-    u8 pad14C[0x158 - 0x14C];
-    s32 unk158;
+    u8 reserved_140[0x148 - 0x140];
+    s32 head_turn;
+    u8 reserved_14c[0x158 - 0x14C];
+    s32 word_158;
 } SubObj;
 
 typedef struct SubWsNode {
@@ -91,12 +90,12 @@ typedef struct SubWorkspace {
     s32 count;
     ZqBound bound1;
     ZqBound bound2;
-    s32 unk1038;
-    s32 unk103C;
-    s32 unk1040;
-    s32 unk1044;
-    s32 unk1048;
-    s32 unk104C;
+    s32 word_1038;
+    s32 word_103c;
+    s32 word_1040;
+    s32 word_1044;
+    s32 word_1048;
+    s32 word_104c;
 } SubWorkspace;
 
 
@@ -111,7 +110,9 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList g_obj_bounds;
+#define CRASH_EXT_LEVEL_GRID_WORKSPACE
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_GRID_WORKSPACE
 
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
@@ -199,14 +200,14 @@ void Solid_PlotObjWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
     ZqVec diff;
     s32 i, vx, vz, no_grid;
     s32 x, x1, x2, z, z1, z2;
-    SubObj *unk78, *cand_obj;
+    SubObj *collider, *cand_obj;
     SubBox *box;
 
     no_grid = !(((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000);
     vx = v->x;
     vz = v->z;
     if (g_obj_bounds.count != 0) {
-        unk78 = obj->unk78;
+        collider = obj->collider;
         bound1.p1.x = v->x + obj->bound.p1.x;
         bound1.p1.y = v->y + obj->bound.p1.y;
         bound1.p1.z = v->z + obj->bound.p1.z;
@@ -219,26 +220,26 @@ void Solid_PlotObjWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
         bound2.p2.x = bound1.p2.x + 0x6400;
         bound2.p2.y = bound1.p2.y;
         bound2.p2.z = bound1.p2.z + 0x6400;
-        ws->unk104C += 0x100;
+        ws->word_104c += 0x100;
         box = g_obj_bounds.boxes;
         for (i = g_obj_bounds.count - 1; i >= 0; i--, box++) {
             cand_obj = box->obj;
-            if ((cand_obj != unk78 || !flag || box->bound.p2.y > bound2.p1.y)
+            if ((cand_obj != collider || !flag || box->bound.p2.y > bound2.p1.y)
                 && Level_TestBoundIntersection_inline(&bound2, &box->bound)) {
-                bound3.p1.x = box->bound.p1.x + cand_obj->unk148;
+                bound3.p1.x = box->bound.p1.x + cand_obj->head_turn;
                 bound3.p1.y = box->bound.p1.y;
-                bound3.p1.z = box->bound.p1.z + cand_obj->unk148;
-                bound3.p2.x = box->bound.p2.x - cand_obj->unk148;
+                bound3.p1.z = box->bound.p1.z + cand_obj->head_turn;
+                bound3.p2.x = box->bound.p2.x - cand_obj->head_turn;
                 bound3.p2.y = box->bound.p2.y;
-                bound3.p2.z = box->bound.p2.z - cand_obj->unk148;
+                bound3.p2.z = box->bound.p2.z - cand_obj->head_turn;
                 if (no_grid
                     && (cand_obj->status_b & 0x10000)
                     && (!(((obj->flags120 & 0x10) || obj->anim_state == 5)
-                          && cand_obj->unk20->header->category == 0x300
+                          && cand_obj->word_20->header->category == 0x300
                           && (!(cand_obj->status_c & 0x1012) || (cand_obj->flags120 & 0x10020))))
                     && bound2.p1.y <= box->bound.p2.y
                     && bound2.p2.y > box->bound.p1.y
-                    && (cand_obj->unk20->header->type != 0xB
+                    && (cand_obj->word_20->header->type != 0xB
                         || (diff.x = (v->x - cand_obj->trans.x) >> 8,
                             diff.z = (v->z - cand_obj->trans.z) >> 8,
                             (SquareRoot0(diff.x * diff.x + diff.z * diff.z) << 8) > 0x19000))) {

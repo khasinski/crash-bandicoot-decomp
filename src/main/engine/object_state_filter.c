@@ -2,7 +2,7 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 typedef struct {
-    u8 pad00[0xD8];
+    u8 reserved_00[0xD8];
     s32 pid_flags;
 } GoolObj;
 void *Gool_ObjectHasPidFlags(GoolObj *object,s32 state) {

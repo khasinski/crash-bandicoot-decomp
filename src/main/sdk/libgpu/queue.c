@@ -14,7 +14,9 @@ typedef struct {
     void (* volatile callback)(void);
 } GpuState;
 
-extern GpuState g_gpu_mode;
+#define CRASH_EXT_SDK_LIBGPU_QUEUE_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_QUEUE_0
 
 /* --- _addque2 & _exeque --- */
 
@@ -31,9 +33,9 @@ typedef struct {
     s32 arg;
 } GpuActiveEntry;
 
-extern volatile GpuActiveEntry g_gpu_queue_enabled;
-
-extern volatile GpuQueueEntry g_gpu_queue_entries[64];
+#define CRASH_EXT_SDK_LIBGPU_QUEUE_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_QUEUE_1
 
 
 s32 _addque2(void (*func)(void *, s32), u32 *buf, s32 size, s32 arg)

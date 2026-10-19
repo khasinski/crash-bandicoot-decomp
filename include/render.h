@@ -12,7 +12,7 @@ typedef struct RenderBuffer {
     GpuDrawing drawing;
     s32 word74;
     s32 word78;
-    u8 pad7C[0xC];
+    u8 meta[0xC];
     u32 ordering_table[0x800];
 } RenderBuffer;
 
@@ -24,7 +24,7 @@ typedef struct RenderTransformWords {
 
 /* Shared context word selected by mode update and read by Gfx_InitMatrices. */
 typedef struct RenderContextView {
-    u8 pad00[0x114];
+    u8 reserved_00[0x114];
     s32 word114;
 } RenderContextView;
 
@@ -40,7 +40,7 @@ typedef struct RenderProjectionState {
  * Other words in that interval are accessed through existing named aliases. */
 typedef struct RenderCameraPrefix {
     s32 transform[9];
-    u8 pad24[0x48];
+    u8 reserved_24[0x48];
     RenderProjectionState projection;
 } RenderCameraPrefix;
 

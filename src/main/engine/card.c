@@ -2,13 +2,10 @@
 /* GNU_AS_G: 4 */
 #include "common.h"
 #include "engine_ticks.h"
-#define CRASH_ENGINE_STATE_STORAGE
 #include "engine_state.h"
 #include "resource.h"
 #include "gool.h"
 #include "object_links.h"
-
-extern EngineState *gp_card;
 
 
 typedef EngineFileRequest FileRequest;
@@ -196,7 +193,7 @@ typedef struct {
     s32 word00;
     s32 word04;
     s32 record_index;
-    char pad0C[64];
+    char title[64];
 } EngineDirectorySlotView;
 
 typedef struct {
@@ -265,18 +262,18 @@ void Card_PartReadImages(void)
         invalid = 1;
     }
     if (!invalid) {
-        ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C[0] = 0;
+        ((EngineDirectoryStateView *)gp_card)->slots[slot_idx].title[0] = 0;
         if ((u8)block.header.title[0] >= 0x80) {
             Card_ShiftJisToAscii((u8 *)&block);
         }
         block.header.title[31] = 0;
-        BIOS_StrCpy((char *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C,
+        BIOS_StrCpy((char *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].title,
             block.header.title);
     } else {
-        __builtin_memcpy(((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C,
+        __builtin_memcpy(((EngineDirectoryStateView *)gp_card)->slots[slot_idx].title,
             g_str_card_damaged_slot, 13);
     }
-    Card_StrToUpper((u8 *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C);
+    Card_StrToUpper((u8 *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].title);
     if (invalid) {
         blocks = 1;
     } else {
@@ -293,7 +290,7 @@ void Card_PartReadImages(void)
         char part_str[80];
         sprintf(part_str, g_str_card_part_d_of_d, i + 1, blocks);
         Gfx_FormatCardString(((WordView *)&g_card_icon)->v, (slot_idx + i) << 8,
-            i == 0 ? (char *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].pad0C : part_str,
+            i == 0 ? (char *)((EngineDirectoryStateView *)gp_card)->slots[slot_idx].title : part_str,
             0x28, 1);
     }
     if (!invalid) {
@@ -436,7 +433,9 @@ void Card_AsciiToShiftJis(char *title, s32 len)
     }
 }
 
-extern EngineByteRecord g_card_filename;
+#define CRASH_EXT_ENGINE_CARD_0
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_CARD_0
 
 
 static inline EngineDirectorySlot *engine_selected_file(void)
@@ -570,9 +569,6 @@ void Card_PartWrite(s32 mode)
 #undef ENGINE_CARD_WRITE_RETRY
 
 /* Word views of the runtime values serialised in the save record. */
-extern u32 g_stereo_disabled[];
-extern u32 g_cur_map_level[];
-extern u32 g_levels_unlocked[];
 
 void Card_SaveGlobals(EngineSaveRecord *record)
 {
@@ -1027,8 +1023,9 @@ void Card_ResetStateAndFlags(s32 flags)
 
 /* Six-byte state copied as an unaligned record in retail. */
 typedef EngineByteRecord ByteRecord;
-extern ByteRecord gp_str_card_invalid_tag;
-extern ByteRecord g_card_filename;
+#define CRASH_EXT_ENGINE_CARD_1
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_CARD_1
 
 
 s32 Card_Alloc(void)

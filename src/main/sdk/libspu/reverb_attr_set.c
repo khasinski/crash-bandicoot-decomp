@@ -18,7 +18,9 @@ typedef struct {
 
 
 
-extern SpuReverbRegisters g_spu_reverb_reg_offsets[];
+#define CRASH_EXT_SDK_LIBSPU_REVERB_ATTR_SET
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_REVERB_ATTR_SET
 
 s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
 {

@@ -1,3 +1,4 @@
+/* GNU_AS_NO_GP: gp_pbak_frame_idx */
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
@@ -9,60 +10,60 @@ typedef struct GoolVectors {
 } GoolVectors;
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
-    s32 unk04;
-    s32 unk08;
-    s32 unk0C;
-    s32 unk10;
+    s32 word_00;
+    s32 word_04;
+    s32 word_08;
+    s32 word_0c;
+    s32 word_10;
 } GoolCodeHeader;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     u8 *code;
     u8 *data;
     u16 *states;
-    void *unk20;
+    void *word_20;
     u32 *anims;
 } GoolExecutable;
 
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 typedef struct ResourceEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *data;
 } ResourceEntry;
 
 typedef struct GoolObj {
     s32 kind;
-    s32 unk04;
-    u8 pad08[0x18];
+    s32 word_04;
+    u8 reserved_08[0x18];
     GoolExecutable *exec;
-    s32 unk24;
+    s32 word_24;
     ResourceEntry *zone;
-    s32 unk2C;
+    s32 word_2c;
     GoolDefaults defaults;
     struct GoolObj *self;
     struct GoolObj *parent;
     struct GoolObj *next;
     struct GoolObj *children;
-    s32 unk70;
+    s32 creator;
     void *player;
-    s32 unk78;
-    s32 unk7C;
+    s32 collider;
+    s32 interrupter;
     GoolVectors vectors;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    s32 unkB8;
-    s32 unkBC;
-    s32 unkC0;
-    s32 unkC4;
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    s32 target_rot_z;
+    s32 rot_vel_x;
+    s32 rot_vel_y;
+    s32 rot_vel_z;
     u32 status_a;
     u32 status_b;
     u32 status_c;
@@ -71,14 +72,14 @@ typedef struct GoolObj {
     u32 *sp;
     u32 *pc;
     u32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    s32 unkF8;
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
+    u32 *tp;
+    u32 *ep;
+    s32 result_v;
+    s32 misc_flag;
+    s32 arg0;
+    s32 arg1;
+    s32 arg2;
+    s32 arg3;
     void *anim_seq;
     s32 anim_frame;
     void *entity;
@@ -95,29 +96,24 @@ typedef struct GoolObj {
     s32 event;
     s32 cam_rot_x;
     s32 ang_vel_x;
-    s32 unk148;
+    s32 head_turn;
     s32 voice_id;
-    s32 unk150;
-    s32 unk154;
+    s32 ack_proj;
+    s32 hotspot_size;
     s32 node_id;
 } GoolObj;
 
 typedef struct NsdTable {
-    u8 pad00[0x14];
+    u8 reserved_00[0x14];
     s32 items[1];
 } NsdTable;
 
-extern NsdTable *g_ns_page_pool[];
-extern GoolObj *g_player[];
-extern ResourceEntry *g_pads[];
-extern GoolObj g_gool_obj_list_3;
+#define CRASH_EXT_GOOL_CREATE_OBJECT_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_CREATE_OBJECT_0
 
-extern GoolObj *gp_crash_obj;
-
-extern GoolObj g_gool_obj_list_7;
-
-#define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
-#define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
+#define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->word_04 : (n)->children)
+#define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->word_04 : &(n)->children)
 
 static __inline__ s32 Gool_RemoveLevelSpawn(GoolObj *node, GoolObj *new_parent)
 {
@@ -166,7 +162,7 @@ static __inline__ s32 Gool_FindObject_inline(GoolObj *root, Visitor visitor, voi
         }
     }
     if (root->kind == 2) {
-        child = (GoolObj *)root->unk04;
+        child = (GoolObj *)root->word_04;
     } else {
         child = root->children;
     }
@@ -179,10 +175,10 @@ static __inline__ s32 Gool_FindObject_inline(GoolObj *root, Visitor visitor, voi
 }
 
 typedef struct ZoneEntity {
-    u8 pad00[4];
+    u8 reserved_00[4];
     u16 flags;
     u8 group;
-    u8 pad07;
+    u8 reserved_07;
     u16 id;
     u16 path_length;
     s16 rot_x;
@@ -201,12 +197,12 @@ typedef struct ObjectRoot {
 } ObjectRoot;
 
 typedef struct ZoneHeaderView {
-    u8 pad00[0x204];
+    u8 reserved_00[0x204];
     s32 path_index;
     s32 path_count;
-    u8 pad20C[0xD0];
+    u8 reserved_20c[0xD0];
     u32 flags2DC;
-    u8 pad2E0[0x38];
+    u8 reserved_2e0[0x38];
     GoolDefaults obj_defaults;
     GoolDefaults player_defaults;
 } ZoneHeaderView;
@@ -219,10 +215,9 @@ typedef struct ZoneEntryView {
     void *items[1];
 } ZoneEntryView;
 
-extern GoolObj *g_doctor_cortex_obj[];
-extern ZoneEntity *g_mdat_title_str_ptr[];
-extern GoolObj g_gool_obj_list_4;
-extern s32 gp_pbak_frame_idx[];
+#define CRASH_EXT_GOOL_CREATE_OBJECT_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_CREATE_OBJECT_1
 
 #define IS_PLAYER_ENTITY(e) \
     ((e)->group == 3 && \
@@ -291,7 +286,7 @@ void * Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
             }
         }
         Gool_RemoveLevelSpawn(obj, (GoolObj *)&((ObjectRoot *)g_free_objects)[idx]);
-        obj->unk04 = entity->group;
+        obj->word_04 = entity->group;
         res = GOOL_InitObject(obj, entity->type, entity->subtype, 0, NULL);
         if (res >= -0xFE) {
             Gool_RemoveLevelSpawn(obj, &g_gool_obj_list_7);
@@ -315,30 +310,30 @@ void * Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
             obj->vectors.rot[1] = entity->rot_y;
             obj->vectors.rot[2] = entity->rot_z;
         }
-        obj->unkBC = entity->rot_x << 8;
-        obj->unkC0 = entity->rot_y << 8;
-        obj->unkC4 = entity->rot_z << 8;
+        obj->rot_vel_x = entity->rot_x << 8;
+        obj->rot_vel_y = entity->rot_y << 8;
+        obj->rot_vel_z = entity->rot_z << 8;
         Gool_ObjectOrientOnPath(obj, 0, obj->vectors.trans);
-        if (obj == gp_crash_obj && gp_pbak_frame_idx[0] == -1) {
+        if (obj == gp_crash_obj && gp_pbak_frame_idx == -1) {
             Level_SaveState(obj, g_checkpoint_save_state, 1);
         }
-        if (obj->exec->header->unk04 == 0x300) {
+        if (obj->exec->header->word_04 == 0x300) {
             Gool_RemoveLevelSpawn(obj, &g_gool_obj_list_4);
         }
-        if (obj->exec->header->unk00 == 0x22) {
+        if (obj->exec->header->word_00 == 0x22) {
             if (prev_box != NULL) {
-                obj->unkA4 = (s32)prev_box;
-                obj->unkA8 = 0;
-                prev_box->unkA8 = (s32)obj;
+                obj->vel_x = (s32)prev_box;
+                obj->vel_y = 0;
+                prev_box->vel_y = (s32)obj;
             } else {
-                obj->unkA4 = 0;
-                obj->unkA8 = 0;
+                obj->vel_x = 0;
+                obj->vel_y = 0;
             }
             obj->vectors.trans[1] += 0x19000 - g_spu_reverb_addr[0];
             g_doctor_cortex_obj[0] = obj;
             if (!(((ZoneHeaderView *)zone->items[0])->flags2DC & 4)) {
                 tmp = ((obj->vectors.trans[2] >> 4) ^ obj->vectors.trans[0]) & 7;
-                obj->unk104 = tmp;
+                obj->arg3 = tmp;
                 if (tmp != 0) {
                     obj->status_b |= 0x10000000;
                 }
@@ -372,7 +367,7 @@ void * GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_coun
         return (GoolObj *)-0x16;
     }
     Gool_RemoveLevelSpawn(obj, parent);
-    obj->unk04 = 3;
+    obj->word_04 = 3;
     res = GOOL_InitObject(obj, exec_id, subtype, arg_count, args);
     if (obj->zone != NULL) {
         obj->defaults = ((ZoneHeaderView *)obj->zone->data)->obj_defaults;
@@ -398,26 +393,26 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
     obj->path_progress = 0;
     obj->path_length = 0;
     obj->kind = 1;
-    obj->unkA4 = 0;
-    obj->unkA8 = 0;
-    obj->unkAC = 0;
-    obj->unkB0 = 0;
-    obj->unkB4 = 0;
-    obj->unkB8 = 0;
-    obj->unkBC = 0;
-    obj->unkC0 = 0;
-    obj->unkC4 = 0;
+    obj->vel_x = 0;
+    obj->vel_y = 0;
+    obj->vel_z = 0;
+    obj->target_rot_x = 0;
+    obj->target_rot_y = 0;
+    obj->target_rot_z = 0;
+    obj->rot_vel_x = 0;
+    obj->rot_vel_y = 0;
+    obj->rot_vel_z = 0;
     obj->speed = 0;
     obj->anim_frame = 0;
-    obj->unkF8 = 0;
-    obj->unkB4 = 0;
+    obj->arg0 = 0;
+    obj->target_rot_y = 0;
     obj->status_a = 0;
     obj->status_c = 0;
     obj->status_b = 0;
     obj->invincibility_state = 0;
     obj->cam_zoom = 0;
     obj->floor_time = 0;
-    obj->unk148 = 0;
+    obj->head_turn = 0;
     obj->node_id = 0xFFFF;
     obj->voice_id = -2;
     parent = obj->parent;
@@ -443,7 +438,7 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
         obj->cam_rot_x = 0;
         break;
     }
-    if (obj->unk04 != 3) {
+    if (obj->word_04 != 3) {
         return -0xE;
     }
     entry_ptr = &g_ns_page_pool[0]->items[exec_id];
@@ -453,15 +448,15 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
             return -0xE;
         }
         obj->self = obj;
-        obj->unk78 = 0;
-        obj->unk70 = 0;
-        obj->unk7C = 0;
+        obj->collider = 0;
+        obj->creator = 0;
+        obj->interrupter = 0;
         obj->player = g_player[0];
         obj->subtype = subtype;
         obj->anim_seq = NULL;
-        obj->unkF0 = 0;
+        obj->result_v = 0;
         exec = obj->exec;
-        state = exec->states[exec->header->unk10 + obj->subtype];
+        state = exec->states[exec->header->word_10 + obj->subtype];
         if (state == 0xFF) {
             return -0x1B;
         }
@@ -480,7 +475,7 @@ s32 Gool_ObjectKill(GoolObj *obj, s32 flag) {
     if (obj == NULL) {
         return -0xFF;
     }
-    if (obj == gp_crash_obj && ((GoolCodeHeader *)g_ns_page_pool[0])->unk04 != 0x19) {
+    if (obj == gp_crash_obj && ((GoolCodeHeader *)g_ns_page_pool[0])->word_04 != 0x19) {
         return -0xFF;
     }
     if (flag != 0) {

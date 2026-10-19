@@ -8,9 +8,9 @@ typedef struct WgeoHeader {
     s32 x;
     s32 y;
     s32 z;
-    s32 unk0C;
-    s32 unk10;
-    s32 unk14;
+    s32 word_0c;
+    s32 word_10;
+    s32 word_14;
     u32 tpage_count;
     s32 flags;
     u32 tpages[8];
@@ -33,21 +33,15 @@ typedef struct ZoneHeader9A2C {
 
 
 typedef struct ResourceItem {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     void *item0;
     void *item1;
     void *item2;
 } ResourceItem;
 
-extern s32 g_cam_trans_x;
-extern s16 g_m_light;
-
-extern struct {
-    s32 unk0;
-    s32 level_id;
-} *g_ns_page_pool;
-
-extern s32 g_island_cam_state;
+#define CRASH_EXT_RENDER_WORLD_SETUP
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_WORLD_SETUP
 
 
 void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0)

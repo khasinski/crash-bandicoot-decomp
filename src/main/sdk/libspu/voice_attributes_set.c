@@ -1,7 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GCC_CPU: r3000 */
 #include "common.h"
-#include "sdk/libspu/voice_attributes.h"
+#include "voice_attributes.h"
 
 static inline u16 encode_attack(s32 mode) {
     switch (mode) {
@@ -67,7 +67,7 @@ s32 _SpuSetVoiceAttr(VoiceAttributes *attr, s32 first, s32 last, s32 skip_wait) 
     end_voice = last;
     skip_delay = skip_wait;
     left_volume = 0;
-    field_mask = attr->field_4;
+    field_mask = attr->mask;
     right_volume = 0;
     all_fields = field_mask == 0;
     if (first_voice < 0) {
@@ -85,21 +85,21 @@ valid:
     voice = first_voice;
     if (voice < end_voice) {
         do {
-            if ((1 << voice) & attr->field_0) {
+            if ((1 << voice) & attr->voice) {
                 word_index = voice * 8;
                 if ((all_fields != 0) || (field_mask & 0x10)) {
-                    g_spu_RXX[(voice * 8) + 2] = (u16) attr->field_14;
+                    g_spu_RXX[(voice * 8) + 2] = (u16) attr->pitch;
                 }
                 if ((all_fields != 0) || (field_mask & 0x40)) {
-                    g_spu_pitch_scale_tab[voice] = attr->field_18;
+                    g_spu_pitch_scale_tab[voice] = attr->sample_note;
                 }
                 if ((all_fields != 0) || ((field_mask & 0x20) != 0)) {
                     base_note = g_spu_pitch_scale_tab[voice];
-                    note = attr->field_16;
+                    note = attr->note;
                     g_spu_RXX[word_index + 2] = _spu_note2pitch(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
                 }
                 if ((all_fields != 0) || (field_mask & 0x80)) {
-                    _spu_FsetRXXa(word_index | 3, attr->field_1C);
+                    _spu_FsetRXXa(word_index | 3, attr->addr);
                 }
                 if (all_fields == 0) {
                     if (field_mask & 0x800) {
@@ -111,24 +111,24 @@ valid:
                     }
                 } else {
 load_attack_mode:
-                    adsr_mode = encode_attack(attr->field_24);
+                    adsr_mode = encode_attack(attr->a_mode);
 set_attack_rate:
                     rate = 0x7F;
-                    if ((u16) attr->field_30 < 0x80U) {
-                        rate = attr->field_30;
+                    if ((u16) attr->ar < 0x80U) {
+                        rate = attr->ar;
                     }
                     attack_regs = g_spu_RXX + word_index;
                     operand.word = attack_regs[4] & 0xFF;
                     attack_regs[4] = (u16) (operand.word | ((rate | adsr_mode) << 8));
                 }
                 if ((all_fields != 0) || (field_mask & 0x1000)) {
-                    rate = clamp_rate4(&attr->field_32);
+                    rate = clamp_rate4(&attr->dr);
                     decay_regs = g_spu_RXX + word_index;
                     operand.word = decay_regs[4] & 0xFF0F;
                     decay_regs[4] = (u16) (operand.word | (rate * 0x10));
                 }
                 if ((all_fields != 0) || (field_mask & 0x8000)) {
-                    rate = clamp_rate4(&attr->field_38);
+                    rate = clamp_rate4(&attr->sl);
                     level_regs = g_spu_RXX + word_index;
                     level_regs[4] = (u16) (rate | (level_regs[4] & 0xFFF0));
                 }
@@ -142,11 +142,11 @@ set_attack_rate:
                     }
                 } else {
 load_sustain_mode:
-                    adsr_mode = encode_sustain(attr->field_28);
+                    adsr_mode = encode_sustain(attr->s_mode);
 set_sustain_rate:
                     rate = 0x7F;
-                    if ((u16) attr->field_34 < 0x80U) {
-                        rate = attr->field_34;
+                    if ((u16) attr->sr < 0x80U) {
+                        rate = attr->sr;
                     }
                     sustain_regs = g_spu_RXX + word_index;
                     operand.word = sustain_regs[5] & 0x3F;
@@ -162,30 +162,30 @@ set_sustain_rate:
                     }
                 } else {
 load_release_mode:
-                    adsr_mode = encode_release(attr->field_2C);
+                    adsr_mode = encode_release(attr->r_mode);
 set_release_rate:
                     rate = 0x1F;
-                    if ((u16) attr->field_36 < 0x20U) {
-                        rate = attr->field_36;
+                    if ((u16) attr->rr < 0x20U) {
+                        rate = attr->rr;
                     }
                     release_regs = g_spu_RXX + word_index;
                     operand.word = release_regs[5] & 0xFFC0;
                     release_regs[5] = (u16) (operand.word | (rate | adsr_mode));
                 }
                 if ((all_fields != 0) || ((field_mask & 0x20000) != 0)) {
-                    operand.word = attr->field_3A;
+                    operand.word = attr->adsr1;
                     g_spu_RXX[word_index + 4] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || ((field_mask & 0x40000) != 0)) {
-                    operand.word = attr->field_3C;
+                    operand.word = attr->adsr2;
                     g_spu_RXX[word_index + 5] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || (field_mask & 0x10000)) {
-                    _spu_FsetRXXa(word_index | 7, attr->field_20);
+                    _spu_FsetRXXa(word_index | 7, attr->loop_addr);
                 }
                 if ((all_fields != 0) || (field_mask & 1)) {
                     if ((all_fields != 0) || (field_mask & 4)) {
-                        left_mode = attr->field_C;
+                        left_mode = attr->volmode_left;
                         switch (left_mode) {
                         case 1:
                             volume_mode = 0x8000;
@@ -210,16 +210,16 @@ set_release_rate:
                             break;
                         case 0:
                         default:
-                            left_volume = attr->field_8;
+                            left_volume = attr->vol_left;
                             volume_mode = 0;
                             break;
                         }
                     } else {
-                        left_volume = attr->field_8;
+                        left_volume = attr->vol_left;
                         volume_mode = 0;
                     }
                     if (volume_mode != 0) {
-                        left_input = (s16) attr->field_8;
+                        left_input = (s16) attr->vol_left;
                         if (left_input >= 0x80) {
                             left_volume = 0x7F;
                         } else {
@@ -237,7 +237,7 @@ set_release_rate:
                 }
                 if ((all_fields != 0) || (field_mask & 2)) {
                     if ((all_fields != 0) || (field_mask & 8)) {
-                        right_mode = attr->field_E;
+                        right_mode = attr->volmode_right;
                         switch (right_mode) {
                         case 1:
                             volume_mode = 0x8000;
@@ -262,16 +262,16 @@ set_release_rate:
                             break;
                         case 0:
                         default:
-                            right_volume = attr->field_A;
+                            right_volume = attr->vol_right;
                             volume_mode = 0;
                             break;
                         }
                     } else {
-                        right_volume = attr->field_A;
+                        right_volume = attr->vol_right;
                         volume_mode = 0;
                     }
                     if (volume_mode != 0) {
-                        right_input = (s16) attr->field_A;
+                        right_input = (s16) attr->vol_right;
                         if (right_input >= 0x80) {
                             right_volume = 0x7F;
                         } else {

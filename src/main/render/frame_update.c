@@ -1,8 +1,8 @@
+/* GNU_AS_NO_GP: gp_next_lid */
 /* GCC_VERSION: 2.6.3 */
 /* CC1_FLAGS: -O2 */
 /* GNU_AS_G: 4 */
 #include "common.h"
-extern s32 g_draw_stamp;
 #include "gpu.h"
 
 /* =========================================================================
@@ -25,41 +25,38 @@ typedef struct {
     u8 bytes[4];
 } BufferToken;
 
-extern BufferToken g_pbak_header_byte_0[];
-extern BufferToken g_pbak_seed_val;
-extern struct { s32 v, pad; } gp_next_lid;
-extern u32 g_cur_lid_ro;
-extern u32 g_fade_counter;
-extern s32 g_cam_rot_xz[];
-extern s32 g_ns_load_done_flag[];
-extern struct { RenderBufferFull *buf; } g_db_cur;
-extern RenderBufferFull *g_db_prev;
-extern RenderBufferFull *g_ot_cur;
+#define CRASH_EXT_RENDER_FRAME_UPDATE_0
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_FRAME_UPDATE_0
 
 s32 gp_rcnt_stopped = 0;
-extern s32 *gp_cur_pbak_header;
+#define CRASH_EXT_RENDER_FRAME_UPDATE_1
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_FRAME_UPDATE_1
 
 typedef struct ZoneHeader8214 {
-    u8 pad00[0x2E0];
+    u8 reserved_00[0x2E0];
     s32 word2E0;
-    u8 pad2E4[0x18];
+    u8 reserved_2e4[0x18];
     u32 flags2FC;
-    u8 pad300[0x10];
+    u8 reserved_300[0x10];
     u8 r310;
     u8 g311;
     u8 b312;
-    u8 pad313;
+    u8 reserved_313;
     u8 r314;
     u8 g315;
     u8 b316;
 } ZoneHeader8214;
 
 typedef struct ZoneEntry8214 {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     ZoneHeader8214 *header;
 } ZoneEntry8214;
 
-extern ZoneEntry8214 *g_pads[];
+#define CRASH_EXT_RENDER_FRAME_UPDATE_2
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_FRAME_UPDATE_2
 
 
 static __inline__ BufferToken *Gpu_RoundTicks_inline(void)
@@ -75,8 +72,8 @@ void Gpu_Update(void)
     RenderBufferFull *swap;
 
     token = Gpu_RoundTicks_inline();
-    if (gp_next_lid.v == 0 && (g_cur_lid_ro & 0x1000)) {
-        g_draw_stamp++;
+    if (gp_next_lid == 0 && (g_cur_lid_ro[0] & 0x1000)) {
+        g_draw_stamp[0]++;
     }
     if (g_cam_rot_xz[0] != 0) {
         if (g_cam_rot_xz[0] > 0) {
@@ -88,13 +85,13 @@ void Gpu_Update(void)
         } else {
             g_cam_rot_xz[0] += g_gpu_max_frame_ticks;
             Gpu_DrawOverlay(g_cam_rot_xz[0] + 0x100);
-            if (g_cam_rot_xz[0] == 0 && !(g_cur_lid_ro & 0x200000)) {
+            if (g_cam_rot_xz[0] == 0 && !(g_cur_lid_ro[0] & 0x200000)) {
                 g_cam_rot_xz[0] = -2;
             }
         }
     }
-    if (!(g_cur_lid_ro & 0x80000)) {
-        if (g_cur_lid_ro & 0x2000) {
+    if (!(g_cur_lid_ro[0] & 0x80000)) {
+        if (g_cur_lid_ro[0] & 0x2000) {
             Gpu_DrawRect(0, 0, 0x200, g_pads[0]->header->word2E0, token->bytes[0], token->bytes[1], token->bytes[2]);
             Gpu_DrawRect(0, g_pads[0]->header->word2E0, 0x200, 0xD8 - g_pads[0]->header->word2E0, g_pads[0]->header->r310, g_pads[0]->header->g311, g_pads[0]->header->b312);
         } else {
@@ -119,7 +116,7 @@ void Gpu_Update(void)
     if ((u32)(frame_counter - g_db_cur.buf->word7C) < 0x19) {
         VSync(0);
     }
-    if (g_cur_lid_ro & 0x100000) {
+    if (g_cur_lid_ro[0] & 0x100000) {
         if (!gp_rcnt_stopped) {
             EnterCriticalSection();
             StopRCnt(0xF2000002);
@@ -153,6 +150,6 @@ void Gpu_Update(void)
     }
     g_ot_cur->word78 = g_ot_cur->word74;
     Gpu_RResetOT(g_ot_cur->ordering_table, 0x800);
-    g_cur_lid_ro = g_fade_counter;
+    g_cur_lid_ro[0] = g_fade_counter;
 }
 

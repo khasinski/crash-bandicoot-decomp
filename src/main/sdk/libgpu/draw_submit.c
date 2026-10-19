@@ -4,8 +4,10 @@
 
 /* Submit the drawing packet and retain its 92-byte environment snapshot. */
 typedef GpuDrawing Drawing;
-typedef struct {u8 debug;u8 pad01[13];u8 drawing[sizeof(Drawing)];} GpuState;
-extern GpuState g_gpu_debug_level;
+typedef struct {u8 debug;u8 reserved_01[13];u8 drawing[sizeof(Drawing)];} GpuState;
+#define CRASH_EXT_SDK_LIBGPU_DRAW_SUBMIT
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_DRAW_SUBMIT
 
 void *PutDrawEnv(Drawing *arg0) {
     u32 *temp_s0;

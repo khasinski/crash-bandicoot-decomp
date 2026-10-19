@@ -5,8 +5,9 @@
 /* Free the two allocation tables and update the fixed-point value from the current resource. */
 
 
-extern void *g_player;
-extern s32 *g_ns_page_pool;
+#define CRASH_EXT_GOOL_ALLOC
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ALLOC
 
 void GOOL_FreeAllocTable(void)
 {

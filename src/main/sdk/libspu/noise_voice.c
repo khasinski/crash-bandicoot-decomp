@@ -2,17 +2,25 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern volatile u16 *g_snd_tempo;
-typedef struct { s16 pitch; u8 pad[50]; } VoicePitch;
-extern VoicePitch g_spu_vm_voice_pitch[];
-typedef struct { u8 flags; u8 pad[51]; } VoiceFlags;
-extern VoiceFlags g_spu_vm_voice_auto_flag[];
+#define CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_0
+typedef struct { s16 pitch; u8 reserved[50]; } VoicePitch;
+#define CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_1
+typedef struct { u8 flags; u8 reserved[51]; } VoiceFlags;
+#define CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_2
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_2
 
-typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
-extern VoiceVol g_midi_seq_table[];
+typedef struct { s16 left; s16 right; u8 reserved[12]; } VoiceVol;
+#define CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_3
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_NOISE_VOICE_3
 
 void vmNoiseOn(s16 arg0) {
-    s32 pad[2];
+    s32 reserved[2];
     s16 var_a1_2;
     s16 var_a2_2;
     s16 var_a3;
@@ -31,9 +39,9 @@ void vmNoiseOn(s16 arg0) {
 
     packed_id = (*(u16 *)&g_spu_vm_cur_seq_sep_id);
     temp_v1 = g_ss_score_table[packed_id & 255] + (packed_id >> 8);
-    left_scale = temp_v1->field_74;
+    left_scale = temp_v1->voll;
     temp_lo = (u32)(((left_scale << 7) + left_scale) * g_spu_vm_cur_prog_vol) / 127U;
-    right_scale = temp_v1->field_76;
+    right_scale = temp_v1->volr;
     temp_lo_2 = (u32)(((right_scale << 7) + right_scale) * g_spu_vm_cur_prog_vol) / 127U;
     temp_lo = (temp_lo * g_spu_vm_cur_tone_vol) / 127U;
     temp_lo_2 = (temp_lo_2 * g_spu_vm_cur_tone_vol) / 127U;

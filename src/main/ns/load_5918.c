@@ -3,7 +3,6 @@
 #include "ns.h"
 #include "zone.h"
 
-extern ResourceSlot g_ns_physical_pages[];
 
 __inline__ s32 Ns_PageClose(s32 id, s32 count);
 

@@ -17,18 +17,21 @@ typedef struct CdReadState {
     CdCallback word20;
     CdCallback word24;
 } CdReadState;
-extern CdReadState g_cd_read_state;
+#define CRASH_EXT_SDK_LIBCD_BIOS_SYNC_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_BIOS_SYNC_0
 
 typedef struct {
     u8 sync;
     u8 ready;
     u8 data;
-    u8 pad[13];
+    u8 reserved[13];
 } CdStatus;
 
 
-extern volatile u8 *g_cd_reg0;
-extern volatile CdStatus g_cd_status;
+#define CRASH_EXT_SDK_LIBCD_BIOS_SYNC_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_BIOS_SYNC_1
 
 
 static inline void cd_set_timeout(const char *name)

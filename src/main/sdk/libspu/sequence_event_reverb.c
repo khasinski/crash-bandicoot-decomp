@@ -7,5 +7,5 @@ u8 value;
 {
     SequenceState *state=g_ss_score_table[(s16)sequence]+(s16)channel;
     if (value<0x40) SpuVmDamperOff(); else SpuVmDamperOn();
-    state->field_88=_SsReadDeltaValue(sequence,channel);
+    state->step_counter=_SsReadDeltaValue(sequence,channel);
 }

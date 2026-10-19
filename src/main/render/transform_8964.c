@@ -12,61 +12,61 @@ typedef struct GoolVectors {
 } GoolVectors;
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
-    s32 unk04;
-    s32 unk08;
-    s32 unk0C;
-    s32 unk10;
+    s32 word_00;
+    s32 word_04;
+    s32 word_08;
+    s32 word_0c;
+    s32 word_10;
 } GoolCodeHeader;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     u8 *code;
     u8 *data;
     u16 *states;
-    void *unk20;
+    void *word_20;
     u32 *anims;
 } GoolExecutable;
 
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 typedef struct ResourceEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *data;
-    void *unk14;
+    void *word_14;
 } ResourceEntry;
 
 typedef struct GoolObj {
     s32 kind;
-    s32 unk04;
+    s32 word_04;
     s32 bound[6];
     GoolExecutable *exec;
-    s32 unk24;
+    s32 word_24;
     ResourceEntry *zone;
-    s32 unk2C;
+    s32 word_2c;
     GoolDefaults defaults;
     struct GoolObj *self;
     struct GoolObj *parent;
     struct GoolObj *next;
     struct GoolObj *children;
-    s32 unk70;
+    s32 creator;
     void *player;
-    struct GoolObj *unk78;
-    s32 unk7C;
+    struct GoolObj *collider;
+    s32 interrupter;
     GoolVectors vectors;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    s32 unkB8;
-    s32 unkBC;
-    s32 unkC0;
-    s32 unkC4;
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    s32 target_rot_z;
+    s32 rot_vel_x;
+    s32 rot_vel_y;
+    s32 rot_vel_z;
     u32 status_a;
     u32 status_b;
     u32 status_c;
@@ -75,14 +75,14 @@ typedef struct GoolObj {
     u32 *sp;
     u32 *pc;
     u32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    s32 unkF8;
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    s32 arg0_v;
+    s32 arg1_v;
+    s32 arg2_v;
+    s32 arg3;
     void *anim_seq;
     s32 anim_frame;
     void *entity;
@@ -99,10 +99,10 @@ typedef struct GoolObj {
     s32 event;
     s32 cam_rot_x;
     s32 ang_vel_x;
-    s32 unk148;
+    s32 head_turn;
     s32 voice_id;
-    s32 unk150;
-    s32 unk154;
+    s32 ack_proj;
+    s32 hotspot_size;
     s32 node_id;
 } GoolObj;
 
@@ -114,17 +114,18 @@ typedef struct CamTransformState {
 } CamTransformState;
 
 typedef struct ZoneFogHeader {
-    u8 pad00[0x2E8];
+    u8 reserved_00[0x2E8];
     s32 depth_offset;
 } ZoneFogHeader;
 
 typedef struct ZoneEntry8964 {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     ZoneFogHeader *data;
 } ZoneEntry8964;
 
-extern s32 g_view_proj[];
-extern ZoneEntry8964 *g_pads[];
+#define CRASH_EXT_RENDER_TRANSFORM_8964
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TRANSFORM_8964
 
 
 void Gfx_LoadWorlds(u8 *arg0, u32 *arg1, GoolObj *arg2) {
@@ -137,7 +138,7 @@ void Gfx_LoadWorlds(u8 *arg0, u32 *arg1, GoolObj *arg2) {
         Gte_RTransformSvtx(
             arg0,
             arg1,
-            res->unk14,
+            res->word_14,
             data,
             arg2->vectors.scale[0],
             arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),
@@ -173,7 +174,7 @@ void Gfx_TransformCvtx(u8 *arg0, u32 *arg1, GoolObj *arg2) {
         Gte_RTransformCvtx(
             arg0,
             arg1,
-            res->unk14,
+            res->word_14,
             data,
             arg2->vectors.scale[0],
             arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),

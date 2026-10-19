@@ -19,12 +19,12 @@ typedef struct EngineTileCell {
     s32 tile_x : 9;
     s32 tile_y : 8;
     u32 page : 2;
-    u32 pad0 : 5;
+    u32 reserved_0 : 5;
     u32 clut : 9;
     s32 off_y : 14;
-    u32 pad1 : 9;
+    u32 reserved_1 : 9;
     s32 off_x : 14;
-    u32 pad2 : 18;
+    u32 reserved_2 : 18;
 } EngineTileCell;
 
 typedef struct EngineDrawModePacket {
@@ -46,7 +46,7 @@ typedef struct EngineMode25State {
     /* Title_LoadNextState copies the word at g_title_menu_selection into both fields.
      * The instructions establish word width, not pointer semantics. */
     u32 word35A0, word35A4;
-    u8 pad35A8[0x28];
+    u8 reserved_35a8[0x28];
     s32 word35D0, word35D4;
 } EngineMode25State;
 
@@ -68,7 +68,7 @@ typedef struct EngineByteRecord {
 typedef struct EngineSaveRecord {
     u32 word00, word04, word08, word0C, word10, word14;
     u32 word18, word1C, word20, word24;
-    u8 pad28[0x54];
+    u8 payload[0x54];
     u32 checksum;
 } EngineSaveRecord;
 
@@ -99,7 +99,7 @@ typedef struct EngineDirectorySlot {
     s32 word00;
     u32 word04;
     s32 record_index;
-    u8 pad0C[0x40];
+    u8 title[0x40];
 } EngineDirectorySlot;
 
 /* These arrays end at the 0x6F4-byte lifecycle allocation's boundary. Keep

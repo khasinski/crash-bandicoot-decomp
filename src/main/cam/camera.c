@@ -25,14 +25,14 @@ typedef struct CamVec {
 } CamVec;
 
 typedef struct CamObject {
-    u8 pad00[0x80];
+    u8 reserved_00[0x80];
     CamVec trans;
     CamVec rot;
     CamVec scale;
-    u8 padA4[0x108 - 0xA4];
+    u8 reserved_a4[0x108 - 0xA4];
     u32 *anim;
     u32 anim_frame;
-    u8 pad110[0x140 - 0x110];
+    u8 reserved_110[0x140 - 0x110];
     s32 cam_zoom;
 } CamObject;
 
@@ -42,21 +42,21 @@ typedef struct CamVertex {
 } CamVertex;
 
 typedef struct CamSvtxFrame {
-    u8 pad00[8];
+    u8 reserved_00[8];
     s32 x, y, z;
-    u8 pad14[0x38 - 0x14];
+    u8 reserved_14[0x38 - 0x14];
     CamVertex verts[1];
 } CamSvtxFrame;
 
 typedef struct CamTgeoHeader {
-    u32 pad00;
+    u32 reserved_00;
     s32 scale_x;
     s32 scale_y;
     s32 scale_z;
 } CamTgeoHeader;
 
 typedef struct CamLevelView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     s32 level_id;
 } CamLevelView;
 
@@ -87,33 +87,33 @@ s32 gp_cam_death_pan_z;
 
 /* View of the global state object at g_pause_state (camera fields only). */
 typedef struct CamGlobals {
-    u8 pad000[0xAC0];
+    u8 reserved_000[0xAC0];
     u32 display_flags;      /* 0x800618B0 */
     s32 death_cam;          /* 0x800618B4 */
-    u8 padAC8[0xAE0 - 0xAC8];
+    u8 reserved_ac8[0xAE0 - 0xAC8];
     s32 game_state;         /* 0x800618D0 */
-    u8 padAE4[0xB2C - 0xAE4];
+    u8 reserved_ae4[0xB2C - 0xAE4];
     CamObject *death_obj;   /* 0x8006191C */
-    u8 padB30[0xB60 - 0xB30];
+    u8 reserved_b30[0xB60 - 0xB30];
     u32 death_vert;         /* 0x80061950 */
-    u8 padB64[0xB7C - 0xB64];
+    u8 reserved_b64[0xB7C - 0xB64];
     s32 death_zoom_speed;   /* 0x8006196C */
     s32 death_pan_speed;    /* 0x80061970 */
-    u8 padB84[0xB9C - 0xB84];
+    u8 reserved_b84[0xB9C - 0xB84];
     s32 island_rot;         /* 0x8006198C */
     s32 wordBA0;            /* 0x80061990 */
     s32 island_state;       /* 0x80061994 */
 } CamGlobals;
 
-extern CamGlobals cam_globals;
+#define CRASH_EXT_CAM_CAMERA_0
+#include "cam_externs.h"
+#undef CRASH_EXT_CAM_CAMERA_0
 /* Scalar names for the zone state also covered by level_position. CamFollow
  * reads it through the struct view, CamUpdate mostly through these. */
-extern ZonePath *g_pad2_state;
 
-extern void *gp_crash_obj;    /* the player object */
-extern s32 g_gool_pads;      /* pad buttons pressed this frame */
-extern s32 g_cam_trans_x;
-extern CamLevelView *g_ns_page_pool;
+#define CRASH_EXT_CAM_CAMERA_1
+#include "cam_externs.h"
+#undef CRASH_EXT_CAM_CAMERA_1
 
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

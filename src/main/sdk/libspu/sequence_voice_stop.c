@@ -2,7 +2,9 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern s16 g_spu_vm_voice_seq_sep[][26];
+#define CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOICE_STOP
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_SEQUENCE_VOICE_STOP
 void SpuVmSeqKeyOff(s16 selector) {
     u8 voice=0;
     if (gp_spawn_count!=0) {

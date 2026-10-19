@@ -52,6 +52,7 @@ G="${CRASH_G:-8}"
 GNU_AS_G="${CRASH_GNU_AS_G:-$(sed -nE 's/.*GNU_AS_G:[[:space:]]*([0-9]+).*/\1/p' "$IN" | head -1)}"
 GNU_AS_G="${GNU_AS_G:-0}"
 case "$GNU_AS_G" in 0|4|8) ;; *) echo "unsupported GNU_AS_G: $GNU_AS_G" >&2; exit 1 ;; esac
+GNU_AS_NO_GP="${CRASH_GNU_AS_NO_GP:-$(sed -nE 's/.*GNU_AS_NO_GP:[[:space:]]*([A-Za-z0-9_[:space:]]+).*/\1/p' "$IN" | tr '\n' ' ')}"
 
 
 OPT="-O2"
@@ -106,13 +107,13 @@ file "$CPP" | grep -q Mach-O || [ "$(uname -s)" != Darwin ] || CPP="$TC/gcc-2.6.
     -D__LANGUAGE_C -D_LANGUAGE_C -DLANGUAGE_C -Dpsx -D__psx__ \
     -I"$ROOT/include" -I"$ROOT/src/main" -MD "$OUT.d" "$IN" \
   | run_tool "$GCC_DIR/cc1" ${CRASH_CC1_FLAGS:--quiet -mcpu=$GCC_CPU -mgas -msoft-float -g -gcoff $OPT $EXTRA_CC1_FLAGS -G$G -funsigned-char -w} -o - \
-  | awk -v g="$GNU_AS_G" '{
+  | awk -v g="$GNU_AS_G" -v nogp=" $GNU_AS_NO_GP " '{
         print;
         if (g > 0 && $1 == ".extern") {
             split($2, a, ",");
             sz = $3 + 0;
             if (sz == 0) sz = a[2] + 0;
-            if (sz > 0 && sz <= g && (a[1] ~ /^(gp_|D_8005(6[4567]|E340))/ || (a[1] !~ /^(g_|D_800)/ && a[1] != "frame_counter" && a[1] != "level_position")))
+            if (index(nogp, " " a[1] " ") == 0 && sz > 0 && sz <= g && (a[1] ~ /^(gp_|D_8005(6[4567]|E340))/ || (a[1] !~ /^(g_|D_800)/ && a[1] != "frame_counter" && a[1] != "level_position")))
                 printf ".sdata\n.size %s,%d\n.text\n", a[1], sz;
         }
     }' \

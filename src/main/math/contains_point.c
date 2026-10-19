@@ -3,7 +3,7 @@
 /* GCC_VERSION: 2.6.3 */
 typedef struct { s32 x, y, z; } Point3;
 typedef struct { s32 x, y, z, width, height, depth; } Bounds3;
-typedef struct { u8 pad00[0x14]; Bounds3 *bounds; } BoundsView;
+typedef struct { u8 reserved_00[0x14]; Bounds3 *bounds; } BoundsView;
 
 s32 Level_TestPointInRect(Bounds3 *arg0, Point3 *arg1)
 {

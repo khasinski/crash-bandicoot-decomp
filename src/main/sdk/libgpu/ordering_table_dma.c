@@ -2,8 +2,9 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern volatile s16 g_gpu_vram_max_w[];
-extern volatile s16 g_gpu_vram_max_h[];
+#define CRASH_EXT_SDK_LIBGPU_ORDERING_TABLE_DMA
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_ORDERING_TABLE_DMA
 
 s32 _otc(u32 *table, s32 count)
 {

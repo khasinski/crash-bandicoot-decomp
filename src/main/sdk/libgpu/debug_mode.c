@@ -3,11 +3,17 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Update GPU debug and mode bytes, returning their previous values. */
-extern u8 g_gpu_mode;
-typedef struct {u8 debug;u8 pad01[13];u8 drawing[92];u8 display[20];} GpuState;
-extern GpuState g_gpu_debug_level;
-typedef struct {u8 reverse;u8 pad01[12];u8 drawing[92];u8 display[20];} GpuReverseState;
-extern GpuReverseState g_gpu_reverse_flag;
+#define CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_0
+typedef struct {u8 debug;u8 reserved_01[13];u8 drawing[92];u8 display[20];} GpuState;
+#define CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_1
+typedef struct {u8 reverse;u8 reserved_01[12];u8 drawing[92];u8 display[20];} GpuReverseState;
+#define CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_2
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_2
 
 
 u8 SetGraphReverse(s32 requested) {
@@ -36,8 +42,10 @@ s32 SetGraphDebug(s32 arg0) {
     return temp_s0;
 }
 
-typedef struct {u8 mode,debug;u8 pad02[12];u8 drawing[92];u8 display[20];} GpuModeState;
-extern GpuModeState g_gpu_debug_level_2;
+typedef struct {u8 mode,debug;u8 reserved_02[12];u8 drawing[92];u8 display[20];} GpuModeState;
+#define CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_3
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_DEBUG_MODE_3
 
 u8 SetGraphQueue(s32 requested) {
     GpuModeState *state = &g_gpu_debug_level_2;

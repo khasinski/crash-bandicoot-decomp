@@ -11,7 +11,7 @@ typedef struct {
     u16 ps;
     u16 ts;
     u8 vs;
-    u8 pad;
+    u8 reserved;
     u8 mvol;
     u8 mpan;
     u8 attr1;
@@ -34,8 +34,9 @@ typedef struct {
 
 
 
-extern VabHdr *g_vab_master_vol_table[];
-extern ProgAtr *g_vab_prog_tables[];
+#define CRASH_EXT_SDK_LIBSPU_BANK_TRANSFER
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_BANK_TRANSFER
 
 s16 SsVabOpenHeadWithMode(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
     u32 vag_len[256];

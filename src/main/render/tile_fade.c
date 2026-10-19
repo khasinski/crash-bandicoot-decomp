@@ -14,7 +14,9 @@ typedef struct {
     u8 bytes[19];
 } FadeTable;
 
-extern FadeTable g_tile_fade_alpha_table;
+#define CRASH_EXT_RENDER_TILE_FADE
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_TILE_FADE
 
 
 void Gpu_DrawRect(s32 x, s32 y, s32 w, s32 h, u8 r, u8 g, u8 b) {

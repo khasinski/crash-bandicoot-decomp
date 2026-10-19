@@ -6,6 +6,6 @@ void _SsSndPause(s16 sequence,s16 channel)
 {
     SequenceState *state = &g_ss_score_table[sequence][channel];
     SpuVmSeqKeyOff((channel<<8)|sequence);
-    state->field_2B = 0;
-    g_ss_score_table[sequence][channel].field_90 &= ~2;
+    state->play_mode = 0;
+    g_ss_score_table[sequence][channel].flags &= ~2;
 }

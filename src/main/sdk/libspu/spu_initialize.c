@@ -6,7 +6,6 @@
               /* extern */
 
 typedef void (*SequenceCallback)();
-extern SequenceCallback g_ss_mark_callbacks[];
 
 void _SsInit(void) {
     u16 *defaults;

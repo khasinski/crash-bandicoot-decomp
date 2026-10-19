@@ -4,12 +4,10 @@
 
 /* Acknowledge controller interrupts and reset CD status. */
 
-extern volatile s8 *g_cd_reg0;
-extern volatile s8 *g_cd_reg2_ptr;
-extern volatile u8 *g_cd_reg3_ptr;
 
-extern volatile s8 g_cd_status;
-extern volatile u8 g_cd_in_callback[];
+#define CRASH_EXT_SDK_LIBCD_RESET
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_RESET
 
 void CD_initvol(void) {
     u32 acknowledge = 7;

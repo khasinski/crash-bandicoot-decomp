@@ -2,16 +2,15 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-typedef struct { s16 value; u8 pad[50]; } VoiceWord;
-extern VoiceWord g_spu_vm_voice_vol[];
-extern VoiceWord g_spu_vm_voice_seq_sep[];
-extern VoiceWord g_spu_vm_voice_tone_prog[];
-extern VoiceWord g_spu_vm_voice_tone_idx[];
-extern VoiceWord g_spu_vm_voice_vab_id[];
-typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
+typedef struct { s16 value; u8 reserved[50]; } VoiceWord;
+#define CRASH_EXT_SDK_LIBSPU_VOICE_UPDATE_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_UPDATE_0
+typedef struct { s16 left; s16 right; u8 reserved[12]; } VoiceVol;
 
-extern VoiceVol g_midi_seq_table[];
-extern u8 *g_vab_cur_master_vol;
+#define CRASH_EXT_SDK_LIBSPU_VOICE_UPDATE_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_UPDATE_1
 
 
 s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
@@ -42,8 +41,8 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
     }
     for (var_t2 = 0; var_t2 < gp_spawn_count; var_t2++) {
         if ((g_spu_vm_voice_seq_sep[var_t2].value == arg0) && (g_spu_vm_voice_tone_prog[var_t2].value == arg2) && (g_spu_vm_voice_vab_id[var_t2].value == arg1)) {
-            if ((temp_s2->gains[temp_s2->field_12] != (arg3 & 0xFFFF)) && (temp_s2->gains[temp_s2->field_12] == 0)) {
-                temp_s2->gains[temp_s2->field_12] = 1;
+            if ((temp_s2->gains[temp_s2->channel] != (arg3 & 0xFFFF)) && (temp_s2->gains[temp_s2->channel] == 0)) {
+                temp_s2->gains[temp_s2->channel] = 1;
             }
             temp_lo = (g_spu_vm_voice_vol[var_t2].value * (arg3 & 0xFFFF)) / 127;
             master_volume = g_vab_cur_master_vol[0x18];
@@ -51,8 +50,8 @@ s32 SpuVmSetVol(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4) {
             temp_lo = temp_lo_2 * g_vab_cur_prog_table[arg2 * 16 + 1];
             temp_a0_2 = g_spu_vm_voice_tone_idx[var_t2].value;
             temp_lo = ((u32)temp_lo * g_ns_vpage_pool[((arg2 * 16 + temp_a0_2) << 5) + 2]) / 16129U;
-            temp_lo_2 = (u32) (temp_lo * temp_s2->field_74) / 127U;
-            var_t1 = (u32) (temp_lo * temp_s2->field_76) / 127U;
+            temp_lo_2 = (u32) (temp_lo * temp_s2->voll) / 127U;
+            var_t1 = (u32) (temp_lo * temp_s2->volr) / 127U;
             temp_v1_3 = g_ns_vpage_pool[(temp_a0_2 << 5) + 3];
             if (temp_v1_3 < 0x40U) {
                 var_t1 = (u32) (var_t1 * temp_v1_3) / 63U;

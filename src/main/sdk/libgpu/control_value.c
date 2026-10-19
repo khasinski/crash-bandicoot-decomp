@@ -1,9 +1,9 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern u8 g_gpu_mode;
-extern u8 g_gpu_debug_level;
-extern u8 g_gpu_reverse_flag;
+#define CRASH_EXT_SDK_LIBGPU_CONTROL_VALUE
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_CONTROL_VALUE
 
 s32 DrawSyncCallback(s32 arg0) {
     s32 temp_v0;

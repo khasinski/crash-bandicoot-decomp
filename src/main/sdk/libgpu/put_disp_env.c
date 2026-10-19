@@ -18,21 +18,25 @@ typedef struct {
     void (* volatile callback)(void);
 } GpuState;
 
-extern GpuState g_gpu_mode;
+#define CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_0
 
 typedef struct {
     u8 debug;
-    u8 pad[15];
+    u8 reserved[15];
 } GpuDebugState;
-extern volatile GpuDebugState g_gpu_debug_level;
+#define CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_1
 
 typedef struct {
     u8 reverse;
-    u8 pad[15];
+    u8 reserved[15];
 } GpuReverseState;
-extern volatile GpuReverseState g_gpu_reverse_flag;
-
-extern volatile GpuDisplayEnv g_gpu_cur_dispenv;
+#define CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_2
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_PUT_DISP_ENV_2
 
 
 #define CLAMP(val, min, max) ((val) < (min) ? (min) : ((val) > (max) ? (max) : (val)))
@@ -55,16 +59,16 @@ void * PutDispEnv(GpuDisplayEnv *env)
         g_gpu_cur_dispenv.screen.y != env->screen.y ||
         g_gpu_cur_dispenv.screen.w != env->screen.w ||
         g_gpu_cur_dispenv.screen.h != env->screen.h) {
-        env->pad12 = GetVideoMode();
+        env->video_mode = GetVideoMode();
         hx1 = 0x260 + env->screen.x * 10;
-        vy1 = env->screen.y + (env->pad12 ? 0x13 : 0x10);
+        vy1 = env->screen.y + (env->video_mode ? 0x13 : 0x10);
         hx2 = hx1 + (env->screen.w ? env->screen.w * 10 : 0xA00);
         vy2 = vy1 + (env->screen.h ? env->screen.h : 0xF0);
 
         hx1 = CLAMP(hx1, 0x1F4, 0xCDA);
         hx2 = CLAMP(hx2, hx1 + 0x50, 0xCDA);
-        vy1 = CLAMP(vy1, 0x10, env->pad12 ? 0x136 : 0x100);
-        vy2 = CLAMP(vy2, vy1 + 2, env->pad12 ? 0x138 : 0x102);
+        vy1 = CLAMP(vy1, 0x10, env->video_mode ? 0x136 : 0x100);
+        vy2 = CLAMP(vy2, vy1 + 2, env->video_mode ? 0x138 : 0x102);
 
         g_gpu_ctl->ctl10(0x06000000 | ((hx2 & 0xFFF) << 12) | (hx1 & 0xFFF));
         g_gpu_ctl->ctl10(0x07000000 | ((vy2 & 0x3FF) << 10) | (vy1 & 0x3FF));
@@ -77,8 +81,8 @@ void * PutDispEnv(GpuDisplayEnv *env)
         g_gpu_cur_dispenv.display.h != env->display.h) {
         s32 small_h;
 
-        env->pad12 = GetVideoMode();
-        if (env->pad12 == 1) {
+        env->video_mode = GetVideoMode();
+        if (env->video_mode == 1) {
             mode |= 0x08;
         }
         if (env->rgb24) {
@@ -101,7 +105,7 @@ void * PutDispEnv(GpuDisplayEnv *env)
                 mode |= 0x03;
             }
         }
-        small_h = env->display.h < (env->pad12 ? 0x121 : 0x101);
+        small_h = env->display.h < (env->video_mode ? 0x121 : 0x101);
         if (!small_h) {
             mode |= 0x24;
         }

@@ -1,5 +1,5 @@
 #include "common.h"
-extern void *g_ns_nsd_header;
+#include "resource.h"
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -15,14 +15,14 @@ s32 Ns_ReadSync(s32 enabled)
 }
 
 typedef struct CdResourceHash {
-    u8 pad00[0x418];
+    u8 reserved_00[0x418];
     s32 word418;
     s32 word41C;
     u32 words420[1];
 } CdResourceHash;
 
 typedef struct CdResourceEntry {
-    u8 pad00[0x14];
+    u8 reserved_00[0x14];
     s32 word14;
 } CdResourceEntry;
 

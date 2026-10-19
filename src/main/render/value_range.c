@@ -21,17 +21,16 @@ s32 Gfx_TgeoGetTexinfoArray(s32 arg0)
 typedef struct {
     u32 words[5];
     struct {
-        u8 pad[3];
+        u8 reserved[3];
         u8 flags;
     } entries[1];
 } RenderEntryData;
 
 typedef struct {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     RenderEntryData *data;
 } RenderEntry;
 
-extern s32 gp_pbak_mode;
 
 s32 Gfx_TgeoLookupEntry(RenderEntry *entry)
 {

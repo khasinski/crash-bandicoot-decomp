@@ -4,7 +4,7 @@
 /* Attribute fields read at offsets 0x00, 0x08 and 0x0A. */
 typedef struct {
     u32 mask;
-    u8 pad04[4];
+    u8 reserved_04[4];
     u16 volume08, volume0A;
 } SpuVolumeAttrs;
 

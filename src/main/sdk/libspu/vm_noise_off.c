@@ -7,9 +7,9 @@ typedef struct {
     u16 voice_off_lo;
     u16 voice_off_hi;
 } SpuPorts;
-extern SpuPorts *g_snd_tempo;
-extern u8 g_spu_vm_voice_pitch[];
-extern u8 g_spu_vm_voice_auto_flag[];
+#define CRASH_EXT_SDK_LIBSPU_VM_NOISE_OFF
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VM_NOISE_OFF
 void vmNoiseOff(s32 arg0) {
     s32 offset;
     SpuPorts *ports;

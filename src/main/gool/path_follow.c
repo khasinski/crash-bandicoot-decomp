@@ -12,61 +12,61 @@ typedef struct GoolVectors {
 } GoolVectors;
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
-    s32 unk04;
-    s32 unk08;
-    s32 unk0C;
-    s32 unk10;
+    s32 word_00;
+    s32 word_04;
+    s32 word_08;
+    s32 word_0c;
+    s32 word_10;
 } GoolCodeHeader;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     u8 *code;
     u8 *data;
     u16 *states;
-    void *unk20;
+    void *word_20;
     u32 *anims;
 } GoolExecutable;
 
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 typedef struct ResourceEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *data;
-    void *unk14;
+    void *word_14;
 } ResourceEntry;
 
 typedef struct GoolObj {
     s32 kind;
-    s32 unk04;
+    s32 word_04;
     s32 bound[6];
     GoolExecutable *exec;
-    s32 unk24;
+    s32 word_24;
     ResourceEntry *zone;
-    s32 unk2C;
+    s32 word_2c;
     GoolDefaults defaults;
     struct GoolObj *self;
     struct GoolObj *parent;
     struct GoolObj *next;
     struct GoolObj *children;
-    s32 unk70;
+    s32 creator;
     void *player;
-    struct GoolObj *unk78;
-    s32 unk7C;
+    struct GoolObj *collider;
+    s32 interrupter;
     GoolVectors vectors;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    s32 unkB8;
-    s32 unkBC;
-    s32 unkC0;
-    s32 unkC4;
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    s32 target_rot_z;
+    s32 rot_vel_x;
+    s32 rot_vel_y;
+    s32 rot_vel_z;
     u32 status_a;
     u32 status_b;
     u32 status_c;
@@ -75,14 +75,14 @@ typedef struct GoolObj {
     u32 *sp;
     u32 *pc;
     u32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    s32 unkF8;
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    s32 arg0;
+    s32 arg1;
+    s32 arg2;
+    s32 arg3;
     void *anim_seq;
     s32 anim_frame;
     void *entity;
@@ -99,10 +99,10 @@ typedef struct GoolObj {
     s32 event;
     s32 cam_rot_x;
     s32 ang_vel_x;
-    s32 unk148;
+    s32 head_turn;
     s32 voice_id;
-    s32 unk150;
-    s32 unk154;
+    s32 ack_proj;
+    s32 hotspot_size;
     s32 node_id;
 } GoolObj;
 
@@ -122,7 +122,7 @@ typedef struct ZoneEntity {
     ZoneEntryView *zone;
     u16 flags;
     u8 group;
-    u8 pad07;
+    u8 reserved_07;
     u16 id;
     u16 path_length;
     s16 rot_x;
@@ -137,8 +137,9 @@ typedef struct Unk4Bytes {
     u8 bytes[4];
 } Unk4Bytes;
 
-extern GoolVec3 g_path_orient_zero_vec;
-extern Unk4Bytes gp_path_orient_step;
+#define CRASH_EXT_GOOL_PATH_FOLLOW
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PATH_FOLLOW
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
@@ -214,19 +215,19 @@ s32 Gool_ObjectOrientOnPath(GoolObj *obj, s32 progress, s32 *trans_arr) {
             abs_dx = ABS(proj.x - obj->vectors.trans[0]);
             abs_dz = ABS(proj.z - obj->vectors.trans[2]);
             if (abs_dz < abs_dx) {
-                obj->unkC0 = abs_dx + abs_dz / 2;
+                obj->rot_vel_y = abs_dx + abs_dz / 2;
             } else {
-                obj->unkC0 = abs_dz + abs_dx / 2;
+                obj->rot_vel_y = abs_dz + abs_dx / 2;
             }
-            obj->unkC0 = obj->unkC0;
-            if (obj->unkC0 > obj->unk154 || (frac < 0 && idx == 0) || frac >= 0x100) {
+            obj->rot_vel_y = obj->rot_vel_y;
+            if (obj->rot_vel_y > obj->hotspot_size || (frac < 0 && idx == 0) || frac >= 0x100) {
                 obj->status_a |= 0x200;
             }
             if ((next_pt.z - trans->z) * (obj->vectors.trans[0] >> 8) -
                 (next_pt.x - trans->x) * (obj->vectors.trans[2] >> 8) -
                 (trans->x >> 8) * next_pt.z +
                 (trans->z >> 8) * next_pt.x < 0) {
-                obj->unkC0 = -obj->unkC0;
+                obj->rot_vel_y = -obj->rot_vel_y;
             }
         } else {
             return -0xE;
@@ -245,20 +246,20 @@ s32 Gool_ObjectOrientOnPath(GoolObj *obj, s32 progress, s32 *trans_arr) {
     }
     if (obj->status_b & 4) {
         if ((obj->status_b & 2) && (obj->status_a & 4)) {
-            obj->unkB4 = ratan2(-diff.x, -diff.z);
+            obj->target_rot_y = ratan2(-diff.x, -diff.z);
         } else {
-            obj->unkB4 = ratan2(diff.x, diff.z);
+            obj->target_rot_y = ratan2(diff.x, diff.z);
         }
         if (obj->status_b & 0x800) {
             s32 abs_dx = ABS(diff.x);
             s32 abs_dz = ABS(diff.z);
             obj->vectors.rot[2] = ratan2(diff.x, diff.z);
-            obj->unkB8 = -ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
+            obj->target_rot_z = -ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
         }
     } else if (obj->status_b & 0x800) {
         s32 abs_dx = ABS(diff.x);
         s32 abs_dz = ABS(diff.z);
-        obj->unkB8 = ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
+        obj->target_rot_z = ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
         obj->vectors.rot[2] = ratan2(-diff.x, -diff.z);
     }
     next_pt.x = ((next_pt.x - trans->x) * frac) >> 8;

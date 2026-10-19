@@ -41,7 +41,7 @@ PATTERNS = {
     "asm_symbol_aliases": re.compile(r'\b(?:__asm__|asm)\s*\(\s*"(?:D_|func_)[0-9A-Fa-f]+'),
     "externs_in_c": re.compile(r"^\s*extern\b", re.MULTILINE),
     "func_prototypes_in_c": re.compile(
-        r"^(?:extern\s+)?(?:const\s+|volatile\s+|unsigned\s+|signed\s+|struct\s+\w+\s+)*"
+        r"^(?!\s*typedef\b)(?:extern\s+)?(?:const\s+|volatile\s+|unsigned\s+|signed\s+|struct\s+\w+\s+)*"
         r"(?!HANDWRITTEN_ASM\b|INCLUDE_ASM\b|PSYQ_BIOS_TRAMPOLINE\b)[A-Za-z_][A-Za-z0-9_]*[\s*]+"
         r"[A-Za-z_][A-Za-z0-9_]*\s*\([^;{}]*\)\s*;",
         re.MULTILINE,

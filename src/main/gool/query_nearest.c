@@ -3,25 +3,19 @@
 /* GCC_VERSION: 2.6.3 */
 
 
-extern struct {
-    u8 pad[0x10];
-    u8 *data;
-} *g_pads;
-
-extern struct {
-    s32 unk0;
-    s32 type;
-} *g_ns_page_pool;
+#define CRASH_EXT_GOOL_QUERY_NEAREST
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_QUERY_NEAREST
 
 
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
+    s32 word_00;
     s32 category;
 } GoolCodeHeader;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     void *code;
     void *data;
@@ -30,18 +24,18 @@ typedef struct GoolExecutable {
 } GoolExecutable;
 
 typedef struct GoolObj {
-    u8 pad00[0x20];
+    u8 reserved_00[0x20];
     GoolExecutable *exec;
-    u8 pad24[0x58];
+    u8 reserved_24[0x58];
     struct GoolObj *interrupter;
     s32 trans[3];
-    u8 pad8C[0x44];
+    u8 reserved_8c[0x44];
     u32 status_c;
-    u8 padD4[0x24];
-    s32 unkF8;
-    u8 padFC[0x24];
+    u8 reserved_d4[0x24];
+    s32 arg0_v;
+    u8 reserved_fc[0x24];
     u32 state_flags;
-    u8 pad124[4];
+    u8 reserved_124[4];
     s32 anim_type;
 } GoolObj;
 
@@ -107,7 +101,7 @@ s32 Gool_FindNearestObject(GoolObj *arg0, GoolQuery *arg1)
                         sp10 = 0x100;
                         arg0->interrupter = arg1->other;
                         Gool_ObjectInterrupt(arg0, state, 1, &sp10);
-                        if (arg1->other->unkF8 == 0) {
+                        if (arg1->other->arg0_v == 0) {
                             return 0;
                         }
                     }

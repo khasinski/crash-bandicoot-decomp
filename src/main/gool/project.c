@@ -12,16 +12,17 @@ typedef struct {
 } Matrix;
 
 typedef struct {
-    s16 x, y, z, pad;
+    s16 x, y, z, reserved;
 } SVector;
 
 typedef struct {
-    s32 x, y, z, pad;
+    s32 x, y, z, reserved;
 } LVector;
 
 
-extern u8 g_m_wgeo_view[];
-extern s32 g_cam_trans_x;
+#define CRASH_EXT_GOOL_PROJECT
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_PROJECT
 
 void Gool_Transform(Vec3 *arg0, Vec3 *arg1, Vec3 *arg2, Vec3 *arg3, Vec3 *arg4)
 {
@@ -148,15 +149,15 @@ s32 Gool_Project(Vec3 *arg0, Vec3 *arg1)
 }
 
 typedef struct CollideObj {
-    u8 pad00[0x78];
+    u8 reserved_00[0x78];
     struct CollideObj *other;
-    u8 pad7C[4];
+    u8 reserved_7c[4];
     Vec3 pos;
-    u8 pad8C[0x3C];
+    u8 reserved_8c[0x3C];
     u32 flagsC8;
-    u8 padCC[0x54];
+    u8 reserved_cc[0x54];
     u32 flags120;
-    u8 pad124[0x24];
+    u8 reserved_124[0x24];
     s32 radius;
 } CollideObj;
 

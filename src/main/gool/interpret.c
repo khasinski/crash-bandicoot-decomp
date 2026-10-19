@@ -1,3 +1,4 @@
+/* GNU_AS_NO_GP: gp_pbak_frame_idx */
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
@@ -20,11 +21,11 @@ typedef struct GoolVectors {
 } GoolVectors;
 
 typedef struct GoolCodeHeader {
-    s32 unk00;
-    s32 unk04;
-    s32 unk08;
-    s32 unk0C;
-    s32 unk10;
+    s32 word_00;
+    s32 word_04;
+    s32 word_08;
+    s32 word_0c;
+    s32 word_10;
 } GoolCodeHeader;
 
 typedef struct GoolState {
@@ -37,25 +38,25 @@ typedef struct GoolState {
 } GoolState;
 
 typedef struct GoolExecutable {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolCodeHeader *header;
     u32 *code;
     u32 *data;
-    void *unk1C;
+    void *word_1c;
     GoolState *states;
     u8 * const anims;
 } GoolExecutable;
 
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 typedef struct ZoneHeaderView {
-    u8 pad00[0x210];
+    u8 reserved_00[0x210];
     s32 neighbor_count;
     u32 neighbors[8];
-    u8 pad234[0xC8];
+    u8 reserved_234[0xC8];
     u32 flags2FC;
 } ZoneHeaderView;
 
@@ -71,41 +72,41 @@ typedef struct GoolAnimVertex {
     u8 x;
     u8 y;
     u8 z;
-    u8 pad[3];
+    u8 reserved[3];
 } GoolAnimVertex;
 
 typedef struct GoolAnimFrame {
-    u8 pad00[8];
+    u8 reserved_00[8];
     Vec3 offset;
-    u8 pad14[0x24];
+    u8 reserved_14[0x24];
     GoolAnimVertex verts[1];
 } GoolAnimFrame;
 
 typedef struct GoolAnimModel {
-    u8 pad00[4];
+    u8 reserved_00[4];
     Vec3 scale;
 } GoolAnimModel;
 
 typedef struct GoolAnimEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     void *items[1];
 } GoolAnimEntry;
 
 typedef struct GoolAnimSeq {
     u8 type;
-    u8 pad01[3];
+    u8 reserved_01[3];
     u32 eid;
     u32 model_eid;
 } GoolAnimSeq;
 
 typedef struct GoolObj {
     s32 kind;
-    s32 unk04;
+    s32 word_04;
     GoolBound bound;
     const GoolExecutable *exec;
     GoolExecutable *external;
     ResourceEntry *zone;
-    s32 unk2C;
+    s32 word_2c;
     u16 defaults[24];
     struct GoolObj *self;
     struct GoolObj *parent;
@@ -113,8 +114,8 @@ typedef struct GoolObj {
     struct GoolObj *children;
     struct GoolObj *creator;
     struct GoolObj *player;
-    struct GoolObj *unk78;
-    struct GoolObj *unk7C;
+    struct GoolObj *collider;
+    struct GoolObj *interrupter;
     Vec3 trans;
     Vec3 rot;
     Vec3 scale;
@@ -129,14 +130,14 @@ typedef struct GoolObj {
     s32 *sp;
     u32 *pc;
     s32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    s32 unkF8;
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
+    u32 *tp;
+    u32 *ep;
+    s32 result_v;
+    s32 misc_flag;
+    s32 arg0;
+    s32 arg1;
+    s32 arg2;
+    s32 arg3_v;
     GoolAnimSeq *anim_seq;
     s32 anim_frame;
     void *entity;
@@ -153,10 +154,10 @@ typedef struct GoolObj {
     s32 event;
     s32 cam_rot_x;
     s32 ang_vel_x;
-    s32 unk148;
+    s32 head_turn;
     s32 voice_id;
-    s32 unk150;
-    s32 unk154;
+    s32 ack_proj;
+    s32 hotspot_size;
     s32 node_id;
 } GoolObj;
 
@@ -179,33 +180,27 @@ typedef struct ObjectRoot {
 } ObjectRoot;
 
 typedef struct LevelStateView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     u16 level_id;
 } LevelStateView;
 
 typedef struct PadStateView {
-    u8 pad00[0x84];
-    u32 unk84;
+    u8 reserved_00[0x84];
+    u32 word_84;
 } PadStateView;
 
-extern GoolObj *gp_crash_obj;
-
-extern s32 gp_pbak_frame_idx[];
-extern ResourceEntry *g_pads[];
-extern ResourceEntry *g_cur_zone_ptr[];
-extern s32 g_draw_stamp[];
-extern PadStateView *g_db_cur[];
-extern LevelStateView *g_ns_page_pool[];
-extern GoolObj g_gool_obj_list_4;
+#define CRASH_EXT_GOOL_INTERPRET
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_INTERPRET
 
 typedef s32 (*Visitor)(GoolObj *, void *);
 
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->word_84 < 0x67U ? g_db_cur[0]->word_84 : 0x66))) / 1024)
 
-#define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
-#define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
+#define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->word_04 : (n)->children)
+#define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->word_04 : &(n)->children)
 
 static __inline__ s32 *TRANS_GOP_IN(GoolObj *obj, s32 gop)
 {
@@ -315,7 +310,7 @@ static __inline__ s32 Gool_FindObject_inline(GoolObj *root, Visitor visitor, voi
         }
     }
     if (root->kind == 2) {
-        child = (GoolObj *)root->unk04;
+        child = (GoolObj *)root->word_04;
     } else {
         child = root->children;
     }
@@ -1107,7 +1102,7 @@ next_ins:
                         }
                         break;
                     case 9:
-                        gp_pbak_frame_idx[0] = (u32)*s_ptr >> 8;
+                        gp_pbak_frame_idx = (u32)*s_ptr >> 8;
                         break;
                     case 10:
                         Ns_CdSeek((u32)*s_ptr >> 8);
@@ -1151,7 +1146,7 @@ next_ins:
                     break;
 
                 case 15:
-                    obj->unkF4 = Card_Control(subarg, *s_ptr);
+                    obj->misc_flag = Card_Control(subarg, *s_ptr);
                     break;
                 }
             }
@@ -1369,13 +1364,13 @@ next_ins:
             s_ptr = Gool_TranslateOutGop(obj, ins & 0xFFF, 0);
             switch (s_val) {
             case 1:
-                obj->unkF4 = Ns_Open(s_ptr, 0, 1);
+                obj->misc_flag = Ns_Open(s_ptr, 0, 1);
                 break;
             case 6:
-                obj->unkF4 = Ns_Open(s_ptr, 1, 1);
+                obj->misc_flag = Ns_Open(s_ptr, 1, 1);
                 break;
             case 2:
-                obj->unkF4 = Ns_Close(s_ptr, 1);
+                obj->misc_flag = Ns_Close(s_ptr, 1);
                 break;
             case 3:
                 *obj->sp++ = Ns_Close(s_ptr, 0);
@@ -1512,7 +1507,7 @@ next_ins:
                         va = obj->trans;
                         vb = *vec_src;
                         va.y += obj->bound.p2.y / 2;
-                        obj->unkF4 = Zone_ReboundVector(&va, &vb);
+                        obj->misc_flag = Zone_ReboundVector(&va, &vb);
                         if ((ins & 0xFFF) != 0xBE0) {
                             *(Vec3 *)TRANS_GOP_OUT(obj, ins & 0xFFF) = vb;
                         }
@@ -1531,7 +1526,7 @@ next_ins:
                         if (obj == gp_crash_obj || obj->parent == gp_crash_obj) {
                             Zone_FindNearestObjectNode2(obj, &v_tmp);
                         }
-                        obj->unkF4 = Zone_FindNearestObjectNode(obj, &va);
+                        obj->misc_flag = Zone_FindNearestObjectNode(obj, &va);
                         if ((ins & 0xFFF) != 0xBE0) {
                             *(Vec3 *)TRANS_GOP_OUT(obj, ins & 0xFFF) = vb;
                         }
@@ -1610,7 +1605,7 @@ next_ins:
                         break;
                     }
                 } else {
-                    obj->unkF4 = 0;
+                    obj->misc_flag = 0;
                 }
                 if (!(obj->status_a & 0x20000)) {
                     obj->sp = (s32 *)((u8 *)obj->sp - ((ins >> 16) & 0x1C));
@@ -1648,9 +1643,9 @@ next_ins:
                         opcode == 0x91);
                     if ((s32)child < -0xFE) {
                         child->creator = obj;
-                        obj->unkF4 = (s32)child;
+                        obj->misc_flag = (s32)child;
                     } else {
-                        obj->unkF4 = 0;
+                        obj->misc_flag = 0;
                     }
                 }
                 obj->sp -= arg_count;

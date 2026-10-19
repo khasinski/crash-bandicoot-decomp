@@ -2,9 +2,9 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern u8 g_gpu_debug_level;
-extern s16 g_gpu_vram_max_w;
-extern s16 g_gpu_vram_max_h;
+#define CRASH_EXT_SDK_LIBGPU_COMMAND_DISPATCH
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_COMMAND_DISPATCH
 
 void checkRECT(const char *name, GpuRect *rect) {
     switch (g_gpu_debug_level) {

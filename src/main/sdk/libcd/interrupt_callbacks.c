@@ -3,16 +3,16 @@
 /* GNU_AS_G: 0 */
 #include "common.h"
 typedef void (*CdCallback)(s32,void*);
-extern volatile u8 *g_cd_reg0[];
-extern volatile u8 g_cd_status[];
-extern volatile u8 g_cd_in_callback[];
+#define CRASH_EXT_SDK_LIBCD_INTERRUPT_CALLBACKS
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_INTERRUPT_CALLBACKS
 void cd_callback(void) {
     s32 event;
     s32 pending;
     u8 bank;
     volatile u8 *ready_status;
 
-    bank = *g_cd_reg0[0] & 3;
+    bank = *g_cd_reg0 & 3;
     ready_status=g_cd_in_callback;
 loop_1:
     pending = getintr();
@@ -30,5 +30,5 @@ loop_1:
         }
         goto loop_1;
     }
-    *g_cd_reg0[0] = bank;
+    *g_cd_reg0 = bank;
 }

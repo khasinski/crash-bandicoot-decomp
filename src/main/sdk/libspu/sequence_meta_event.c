@@ -22,78 +22,78 @@ void _SsGetMetaEvent(s16 arg0, s16 arg1, u8 arg2) {
 
     switch (arg2) {
     case 0x51:
-        bytes = state->field_4;
-        state->field_4 = bytes + 1;
+        bytes = state->read_pos;
+        state->read_pos = bytes + 1;
         b0 = bytes[0];
-        state->field_4 = bytes + 2;
+        state->read_pos = bytes + 2;
         b1 = bytes[1];
-        state->field_4 = bytes + 3;
+        state->read_pos = bytes + 3;
         val = (b0 << 16) | (b1 << 8) | bytes[2];
         bpm = 60000000 / val;
-        prod = state->field_4A * bpm;
+        prod = state->resolution * bpm;
         fifteen_ticks = g_spawns_base << 4;
         fifteen_ticks -= g_spawns_base;
         divisor = clock_divisor(fifteen_ticks);
-        state->field_8C = bpm;
+        state->cur_bpm = bpm;
         if ((u32)(prod * 10) < divisor) {
             u32 tmp = (u32)(g_spawns_base * 600) / (u32)prod;
-            state->field_6E = tmp;
-            state->field_70 = tmp;
+            state->delta_step = tmp;
+            state->tick_rem = tmp;
             {
                 s32 z = (s32)state & 1;
                 if ((z >> 1) == 0) {
                     goto L_end;
                 }
                 if (divisor == 0) goto L_else;
-                state->field_88 = 0;
+                state->step_counter = 0;
                 if ((s32)divisor < 0) goto L_else;
-                state->field_88 = 0;
+                state->step_counter = 0;
                 if ((s32)divisor > 0) goto L_else;
-                state->field_88 = 0;
+                state->step_counter = 0;
                 if ((s32)divisor <= 0) goto L_else;
-                state->field_88 = 0;
+                state->step_counter = 0;
             }
         } else {
             u32 tmp;
         L_else:
-            tmp = (u32)(state->field_4A * state->field_8C * 10) / divisor;
-            state->field_6E = -1;
-            state->field_70 = tmp;
-            if ((u32)(fifteen_ticks * 2) < (u32)((u32)(state->field_4A * state->field_8C * 10) % divisor)) {
-                state->field_70 = tmp + 1;
+            tmp = (u32)(state->resolution * state->cur_bpm * 10) / divisor;
+            state->delta_step = -1;
+            state->tick_rem = tmp;
+            if ((u32)(fifteen_ticks * 2) < (u32)((u32)(state->resolution * state->cur_bpm * 10) % divisor)) {
+                state->tick_rem = tmp + 1;
             }
         }
     L_end:
-        state->field_88 = _SsReadDeltaValue(arg0, arg1);
+        state->step_counter = _SsReadDeltaValue(arg0, arg1);
         break;
     case 0x2F:
-        state->field_48++;
-        if (state->field_46 == 0) {
-            state->field_80 = 0;
-            state->field_27 = 0;
-            state->field_88 = 0;
-            state->field_4 = state->field_8;
-        } else if ((s16)state->field_48 < state->field_46) {
-            state->field_80 = 0;
-            state->field_27 = 0;
-            state->field_88 = 0;
-            state->field_4 = state->field_8;
-            state->field_C = state->field_8;
+        state->loop_count++;
+        if (state->loop_max == 0) {
+            state->delta_value = 0;
+            state->rpn2 = 0;
+            state->step_counter = 0;
+            state->read_pos = state->start_pos;
+        } else if ((s16)state->loop_count < state->loop_max) {
+            state->delta_value = 0;
+            state->rpn2 = 0;
+            state->step_counter = 0;
+            state->read_pos = state->start_pos;
+            state->loop_pos = state->start_pos;
         } else {
-            (g_ss_score_table[arg0] + arg1)->field_90 &= ~1;
-            (g_ss_score_table[arg0] + arg1)->field_90 &= ~8;
-            (g_ss_score_table[arg0] + arg1)->field_90 &= ~2;
-            (g_ss_score_table[arg0] + arg1)->field_90 |= 0x200;
-            (g_ss_score_table[arg0] + arg1)->field_90 |= 4;
-            state->field_2B = 0;
-            state->field_C = state->field_8;
-            if (state->field_3C != 0xFF) {
-                state->field_2B = 0;
-                _SsSndNextSep(state->field_3C, state->field_0);
+            (g_ss_score_table[arg0] + arg1)->flags &= ~1;
+            (g_ss_score_table[arg0] + arg1)->flags &= ~8;
+            (g_ss_score_table[arg0] + arg1)->flags &= ~2;
+            (g_ss_score_table[arg0] + arg1)->flags |= 0x200;
+            (g_ss_score_table[arg0] + arg1)->flags |= 4;
+            state->play_mode = 0;
+            state->loop_pos = state->start_pos;
+            if (state->next_sep != 0xFF) {
+                state->play_mode = 0;
+                _SsSndNextSep(state->next_sep, state->open_sep_no);
                 SpuVmSeqKeyOff((arg1 << 8) | arg0);
             }
             SpuVmSeqKeyOff((arg1 << 8) | arg0);
-            state->field_88 = state->field_70;
+            state->step_counter = state->tick_rem;
         }
         break;
     }

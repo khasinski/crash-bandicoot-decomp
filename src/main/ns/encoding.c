@@ -5,7 +5,6 @@
 
 /* Character lookup and decoding for the 64-character resource-name alphabet. */
 
-extern s32 gp_pause_B_pressed;
 
 
 u8 Ns_AlphaNumChar(s32 index)

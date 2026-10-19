@@ -1,7 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-extern s16 g_midi_channel_states[];
+#include "audio_channels.h"
 
 /* Wait for a pending fade, then request the selected sequence. Tagged
  * references contain an ID; resolved references point to a handle whose
@@ -24,7 +24,7 @@ void Midi_Update(s32 *reference) {
    if(gp_midi_loaded_eid!=((s32 *)key)[1]) {
 change:
     if(gp_midi_default_rvol==0 && gp_midi_vab_id_2!=-1 && gp_midi_vab_id==0) {
-     SsSepSetDecrescendo(gp_midi_vol,g_midi_channel_states[0],(s32)(gp_midi_seq_gain<<16)>>23,30);
+     SsSepSetDecrescendo(gp_midi_vol,g_midi_channel_states[0].channel,(s32)(gp_midi_seq_gain<<16)>>23,30);
      gp_midi_seq_num=30;gp_midi_vab_id=reference;gp_card_chan=4;return;
     }
    }

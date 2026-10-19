@@ -1,11 +1,12 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-typedef struct {u8 pad00[4];u16 word04;} Context;
-typedef struct {u8 pad00[0x2FC];u32 flags;} Data;
-typedef struct {u8 pad00[0x10];Data *data;} Root;
-extern Root *g_pads;
-extern Context *g_ns_page_pool;
+typedef struct {u8 reserved_00[4];u16 word04;} Context;
+typedef struct {u8 reserved_00[0x2FC];u32 flags;} Data;
+typedef struct {u8 reserved_00[0x10];Data *data;} Root;
+#define CRASH_EXT_ENGINE_TAG_LIST
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_TAG_LIST
 
 void Gool_ClearAllSpawns(s32 tag)
 {

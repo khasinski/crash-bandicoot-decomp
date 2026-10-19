@@ -4,20 +4,14 @@
 
 
 typedef struct ZoneFogHeader {
-    u8 pad00[0x2E8];
+    u8 reserved_00[0x2E8];
     s32 depth_offset;
     s32 fog_mode;
 } ZoneFogHeader;
 
-extern struct {
-    u8 pad[0x10];
-    ZoneFogHeader *data;
-} *g_pads;
-
-extern struct {
-    s32 unk0;
-    s32 type;
-} *g_ns_page_pool;
+#define CRASH_EXT_GOOL_ENTRIES_A2F4
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_ENTRIES_A2F4
 
 void Gfx_GetFar(u32 *arg0, s32 *arg1)
 {

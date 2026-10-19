@@ -4,7 +4,9 @@
 
 /* Dispatch the display operation only when the pointed-to halfword is nonzero. */
 
-extern u16 *gp_level_entry;
+#define CRASH_EXT_RENDER_DISPLAY
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_DISPLAY
 
 void Gfx_UpdateMatrices2(void)
 {

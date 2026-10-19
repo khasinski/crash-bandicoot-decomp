@@ -15,7 +15,7 @@ typedef struct NsDirectory {
     s32 word40C;
     s32 word410;
     s32 word414;
-    u8 pad418[0x520 - 0x418];
+    u8 reserved_418[0x520 - 0x418];
     ResourceBucket entries[1];
 } NsDirectory;
 
@@ -29,7 +29,7 @@ typedef struct NsState {
     u32 *level_eid;
     u8 *level_header;
     NsDirectory *directory;
-    u8 pad1C[4];
+    u8 reserved_1c[4];
     u32 nsf_sector;
     s32 draw_skip;
     s32 physical_count;
@@ -56,7 +56,7 @@ typedef struct NsSubsystem {
     u32 word00;
     void (*init)(void);
     void (*init_pages)(void);
-    u8 pad0C[8];
+    u8 reserved_0c[8];
     void (*kill)(void);
     u32 word18;
 } NsSubsystem;

@@ -1,9 +1,9 @@
+/* GNU_AS_NO_GP: gp_pause_B_pressed */
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 #include "ns.h"
 /* GNU_AS_G: 8 */
 /* External word view: this unit uses an absolute reference to the flag. */
-extern s32 gp_pause_B_pressed[];
 
 
 typedef struct {
@@ -19,7 +19,9 @@ typedef struct {
     PadSlot slots[2];
 } PadState;
 
-extern PadState g_pad_driver_state;
+#define CRASH_EXT_ENGINE_SHUTDOWN_0
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_SHUTDOWN_0
 
 s32 Core_Init(void)
 {
@@ -30,7 +32,7 @@ s32 Core_Init(void)
     }
     SetVideoMode(0);
     InitGeom();
-    if (gp_pause_B_pressed[0] != 0) {
+    if (gp_pause_B_pressed != 0) {
         ResetCallback();
         CdInit();
     }
@@ -52,7 +54,7 @@ s32 Core_Init(void)
     for (i = 0; i < 16; i++) {
         g_slst_buf0[i].word18 = 0x6396347F;
     }
-    if (gp_pause_B_pressed[0] != 0) {
+    if (gp_pause_B_pressed != 0) {
         Cd_ReadFileSys();
     }
     return -0xFF;
@@ -60,7 +62,7 @@ s32 Core_Init(void)
 
 s32 Core_Kill(void)
 {
-    if (gp_pause_B_pressed[0] != 0) {
+    if (gp_pause_B_pressed != 0) {
         CdControl(8, NULL, NULL);
         StopCallback();
     }
@@ -97,26 +99,25 @@ typedef struct {
 
 typedef struct {
     s32 count;
-    u8 pad04[0x524];
+    u8 reserved_04[0x524];
     s32 seed;
     DemoInput inputs[1];
 } DemoRecording;
 
 typedef struct {
-    u8 pad00[0x84];
+    u8 reserved_00[0x84];
     s32 word84;
 } DemoBufferView;
 
 typedef struct {
     s32 player;
-    u8 pad04[0x70];
+    u8 reserved_04[0x70];
     s32 playback_mode;
 } PlaybackState;
 
-extern DemoInput *gp_cur_pbak_header;
-extern DemoRecording *gp_cur_pbak_frame;
-extern DemoBufferView *g_db_cur[];
-extern PlaybackState g_pad_debug_override;
+#define CRASH_EXT_ENGINE_SHUTDOWN_1
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_SHUTDOWN_1
 
 void Pad_Update(void)
 {

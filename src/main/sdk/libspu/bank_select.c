@@ -1,9 +1,9 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-extern u8 *g_vab_prog_tables[];
-extern u8 *g_vab_master_vol_table[];
-extern u8 *g_vab_cur_master_vol;
+#define CRASH_EXT_SDK_LIBSPU_BANK_SELECT
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_BANK_SELECT
 
 s32 SpuVmVSetUp(s16 arg0, s16 arg1) {
     u8 *temp_a0, *master;

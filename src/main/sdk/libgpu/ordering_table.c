@@ -1,6 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gpu.h"
-extern u8 g_gpu_debug_level;
+#define CRASH_EXT_SDK_LIBGPU_ORDERING_TABLE
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_ORDERING_TABLE
 
 
 u32 *ClearOTag(u32 *ot,s32 count) {

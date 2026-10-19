@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -21,7 +20,7 @@ typedef struct ZqRect {
 typedef struct ZqZoneRect {
     s32 x, y, z;
     s32 w, h, d;
-    u32 unk18;
+    u32 word_18;
     u16 root;
     s16 max_depth_x;
     s16 max_depth_y;
@@ -29,7 +28,7 @@ typedef struct ZqZoneRect {
 } ZqZoneRect;
 
 typedef struct LevelStateView {
-    u8 pad00[4];
+    u8 reserved_00[4];
     s32 level_id;
 } LevelStateView;
 
@@ -41,42 +40,42 @@ typedef struct SubLight {
 } SubLight;
 
 typedef struct SubObj {
-    u8 pad00[8];
+    u8 reserved_00[8];
     ZqBound bound;
-    void *unk20;
-    u8 pad24[4];
+    void *word_20;
+    u8 reserved_24[4];
     ResourceEntry *entry;
-    u8 pad2C[4];
+    u8 reserved_2c[4];
     SubLight light;
-    u8 pad60[4];
+    u8 reserved_60[4];
     struct SubObj *parent;
-    u8 pad68[0x78 - 0x68];
-    struct SubObj *unk78;
-    u8 pad7C[4];
+    u8 reserved_68[0x78 - 0x68];
+    struct SubObj *collider;
+    u8 reserved_7c[4];
     ZqVec trans;
-    u8 pad8C[0xA8 - 0x8C];
+    u8 reserved_8c[0xA8 - 0x8C];
     s32 vel_y;
-    u8 padAC[0xC8 - 0xAC];
+    u8 reserved_ac[0xC8 - 0xAC];
     u32 status_a;
     u32 status_b;
     u32 status_c;
-    u8 padD4[0xFC - 0xD4];
-    u32 unkFC;
-    u8 pad100[0x110 - 0x100];
-    u16 *unk110;
-    u8 pad114[0x120 - 0x114];
+    u8 reserved_d4[0xFC - 0xD4];
+    u32 arg1;
+    u8 reserved_100[0x110 - 0x100];
+    u16 *word_110;
+    u8 reserved_114[0x120 - 0x114];
     u32 flags120;
-    u8 pad124[4];
+    u8 reserved_124[4];
     s32 anim_state;
-    u8 pad12C[4];
+    u8 reserved_12c[4];
     u32 ground_time;
     s32 impact_vel_y;
     s32 offset138;
     s32 event;
-    u8 pad140[0x148 - 0x140];
-    s32 unk148;
-    u8 pad14C[0x158 - 0x14C];
-    s32 unk158;
+    u8 reserved_140[0x148 - 0x140];
+    s32 head_turn;
+    u8 reserved_14c[0x158 - 0x14C];
+    s32 word_158;
 } SubObj;
 
 typedef struct SubWsNode {
@@ -92,15 +91,17 @@ typedef struct SubWorkspace {
     s32 count;
     ZqBound bound1;
     ZqBound bound2;
-    s32 unk1038;
-    s32 unk103C;
-    s32 unk1040;
-    s32 unk1044;
-    s32 unk1048;
-    s32 unk104C;
+    s32 word_1038;
+    s32 word_103c;
+    s32 word_1040;
+    s32 word_1044;
+    s32 word_1048;
+    s32 word_104c;
 } SubWorkspace;
 
-extern SubObj *gp_crash_obj[];
+#define CRASH_EXT_LEVEL_OCTREE_0
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_OCTREE_0
 
 
 typedef struct SubBox {
@@ -113,7 +114,9 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList g_obj_bounds;
+#define CRASH_EXT_LEVEL_OCTREE_1
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_OCTREE_1
 
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
@@ -547,7 +550,7 @@ u32 Zone_FindNearestObjectNode3(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
         box = g_obj_bounds.boxes;
         for (i = 0; i < g_obj_bounds.count; i++, box++) {
             cand_obj = box->obj;
-            if (cand_obj != obj && cand_obj->unk158 != 0xFFFF) {
+            if (cand_obj != obj && cand_obj->word_158 != 0xFFFF) {
                 if (flags & 1) {
                     cand_v = box->bound.p2.y;
                     if (orig.x >= box->bound.p1.x && orig.x <= box->bound.p2.x
@@ -614,7 +617,7 @@ done_boxes:
     idx = -1;
     if (res != 0) {
         if (hit_box) {
-            idx = ((SubObj *)res)->unk158;
+            idx = ((SubObj *)res)->word_158;
             if (idx < 0) {
                 idx = -idx;
                 arg3 = 0;
@@ -644,7 +647,7 @@ void Zone_ColorsScaleSeekByEntityNode(SubObj *obj)
     } else {
         defaults = obj->entry->data + 0x318;
     }
-    ptr = obj->unk110;
+    ptr = obj->word_110;
     if (ptr != NULL) {
         val = ptr[2] >> 3;
         if (val != 0xFFFF) {

@@ -9,14 +9,16 @@
 
 typedef struct {
     u32 directory_sector : 23;
-    u32 pad0 : 9;
+    u32 reserved_0 : 9;
     u32 directory_size : 17;
-    u32 pad1 : 15;
+    u32 reserved_1 : 15;
     u32 page_sector : 24;
-    u32 pad2 : 8;
+    u32 reserved_2 : 8;
 } NsFileMapBits;
 
-extern NsFileMapBits g_file_map[];
+#define CRASH_EXT_ENGINE_CD_DIR
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_CD_DIR
 
 
 

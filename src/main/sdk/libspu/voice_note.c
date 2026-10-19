@@ -7,20 +7,14 @@ typedef struct {
     u8 gap00[0x12];
     u16 programs;
 } VabHeader;
-extern u8 g_spu_vm_voice_table[];
-extern u8 g_spu_vm_voice_age[];
-extern u8 g_spu_vm_voice_vol[];
-extern u8 g_spu_vm_voice_pan[];
-extern u8 g_spu_vm_voice_seq_sep[];
-extern u8 g_spu_vm_voice_tone_prog[];
-extern u8 g_spu_vm_voice_tone_idx[];
-extern u8 g_spu_vm_voice_vab_id[];
-extern u8 g_spu_vm_voice_prior[];
-extern u8 g_spu_vm_voice_auto_flag[];
-extern VabHeader *g_vab_cur_master_vol;
+#define CRASH_EXT_SDK_LIBSPU_VOICE_NOTE_0
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_NOTE_0
 
 /* Shared note context; the sample cursor points 24 bytes into it. */
-extern u8 g_midi_sep[32];
+#define CRASH_EXT_SDK_LIBSPU_VOICE_NOTE_1
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_NOTE_1
 s32 SpuVmKeyOn(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
     /* The selector writes parallel byte lists of samples and tone indices. */
     u8 sp10[128];
@@ -47,7 +41,7 @@ s32 SpuVmKeyOn(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
         if (arg0 == 0x21) {
             g_spu_vm_cur_pan = (s8) arg4;
         } else {
-            g_spu_vm_cur_pan = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->field_12]) / 127);
+            g_spu_vm_cur_pan = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->channel]) / 127);
         }
         g_midi_sep[5] = (s8) arg5;
         temp_v0 = (arg2 * 0x10) + g_vab_cur_prog_table;

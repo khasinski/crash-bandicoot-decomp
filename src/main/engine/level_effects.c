@@ -10,11 +10,13 @@ typedef struct {
 } LightMat;
 
 typedef struct LevelHeader {
-    s32 unk0;
+    s32 word_0;
     s32 level_id;
 } LevelHeader;
 
-extern LevelHeader *g_ns_page_pool[];
+#define CRASH_EXT_ENGINE_LEVEL_EFFECTS_0
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_LEVEL_EFFECTS_0
 
 typedef struct SaveVec {
     s32 x, y, z;
@@ -27,30 +29,29 @@ typedef struct SaveTransform {
 } SaveTransform;
 
 typedef struct SaveObj {
-    u8 pad00[0x28];
+    u8 reserved_00[0x28];
     ResourceEntry *entry;
-    u8 pad2C[0x4C];
-    struct SaveObj *unk78;
-    u8 pad7C[4];
+    u8 reserved_2c[0x4C];
+    struct SaveObj *collider;
+    u8 reserved_7c[4];
     SaveTransform transform;
-    s32 unkA4;
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0;
-    s32 unkB4;
-    u8 padB8[0x10];
+    s32 vel_x;
+    s32 vel_y;
+    s32 vel_z;
+    s32 target_rot_x;
+    s32 target_rot_y;
+    u8 reserved_b8[0x10];
     u32 status_a;
     u32 status_b;
-    u8 padD0[0x54];
-    s32 unk124;
-    u8 pad128[8];
-    s32 unk130;
+    u8 reserved_d0[0x54];
+    s32 word_124;
+    u8 reserved_128[8];
+    s32 word_130;
 } SaveObj;
 
-extern SaveObj *gp_crash_obj;
-
-extern s32 gp_next_lid;
-extern SaveObj *g_shader_obj_color_scale;
+#define CRASH_EXT_ENGINE_LEVEL_EFFECTS_1
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_LEVEL_EFFECTS_1
 
 
 s32 gp_shader_prev_mode = -1;

@@ -3,24 +3,9 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 /* Retail passes 1; this callee does not consume incoming arguments. */
-extern volatile u8 *g_snd_tempo;
-
-extern s32 g_spu_reverb_attr;
-
-
-extern u8 g_spu_vm_voice_table[];
-extern u8 g_spu_vm_voice_age[];
-extern u8 g_spu_vm_voice_pitch[];
-extern u8 g_spu_vm_voice_envx[];
-extern u8 g_spu_vm_voice_vol[];
-extern u8 g_spu_vm_voice_pan[];
-extern u8 g_spu_vm_voice_seq_sep[];
-
-extern u8 g_spu_vm_voice_tone_prog[];
-extern u8 g_spu_vm_voice_tone_idx[];
-extern u8 g_spu_vm_voice_auto_flag[];
-
-extern u16 g_midi_seq_table[];
+#define CRASH_EXT_SDK_LIBSPU_VOICE_STATE_INIT
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_STATE_INIT
 void SpuVmInit(s32 arg0) {
     u32 index;
     u16 register_offset;

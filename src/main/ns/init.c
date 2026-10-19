@@ -6,9 +6,6 @@
  * flag through $gp, so it owns the .sdata word. */
 s32 gp_pause_B_pressed = 1;
 
-extern s32 gp_pbak_mode;
-extern s32 gp_pbak_frame_idx;
-extern ResourceSlot g_spu_slots[8];
      /* "Inited and Allocated %d pages\n" */
 
 

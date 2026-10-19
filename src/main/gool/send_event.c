@@ -10,55 +10,59 @@ static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 
 
 typedef struct GoolExecView {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     struct {
-        s32 unk00;
-        s32 unk04;
-        s32 unk08;
-        s32 unk0C;
-        s32 unk10;
+        s32 word_00;
+        s32 word_04;
+        s32 word_08;
+        s32 word_0c;
+        s32 word_10;
     } *header;
     u8 *code;
     s32 *data;
     u16 *states;
-    u8 *unk20;
+    u8 *word_20;
 } GoolExecView;
 
 typedef struct GoolObjView {
-    u8 pad00[0x20];
+    u8 reserved_00[0x20];
     GoolExecView *exec;
     GoolExecView *external;
-    u8 pad28[0x38];
+    u8 reserved_28[0x38];
     struct GoolObjView *links[8];
-    u8 pad80[0x48];
+    u8 reserved_80[0x48];
     u32 status_a;
     u32 status_b;
     u32 status_c;
-    u8 padD4[0x8];
+    u8 reserved_d4[0x8];
     s32 *sp;
     u32 *pc;
     s32 *fp;
-    u32 *unkE8;
-    u32 *unkEC;
-    s32 unkF0;
-    s32 unkF4;
-    u8 padF8[0x30];
+    u32 *tp;
+    u32 *ep;
+    s32 result;
+    s32 misc_flag;
+    u8 reserved_f8[0x30];
     s32 anim_type;
-    u8 pad12C[0x10];
+    u8 reserved_12c[0x10];
     s32 event;
 } GoolObjView;
 
 typedef struct GoolTimeState {
-    u8 pad00[0x84];
-    u32 unk84;
+    u8 reserved_00[0x84];
+    u32 word_84;
 } GoolTimeState;
 
-extern GoolTimeState *g_db_cur[];
+#define CRASH_EXT_GOOL_SEND_EVENT_0
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_SEND_EVENT_0
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->word_84 < 0x67U ? g_db_cur[0]->word_84 : 0x66))) / 1024)
 
-extern GoolObjView *gp_crash_obj;
+#define CRASH_EXT_GOOL_SEND_EVENT_1
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_SEND_EVENT_1
 
 static __inline__ s32 GOOL_CreateObjectStackFrame_inline(GoolObjView *object, s32 arg_words, s32 flags)
 {
@@ -91,14 +95,14 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
     res = -0x1A;
     if (recipient != NULL) {
         if (sender != NULL) {
-            sender->unkF4 = 1;
+            sender->misc_flag = 1;
         }
         recipient->links[7] = sender;
-        if (recipient->unkEC != NULL) {
+        if (recipient->ep != NULL) {
             *recipient->sp++ = event;
             *recipient->sp++ = (s32)argv;
             GOOL_CreateObjectStackFrame_inline(recipient, 2, 0xFFFF);
-            recipient->pc = recipient->unkEC;
+            recipient->pc = recipient->ep;
             res = GOOL_InterpretObject(recipient, 8, sp10);
             if (res != -0x1A) {
                 if (res >= -0xFE) {
@@ -107,18 +111,18 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
                 state = sp10[0];
             }
             if (sender != NULL) {
-                sender->unkF4 = sp10[1];
+                sender->misc_flag = sp10[1];
             }
         }
         if (res >= -0xFE) {
             idx = event >> 8;
-            if (idx < recipient->exec->header->unk10) {
+            if (idx < recipient->exec->header->word_10) {
                 state = recipient->exec->states[idx];
             } else {
                 state = 0xFF;
             }
             if (sender != NULL) {
-                sender->unkF4 = (state != 0xFF);
+                sender->misc_flag = (state != 0xFF);
             }
             if (state & 0x8000) {
                 recipient->event = event;
@@ -135,7 +139,7 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
             if (event == 0x1800 || event == 0x1900 || event == 0x2500) {
                 i &= ~2;
             }
-            target_flags = *(u32 *)((state << 4) + (u32)recipient->exec->unk20);
+            target_flags = *(u32 *)((state << 4) + (u32)recipient->exec->word_20);
             if (recipient == gp_crash_obj) {
                 anim_type = recipient->anim_type;
                 if ((u32)(anim_type - 3) < 2 || anim_type == 2) {
@@ -153,11 +157,11 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
                 }
                 GOOL_ChangeObjectState(recipient, state, argc, argv);
             } else if (state != 0xFF && sender != NULL) {
-                sender->unkF4 = 0;
+                sender->misc_flag = 0;
             }
         }
     } else if (sender != NULL) {
-        sender->unkF4 = 0;
+        sender->misc_flag = 0;
     }
     return -0xFF;
 }

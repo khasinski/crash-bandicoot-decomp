@@ -4,12 +4,9 @@
 #include "common.h"
 
 
-extern volatile u8 *g_cd_reg0[];
-extern volatile u8 *g_cd_reg1_ptr[];
-extern volatile u8 *g_cd_reg3_ptr[];
-extern volatile s8 *g_cd_reg2_ptr[];
-extern volatile u8 g_cd_status[];
-extern volatile u8 g_cd_in_callback;
+#define CRASH_EXT_SDK_LIBCD_INTERRUPT_DISPATCH
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_INTERRUPT_DISPATCH
 
 /* The SDK uses both scalar and array views of these event bytes. */
 
@@ -34,20 +31,20 @@ s32 getintr(void)
     u8 *write, *remaining;
     u8 sampled;
 
-    *g_cd_reg0[0] = 1;
-    sampled = *g_cd_reg3_ptr[0] & 7;
+    *g_cd_reg0 = 1;
+    sampled = *g_cd_reg3_ptr & 7;
     interrupt = sampled;
     errors = 0;
     if (interrupt == 0) return 0;
-    while (interrupt != (*g_cd_reg3_ptr[0] & 7)) {
-        interrupt = *g_cd_reg3_ptr[0] & 7;
+    while (interrupt != (*g_cd_reg3_ptr & 7)) {
+        interrupt = *g_cd_reg3_ptr & 7;
     }
     write = response;
     count = 0;
 read_response:
-    if (*g_cd_reg0[0] & 0x20) {
+    if (*g_cd_reg0 & 0x20) {
         count++;
-        *write = *g_cd_reg1_ptr[0];
+        *write = *g_cd_reg1_ptr;
         write++;
         if (count < 8) goto read_response;
     }
@@ -61,9 +58,9 @@ read_response:
             remaining++;
         } while (count < 8);
     }
-    *g_cd_reg0[0] = 1;
-    *g_cd_reg3_ptr[0] = 7;
-    *g_cd_reg2_ptr[0] = 7;
+    *g_cd_reg0 = 1;
+    *g_cd_reg3_ptr = 7;
+    *g_cd_reg2_ptr = 7;
     if ((interrupt & 0xFF) != 3 || g_cd_ack_counters_b[g_cd_com_flags_tab[0]] != 0) {
         if (!(g_cd_read_sectors & 0x10) && (response[0] & 0x10)) g_cd_read_retry_max++;
         status = response[0] & status_mask;

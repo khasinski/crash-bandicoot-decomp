@@ -13,7 +13,7 @@ typedef struct LvlVec {
 typedef struct LvlCamera {
     LvlVec trans;
     LvlVec rot;
-    u8 pad18[0xD0 - 0x18];
+    u8 reserved_18[0xD0 - 0x18];
     LvlVec rot_after;
     LvlVec rot_before;
 } LvlCamera;
@@ -25,13 +25,14 @@ typedef struct LvlColorState {
     u32 start_tick;
 } LvlColorState;
 
-extern LvlCamera lvl_camera;
-extern LvlColorState lvl_color;
-extern s32 g_doctor_cortex_obj[];
-extern s32 g_mdat_title_str_ptr[];
+#define CRASH_EXT_LEVEL_UPDATE_0
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_UPDATE_0
 
 /* SLST polygon id lists: current, and the two buffers swapped per step. */
-extern void *gp_level_entry;
+#define CRASH_EXT_LEVEL_UPDATE_1
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_UPDATE_1
 
 
 /* Whether one of the header's neighbour links resolves to entry. */
@@ -48,7 +49,7 @@ static __inline__ s32 zone_has_neighbor(ZoneHeader *header, ZoneEntry *entry)
 }
 
 typedef struct ZoneEntityHeader {
-    u8 pad00[6];
+    u8 reserved_00[6];
     u8 group;
 } ZoneEntityHeader;
 
@@ -243,6 +244,6 @@ void Level_UpdateMisc(void *arg0, u32 flags)
     lvl_color.target = gfx->color;
     g_game_state[0] = gfx->flags;
     if (!(flags & 4)) {
-        Midi_SetStateStopped(gfx->unk24);
+        Midi_SetStateStopped(gfx->midi_seq_state);
     }
 }

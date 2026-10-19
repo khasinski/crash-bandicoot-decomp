@@ -5,7 +5,9 @@
 
 /* The queue consumer callback also updates this index. */
 
-extern u8 g_gpu_queue_entries[0x1800];
+#define CRASH_EXT_SDK_LIBGPU_QUEUE_RESET
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_QUEUE_RESET
 
 /* Reset queue indices and hardware, then restore interrupt state. */
 s32 _reset(s32 arg0) {

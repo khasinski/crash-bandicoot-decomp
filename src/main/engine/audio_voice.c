@@ -1,10 +1,8 @@
+/* GNU_AS_NO_GP: gp_use_cd */
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 /* GCC_CPU: 3000 */
 #include "common.h"
-extern s32 g_stereo_disabled;
-extern s32 g_levels_unlocked;
-extern s32 g_cur_map_level;
 
 /* =========================================================================
  * Section 2: Audio / SPU Voice Management (asm/USA/main/text_20878.s)
@@ -22,9 +20,9 @@ typedef struct {
 } Vec3;
 
 typedef struct {
-    u8 pad00[0x80];
+    u8 reserved_00[0x80];
     Vec3 trans;
-    u8 pad8C[0x40];
+    u8 reserved_8c[0x40];
     u32 status_b;
 } GoolObjectAudio;
 
@@ -41,9 +39,9 @@ typedef struct {
     u32 b9 : 1;
     u32 b10 : 1;
     u32 b11 : 1;
-    s32 unk04;
+    s32 word_04;
     GoolObjectAudio *obj;
-    u8 unk0C;
+    u8 word_0c;
     u8 priority;
     s16 volume;
     s16 delay;
@@ -85,15 +83,17 @@ typedef struct {
     u16 sl;
     u16 ads_stat;
     u16 r_stat;
-    u16 pad;
+    u16 reserved;
 } SpuVoiceAttrLocal;
 
 typedef struct {
-    s32 unk00;
+    s32 word_00;
     s32 id;
 } LevelHeaderInfo;
 
-extern LevelHeaderInfo *g_ns_page_pool;
+#define CRASH_EXT_ENGINE_AUDIO_VOICE_0
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_AUDIO_VOICE_0
 s32 gp_midi_state = 0x1E;
 asm(".globl gp_sfx_vol, gp_mus_vol, gp_sfx_vol_scaled, gp_mus_vol_scaled");
 s32 gp_sfx_vol;
@@ -101,16 +101,16 @@ s16 gp_mus_vol;
 s16 gp_sfx_vol_scaled;
 s16 gp_mus_vol_scaled;
 
-extern struct { s32 v, pad; } gp_use_cd;
-extern VoiceEntry g_voices[24];
-
-extern VoiceParams g_audio_voices_end;
-extern u8 g_midi_seq_slot_b[];
+#define CRASH_EXT_ENGINE_AUDIO_VOICE_1
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_AUDIO_VOICE_1
 typedef struct {
-    u8 pad00[0x10];
-    s32 unk10;
+    u8 reserved_00[0x10];
+    s32 word_10;
 } ZonePtr57914;
-extern ZonePtr57914 *g_pads;
+#define CRASH_EXT_ENGINE_AUDIO_VOICE_2
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_AUDIO_VOICE_2
 
 
 
@@ -132,7 +132,7 @@ AudioVolume *Audio_Spatialize(Vec3 *pos, s32 vol) {
     } else {
         pan = cos(ratan2(z, x)) + 0x1000;
         base_vol = (vol << 15) / dist;
-        if (g_stereo_disabled == 0) {
+        if (g_stereo_disabled[0] == 0) {
             left = (base_vol + base_vol * (0x2000 - pan)) >> 11;
             right = (base_vol + base_vol * pan) >> 11;
         } else {
@@ -220,7 +220,7 @@ s32 Audio_VoiceCreate(GoolObjectAudio *obj, u32 arg1, s32 vol) {
     s32 res;
     u32 addr;
 
-    if (g_cur_map_level == 0) {
+    if (g_cur_map_level[0] == 0) {
         return;
     }
     voice_idx = Audio_VoiceAlloc();
@@ -246,7 +246,7 @@ s32 Audio_VoiceCreate(GoolObjectAudio *obj, u32 arg1, s32 vol) {
             Gool_Transform2(&obj->trans, &pos, 1);
             entry->params.trans_pos = pos;
         }
-        g_audio_voices_end.unk0C = 1;
+        g_audio_voices_end.word_0c = 1;
         g_audio_voices_end.priority = 0x80;
         g_audio_voices_end.volume = 0x3FFF;
         g_audio_voices_end.pitch = 0x1000;
@@ -370,7 +370,7 @@ s32 Audio_Control(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
                 }
                 break;
             case 4:
-                params->unk0C = *(u8 *)arg2;
+                params->word_0c = *(u8 *)arg2;
                 break;
             case 5:
                 params->obj = *(GoolObjectAudio **)arg2;
@@ -425,16 +425,16 @@ void Audio_Update(void) {
 
     tmp = g_ns_page_pool->id;
     if (tmp == 0x19) {
-        v = g_cur_map_level;
+        v = g_cur_map_level[0];
         tmp = v << 14;
         tmp -= v;
         tmp >>= 8;
         gp_mus_vol_scaled = tmp;
-        v = g_levels_unlocked;
+        v = g_levels_unlocked[0];
         Midi_ResetSeqVol((s16)((v * 0x3FFF) >> 8));
     }
     if (g_pads != NULL) {
-        Midi_Update(g_pads->unk10 + 0x304);
+        Midi_Update(g_pads->word_10 + 0x304);
     }
     if (gp_midi_fade_step != 0) {
         if (gp_midi_fade_step < 0 && gp_spu_master_vol < -gp_midi_fade_step) {
@@ -448,13 +448,13 @@ void Audio_Update(void) {
         gp_spu_master_vol += gp_midi_fade_step;
         SsSetMVol(gp_spu_master_vol >> 7, gp_spu_master_vol >> 7);
     }
-    if (gp_use_cd.v == 1) {
+    if (gp_use_cd == 1) {
         gp_midi_fade_step = -0x222;
         if (gp_midi_default_rvol != 0 && gp_midi_open_seq_cnt >= 2 && gp_card_chan == 3) {
             Midi_Control(g_midi_seq_slot_b, 2, 0);
         }
     }
-    if (gp_use_cd.v == -1) {
+    if (gp_use_cd == -1) {
         gp_midi_fade_step = 0x667;
         if (gp_midi_default_rvol != 0 && gp_midi_open_seq_cnt >= 2 && gp_card_chan == 3) {
             Midi_Control(g_midi_seq_slot_b, 3, 0);
@@ -473,7 +473,7 @@ void Audio_Update(void) {
                 SpuSetKey(1, 1 << i);
             }
             if (g_spu_key_statuses[i] == 3) {
-                if (--entry->params.unk0C == 0) {
+                if (--entry->params.word_0c == 0) {
                     SpuSetKey(0, 1 << i);
                     entry->params.b3 = 0;
                     goto check_end;

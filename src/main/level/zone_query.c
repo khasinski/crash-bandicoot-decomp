@@ -21,7 +21,7 @@ typedef struct ZqRect {
 typedef struct ZqZoneRect {
     s32 x, y, z;
     s32 w, h, d;
-    u32 unk18;
+    u32 word_18;
     u16 root;
     s16 max_depth_x;
     s16 max_depth_y;

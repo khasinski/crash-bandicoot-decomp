@@ -4,8 +4,6 @@
 #include "ns.h"
 #include "zone.h"
 
-extern s32 gp_pause_B_pressed;
-extern ResourceSlot g_spu_slots[8];
 
 
 typedef struct NsDirectoryExt {

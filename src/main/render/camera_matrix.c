@@ -2,13 +2,10 @@
 /* CC1_FLAGS: -O2 */
 #include "common.h"
 #include "gpu.h"
-extern s32 g_draw_stamp;
 
-extern s16 g_m_rot;
-
-extern s16 g_m_color;
-
-extern s16 g_m_wgeo_view;
+#define CRASH_EXT_RENDER_CAMERA_MATRIX_0
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_CAMERA_MATRIX_0
 
 
 typedef struct Copy32 {
@@ -23,41 +20,44 @@ typedef struct ShortMat {
     s16 m[9];
 } ShortMat;
 
-extern Copy12 g_cam_trans_x;
-extern Copy12 g_cam_dir_rot_y;
+#define CRASH_EXT_RENDER_CAMERA_MATRIX_1
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_CAMERA_MATRIX_1
 
 typedef struct ZoneCamData {
-    u8 pad000[0x2FC];
+    u8 reserved_000[0x2FC];
     u32 flags;
-    u8 pad300[0x314 - 0x300];
+    u8 reserved_300[0x314 - 0x300];
     u8 bg_color[3];
 } ZoneCamData;
 
 typedef struct ZoneCamEntry {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     ZoneCamData *data;
 } ZoneCamEntry;
 
 typedef struct CamBlock {
     Copy32 m804;
-    u8 pad824[0x80057888 - 0x80057824];
+    u8 reserved_824[0x80057888 - 0x80057824];
     Copy12 m888;
-    u8 pad894[0x80057914 - 0x80057894];
+    u8 reserved_894[0x80057914 - 0x80057894];
     ZoneCamEntry *z914;
-    u8 pad918[0x80057938 - 0x80057918];
+    u8 reserved_918[0x80057938 - 0x80057918];
     s32 w938;
 } CamBlock;
 
-extern CamBlock g_m_light;
+#define CRASH_EXT_RENDER_CAMERA_MATRIX_2
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_CAMERA_MATRIX_2
 
 
 typedef struct WgeoHeader {
     s32 x;
     s32 y;
     s32 z;
-    s32 unk0C;
-    s32 unk10;
-    s32 unk14;
+    s32 word_0c;
+    s32 word_10;
+    s32 word_14;
     u32 tpage_count;
     s32 flags;
     u32 tpages[8];
@@ -150,7 +150,7 @@ void Gfx_UpdateMatrices(void)
     g_m_light.m804 = *(cam - 4);
 
     if (g_m_light.z914->data->flags & 0x1000) {
-        *(((s32 *)cam) + 10) = __builtin_abs(((g_draw_stamp % 128) - 64) * 800) + 0xDC1E0;
+        *(((s32 *)cam) + 10) = __builtin_abs(((g_draw_stamp[0] % 128) - 64) * 800) + 0xDC1E0;
         s0_4 = sin(0x7D);
         v0_4 = cos(0x7D);
         *(((s16 *)cam) - 0x20) = 0x1000;

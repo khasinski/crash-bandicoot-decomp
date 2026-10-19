@@ -1,7 +1,9 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-extern u8 g_gpu_debug_level;
+#define CRASH_EXT_SDK_LIBGPU_PACKET_LINK
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_PACKET_LINK
 
 s32 *ClearOTagR(s32 *arg0, s32 arg1) {
     if ((u8) g_gpu_debug_level >= 2U) {

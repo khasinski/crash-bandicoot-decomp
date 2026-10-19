@@ -7,7 +7,7 @@
  * This is not yet a reconstruction of the full object/resource layout.
  */
 typedef struct ObjectView {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     u8 *resource;
 } ObjectView;
 
@@ -17,38 +17,38 @@ typedef struct ObjectView {
 typedef struct GoolRuntimeObject {
     s32 kind;
     struct GoolRuntimeObject *word04;
-    u8 pad08[0x20];
+    u8 reserved_08[0x20];
     s32 entry;
-    u8 pad2C[0x3C];
+    u8 reserved_2c[0x3C];
     struct GoolRuntimeObject *next;
     struct GoolRuntimeObject *children;
-    u8 pad70[0x5C];
+    u8 reserved_70[0x5C];
     u32 flagsCC;
-    u8 padD0[0xC];
+    u8 reserved_d0[0xC];
     u32 *stack;
     u32 pc;
     u32 *frame;
-    u8 padE8[0x38];
+    u8 reserved_e8[0x38];
     u32 flags120;
-    u8 pad124[0x14];
+    u8 reserved_124[0x14];
     s32 offset138;
 } GoolRuntimeObject;
 
 /* Independent view of the resource reached through ObjectView.resource. */
 typedef struct GoolResourceState {
-    u8 pad00[0x2DC];
+    u8 reserved_00[0x2DC];
     u32 flags2DC;
 } GoolResourceState;
 
 /* Default block copied by Gool_ObjectColorByZone; halfword updates at 0x2A..0x2E. */
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
-    u16 field2A, field2C, field2E;
+    u16 intensity_r, intensity_g, intensity_b;
 } GoolDefaults;
 
 struct ResourceEntry;
 typedef struct GoolDefaultsObject {
-    u8 pad00[0x28];
+    u8 reserved_00[0x28];
     struct ResourceEntry *entry;
     u32 word2C;
     GoolDefaults defaults;
@@ -62,17 +62,17 @@ typedef struct GoolMessageEntry {
 } GoolMessageEntry;
 
 typedef struct GoolMessageResource {
-    u8 pad00[0x10];
+    u8 reserved_00[0x10];
     GoolMessageEntry *entry;
 } GoolMessageResource;
 
 typedef struct GoolActorView {
-    u8 pad00[8];
+    u8 reserved_00[8];
     s32 bounds[6];
     GoolMessageResource *resource;
-    u8 pad24[0x5C];
+    u8 reserved_24[0x5C];
     s32 position[3];
-    u8 pad8C[0x24];
+    u8 reserved_8c[0x24];
     s32 radius[3];
 } GoolActorView;
 

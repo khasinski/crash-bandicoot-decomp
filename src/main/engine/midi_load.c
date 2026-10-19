@@ -6,7 +6,7 @@
 
 typedef struct {
     u16 count;
-    u16 pad02;
+    u16 reserved_02;
     s32 bank_ref;
     s32 refs[7];
 } MidiHeaderItem;

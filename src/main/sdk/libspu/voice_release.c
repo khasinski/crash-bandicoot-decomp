@@ -2,12 +2,12 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-typedef struct { s16 value; u8 pad[50]; } VoiceWord;
-typedef struct { u8 value; u8 pad[51]; } VoiceByte;
+typedef struct { s16 value; u8 reserved[50]; } VoiceWord;
+typedef struct { u8 value; u8 reserved[51]; } VoiceByte;
 
-extern VoiceWord g_spu_vm_voice_table[];
-extern VoiceWord g_spu_vm_voice_pitch[];
-extern VoiceByte g_spu_vm_voice_auto_flag[];
+#define CRASH_EXT_SDK_LIBSPU_VOICE_RELEASE
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSPU_VOICE_RELEASE
 
 void SpuVmKeyOffNow(void) {
     u16 voice;

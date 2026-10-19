@@ -8,7 +8,9 @@ typedef ResourceEntry Entry;
 typedef GoolDefaultsObject Object;
 /* Storage is owned by engine/state; retain the absolute view of the
  * resource selection word while sized gp_crash_obj uses the native gp load. */
-extern Object *gp_crash_obj;
+#define CRASH_EXT_ENGINE_OBJECT_DEFAULTS
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_OBJECT_DEFAULTS
 void Gool_ObjectColorByZone(Object *object,s32 mode) {
     Entry *entry;
     Defaults *defaults;
@@ -19,9 +21,9 @@ void Gool_ObjectColorByZone(Object *object,s32 mode) {
     switch(mode) {
     case 0: object->defaults=*defaults;return;
     case 1:
-        object->defaults.field2A=defaults->field2A;
-        object->defaults.field2C=defaults->field2C;
-        object->defaults.field2E=defaults->field2E;
+        object->defaults.intensity_r=defaults->intensity_r;
+        object->defaults.intensity_g=defaults->intensity_g;
+        object->defaults.intensity_b=defaults->intensity_b;
         return;
     }
 }

@@ -2,7 +2,9 @@
 
 /* GCC_VERSION: 2.6.3 */
 typedef GoolRuntimeObject Object;
-extern s32 g_cur_zone_ptr;
+#define CRASH_EXT_GOOL_OBJECT_RELEASE_CALLBACK
+#include "gool_externs.h"
+#undef CRASH_EXT_GOOL_OBJECT_RELEASE_CALLBACK
 s32 Gool_ZoneObjectTerminate(Object *arg0, s32 arg1) {
     s32 temp_s1;
 

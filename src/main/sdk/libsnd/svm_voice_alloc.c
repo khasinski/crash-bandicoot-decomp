@@ -4,42 +4,38 @@
 #include "common.h"
 
 typedef struct {
-    u16 unk0;
-    u16 unk2;
-    u8 pad4[2];
-    u16 unk6;
-    u8 pad8[16];
-    s16 unk18;
-    u8 pad1A;
-    u8 unk1B;
-    u8 pad1C[24];
+    u16 word_0;
+    u16 word_2;
+    u8 reserved_4[2];
+    u16 word_6;
+    u8 reserved_8[16];
+    s16 word_18;
+    u8 reserved_1a;
+    u8 word_1b;
+    u8 reserved_1c[24];
 } VoiceStruct;
 
-typedef struct { u16 value; u8 pad[50]; } VoiceU16;
-typedef struct { s16 value; u8 pad[50]; } VoiceS16;
-typedef struct { u8 value; u8 pad[51]; } VoiceU8;
+typedef struct { u16 value; u8 reserved[50]; } VoiceU16;
+typedef struct { s16 value; u8 reserved[50]; } VoiceS16;
+typedef struct { u8 value; u8 reserved[51]; } VoiceU8;
 
 typedef struct {
-    u8 unk0[7];
-    u8 unk7;
-    u8 unk8[4];
-    u8 unkC;
-    u8 unkD[2];
-    u8 unkF;
-    u8 unk10[8];
-    s16 unk18;
-    s16 unk1A;
-    s16 unk1C;
-    s16 unk1E;
+    u8 word_0[7];
+    u8 word_7;
+    u8 word_8[4];
+    u8 word_c;
+    u8 word_d[2];
+    u8 word_f;
+    u8 word_10[8];
+    s16 word_18;
+    s16 word_1a;
+    s16 word_1c;
+    s16 word_1e;
 } SvmCur;
 
-extern SvmCur g_midi_sep;
-
-extern VoiceStruct g_spu_vm_voice_table[];
-extern VoiceU16 g_spu_vm_voice_age[];
-extern VoiceU16 g_spu_vm_voice_envx[];
-extern VoiceS16 g_spu_vm_voice_prior[];
-extern VoiceU8 g_spu_vm_voice_auto_flag[];
+#define CRASH_EXT_SDK_LIBSND_SVM_VOICE_ALLOC
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBSND_SVM_VOICE_ALLOC
 
 s32 SpuVmAlloc(void)
 {
@@ -55,7 +51,7 @@ s32 SpuVmAlloc(void)
     var_t3 = 0xFFFF;
     var_t2 = 0;
     var_t0 = 0;
-    var_t4 = g_midi_sep.unkF;
+    var_t4 = g_midi_sep.word_f;
     var_t1 = 0x63;
     for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
         if ((g_spu_vm_voice_auto_flag[var_a3].value == 0) && (g_spu_vm_voice_envx[var_a3].value == 0)) {
@@ -90,10 +86,10 @@ s32 SpuVmAlloc(void)
     }
     if (var_s0 < gp_spawn_count) {
         for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
-            (g_spu_vm_voice_table + var_a3)->unk2 = g_spu_vm_voice_age[var_a3].value + 1;
+            (g_spu_vm_voice_table + var_a3)->word_2 = g_spu_vm_voice_age[var_a3].value + 1;
         }
         g_spu_vm_voice_age[var_s0].value = 0;
-        g_spu_vm_voice_prior[var_s0].value = g_midi_sep.unkF;
+        g_spu_vm_voice_prior[var_s0].value = g_midi_sep.word_f;
         if (g_spu_vm_voice_auto_flag[var_s0].value == 2) {
             _SpuVmSetNoiseVoice(0, 0xFFFFFF);
         }

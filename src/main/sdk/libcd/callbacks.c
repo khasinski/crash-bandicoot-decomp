@@ -4,7 +4,9 @@
 
 /* Clear callback state and install the CD interrupt handler. */
 
-extern s32 g_cd_read_state[10];
+#define CRASH_EXT_SDK_LIBCD_CALLBACKS
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBCD_CALLBACKS
 
 void CD_init(void) {
     s32 *var_v1;

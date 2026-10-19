@@ -10,11 +10,13 @@ typedef struct {
 } LightMat;
 
 typedef struct LevelHeader {
-    s32 unk0;
+    s32 word_0;
     s32 level_id;
 } LevelHeader;
 
-extern LevelHeader *g_ns_page_pool[];
+#define CRASH_EXT_LEVEL_LIGHT
+#include "level_externs.h"
+#undef CRASH_EXT_LEVEL_LIGHT
 
 
 void Zone_ColorsScale(LightMat *arg0, LightMat *arg1, s32 arg2, s32 arg3, s32 arg4)

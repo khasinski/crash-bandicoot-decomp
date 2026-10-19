@@ -4,7 +4,7 @@ typedef struct {
     u32 mask;
     s16 volume_left,volume_right;
     s16 mode_left,mode_right;
-    u8 pad0C[4];
+    u8 reserved_0c[4];
     u16 cd_left,cd_right;
     s32 cd_mix,cd_reverb;
     u16 external_left,external_right;

@@ -3,11 +3,11 @@
 #include "resource.h"
 
 
-extern s32 gp_pbak_mode;
 /* Unsized storage views retain the native absolute addressing. Only the
  * mode word above is accessed through gp in this function. */
-extern s32 g_ns[];
-extern s32 g_ns_load_done_flag[];
+#define CRASH_EXT_ENGINE_LEVEL_RESOURCE_CHOOSE
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_LEVEL_RESOURCE_CHOOSE
 
 void Pbak_Choose(s32 *resource_id)
 {

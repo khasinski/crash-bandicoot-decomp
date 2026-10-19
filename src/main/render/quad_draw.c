@@ -6,16 +6,16 @@
 
 typedef struct Rect9398 {
     u16 x0;
-    u16 pad02;
+    u16 reserved_02;
     s32 y0;
-    s32 pad08;
+    s32 reserved_08;
     u16 x1;
-    u16 pad0E;
+    u16 reserved_0e;
     s32 y1;
 } Rect9398;
 
 typedef struct PrimBuf9398 {
-    u8 pad00[0x78];
+    u8 reserved_00[0x78];
     void *prim_ptr;
 } PrimBuf9398;
 
@@ -35,14 +35,15 @@ typedef struct PolyFT4_9398 {
     u16 tpage;
     u32 xy2;
     u16 uv2;
-    u16 pad1E;
+    u16 reserved_1e;
     u32 xy3;
     u16 uv3;
-    u16 pad26;
+    u16 reserved_26;
 } PolyFT4_9398;
 
-extern PrimBuf9398 *g_ot_cur;
-extern s32 g_view_proj;
+#define CRASH_EXT_RENDER_QUAD_DRAW
+#include "render_externs.h"
+#undef CRASH_EXT_RENDER_QUAD_DRAW
 
 void Gfx_TransformFragment(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
 {
@@ -139,28 +140,28 @@ typedef struct PolyGT4_9398 {
     u8 r1;
     u8 g1;
     u8 b1;
-    u8 pad13;
+    u8 reserved_13;
     u32 xy1;
     u16 uv1;
     u16 tpage;
     u8 r2;
     u8 g2;
     u8 b2;
-    u8 pad1F;
+    u8 reserved_1f;
     u32 xy2;
     u16 uv2;
-    u16 pad26;
+    u16 reserved_26;
     u8 r3;
     u8 g3;
     u8 b3;
-    u8 pad2B;
+    u8 reserved_2b;
     u32 xy3;
     u16 uv3;
-    u16 pad32;
+    u16 reserved_32;
 } PolyGT4_9398;
 
 typedef struct LightCols9398 {
-    u8 pad00[0x48];
+    u8 reserved_00[0x48];
     s16 c[4][3];
 } LightCols9398;
 

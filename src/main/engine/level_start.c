@@ -3,14 +3,9 @@
       /* extern */
                            /* extern */
                                  /* extern */
-extern s32 *g_ns_page_pool;
-
-extern Node g_gool_obj_list_3;
-extern Node *g_level_pause_menu_obj;
-
-extern s32 g_key_count;
-extern s32 g_pad_debug_override;
-extern s32 g_cam_rot_xz;
+#define CRASH_EXT_ENGINE_LEVEL_START
+#include "engine_externs.h"
+#undef CRASH_EXT_ENGINE_LEVEL_START
 
 void Level_InitMisc(s32 arg0) {
     Node *root;
@@ -69,7 +64,7 @@ create_object:
     if (g_pbak_frame_step != 2) {
         g_pad_debug_override = 0;
     }
-    g_key_count = 0;
+    g_key_count[0] = 0;
     Solid_TransSmoothStopAtSolid(0, 0, 0);
     g_gpu_max_frame_ticks = 0x20;
     g_level_misc_init_zero = 0;

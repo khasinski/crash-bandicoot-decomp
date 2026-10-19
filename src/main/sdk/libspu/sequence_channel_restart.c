@@ -5,14 +5,14 @@
 void _SsSndNextSep(s16 sequence, s16 channel) {
     SequenceState *state;
     state = &g_ss_score_table[sequence][channel];
-    state->field_46 = 1;
-    state->field_48 = 0;
-    g_ss_score_table[sequence][channel].field_90 &= ~0x100;
-    g_ss_score_table[sequence][channel].field_90 &= ~8;
-    g_ss_score_table[sequence][channel].field_90 &= ~2;
-    g_ss_score_table[sequence][channel].field_90 &= ~4;
-    g_ss_score_table[sequence][channel].field_90 &= ~0x200;
-    state->field_2B = 1;
-    state->field_4 = state->field_8;
-    g_ss_score_table[sequence][channel].field_90 |= 1;
+    state->loop_max = 1;
+    state->loop_count = 0;
+    g_ss_score_table[sequence][channel].flags &= ~0x100;
+    g_ss_score_table[sequence][channel].flags &= ~8;
+    g_ss_score_table[sequence][channel].flags &= ~2;
+    g_ss_score_table[sequence][channel].flags &= ~4;
+    g_ss_score_table[sequence][channel].flags &= ~0x200;
+    state->play_mode = 1;
+    state->read_pos = state->start_pos;
+    g_ss_score_table[sequence][channel].flags |= 1;
 }

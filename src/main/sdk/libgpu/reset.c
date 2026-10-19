@@ -3,11 +3,9 @@
 /* GCC_VERSION: 2.6.3 */
 
 
-extern u8 g_gpu_mode[];
-extern u8 g_gpu_debug_level_2;
-extern u8 g_gpu_debug_level;
-extern u16 g_gpu_vram_max_w;
-extern u16 g_gpu_vram_max_h;
+#define CRASH_EXT_SDK_LIBGPU_RESET
+#include "sdk_externs.h"
+#undef CRASH_EXT_SDK_LIBGPU_RESET
 
 /* Reset the GPU state and cached environments, or invoke the driver reset. */
 s32 ResetGraph(s32 requested)
