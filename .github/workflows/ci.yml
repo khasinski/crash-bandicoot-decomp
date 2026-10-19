@@ -16,6 +16,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install scoring dependencies
-        run: python -m pip install pyelftools
+        run: python -m pip install pyelftools pyyaml
       - name: Run retail-free checks
         run: make test-source PY=python

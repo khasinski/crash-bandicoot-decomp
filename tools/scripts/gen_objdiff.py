@@ -22,8 +22,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 
 CATEGORIES = [
@@ -107,6 +105,8 @@ def retype_embedded_data_in_asm(asm_path: Path, declarations: dict[str, list[int
 
 
 def main() -> int:
+    import yaml
+
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--version", default="USA")
     ap.add_argument("--python", default=sys.executable)
