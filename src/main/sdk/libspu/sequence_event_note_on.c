@@ -30,7 +30,6 @@ s32 _SsReadDeltaValue(s16, s16);
 void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
     ProgramAttributes prog_attr;
     ToneAttributes tone_attr;
-    s32 dummy[1];
     SequenceState *state = g_ss_score_table[sequence] + channel;
     s32 i;
     u8 index = state->field_12;

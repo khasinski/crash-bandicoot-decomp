@@ -119,14 +119,18 @@ class ReportAuditAndDebtTests(unittest.TestCase):
         sample_c = (
             '/* comment with INCLUDE_ASM("ignored", f) */\n'
             'extern s32 alias_sym __asm__("D_80056400");\n'
-            'HANDWRITTEN_ASM("src/main/engine/gte_asm", func_800334A0);\n'
+            's32 helper_proto(s32 a);\n'
+            'HANDWRITTEN_ASM("asm/USA/main/nonmatchings/engine/gte_render", func_800334A0);\n'
             'void f(u8 *p) {\n'
             '    register s32 v asm("$4");\n'
+            '    s32 unk_04 = 0;\n'
             '    asm volatile("");\n'
-            '    v = *(s32 *)(p + 0x10) + p[-1] + D_80056400;\n'
+            '    if (0) { v = 1; }\n'
+            '    v = ((s32)p & 1); if ((v >> 1) == 0) {}\n'
+            '    v = *(s32 *)(p + 0x10) + p[-1] + D_80056400 + unk_04;\n'
             '}\n'
         )
-        sample_h = 'extern s32 hdr_alias __asm__("D_80056404");\n'
+        sample_h = 'extern s32 hdr_alias __asm__("D_80056404");\ntypedef struct { u8 pad0[4]; } S;\n'
         with tempfile.TemporaryDirectory() as src_dir, tempfile.TemporaryDirectory() as hdr_dir:
             (Path(src_dir) / "sample.c").write_text(sample_c)
             (Path(hdr_dir) / "sample.h").write_text(sample_h)
@@ -139,7 +143,12 @@ class ReportAuditAndDebtTests(unittest.TestCase):
         self.assertEqual(counts["raw_symbol_references"], 2)
         self.assertEqual(counts["asm_symbol_aliases"], 1)
         self.assertEqual(counts["externs_in_c"], 1)
+        self.assertEqual(counts["func_prototypes_in_c"], 1)
+        self.assertEqual(counts["unk_fields_in_c"], 2)
+        self.assertEqual(counts["fake_control_flow"], 1)
+        self.assertEqual(counts["fake_bit_tautologies"], 1)
         self.assertEqual(counts["header_asm_aliases"], 1)
+        self.assertEqual(counts["header_unk_fields"], 1)
 
 
 if __name__ == "__main__":

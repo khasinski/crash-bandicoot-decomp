@@ -390,7 +390,7 @@ block_118:
             if (var_a1 != 0) {
                 goto loop_2;
             }
-        } while (0);
+        } while (var_a1 != 0);
     }
 done:
     arg0[var_s2] = 0;

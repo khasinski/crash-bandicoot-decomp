@@ -12,8 +12,7 @@ typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
 extern VoiceVol g_midi_seq_table[];
 
 void vmNoiseOn(s32 arg0) {
-    s32 dummy;
-    s32 *unused_ptr = &dummy;
+    s32 pad[2];
     s16 var_a1_2;
     s16 var_a2_2;
     s16 var_a3;

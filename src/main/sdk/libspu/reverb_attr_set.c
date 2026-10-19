@@ -154,13 +154,13 @@ s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
         g_spu_RXX[0xC3] = arg0->depth_right;
         g_spu_reverb_vr_cur = arg0->depth_right;
     }
-    if (0) {
+    goto after_depth;
 clear_depth:
-        g_spu_RXX[0xC2] = 0;
-        g_spu_RXX[0xC3] = 0;
-        g_spu_reverb_vl_cur = 0;
-        g_spu_reverb_vr_cur = 0;
-    }
+    g_spu_RXX[0xC2] = 0;
+    g_spu_RXX[0xC3] = 0;
+    g_spu_reverb_vl_cur = 0;
+    g_spu_reverb_vr_cur = 0;
+after_depth:
     if (set_mode || set_delay || set_feedback) {
         _spu_setReverbAttr(&param);
     }
