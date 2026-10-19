@@ -4,7 +4,7 @@
 
 /* Absolute difference of two signed values, preserving the retail subtraction order. */
 
-s32 func_8002F840(s32 a, s32 b)
+s32 Math_Absdiff(s32 a, s32 b)
 {
     s32 delta = a - b;
 

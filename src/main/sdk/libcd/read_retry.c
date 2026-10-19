@@ -1,13 +1,13 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
-s32 func_80045518(void *, s32, s32);
+s32 cd_read_retry(void *, s32, s32);
 
-s32 func_800439A4(s32 count, void *buffer, s32 mode)
+s32 CdRead(s32 count, void *buffer, s32 mode)
 {
     s32 retries = 3;
     do {
-        if (func_80045518(buffer, count, mode) != 0) {
+        if (cd_read_retry(buffer, count, mode) != 0) {
             retries--;
         } else {
             return 1;

@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
+extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -98,22 +99,20 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern LevelStateView *D_8005C53C[];
-extern u32 D_80060E04[];
+extern LevelStateView *g_ns_page_pool[];
 
-extern s32 *D_800566F4;
 
-ZoneEntry *func_80015A98(u32 *);
-s32 func_80024040(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *func_80026DD4(ZoneEntry *, ZqVec *);
-void func_80027F50(void *, SubObj *, s32, s32);
-s32 func_80037D50(ZqZoneRect *, ZqBound *, void *, s32);
-void func_8003864C(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void func_8002D8B8(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 func_8002CD9C(SubObj *, ZqVec *, SubWorkspace *);
-s32 func_8002C8EC(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 func_8002E0A0(s32, s32, ZqVec *, SubObj *);
-s32 func_8002E3F8(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
+ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
+void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
+s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
+void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
+void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
+s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
+s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
+s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
+s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -125,12 +124,12 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList D_80060E08;
+extern SubBoxList g_obj_bounds;
 extern ZqVec D_800567F8;
 
-void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 func_80038DF8(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
+void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
+void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
+s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -142,7 +141,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -151,7 +150,7 @@ static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 {
     if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
         && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
@@ -160,10 +159,10 @@ static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void func_8002D69C(s32, s32);
-s32 func_80042B9C(s32);
+void Solid_PlotWall(s32, s32);
+s32 SquareRoot0(s32);
 
-static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
+static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
     s32 *p;
     u32 mask;
@@ -197,7 +196,7 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     if (y1 >= 32) {
         return;
     }
-    p = &D_800566F4[y1];
+    p = &gp_grid_rows[y1];
     if (set) {
         for (; y1 < y2; y1++, p++) {
             *p |= mask;
@@ -212,18 +211,18 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 
-s32 func_8002BE8C(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws);
-void func_8002C184(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel);
-s32 func_8002C3B8(SubObj *obj, u32 node);
-__inline__ void func_8002C51C(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 div_val, s32 *out);
-s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
-s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y);
-s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws);
-__inline__ void func_8002D0B8(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
-s32 func_8002D18C(SubObj *obj, ZqVec *v);
-void func_8002D384(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out);
+s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws);
+void Solid_TransPullStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel);
+s32 ProcessNode(SubObj *obj, u32 node);
+__inline__ void Solid_StopAtFloor(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 div_val, s32 *out);
+s32 Solid_StopAtHighestObjectBelow(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
+s32 Solid_StopAtFloorZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y);
+s32 Solid_StopAtCeil(SubObj *obj, ZqVec *v, SubWorkspace *ws);
+__inline__ void Solid_StopAtCeilZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
+s32 Solid_StopAtZone(SubObj *obj, ZqVec *v);
+void Solid_TransStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out);
 
-s32 func_8002BE8C(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
+s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
 {
     ZqVec pos;
     ZqVec vel;
@@ -233,18 +232,18 @@ s32 func_8002BE8C(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
 
     trans = &obj->trans;
     if (obj == NULL) {
-        D_800565DC = 0;
+        gp_wall_cache = 0;
         return 0;
     }
-    level = D_8005C53C[0]->level_id;
-    D_800564BC = (level == 0x11 || level == 0x1E) ? 0x27AC4 : 0xF424;
+    level = g_ns_page_pool[0]->level_id;
+    gp_wall_bitmap = (level == 0x11 || level == 0x1E) ? 0x27AC4 : 0xF424;
     pos.x = trans->x;
     pos.y = trans->y;
     pos.z = trans->z;
     vel.x = in_vel->x;
     vel.y = in_vel->y;
     vel.z = in_vel->z;
-    if (D_800565DC) {
+    if (gp_wall_cache) {
         if (ABS(D_800567F8.x - in_vel->x) < 10
             && ABS(D_800567F8.y - in_vel->y) < 10
             && ABS(D_800567F8.z - in_vel->z) < 10) {
@@ -253,17 +252,17 @@ s32 func_8002BE8C(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
             vel.z = 0;
         }
     }
-    func_8002C184(obj, ws, (s32 *)&pos, (s32 *)&vel);
-    if (!D_800565DC && (in_vel->x != 0 || in_vel->z != 0)
+    Solid_TransPullStopAtSolid(obj, ws, (s32 *)&pos, (s32 *)&vel);
+    if (!gp_wall_cache && (in_vel->x != 0 || in_vel->z != 0)
         && ((trans->x - pos.x) >= 0 ? (trans->x - pos.x) < 2 : (pos.x - trans->x) < 2)
         && ((trans->y - pos.y) >= 0 ? (trans->y - pos.y) < 2 : (pos.y - trans->y) < 2)
         && ((trans->z - pos.z) >= 0 ? (trans->z - pos.z) < 2 : (pos.z - trans->z) < 2)) {
         D_800567F8.x = in_vel->x;
         D_800567F8.y = in_vel->y;
         D_800567F8.z = in_vel->z;
-        D_800565DC = 1;
+        gp_wall_cache = 1;
     } else {
-        D_800565DC = 0;
+        gp_wall_cache = 0;
     }
     trans->x = pos.x;
     trans->y = pos.y;
@@ -271,12 +270,12 @@ s32 func_8002BE8C(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
     if (obj->status_a & 0x400) {
         arg = 0x6400;
         if (!(obj->status_a & 1) || obj->event != 0x900) {
-            func_80024040(NULL, obj, obj->event, 1, &arg);
+            Gool_ExecStateCode(NULL, obj, obj->event, 1, &arg);
         }
     }
 }
 
-void func_8002C184(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel)
+void Solid_TransPullStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel)
 {
     s32 step[3];
     s32 out_pos[3];
@@ -309,7 +308,7 @@ void func_8002C184(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel)
                 step[i] = vel[i];
             }
         }
-        func_8002D384(obj, ws, pos, step, out_pos);
+        Solid_TransStopAtSolid(obj, ws, pos, step, out_pos);
         for (i = 0; i < 3; i++) {
             pos[i] = out_pos[i];
             vel[i] -= step[i];
@@ -317,7 +316,7 @@ void func_8002C184(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel)
     }
 }
 
-s32 func_8002C3B8(SubObj *obj, u32 node)
+s32 ProcessNode(SubObj *obj, u32 node)
 {
     s32 type, subtype, level;
 
@@ -369,7 +368,7 @@ s32 func_8002C3B8(SubObj *obj, u32 node)
         break;
     }
     if (type == 4) {
-        level = D_8005C53C[0]->level_id;
+        level = g_ns_page_pool[0]->level_id;
         if (level == 3 || level == 7) {
             obj->event = 0x2100;
             obj->status_a |= 0x400;
@@ -386,13 +385,13 @@ s32 func_8002C3B8(SubObj *obj, u32 node)
     return 0;
 }
 
-__inline__ void func_8002C51C(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 div_val, s32 *out)
+__inline__ void Solid_StopAtFloor(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 div_val, s32 *out)
 {
     ZqBound unused;
     s32 max_y, dy;
     ZqBound *bound;
 
-    max_y = v2->y + D_800564BC;
+    max_y = v2->y + gp_wall_bitmap;
     dy = v1->y - v2->y;
     bound = &ws->bound2;
     if (dy > 0) {
@@ -404,10 +403,10 @@ __inline__ void func_8002C51C(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *w
     ws->bound2.p2.y = v2->y + 0x29900;
     ws->bound2.p1.z = v2->z + (-0x9600 / div_val) + 0xC80;
     ws->bound2.p2.z = v2->z + (0x9600 / div_val) - 0xC80;
-    func_80038AC4(obj, ws, &ws->bound1, bound, max_y, out, -0x3B9AC9FF, func_8002C3B8);
+    Solid_RFindFloorY(obj, ws, &ws->bound1, bound, max_y, out, -0x3B9AC9FF, ProcessNode);
 }
 
-s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
+s32 Solid_StopAtHighestObjectBelow(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
 {
     s32 res;
     SubObj *hit_obj;
@@ -421,7 +420,7 @@ s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
     bound = &ws->bound2;
     max_y = v2->y + 0xF424;
     dy = v1->y - v2->y;
-    if (D_80060E08.count == 0) {
+    if (g_obj_bounds.count == 0) {
         return -0x3B9AC9FF;
     }
     if (dy > 0) {
@@ -434,12 +433,12 @@ s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
     ws->bound2.p1.z = v2->z - 0x4B00;
     ws->bound2.p2.z = v2->z + 0x4B00;
     ws->unk104C += 0x10;
-    for (i = 0, box = D_80060E08.boxes; i < D_80060E08.count; i++, box++) {
+    for (i = 0, box = g_obj_bounds.boxes; i < g_obj_bounds.count; i++, box++) {
         cand_y = box->bound.p2.y;
         cand_obj = box->obj;
         if ((cand_y <= max_y || (cand_obj->status_b & 0x400000))
             && cand_y > res
-            && func_80026CA8(bound, &box->bound)) {
+            && Level_TestBoundIntersection(bound, &box->bound)) {
             hit_box = box;
             if (cand_obj->status_b & 0x20000) {
                 if (!(((obj->flags120 & 0x10) || obj->anim_state == 5)
@@ -453,12 +452,12 @@ s32 func_8002C660(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
         }
     }
     if (hit_obj != NULL) {
-        func_80024AD4(obj, bound, hit_obj, &hit_box->bound);
+        Gool_Collide(obj, bound, hit_obj, &hit_box->bound);
     }
     return res;
 }
 
-s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y)
+s32 Solid_StopAtFloorZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y)
 {
     s32 out[3];
     ZqBound unused;
@@ -474,10 +473,10 @@ s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_
     ws->bound2.p2.z = v2->z + 0x9600;
     flags = 0x40001;
     bound = &ws->bound2;
-    if (!ws->initialized || !func_80026D40(bound, &ws->bound1)) {
-        func_800294B0(v2, obj, ws);
+    if (!ws->initialized || !Level_TestBoundInBound(bound, &ws->bound1)) {
+        Zone_QueryOctrees(v2, obj, ws);
     }
-    func_8002C51C(obj, v1, v2, ws, 8, out);
+    Solid_StopAtFloor(obj, v1, v2, ws, 8, out);
     y2 = out[2];
     y1 = out[1];
     if (y2 == -0x3B9AC9FF) {
@@ -490,7 +489,7 @@ s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_
     } else {
         ws->unk1044 = y1;
     }
-    y3 = func_8002C660(obj, v1, v2, ws);
+    y3 = Solid_StopAtHighestObjectBelow(obj, v1, v2, ws);
     if (y3 == -0x3B9AC9FF) {
         ws->unk1048 = 0;
     } else {
@@ -526,7 +525,7 @@ s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_
         if (y2 == -0x3B9AC9FF) {
             tmp = obj->trans.y;
         } else {
-            tmp = obj->trans.y + D_800564BC + offset_y;
+            tmp = obj->trans.y + gp_wall_bitmap + offset_y;
         }
         *out_y = tmp;
         if (tmp < res) {
@@ -535,8 +534,8 @@ s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_
         bound->p1.y = res;
         bound->p2.y = res + 0x29900;
         v2->y = res;
-        if (!ws->initialized || !func_80026D40(bound, &ws->bound1)) {
-            func_800294B0(v2, obj, ws);
+        if (!ws->initialized || !Level_TestBoundInBound(bound, &ws->bound1)) {
+            Zone_QueryOctrees(v2, obj, ws);
         }
         if (obj->vel_y < 0 && (flags & 1)) {
             obj->impact_vel_y = obj->vel_y;
@@ -548,7 +547,7 @@ s32 func_8002C8EC(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_
     return res;
 }
 
-s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws)
+s32 Solid_StopAtCeil(SubObj *obj, ZqVec *v, SubWorkspace *ws)
 {
     ZqVec vec;
     s32 arg;
@@ -566,10 +565,10 @@ s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws)
     ws->bound2.p2.z = v->z + 0x4B00;
     hit_obj = NULL;
     bound = &ws->bound2;
-    for (i = 0, box = D_80060E08.boxes; i < D_80060E08.count; i++, box++) {
+    for (i = 0, box = g_obj_bounds.boxes; i < g_obj_bounds.count; i++, box++) {
         cand_obj = box->obj;
         if ((cand_obj->status_b & 0x8000000)
-            && func_80026CA8(bound, &box->bound)) {
+            && Level_TestBoundIntersection(bound, &box->bound)) {
             hit_obj = cand_obj;
             if (res1 == -0x3B9AC9FF) {
                 res1 = box->bound.p1.y;
@@ -582,12 +581,12 @@ s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws)
     bound->p2.x = v->x + 0x2580;
     bound->p1.z = v->z - 0x2580;
     bound->p2.z = v->z + 0x2580;
-    res2 = func_80038DF8(obj, ws, &ws->bound1, bound, 2, 1, -0x3B9AC9FF);
+    res2 = Solid_RFindCeilY(obj, ws, &ws->bound1, bound, 2, 1, -0x3B9AC9FF);
     if (((ZoneHeader *)((ZoneEntry *)obj->entry)->items[0])->flags & 0x20000) {
         vec.x = v->x;
         vec.y = bound->p2.y;
         vec.z = v->z;
-        if ((s32)func_80026DD4((ZoneEntry *)level_position.zone, &vec) >= -0xFE) {
+        if ((s32)Zone_FindNeighbor((ZoneEntry *)level_position.zone, &vec) >= -0xFE) {
             if ((((ZqZoneRect *)((ZoneEntry *)obj->entry)->items[1])->y << 8) < vec.y) {
                 res2 = ((ZqZoneRect *)((ZoneEntry *)obj->entry)->items[1])->y << 8;
             }
@@ -596,17 +595,17 @@ s32 func_8002CD9C(SubObj *obj, ZqVec *v, SubWorkspace *ws)
     if (res1 != -0x3B9AC9FF && (res2 == -0x3B9AC9FF || res1 < res2)) {
         hit_obj->status_a |= 0x80;
         arg = 0x6400;
-        func_80024040(obj, hit_obj, 0x1700, 1, &arg);
+        Gool_ExecStateCode(obj, hit_obj, 0x1700, 1, &arg);
         return res1;
     }
     return res2;
 }
 
-__inline__ void func_8002D0B8(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
+__inline__ void Solid_StopAtCeilZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws)
 {
     s32 res;
 
-    res = func_8002CD9C(obj, v2, ws);
+    res = Solid_StopAtCeil(obj, v2, ws);
     if (res == -0x3B9AC9FF) {
         ws->unk103C = 0;
     } else {
@@ -623,7 +622,7 @@ __inline__ void func_8002D0B8(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *w
     }
 }
 
-s32 func_8002D18C(SubObj *obj, ZqVec *v)
+s32 Solid_StopAtZone(SubObj *obj, ZqVec *v)
 {
     s32 arg1, arg2, arg3;
     ZoneEntry *zone;
@@ -631,19 +630,19 @@ s32 func_8002D18C(SubObj *obj, ZqVec *v)
     s32 *header;
     s32 flag, level;
 
-    zone = func_80026DD4((ZoneEntry *)level_position.zone, v);
+    zone = Zone_FindNeighbor((ZoneEntry *)level_position.zone, v);
     if ((s32)zone >= -0xFE) {
         rect = (ZqZoneRect *)((ZoneEntry *)obj->entry)->items[1];
         if (v->y < ((rect->y << 8) - obj->bound.p1.y)) {
             flag = 1;
-            if (D_8005C53C[0]->level_id == 0x17) {
+            if (g_ns_page_pool[0]->level_id == 0x17) {
                 arg1 = 0;
-                func_80024040(NULL, obj, 0x2100, 1, &arg1);
+                Gool_ExecStateCode(NULL, obj, 0x2100, 1, &arg1);
             }
             if ((((ZoneHeader *)((ZoneEntry *)obj->entry)->items[0])->flags & 2)
                 && obj->anim_state != 2) {
                 arg2 = 0x6400;
-                func_80024040(NULL, obj, 0x900, 1, &arg2);
+                Gool_ExecStateCode(NULL, obj, 0x900, 1, &arg2);
                 flag = 0;
             }
             if (flag) {
@@ -660,15 +659,15 @@ s32 func_8002D18C(SubObj *obj, ZqVec *v)
     if (obj->entry != NULL) {
         header = (s32 *)((ZoneEntry *)obj->entry)->items[0];
         if ((header[0xBF] & 4) && obj->trans.y < header[0xC0]
-            && ((level = D_8005C53C[0]->level_id) == 0xF || level == 0x18)) {
+            && ((level = g_ns_page_pool[0]->level_id) == 0xF || level == 0x18)) {
             arg3 = 0x27100;
-            func_80024040(NULL, obj, 0x2100, 1, &arg3);
+            Gool_ExecStateCode(NULL, obj, 0x2100, 1, &arg3);
         }
     }
     return -0xFF;
 }
 
-void func_8002D384(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out)
+void Solid_TransStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out)
 {
     s32 next_pos[3];
     s32 delta[3];
@@ -683,11 +682,11 @@ void func_8002D384(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out)
     for (i = 0; i < 3; i++) {
         next_pos[i] = pos[i] + delta[i];
     }
-    func_8002C8EC(obj, (ZqVec *)pos, (ZqVec *)next_pos, ws, &sp40);
-    func_8002DF50((ZqVec *)pos, obj, ws);
+    Solid_StopAtFloorZone(obj, (ZqVec *)pos, (ZqVec *)next_pos, ws, &sp40);
+    Solid_PlotWalls((ZqVec *)pos, obj, ws);
     gx = (((next_pos[0] - pos[0]) << 2) / 0x2000) + 0x10;
     gz = (((next_pos[2] - pos[2]) << 2) / 0x2000) + 0x10;
-    if (func_8002E3F8((ZqVec *)pos, gx, gz, &sp44, &sp48, obj, 0)) {
+    if (Solid_StopAtWalls((ZqVec *)pos, gx, gz, &sp44, &sp48, obj, 0)) {
         next_pos[0] = (((sp44 - 0x10) << 13) >> 2) + pos[0];
         next_pos[2] = (((sp48 - 0x10) << 13) >> 2) + pos[2];
     } else {
@@ -698,8 +697,8 @@ void func_8002D384(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out)
     if ((gx != 0x10 || gz != 0x10) && gx == sp44 && gz == sp48) {
         obj->status_a |= 0x100;
     }
-    func_8002D0B8(obj, (ZqVec *)pos, (ZqVec *)next_pos, ws);
-    func_8002D18C(obj, (ZqVec *)next_pos);
+    Solid_StopAtCeilZone(obj, (ZqVec *)pos, (ZqVec *)next_pos, ws);
+    Solid_StopAtZone(obj, (ZqVec *)next_pos);
     for (i = 0; i < 3; i++) {
         out[i] = next_pos[i];
     }

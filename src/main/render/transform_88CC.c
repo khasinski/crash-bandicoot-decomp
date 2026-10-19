@@ -2,7 +2,6 @@
 /* CC1_FLAGS: -O2 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-extern s32 D_800618B8[];
 
 typedef struct GoolVectors {
     s32 trans[3];
@@ -46,29 +45,28 @@ typedef struct ResourceEntry88CC {
 
 extern u8 D_80057844[];
 
-extern u8 D_80057824[];
-extern s32 D_80057888[], D_8005788C[], D_80057890[];
-extern s32 D_800578D0[];
-extern s32 D_800618B0[];
+extern u8 g_m_color[];
+extern s32 g_view_proj[];
+extern s32 g_cur_lid_ro[];
 
 extern GoolObj88CC *D_800618CC[];
-extern GoolObj88CC *D_800566B4[];
-extern ResourceEntry88CC *D_80057914[];
+extern GoolObj88CC *gp_crash_obj[];
+extern ResourceEntry88CC *g_pads[];
 
-void func_80042E9C(void *);
-void func_80042F2C(void *);
-void func_80042FEC(void *, void *, void *);
-void func_800351C8(void *, void *, void *, void *);
-s32 func_80042B9C(s32);
+void SetRotMatrix(void *);
+void SetTransMatrix(void *);
+void RotTrans(void *, void *, void *);
+void Gte_RProjectBound(void *, void *, void *, void *);
+s32 SquareRoot0(s32);
 void func_8003913C(void *, void *, void *, void *);
-void func_80039BD4(void *, void *, void *, void *);
+void Gte_RCalcObjectMatrices(void *, void *, void *, void *);
 
 typedef struct Matrix88CC {
     s16 m[3][3];
     s32 t[3];
 } Matrix88CC;
 
-s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
+s32 Gfx_CalcObjectMatrices(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
 {
     s16 sp10[4];
     Matrix88CC sp18;
@@ -99,15 +97,15 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
     if (arg4 != NULL) {
         *arg4 = 0;
     }
-    func_80042E9C(D_80057844);
-    func_80042F2C(D_8005726C);
+    SetRotMatrix(D_80057844);
+    SetTransMatrix(g_cams);
     sp10[0] = (arg2->vectors.trans[0] - (*D_80057888)) >> 8;
     sp10[1] = (arg2->vectors.trans[1] - (*D_8005788C)) >> 8;
     sp10[2] = (arg2->vectors.trans[2] - (*D_80057890)) >> 8;
-    func_80042FEC(sp10, sp18.t, &sp88);
+    RotTrans(sp10, sp18.t, &sp88);
 
-    if (!((*D_800618B0) & 0x10000)) {
-        far_z = (*D_80057914)->data->far_clip >> 8;
+    if (!((*g_cur_lid_ro) & 0x10000)) {
+        far_z = (*g_pads)->data->far_clip >> 8;
         sp88 = far_z;
         if (far_z != 0 && sp18.t[2] > far_z) {
             return 0;
@@ -117,14 +115,14 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
         }
         status_b = arg2->status_b;
         if (!(status_b & 0x40000)) {
-            d = D_800578D0;
+            d = g_view_proj;
             z = sp18.t[2];
             h = *d;
             if (z <= h) {
                 return 0;
             }
             if (status_b < 0) {
-                func_800351C8(arg2->bound, arg3 ? (p2 + 0x2C) : (p1 + 0x2C), vectors, (u8 *)d - 0x48);
+                Gte_RProjectBound(arg2->bound, arg3 ? (p2 + 0x2C) : (p1 + 0x2C), vectors, (u8 *)d - 0x48);
                 x0 = *(s32 *)0x1F800048;
                 y0 = *(s32 *)0x1F80004C;
                 x1 = *(s32 *)0x1F800050;
@@ -145,8 +143,8 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                 }
             }
         }
-        if (arg2 != (*D_800566B4) && !(arg2->status_b & 0x400)) {
-            header = (*D_80057914)->data;
+        if (arg2 != (*gp_crash_obj) && !(arg2->status_b & 0x400)) {
+            header = (*g_pads)->data;
             switch (header->light_mode) {
             case 2:
                 dst = (u16 *)&arg2->light;
@@ -182,9 +180,9 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                     ty = (*D_800618CC)->vectors.trans[1];
                     tz = (*D_800618CC)->vectors.trans[2];
                 } else {
-                    tx = (*D_800566B4)->vectors.trans[0];
-                    ty = (*D_800566B4)->vectors.trans[1];
-                    tz = (*D_800566B4)->vectors.trans[2];
+                    tx = (*gp_crash_obj)->vectors.trans[0];
+                    ty = (*gp_crash_obj)->vectors.trans[1];
+                    tz = (*gp_crash_obj)->vectors.trans[2];
                 }
                 light->b[0] = 0;
                 light->b[1] = 0;
@@ -205,7 +203,7 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                 dy = (oy - ty) >> 8;
                 oz = arg2->vectors.trans[2];
                 dz = (oz - tz) >> 8;
-                dist = func_80042B9C(dx * dx + dy * dy + dz * dz);
+                dist = SquareRoot0(dx * dx + dy * dy + dz * dz);
                 if (D_80056470 <= 0) {
                     D_80056470 = 1;
                 }
@@ -248,7 +246,7 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
                     light->v[i4][1] = oy;
                     light->v[i4][2] = oz;
                 }
-                val4 = func_80042B9C(ox * ox + oy * oy + oz * oz) >> 5;
+                val4 = SquareRoot0(ox * ox + oy * oy + oz * oz) >> 5;
                 light->b[0] = val4;
                 light->b[1] = val4;
                 light->b[2] = val4;
@@ -294,10 +292,10 @@ s32 func_800180CC(u8 *arg0, void *arg1, GoolObj88CC *arg2, s32 arg3, s32 *arg4)
         }
     }
     if (arg3 != 0) {
-        func_8003913C(D_80057824, arg1, vectors, &arg2->light);
+        func_8003913C(g_m_color, arg1, vectors, &arg2->light);
     } else {
-        func_80039BD4(D_80057824, arg1, vectors, &arg2->light);
+        Gte_RCalcObjectMatrices(g_m_color, arg1, vectors, &arg2->light);
     }
-    func_80042F2C(&sp18);
+    SetTransMatrix(&sp18);
     return 1;
 }

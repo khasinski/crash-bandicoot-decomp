@@ -107,14 +107,14 @@ typedef struct NsdTable {
     s32 items[1];
 } NsdTable;
 
-extern ResourceEntry *D_80057914[];
-GoolExecutable *func_80015118(s32 *, s32, s32);
+extern ResourceEntry *g_pads[];
+GoolExecutable *Ns_Open(s32 *, s32, s32);
 s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
-extern GoolObj *D_800566B4;
+extern GoolObj *gp_crash_obj;
 
-void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
-void func_80030260(GoolObj *);
+void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, void *);
+void Audio_VoiceFree(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -157,19 +157,18 @@ typedef struct ZoneEntryView {
     void *items[1];
 } ZoneEntryView;
 
-s32 func_8002F840(s32, s32);
-void func_8001AC9C(GoolObj *, s32, s32 *);
-void func_80026460(GoolObj *, void *, s32);
+s32 Math_Absdiff(s32, s32);
+void Gool_ObjectOrientOnPath(GoolObj *, s32, s32 *);
+void Level_SaveState(GoolObj *, void *, s32);
 
-extern GoolObj *D_80060E00[];
-extern u32 D_80060E04[];
-extern u32 D_800618B0[];
-void func_800167A4(void);
-void func_8001EEA8(GoolObj *);
+extern GoolObj *g_savestate[];
+extern u32 g_cur_lid_ro[];
+void Pad_Update(void);
+void Gool_ObjectControlDir(GoolObj *);
 s32 GOOL_InterpretObject(GoolObj *, s32, s32);
-void func_8001EB28(GoolObj *, s32);
-void func_8001F30C(GoolObj *, s32);
-void func_8001DE78(GoolObj *);
+void Gool_ObjectColors(GoolObj *, s32);
+void Gool_ObjectPhysics(GoolObj *, s32);
+void Gool_ObjectTransform(GoolObj *);
 
 static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words, s32 flags)
 {
@@ -197,33 +196,33 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
     if (obj->unk04 != 3) {
         return -0xFF;
     }
-    if (obj == D_800566B4) {
-        func_800167A4();
+    if (obj == gp_crash_obj) {
+        Pad_Update();
     }
-    D_80060E00[0] = obj;
-    update_flag = D_800618B0[0] & 8;
+    g_savestate[0] = obj;
+    update_flag = g_cur_lid_ro[0] & 8;
     if (update_flag != 0) {
-        if (((obj->status_b & 0x2000000) || (obj->state_flags & 0x20000)) && (D_800618B0[0] & 0x8000)) {
+        if (((obj->status_b & 0x2000000) || (obj->state_flags & 0x20000)) && (g_cur_lid_ro[0] & 0x8000)) {
             update_flag = 1;
         } else {
             header = obj->exec->header;
             switch (header->unk04) {
             case 0x100:
-                update_flag = D_800618B0[0] & 0x20;
+                update_flag = g_cur_lid_ro[0] & 0x20;
                 break;
             case 0x300:
             case 0x500:
             case 0x600:
-                update_flag = D_800618B0[0] & 0x80;
+                update_flag = g_cur_lid_ro[0] & 0x80;
                 break;
             case 0x200:
-                update_flag = D_800618B0[0] & 0x100;
+                update_flag = g_cur_lid_ro[0] & 0x100;
                 if (header->unk00 == 4 && (obj->subtype == 4 || obj->subtype == 7)) {
                     flag = 1;
                 }
                 break;
             case 0x400:
-                update_flag = D_800618B0[0] & 0x400;
+                update_flag = g_cur_lid_ro[0] & 0x400;
                 break;
             }
         }
@@ -236,8 +235,8 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
             }
         } else {
             obj->unkFC = D_80060E04[0];
-            if ((obj->status_b & 0x10) && D_800566B4->unkFC == obj->unkFC) {
-                func_8001EEA8(obj);
+            if ((obj->status_b & 0x10) && gp_crash_obj->unkFC == obj->unkFC) {
+                Gool_ObjectControlDir(obj);
             }
             if (obj->unkE8 != NULL) {
                 GOOL_CreateObjectStackFrame(obj, 0, 0xFFFF);
@@ -256,38 +255,38 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
                     return res;
                 }
             }
-            func_8001EB28(obj, flag);
-            func_8001F30C(obj, flag);
+            Gool_ObjectColors(obj, flag);
+            Gool_ObjectPhysics(obj, flag);
             obj->status_a &= ~0x20;
         }
     }
-    if (obj->anim_seq != NULL && !(obj->status_b & 0x100) && (D_800618B0[0] & 4)) {
-        if (((obj->status_b & 0x2000000) || (obj->state_flags & 0x20000)) && (D_800618B0[0] & 0x4000)) {
+    if (obj->anim_seq != NULL && !(obj->status_b & 0x100) && (g_cur_lid_ro[0] & 4)) {
+        if (((obj->status_b & 0x2000000) || (obj->state_flags & 0x20000)) && (g_cur_lid_ro[0] & 0x4000)) {
             update_flag = 1;
         } else {
             update_flag = 0;
             switch (obj->exec->header->unk04) {
             case 0x100:
-                update_flag = D_800618B0[0] & 0x10;
+                update_flag = g_cur_lid_ro[0] & 0x10;
                 break;
             case 0x300:
             case 0x500:
             case 0x600:
-                update_flag = D_800618B0[0] & 0x40;
+                update_flag = g_cur_lid_ro[0] & 0x40;
                 break;
             case 0x200:
-                update_flag = D_800618B0[0] & 0x200;
+                update_flag = g_cur_lid_ro[0] & 0x200;
                 break;
             case 0x400:
-                update_flag = D_800618B0[0] & 0x800;
+                update_flag = g_cur_lid_ro[0] & 0x800;
                 break;
             }
         }
         if (update_flag != 0) {
-            func_8001DE78(obj);
+            Gool_ObjectTransform(obj);
         }
     }
-    D_80060E00[0] = NULL;
+    g_savestate[0] = NULL;
     return -0xFF;
 }
 
@@ -348,23 +347,21 @@ typedef struct ZoneDrawHeader {
     GoolDefaults player_defaults;
 } ZoneDrawHeader;
 
-extern CamTransformState D_800577E4;
-extern RenderProjectionState D_800578D0;
-extern RenderBufferView *D_8005840C[];
-extern u8 D_80051774[];
+extern RenderProjectionState g_view_proj;
+extern RenderBufferView *g_ot_cur[];
 
-ZoneEntryView *func_80015A98(u32 *);
-s32 *func_80016E18(void);
-s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-void func_8003A76C(u32 *, void *, void *, s32, s32, s32 *, void *);
-void func_80018B98(void *, s32, void *, GoolBound *, u32 *);
-void func_80018A40(void *, u32 *, GoolObj *);
-void func_80018964(void *, u32 *, GoolObj *);
-void func_8001E7D8(GoolObj *, GoolAnimSeq *, u32, u32 *, u32);
+ZoneEntryView *Ns_Lookup(u32 *);
+s32 *Gpu_GetCurPrimsTail(void);
+s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+void Gte_RTransformSprite(u32 *, void *, void *, s32, s32, s32 *, void *);
+void Gfx_TransformFragment(void *, s32, void *, GoolBound *, u32 *);
+void Gfx_TransformCvtx(void *, u32 *, GoolObj *);
+void Gfx_LoadWorlds(void *, u32 *, GoolObj *);
+void Gool_TextObjectTransform(GoolObj *, GoolAnimSeq *, u32, u32 *, u32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-void func_8001DE78(GoolObj *obj) {
+void Gool_ObjectTransform(GoolObj *obj) {
     GoolAnimSeq *anim_seq;
     u32 anim_frame;
     GoolBound bound;
@@ -377,23 +374,23 @@ void func_8001DE78(GoolObj *obj) {
         {
             GoolSpriteAnim *anim2 = (GoolSpriteAnim *)anim_seq;
             s32 shift = ABS(obj->vectors.scale[0]) / 27279;
-            if (func_8003A144(
+            if (Gte_RCalcSpriteRotMatrix(
                     &obj->vectors,
-                    (obj->status_b & 0x200000) ? &D_800577E4.vec864 : &D_800577E4.vec888,
+                    (obj->status_b & 0x200000) ? &(*(CamTransformState *)g_m_view).vec864 : &(*(CamTransformState *)g_m_view).vec888,
                     obj->status_b & 0x200,
                     shift,
-                    (obj->status_b & 0x200000) ? &D_800577E4.mat7E4 : &D_800577E4.mat844,
-                    D_800578D0.distance,
-                    ((ZoneDrawHeader *)D_80057914[0]->data)->depth_offset >> 8,
+                    (obj->status_b & 0x200000) ? &(*(CamTransformState *)g_m_view).mat7E4 : &(*(CamTransformState *)g_m_view).mat844,
+                    g_view_proj.distance,
+                    ((ZoneDrawHeader *)g_pads[0]->data)->depth_offset >> 8,
                     ((obj->status_b >> 18) ^ 1) & 1)) {
-                void *tex = func_80015A98(&anim2->eid);
-                func_8003A76C(
-                    D_8005840C[0]->ordering_table,
+                void *tex = Ns_Lookup(&anim2->eid);
+                Gte_RTransformSprite(
+                    g_ot_cur[0]->ordering_table,
                     anim2->frames[anim_frame],
                     tex,
                     200 << shift,
-                    obj->cam_zoom + (0x800 - D_800578D0.distance / 2),
-                    func_80016E18(),
+                    obj->cam_zoom + (0x800 - g_view_proj.distance / 2),
+                    Gpu_GetCurPrimsTail(),
                     D_80051774);
             }
         }
@@ -401,49 +398,49 @@ void func_8001DE78(GoolObj *obj) {
     case 5:
         {
             s32 shift = ABS(obj->vectors.scale[0]) / 27279;
-            if (func_8003A144(
+            if (Gte_RCalcSpriteRotMatrix(
                     &obj->vectors,
-                    &D_800577E4.vec888,
+                    &(*(CamTransformState *)g_m_view).vec888,
                     obj->status_b & 0x200,
                     shift,
-                    &D_800577E4.mat844,
-                    D_800578D0.distance,
-                    ((ZoneDrawHeader *)D_80057914[0]->data)->depth_offset >> 8,
+                    &(*(CamTransformState *)g_m_view).mat844,
+                    g_view_proj.distance,
+                    ((ZoneDrawHeader *)g_pads[0]->data)->depth_offset >> 8,
                     ((obj->status_b >> 18) ^ 1) & 1)) {
                 GoolAnimSeq *anim5 = anim_seq;
                 s32 i = 0;
                 GoolFrag *frag = &anim5->frags[anim_frame * anim5->count];
-                void *tex = func_80015A98(&anim5->eid);
+                void *tex = Ns_Lookup(&anim5->eid);
                 for (; i < anim5->count; frag++, i++) {
                     bound.x1 = frag->x1 << shift;
                     bound.y1 = frag->y1 << shift;
                     bound.x2 = frag->x2 << shift;
                     bound.y2 = frag->y2 << shift;
-                    func_80018B98(frag, obj->cam_zoom, tex, &bound, D_8005840C[0]->ordering_table);
+                    Gfx_TransformFragment(frag, obj->cam_zoom, tex, &bound, g_ot_cur[0]->ordering_table);
                 }
             }
         }
         break;
     case 4:
-        func_8001E7D8(obj, anim_seq, anim_frame, D_8005840C[0]->ordering_table, obj->status_b & 0x400);
+        Gool_TextObjectTransform(obj, anim_seq, anim_frame, g_ot_cur[0]->ordering_table, obj->status_b & 0x400);
         break;
     case 1:
-        if (func_80015A98(&anim_seq->eid)->kind == 20) {
-            func_80018A40(
-                func_80015A98(&((GoolAnimSeq *)obj->anim_seq)->eid)->items[(u32)obj->anim_frame >> 8],
-                D_8005840C[0]->ordering_table,
+        if (Ns_Lookup(&anim_seq->eid)->kind == 20) {
+            Gfx_TransformCvtx(
+                Ns_Lookup(&((GoolAnimSeq *)obj->anim_seq)->eid)->items[(u32)obj->anim_frame >> 8],
+                g_ot_cur[0]->ordering_table,
                 obj);
         } else {
-            func_80018964(
-                func_80015A98(&((GoolAnimSeq *)obj->anim_seq)->eid)->items[(u32)obj->anim_frame >> 8],
-                D_8005840C[0]->ordering_table,
+            Gfx_LoadWorlds(
+                Ns_Lookup(&((GoolAnimSeq *)obj->anim_seq)->eid)->items[(u32)obj->anim_frame >> 8],
+                g_ot_cur[0]->ordering_table,
                 obj);
         }
         if (obj->status_b & 0x100000) {
-            if (obj == D_800566B4) {
+            if (obj == gp_crash_obj) {
                 obj->defaults = ((ZoneDrawHeader *)obj->zone->data)->player_defaults;
             } else {
-                zone = obj->zone ? obj->zone : D_80057914[0];
+                zone = obj->zone ? obj->zone : g_pads[0];
                 obj->defaults = ((ZoneDrawHeader *)zone->data)->obj_defaults;
             }
         }
@@ -466,10 +463,10 @@ typedef struct GoolFont {
 } GoolFont;
 
 s32 BIOS_AToI(u8 *);
-void func_80018DBC(GoolObj *, GoolGlyph *, s32, void *, GoolBound *, u32 *, s32);
-void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
+void Gfx_TransformFontChar(GoolObj *, GoolGlyph *, s32, void *, GoolBound *, u32 *, s32);
+void sprintf(u8 *, u8 *, u32, u32, u32, u32);
 
-s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot) {
+s32 Gool_TextStringTransform(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot) {
     GoolBound glyph_bound;
     GoolBound bg_bound;
     u8 num_buf[8];
@@ -563,7 +560,7 @@ s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex,
                 bg_bound.x2 = bg_bound.x2 < glyph_bound.x2 ? glyph_bound.x2 : bg_bound.x2;
                 bg_bound.y2 = bg_bound.y2 < glyph_bound.y2 ? glyph_bound.y2 : bg_bound.y2;
             }
-            func_80018DBC(obj, glyph, obj->cam_zoom, tex, &glyph_bound, ot, color_flag);
+            Gfx_TransformFontChar(obj, glyph, obj->cam_zoom, tex, &glyph_bound, ot, color_flag);
         }
         glyph_bound.x1 += glyph->width << shift;
     next_char:
@@ -578,7 +575,7 @@ done:
             bg_bound.y1 -= 0;
             bg_bound.x2 += 100;
             bg_bound.y2 += 0;
-            func_80018B98(backdrop, obj->cam_zoom - 10, tex, bg_ptr, ot);
+            Gfx_TransformFragment(backdrop, obj->cam_zoom - 10, tex, bg_ptr, ot);
         }
     }
     return max_x;

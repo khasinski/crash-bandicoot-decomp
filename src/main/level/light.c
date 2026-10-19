@@ -14,11 +14,11 @@ typedef struct LevelHeader {
     s32 level_id;
 } LevelHeader;
 
-extern LevelHeader *D_8005C53C[];
+extern LevelHeader *g_ns_page_pool[];
 
-void func_80027A4C(LightMat *src, LightMat *dst, s32 r, s32 g, s32 b);
+void Zone_ColorsScale(LightMat *src, LightMat *dst, s32 r, s32 g, s32 b);
 
-void func_80027A4C(LightMat *arg0, LightMat *arg1, s32 arg2, s32 arg3, s32 arg4)
+void Zone_ColorsScale(LightMat *arg0, LightMat *arg1, s32 arg2, s32 arg3, s32 arg4)
 {
     s32 i;
 
@@ -38,13 +38,13 @@ void func_80027A4C(LightMat *arg0, LightMat *arg1, s32 arg2, s32 arg3, s32 arg4)
     }
 }
 
-void func_80027BC4(s32 idx, LightMat *src, LightMat *dst)
+void Zone_ColorsScaleByNode(s32 idx, LightMat *src, LightMat *dst)
 {
     if (idx >= 0x27) {
-        func_80027A4C(src, dst, 0, 0, 0);
-        if (D_8005C53C[0]->level_id == 0x13) {
+        Zone_ColorsScale(src, dst, 0, 0, 0);
+        if (g_ns_page_pool[0]->level_id == 0x13) {
             if (idx == 0x28) {
-                func_80027A4C(src, dst, 0x64, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
                 dst->a[0] = 0;
                 dst->a[1] = 0xFF;
                 dst->a[2] = 0xFF;
@@ -58,7 +58,7 @@ void func_80027BC4(s32 idx, LightMat *src, LightMat *dst)
                 dst->c[2][1] = 0x64;
                 dst->c[2][2] = 0xFF;
             }
-        } else if (D_8005C53C[0]->level_id == 7) {
+        } else if (g_ns_page_pool[0]->level_id == 7) {
             if (idx == 0x28) {
                 dst->b[0] = 0;
                 dst->b[1] = 0xFF;
@@ -85,7 +85,7 @@ void func_80027BC4(s32 idx, LightMat *src, LightMat *dst)
                 dst->c[2][1] = 0xF0;
                 dst->c[2][2] = 0xF0;
             }
-        } else if (D_8005C53C[0]->level_id == 3) {
+        } else if (g_ns_page_pool[0]->level_id == 3) {
             if (idx == 0x28) {
                 dst->b[0] = 0;
                 dst->b[1] = 0xFF;
@@ -112,35 +112,35 @@ void func_80027BC4(s32 idx, LightMat *src, LightMat *dst)
                 dst->c[2][1] = 0x80;
                 dst->c[2][2] = 0x80;
             }
-        } else if (D_8005C53C[0]->level_id == 0x1C || D_8005C53C[0]->level_id == 0x1D) {
+        } else if (g_ns_page_pool[0]->level_id == 0x1C || g_ns_page_pool[0]->level_id == 0x1D) {
             switch (idx) {
             case 0x28:
-                func_80027A4C(src, dst, 0x32, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x32, 0x64, 0x64);
                 break;
             case 0x29:
-                func_80027A4C(src, dst, 0x4B, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x4B, 0x64, 0x64);
                 break;
             case 0x2A:
-                func_80027A4C(src, dst, 0x64, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
                 break;
             case 0x2B:
-                func_80027A4C(src, dst, 0x7D, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x7D, 0x64, 0x64);
                 break;
             case 0x2C:
-                func_80027A4C(src, dst, 0x96, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x96, 0x64, 0x64);
                 break;
             }
         }
         if (idx < 0x28) {
-            func_80027A4C(src, dst, 0x64, 0x64, 0x64);
+            Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
         } else if (idx >= 0x30) {
             if (idx < 0x40) {
-                func_80027A4C(src, dst, D_80052CB4[idx], D_80052CB4[idx], D_80052CB4[idx]);
+                Zone_ColorsScale(src, dst, D_80052CB4[idx], D_80052CB4[idx], D_80052CB4[idx]);
             } else {
-                func_80027A4C(src, dst, 0x64, 0x64, 0x64);
+                Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
             }
         }
     } else {
-        func_80027A4C(src, dst, 0x64, 0x64, 0x64);
+        Zone_ColorsScale(src, dst, 0x64, 0x64, 0x64);
     }
 }

@@ -5,12 +5,12 @@
 
 /* Initialise draw/display environments and pack the texture-page field for the active GPU mode. */
 
-s32 func_8003F23C(void);
-s32 func_80040144(void);
+s32 GetVideoMode(void);
+s32 GetGraphType(void);
 
-GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
+GpuDrawEnv *SetDefDrawEnv(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
 {
-    s32 mode = func_8003F23C();
+    s32 mode = GetVideoMode();
     u8 draw;
     env->clip.x=x;
     env->clip.y=y;
@@ -29,13 +29,13 @@ GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
     env->draw_to_display=draw;
     env->offset_x=x;
     env->offset_y=y;
-    if(func_80040144()!=1) func_80040144();
+    if(GetGraphType()!=1) GetGraphType();
     env->texture_page=0xA;
     env->clear_background=0;
     return env;
 }
 
-GpuDisplayEnv *func_8003F4D8(GpuDisplayEnv *env,s16 x,s16 y,s16 w,s32 h)
+GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env,s16 x,s16 y,s16 w,s32 h)
 {
     env->display.x=x;
     env->display.y=y;
@@ -52,12 +52,12 @@ GpuDisplayEnv *func_8003F4D8(GpuDisplayEnv *env,s16 x,s16 y,s16 w,s32 h)
     return env;
 }
 
-s32 func_8003F514(s32 depth,s32 blend,s32 x,s32 y)
+s32 GetTPage(s32 depth,s32 blend,s32 x,s32 y)
 {
     s32 mode;
     s32 page;
     s32 extra;
-    if(func_80040144()==1 || func_80040144()==2) {
+    if(GetGraphType()==1 || GetGraphType()==2) {
         mode=depth&3;
         page=(mode<<9)|((blend&3)<<7)|((y&0x300)>>3);
         extra=(x&0x3FF)>>6;

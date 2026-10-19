@@ -2,24 +2,15 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern u16 D_8005724C;
-extern u16 D_80057254;
-extern u16 D_8005725C;
-extern u16 D_80057264;
 extern u8 D_800572B0[];
 extern u8 D_800572C7[];
 
 extern u8 *D_8005CFDC;
 
-extern s16 D_8005E56E;
-extern s16 D_8005E572[1];
 
-typedef struct { u8 gap00[0x74]; u16 left, right; u8 gap78[0xAC - 0x78]; } State;
-extern State *D_80060418[];
-extern u16 D_80061A68;
 
 /* Retail caller passes a byte in a0 and the pitch in a1; a0 is unused here. */
-void func_8004F1A4(u8 arg0, u16 arg1) {
+void SpuVmKeyOnNow(u8 arg0, u16 arg1) {
     s32 master_volume;
     s16 shadow_index;
     u16 *left_destination, *right_destination;
@@ -32,18 +23,18 @@ void func_8004F1A4(u8 arg0, u16 arg1) {
     u32 var_a2;
     u32 var_a3;
     union { s32 signed_value; u32 unsigned_value; u8 *pointer; } squared;
-    State *temp_a0;
+    SequenceState *temp_a0;
 
     master_volume = D_8005CFDC[0x18];
     var_a3 = (s32)(D_8005E55C * ((master_volume << 14) - master_volume)) / 16129;
     gain.signed_value = (s32)var_a3 * D_8005E562;
     var_a2 = (u32)(gain.unsigned_value * D_8005E565) / 16129U;
     shadow_index = D_8005E572[0] * 8;
-    temp_a0 = D_80060418[D_8005E56E & 255] + ((u32)(D_8005E56E << 16) >> 24);
+    temp_a0 = g_ss_score_table[D_8005E56E & 255] + ((u32)(D_8005E56E << 16) >> 24);
     var_a3 = var_a2;
     if ((s16) D_8005E56E != 0x21) {
-        var_a3 = (u32) (var_a2 * temp_a0->left) / 127U;
-        var_a2 = (u32) (var_a2 * temp_a0->right) / 127U;
+        var_a3 = (u32) (var_a2 * temp_a0->field_74) / 127U;
+        var_a2 = (u32) (var_a2 * temp_a0->field_76) / 127U;
     }
     if ((u8) D_8005E566 < 0x40U) {
         var_a2 = (u32) (var_a2 * D_8005E566) / 63U;
@@ -80,7 +71,7 @@ void func_8004F1A4(u8 arg0, u16 arg1) {
     right_destination = (u16 *)squared.pointer + (u16)shadow_index;
     *left_destination = var_a1;
     *right_destination = var_a2;
-    D_800577A4[D_8005E572[0]] = D_800577A4[D_8005E572[0]] | 7;
+    g_card_ev_table[D_8005E572[0]] = g_card_ev_table[D_8005E572[0]] | 7;
     *(s16 *)(D_800572B0 + D_8005E572[0] * 0x34) = arg1;
     D_800572C7[D_8005E572[0] * 0x34] = 1;
     if (D_8005E572[0] < 0x10) {

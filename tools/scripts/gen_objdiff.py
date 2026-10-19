@@ -71,7 +71,7 @@ def source_form_of(c_path: Path) -> str:
         text,
         flags=re.DOTALL,
     )
-    if re.search(r"\b(?:HANDWRITTEN_ASM|INCLUDE_ASM)\s*\(", text):
+    if re.search(r"\b(?:HANDWRITTEN_ASM|INCLUDE_ASM|PSYQ_BIOS_TRAMPOLINE)\s*\(", text):
         return "source_assembly"
     literals = re.findall(r'"(?:\\.|[^"\\])*"', text)
     if any(re.search(r"\.(?:include|incbin|word|byte|ent)\b|\bglabel\b", lit) for lit in literals):

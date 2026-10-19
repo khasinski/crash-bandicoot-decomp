@@ -3,17 +3,16 @@
 #include "ns.h"
 #include "zone.h"
 
-extern volatile s32 frame_counter;
 
-ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void func_800134C8(s32 id);
-ResourceSlot *func_80014C08(s32 id, s32 entry_id);
-__inline__ s32 func_80014E34(s32 id, s32 count);
-ResourceSlot *func_80015034(u32 *ref);
+ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void Ns_Update(s32 id);
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
+__inline__ s32 Ns_PageClose(s32 id, s32 count);
+ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_pool_active_inc(void)
 {
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
 }
 
 #define NS_FIND_OR_ALLOC_SLOT(res_slot, page_id, ent_id, found_label, search_label, done_label) \
@@ -21,7 +20,7 @@ static __inline__ void ns_pool_active_inc(void)
         ResourceSlot *_cand; \
         s32 _i; \
         u32 _ticks; \
-        (res_slot) = D_8005C528.page_map[(page_id) >> 1]; \
+        (res_slot) = g_ns.page_map[(page_id) >> 1]; \
         if ((res_slot) == (ResourceSlot *)-0x12) { \
             goto search_label; \
         } \
@@ -36,7 +35,7 @@ static __inline__ void ns_pool_active_inc(void)
         _cand->references = 0; \
         _cand->word18 = (ent_id); \
         _cand->word28 = _ticks; \
-        D_8005C528.page_map[(page_id) >> 1] = _cand; \
+        g_ns.page_map[(page_id) >> 1] = _cand; \
         ns_pool_active_inc(); \
         (res_slot) = _cand; \
         goto done_label; \
@@ -51,12 +50,12 @@ static __inline__ void ns_pool_active_inc(void)
     done_label:; \
     } while (0)
 
-s32 func_80014D00(s32 id, s32 sync, s32 delta, s32 entry_id)
+s32 Ns_PageOpen(s32 id, s32 sync, s32 delta, s32 entry_id)
 {
     ResourceSlot *slot;
 
     if (sync != 0) {
-        slot = func_80014C08(id, entry_id);
+        slot = Ns_PagePhysical(id, entry_id);
     } else {
         ResourceSlot *inlined_slot;
         NS_FIND_OR_ALLOC_SLOT(inlined_slot, id, entry_id, found_1, search_1, done_1);

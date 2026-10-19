@@ -3,12 +3,12 @@
 #include "common.h"
 #include "resource.h"
 
-extern s16 D_800580A4[];
+extern s16 g_slst_buf1[];
 
 /* Prefer free or inactive slots; otherwise evict a texture absent from the
  * current zone load list. Odd references are IDs, even references are entries.
  */
-s32 func_8001439C(void)
+s32 Ns_TexturePageAllocate(void)
 {
     s32 i;
     s32 j;
@@ -24,7 +24,7 @@ s32 func_8001439C(void)
     u32 id;
     i = 15;
     wanted = 1;
-    scan_slot = &D_800580A0[15];
+    scan_slot = &g_slst_buf0[15];
     do
     {
         if (((s16) scan_slot->state) == wanted)
@@ -38,19 +38,19 @@ s32 func_8001439C(void)
     scan_offset = 15 * 44;
     do
     {
-        if ((*((s16 *) (((u32) D_800580A4) + scan_offset))) == wanted)
+        if ((*((s16 *) (((u32) g_slst_buf1) + scan_offset))) == wanted)
             goto found;
         i--;
         scan_offset -= 44;
     }
     while (i >= 0);
     i = 15;
-    if (D_80057914 != NULL)
+    if (g_pads != NULL)
         goto search;
-    func_80014514(15);
+    Ns_TexturePageFree(15);
     return 15;
     recycle:
-    func_80014514(i);
+    Ns_TexturePageFree(i);
 
     found:
     return i;
@@ -58,9 +58,9 @@ s32 func_8001439C(void)
     search:
     bias = 0xFFEC;
 
-    zone = (ZoneLoadInfo *) D_80057914->data;
+    zone = (ZoneLoadInfo *) g_pads->data;
     offset = 15 * 44;
-    slot = &D_800580A0[15];
+    slot = &g_slst_buf0[15];
     do
     {
         used = 0;

@@ -4,13 +4,12 @@
 
 /* Configure the CD DMA registers and poll the volatile hardware completion bit. */
 
-extern volatile u8 *D_80055864;
+extern volatile u8 *g_cd_reg0;
 extern volatile u8 *D_80055870;
 
-extern volatile s32 *D_800558D8;
 
-s32 func_80045A34(s32 arg0, s32 arg1) {
-    *D_80055864 = 0;
+s32 CD_getsector(s32 arg0, s32 arg1) {
+    *g_cd_reg0 = 0;
     *D_80055870 = 0x80;
     *D_800558C8 = 0x20943;
     *D_80055874 = 0x1323;

@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
+extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -99,20 +100,19 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern SubObj *D_800566B4[];
-extern s32 *D_800566F4;
+extern SubObj *gp_crash_obj[];
 
-ZoneEntry *func_80015A98(u32 *);
-s32 func_80024040(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *func_80026DD4(ZoneEntry *, ZqVec *);
-void func_80027F50(void *, SubObj *, s32, s32);
-s32 func_80037D50(ZqZoneRect *, ZqBound *, void *, s32);
-void func_8003864C(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void func_8002D8B8(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 func_8002CD9C(SubObj *, ZqVec *, SubWorkspace *);
-s32 func_8002C8EC(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 func_8002E0A0(s32, s32, ZqVec *, SubObj *);
-s32 func_8002E3F8(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
+ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
+void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
+s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
+void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
+void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
+s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
+s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
+s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
+s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -124,11 +124,11 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList D_80060E08;
+extern SubBoxList g_obj_bounds;
 
-void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 func_80038DF8(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
+void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
+void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
+s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -140,7 +140,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -149,7 +149,7 @@ static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 {
     if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
         && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
@@ -158,10 +158,10 @@ static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void func_8002D69C(s32, s32);
-s32 func_80042B9C(s32);
+void Solid_PlotWall(s32, s32);
+s32 SquareRoot0(s32);
 
-static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
+static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
     s32 *p;
     u32 mask;
@@ -195,7 +195,7 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     if (y1 >= 32) {
         return;
     }
-    p = &D_800566F4[y1];
+    p = &gp_grid_rows[y1];
     if (set) {
         for (; y1 < y2; y1++, p++) {
             *p |= mask;
@@ -208,7 +208,7 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     }
 }
 
-void func_80027BC4(s32, void *, SubLight *);
+void Zone_ColorsScaleByNode(s32, void *, SubLight *);
 
 static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
 {
@@ -222,20 +222,20 @@ static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
     *dst_f = *src_f;
 }
 
-void func_8002940C(SubObj *obj);
-s32 func_800294B0(ZqVec *v, SubObj *obj, SubWorkspace *ws);
+void Zone_ColorsScaleSeekByEntityNode(SubObj *obj);
+s32 Zone_QueryOctrees(ZqVec *v, SubObj *obj, SubWorkspace *ws);
 
-void func_80027F50(void *defaults, SubObj *obj, s32 idx, s32 flag)
+void Zone_ColorsScaleSeek(void *defaults, SubObj *obj, s32 idx, s32 flag)
 {
     SubLight buf;
     SubLight *dst;
     s32 step, i;
 
     dst = &obj->light;
-    if (obj == D_800566B4[0] && (obj->flags120 & 0x20)) {
+    if (obj == gp_crash_obj[0] && (obj->flags120 & 0x20)) {
         idx = 0x37;
     }
-    func_80027BC4(idx, defaults, &buf);
+    Zone_ColorsScaleByNode(idx, defaults, &buf);
     step = flag ? 0x15E : 0;
     clamp_light(&dst->v1[0], &buf.v1[0], step);
     clamp_light(&dst->v1[1], &buf.v1[1], step);
@@ -253,7 +253,7 @@ void func_80027F50(void *defaults, SubObj *obj, s32 idx, s32 flag)
     }
 }
 
-u32 func_8002832C(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, s32 level, s32 flags)
+u32 Zone_FindNearestNode(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, s32 level, s32 flags)
 {
     u16 *children;
     s32 i, j, k, idx;
@@ -328,7 +328,7 @@ u32 func_8002832C(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, s32 level
             for (j = 0; j < (split_y ? 2 : 1); j++) {
                 for (k = 0; k < (split_z ? 2 : 1); k++, idx++) {
                     if (i == tx && j == ty && k == tz) {
-                        return func_8002832C(zone, children[idx], &child, va, ++level, flags);
+                        return Zone_FindNearestNode(zone, children[idx], &child, va, ++level, flags);
                     }
                 }
             }
@@ -346,7 +346,7 @@ static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
     return 0;
 }
 
-SubObj *func_80028644(SubObj *obj, ZqVec *va)
+SubObj *Zone_FindNearestObjectNode(SubObj *obj, ZqVec *va)
 {
     ZqVec orig;
     ZqVec copy;
@@ -366,7 +366,7 @@ SubObj *func_80028644(SubObj *obj, ZqVec *va)
     do {
         copy = *va;
         for (i = 0; i < header->neighbor_count; i++) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], va)) {
                 zone_rect = (ZqZoneRect *)neighbor->items[1];
                 rect.x = zone_rect->x << 8;
@@ -375,7 +375,7 @@ SubObj *func_80028644(SubObj *obj, ZqVec *va)
                 rect.w = zone_rect->w << 8;
                 rect.h = zone_rect->h << 8;
                 rect.d = zone_rect->d << 8;
-                res = (SubObj *)func_8002832C(zone_rect, zone_rect->root, &rect, va, 0, 9);
+                res = (SubObj *)Zone_FindNearestNode(zone_rect, zone_rect->root, &rect, va, 0, 9);
                 break;
             }
         }
@@ -384,9 +384,9 @@ SubObj *func_80028644(SubObj *obj, ZqVec *va)
             break;
         }
     } while (!res);
-    if (D_80060E08.count > 0) {
-        box = D_80060E08.boxes;
-        for (i = 0; i < D_80060E08.count; i++, box++) {
+    if (g_obj_bounds.count > 0) {
+        box = g_obj_bounds.boxes;
+        for (i = 0; i < g_obj_bounds.count; i++, box++) {
             cand_obj = box->obj;
             if (cand_obj->status_b & 0x20000) {
                 cand_y = box->bound.p2.y;
@@ -415,14 +415,13 @@ done:
     return res;
 }
 
-extern s32 D_80057868[];
 
 static __inline__ s32 get_offset_base(SubObj *obj)
 {
     return !(obj->parent->flags120 & 0x10) ? 0x18 : 0;
 }
 
-u32 func_800289B4(SubObj *obj, ZqVec *va)
+u32 Zone_FindNearestObjectNode2(SubObj *obj, ZqVec *va)
 {
     ZqVec orig;
     ZqVec copy;
@@ -451,7 +450,7 @@ u32 func_800289B4(SubObj *obj, ZqVec *va)
     do {
         copy = *va;
         for (i = 0; i < header->neighbor_count; i++) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], va)) {
                 zone_rect = (ZqZoneRect *)neighbor->items[1];
                 rect.x = zone_rect->x << 8;
@@ -460,7 +459,7 @@ u32 func_800289B4(SubObj *obj, ZqVec *va)
                 rect.w = zone_rect->w << 8;
                 rect.h = zone_rect->h << 8;
                 rect.d = zone_rect->d << 8;
-                res = func_8002832C(zone_rect, zone_rect->root, &rect, va, 0, 1);
+                res = Zone_FindNearestNode(zone_rect, zone_rect->root, &rect, va, 0, 1);
                 break;
             }
         }
@@ -469,9 +468,9 @@ u32 func_800289B4(SubObj *obj, ZqVec *va)
             break;
         }
     } while (!res);
-    if (D_80060E08.count > 0) {
-        box = D_80060E08.boxes;
-        for (i = 0; i < D_80060E08.count; i++, box++) {
+    if (g_obj_bounds.count > 0) {
+        box = g_obj_bounds.boxes;
+        for (i = 0; i < g_obj_bounds.count; i++, box++) {
             cand_obj = box->obj;
             if ((cand_obj->status_b & 0x40020000) == 0x20000) {
                 cand_y = box->bound.p2.y;
@@ -499,7 +498,7 @@ u32 func_800289B4(SubObj *obj, ZqVec *va)
     if (res != 0) {
         if (hit_box) {
             offset = ((SubObj *)res)->offset138;
-            dy = obj->trans.y - D_80057868[0];
+            dy = obj->trans.y - D_80057868;
             if (dy > 0) {
                 offset -= dy >> 12;
             }
@@ -514,7 +513,7 @@ u32 func_800289B4(SubObj *obj, ZqVec *va)
     return res;
 }
 
-u32 func_80028E3C(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
+u32 Zone_FindNearestObjectNode3(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
 {
     ZqVec local_va;
     ZqVec orig;
@@ -545,7 +544,7 @@ u32 func_80028E3C(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
     do {
         copy = *va;
         for (i = 0; i < header->neighbor_count; i++) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], va)) {
                 zone_rect = (ZqZoneRect *)neighbor->items[1];
                 rect.x = zone_rect->x << 8;
@@ -554,7 +553,7 @@ u32 func_80028E3C(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
                 rect.w = zone_rect->w << 8;
                 rect.h = zone_rect->h << 8;
                 rect.d = zone_rect->d << 8;
-                res = func_8002832C(zone_rect, zone_rect->root, &rect, va, 0, flags & 3);
+                res = Zone_FindNearestNode(zone_rect, zone_rect->root, &rect, va, 0, flags & 3);
                 break;
             }
         }
@@ -563,9 +562,9 @@ u32 func_80028E3C(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
             break;
         }
     } while (!res);
-    if (D_80060E08.count > 0) {
-        box = D_80060E08.boxes;
-        for (i = 0; i < D_80060E08.count; i++, box++) {
+    if (g_obj_bounds.count > 0) {
+        box = g_obj_bounds.boxes;
+        for (i = 0; i < g_obj_bounds.count; i++, box++) {
             cand_obj = box->obj;
             if (cand_obj != obj && cand_obj->unk158 != 0xFFFF) {
                 if (flags & 1) {
@@ -619,13 +618,13 @@ u32 func_80028E3C(SubObj *obj, ZqVec *in_va, s32 flags, s32 arg3)
     }
 done_boxes:
     if (flags & 4) {
-        if (obj == D_800566B4[0] || obj->parent == D_800566B4[0]) {
+        if (obj == gp_crash_obj[0] || obj->parent == gp_crash_obj[0]) {
             defaults = obj->parent->entry->data + 0x348;
         } else {
             defaults = obj->parent->entry->data + 0x318;
         }
     } else {
-        if (obj == D_800566B4[0] || obj->parent == D_800566B4[0]) {
+        if (obj == gp_crash_obj[0] || obj->parent == gp_crash_obj[0]) {
             defaults = obj->entry->data + 0x348;
         } else {
             defaults = obj->entry->data + 0x318;
@@ -647,19 +646,19 @@ done_boxes:
         }
     }
     if (flags & 4) {
-        func_80027F50(defaults, obj->parent, idx, arg3);
+        Zone_ColorsScaleSeek(defaults, obj->parent, idx, arg3);
     }
     return res;
 }
 
-void func_8002940C(SubObj *obj)
+void Zone_ColorsScaleSeekByEntityNode(SubObj *obj)
 {
     void *defaults;
     u16 *ptr;
     u32 val;
     s32 idx;
 
-    if (obj == D_800566B4[0] || obj->parent == D_800566B4[0]) {
+    if (obj == gp_crash_obj[0] || obj->parent == gp_crash_obj[0]) {
         defaults = obj->entry->data + 0x348;
     } else {
         defaults = obj->entry->data + 0x318;
@@ -672,12 +671,12 @@ void func_8002940C(SubObj *obj)
             if (idx < 0x27) {
                 idx = -1;
             }
-            func_80027F50(defaults, obj, idx, 0);
+            Zone_ColorsScaleSeek(defaults, obj, idx, 0);
         }
     }
 }
 
-s32 func_800294B0(ZqVec *v, SubObj *obj, SubWorkspace *ws)
+s32 Zone_QueryOctrees(ZqVec *v, SubObj *obj, SubWorkspace *ws)
 {
     u8 unused[0x18];
     ZoneHeader *header;
@@ -694,9 +693,9 @@ s32 func_800294B0(ZqVec *v, SubObj *obj, SubWorkspace *ws)
     ws->bound1.p2.z = v->z + 0x12C00;
     header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
     for (i = 0; i < header->neighbor_count; i++) {
-        rect = (ZqZoneRect *)func_80015A98(&header->neighbors[i])->items[1];
+        rect = (ZqZoneRect *)Ns_Lookup(&header->neighbors[i])->items[1];
         if (zone_rect_overlaps(&ws->bound1, (ZqRect *)rect)) {
-            ws->count = func_80037D50(rect, &ws->bound1, &ws->nodes[ws->count], ws->count);
+            ws->count = Solid_RZoneQueryOctree(rect, &ws->bound1, &ws->nodes[ws->count], ws->count);
         }
     }
     ws->nodes[ws->count].flags = 0xFFFF;

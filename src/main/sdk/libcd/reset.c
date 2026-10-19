@@ -4,21 +4,20 @@
 
 /* Acknowledge controller interrupts and reset CD status. */
 
-extern volatile s8 D_800555C0;
-extern volatile s8 *D_80055864;
+extern volatile s8 *g_cd_reg0;
 extern volatile s8 *D_8005586C;
 extern volatile u8 *D_80055870;
 
-extern volatile s8 D_8005587C;
+extern volatile s8 g_cd_status;
 extern volatile u8 D_8005587D[];
 
-void func_80044C40(void) {
+void CD_initvol(void) {
     u32 acknowledge = 7;
     u8 status;
-    *D_80055864 = 1;
+    *g_cd_reg0 = 1;
     if (*D_80055870 & 7) {
         do {
-            *D_80055864 = 1;
+            *g_cd_reg0 = 1;
             *D_80055870 = acknowledge;
             *D_8005586C = acknowledge;
         } while (*D_80055870 & 7);
@@ -27,8 +26,8 @@ void func_80044C40(void) {
     status = D_8005587E;
     D_800555C0 = 0;
     *D_8005587D = status;
-    D_8005587C = 2;
-    *D_80055864 = 0;
+    g_cd_status = 2;
+    *g_cd_reg0 = 0;
     *D_80055870 = 0;
     *D_80055874 = 0x1325;
 }

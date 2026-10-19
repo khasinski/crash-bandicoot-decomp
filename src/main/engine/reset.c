@@ -4,19 +4,18 @@
 
 /* Clear the two engine state words; their precise role is still unidentified. */
 
-extern s32 D_80056704;
-extern s32 D_80061A30;
+extern s32 gp_cur_pbak_frame;
 
-void func_8002E8A4(void)
+void Pbak_Init(void)
 {
-    D_80056704 = 0;
+    gp_cur_pbak_frame = 0;
     D_80061A30 = 0;
 }
 
-void func_8002E8BC(void)
+void Pbak_Kill(void)
 {
 }
 
-void func_8002E8C4(void)
+void Pbak_Noop(void)
 {
 }

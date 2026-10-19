@@ -123,69 +123,67 @@ typedef struct ZoneEntry8964 {
     ZoneFogHeader *data;
 } ZoneEntry8964;
 
-extern CamTransformState D_800577E4;
-extern s32 D_800578D0[];
-extern ZoneEntry8964 *D_80057914[];
-extern u8 D_80051774[];
+extern s32 g_view_proj[];
+extern ZoneEntry8964 *g_pads[];
 
-ResourceEntry *func_80015A98(void *);
-s32 *func_80016E18(void);
-s32 func_800180CC(u8 *, void *, GoolObj *, s32, s32 *);
-void func_8003460C(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-void func_80034B08(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+ResourceEntry *Ns_Lookup(void *);
+s32 *Gpu_GetCurPrimsTail(void);
+s32 Gfx_CalcObjectMatrices(u8 *, void *, GoolObj *, s32, s32 *);
+void Gte_RTransformSvtx(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
+void Gte_RTransformCvtx(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
+s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
 
-void func_80018964(u8 *arg0, u32 *arg1, GoolObj *arg2) {
+void Gfx_LoadWorlds(u8 *arg0, u32 *arg1, GoolObj *arg2) {
     ResourceEntry *res;
     void *data;
 
-    res = func_80015A98(arg0 + 4);
+    res = Ns_Lookup(arg0 + 4);
     data = res->data;
-    if (func_800180CC(arg0, data, arg2, 1, NULL) != 0) {
-        func_8003460C(
+    if (Gfx_CalcObjectMatrices(arg0, data, arg2, 1, NULL) != 0) {
+        Gte_RTransformSvtx(
             arg0,
             arg1,
             res->unk14,
             data,
             arg2->vectors.scale[0],
-            arg2->cam_zoom + (0x800 - D_800578D0[0] / 2),
-            func_80016E18(),
+            arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),
+            Gpu_GetCurPrimsTail(),
             D_80051774,
             0);
     }
 }
 
-void func_80018A40(u8 *arg0, u32 *arg1, GoolObj *arg2) {
+void Gfx_TransformCvtx(u8 *arg0, u32 *arg1, GoolObj *arg2) {
     ResourceEntry *res;
     s32 sp28;
     void *data;
     s32 visible;
 
-    res = func_80015A98(arg0 + 4);
+    res = Ns_Lookup(arg0 + 4);
     sp28 = 0;
     data = res->data;
     if (arg2->status_b & 0x200) {
-        visible = func_8003A144(
+        visible = Gte_RCalcSpriteRotMatrix(
             &arg2->vectors,
-            &D_800577E4.vec888,
+            &(*(CamTransformState *)g_m_view).vec888,
             1,
             0,
-            &D_800577E4.mat844,
-            D_800578D0[0],
-            D_80057914[0]->data->depth_offset >> 8,
+            &(*(CamTransformState *)g_m_view).mat844,
+            g_view_proj[0],
+            g_pads[0]->data->depth_offset >> 8,
             ((arg2->status_b >> 18) ^ 1) & 1);
     } else {
-        visible = func_800180CC(arg0, data, arg2, 0, &sp28);
+        visible = Gfx_CalcObjectMatrices(arg0, data, arg2, 0, &sp28);
     }
     if (visible != 0) {
-        func_80034B08(
+        Gte_RTransformCvtx(
             arg0,
             arg1,
             res->unk14,
             data,
             arg2->vectors.scale[0],
-            arg2->cam_zoom + (0x800 - D_800578D0[0] / 2),
-            func_80016E18(),
+            arg2->cam_zoom + (0x800 - g_view_proj[0] / 2),
+            Gpu_GetCurPrimsTail(),
             D_80051774,
             sp28);
     }

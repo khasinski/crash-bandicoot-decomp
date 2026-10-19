@@ -3,13 +3,12 @@
 #include "ns.h"
 #include "zone.h"
 
-extern const u32 frame_counter;
 
-ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void func_800134C8(s32 id);
-ResourceSlot *func_80014C08(s32 id, s32 entry_id);
+ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void Ns_Update(s32 id);
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 
-ResourceSlot *func_80015034(u32 *ref);
+ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {
@@ -20,15 +19,15 @@ static __inline__ void ns_slot_unref(ResourceSlot *slot)
         remaining = references - 1;
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
-            func_80014930(slot);
-            D_8005C528.pool.active_count -= 1;
+            Ns_PageDelete(slot);
+            g_ns.pool.active_count -= 1;
         }
     }
 }
 
 static __inline__ void ns_pool_active_inc(void)
 {
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
 }
 
 #define NS_FIND_OR_ALLOC_SLOT(res_slot, page_id, ent_id, found_label, search_label, done_label) \
@@ -36,7 +35,7 @@ static __inline__ void ns_pool_active_inc(void)
         ResourceSlot *_cand; \
         s32 _i; \
         u32 _ticks; \
-        (res_slot) = D_8005C528.page_map[(page_id) >> 1]; \
+        (res_slot) = g_ns.page_map[(page_id) >> 1]; \
         if ((res_slot) == (ResourceSlot *)-0x12) { \
             goto search_label; \
         } \
@@ -51,7 +50,7 @@ static __inline__ void ns_pool_active_inc(void)
         _cand->references = 0; \
         _cand->word18 = (ent_id); \
         _cand->word28 = _ticks; \
-        D_8005C528.page_map[(page_id) >> 1] = _cand; \
+        g_ns.page_map[(page_id) >> 1] = _cand; \
         ns_pool_active_inc(); \
         (res_slot) = _cand; \
         goto done_label; \
@@ -66,16 +65,16 @@ static __inline__ void ns_pool_active_inc(void)
     done_label:; \
     } while (0)
 
-ResourceSlot *func_80014C08(s32 id, s32 entry_id)
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id)
 {
     ResourceSlot *slot;
     s32 sp18;
     s32 sp1C;
 
-    slot = D_8005C528.page_map[id >> 1];
+    slot = g_ns.page_map[id >> 1];
     if ((s32)slot >= -0xFE) {
         sp18 = 1;
-        slot = func_800146F0(NULL, id, entry_id, &sp18, 1);
+        slot = Ns_PageCreatePhysical(NULL, id, entry_id, &sp18, 1);
         if ((s32)slot < -0xFE) {
             goto sync_page;
         }
@@ -86,7 +85,7 @@ ResourceSlot *func_80014C08(s32 id, s32 entry_id)
     }
     if (slot->word06 == 0) {
         sp1C = 1;
-        slot = func_800146F0(slot, id, entry_id, &sp1C, 1);
+        slot = Ns_PageCreatePhysical(slot, id, entry_id, &sp1C, 1);
         if ((s32)slot < -0xFE) {
             goto sync_page;
         }
@@ -95,8 +94,8 @@ ResourceSlot *func_80014C08(s32 id, s32 entry_id)
     slot->word18 = entry_id;
     if ((s16)slot->state != 0x14) {
     sync_page:
-        func_800134C8(id);
-        slot = D_8005C528.page_map[id >> 1];
+        Ns_Update(id);
+        slot = g_ns.page_map[id >> 1];
     }
     return slot;
 }

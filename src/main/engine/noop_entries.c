@@ -4,90 +4,90 @@
 
 /* These retail entry points return without changing state. */
 
-void func_8002FD30(void)
+void Cd_Stub_01(void)
 {
 }
 
-void func_8002FD38(void)
+void Cd_Stub_02(void)
 {
 }
 
-void func_8002FD40(void)
+void Cd_Stub_03(void)
 {
 }
 
-void func_8002FD48(void)
+void Cd_Stub_04(void)
 {
 }
 
-void func_8002FD50(void)
+void Cd_Stub_05(void)
 {
 }
 
-void func_8002FD58(void)
+void Cd_Stub_06(void)
 {
 }
 
-void func_8002FD60(void)
+void Cd_Stub_07(void)
 {
 }
 
-void func_8002FD68(void)
+void Cd_Stub_08(void)
 {
 }
 
-void func_8002FD70(void)
+void Cd_Stub_09(void)
 {
 }
 
-void func_8002FD78(void)
+void Cd_Stub_10(void)
 {
 }
 
-void func_8002FD80(void)
+void Cd_Stub_11(void)
 {
 }
 
-void func_8002FD88(void)
+void Cd_Stub_12(void)
 {
 }
 
-void func_8002FD90(void)
+void Cd_Stub_13(void)
 {
 }
 
-void func_8002FD98(void)
+void Cd_Stub_14(void)
 {
 }
 
-void func_8002FDA0(void)
+void Cd_Stub_15(void)
 {
 }
 
-void func_8002FDA8(void)
+void Cd_Stub_16(void)
 {
 }
 
-void func_8002FDB0(void)
+void Cd_Stub_17(void)
 {
 }
 
-void func_8002FDB8(void)
+void Cd_Stub_18(void)
 {
 }
 
-void func_8002FDC0(void)
+void Cd_Stub_19(void)
 {
 }
 
-void func_8002FDC8(void)
+void Cd_Stub_20(void)
 {
 }
 
-void func_8002FDD0(void)
+void Cd_Stub_21(void)
 {
 }
 
-void func_8002FDD8(void)
+void Cd_Stub_22(void)
 {
 }

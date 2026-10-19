@@ -2,35 +2,34 @@
 #include "common.h"
 #include "ns.h"
 /* GNU_AS_G: 8 */
-void func_80016718(s32);
-void func_80016A6C(void);
-void func_8002F75C(void);
-void func_8002F8C4(void);
-void func_80034504(void);
-void func_8003CB9C(void);
-s32 func_8003CD3C(void);
-s32 func_8003E1A8(u32, s32, s32, void (*)(void));
-void func_8003E1B8(s32);
-void func_8003E1D8(s32);
-void func_8003E1E8(s32);
-void func_8003E1F8(void);
-void func_8003E208(void);
-void func_8003E298(u32, s32, s32);
-void func_8003E370(u32);
-void func_8003E3A4(u32);
-void func_8003E410(s32);
-void func_8003E490(void);
-void func_8003E6F4(void);
-void func_8003E7E8(void);
-void func_8003F224(s32);
-s32 func_8003FDC0(s32);
-void func_80042B1C(void);
-void func_8004324C(void);
-s32 func_80043520(u8, u8 *, u8 *);
+void Pad_Init(s32);
+void Gpu_Init(void);
+void Math_Sranda2(void);
+void Cd_ReadFileSys(void);
+void RIncTickCount(void);
+void Card_Init(void);
+s32 Card_Kill(void);
+s32 OpenEvent(u32, s32, s32, void (*)(void));
+void CloseEvent(s32);
+void EnableEvent(s32);
+void DisableEvent(s32);
+void EnterCriticalSection(void);
+void ExitCriticalSection(void);
+void SetRCnt(u32, s32, s32);
+void StartRCnt(u32);
+void StopRCnt(u32);
+void PadInit(s32);
+void PadStop(void);
+void ResetCallback(void);
+void StopCallback(void);
+void SetVideoMode(s32);
+s32 ResetGraph(s32);
+void InitGeom(void);
+void CdInit(void);
+s32 CdControl(u8, u8 *, u8 *);
 /* External word view: this unit uses an absolute reference to the flag. */
-extern s32 D_80056410[];
+extern s32 gp_pause_B_pressed[];
 
-extern u32 D_8005728C[];
 
 typedef struct {
     u32 word00;
@@ -47,61 +46,61 @@ typedef struct {
 
 extern PadState D_8005E718;
 
-s32 func_8001652C(void)
+s32 Core_Init(void)
 {
     s32 i;
 
     for (i = 0; i < 0x400; i++) {
         ((u8 *)0x1F800000)[i] = 0;
     }
-    func_8003F224(0);
-    func_80042B1C();
-    if (D_80056410[0] != 0) {
-        func_8003E6F4();
-        func_8004324C();
+    SetVideoMode(0);
+    InitGeom();
+    if (gp_pause_B_pressed[0] != 0) {
+        ResetCallback();
+        CdInit();
     }
-    func_80016718(2);
-    func_8003CB9C();
-    func_8003E1F8();
-    func_8003E3A4(0xF2000002);
-    D_80056708 = func_8003E1A8(0xF2000002, 2, 0x1000, func_80034504);
-    func_8003E1D8(D_80056708);
-    func_8003E298(0xF2000002, 0x1000, 0x1000);
-    func_8003E370(0xF2000002);
-    func_8003E208();
-    func_80016A6C();
-    func_8002F75C();
-    D_8005C528.draw_skip = 0;
+    Pad_Init(2);
+    Card_Init();
+    EnterCriticalSection();
+    StopRCnt(0xF2000002);
+    D_80056708 = OpenEvent(0xF2000002, 2, 0x1000, RIncTickCount);
+    EnableEvent(D_80056708);
+    SetRCnt(0xF2000002, 0x1000, 0x1000);
+    StartRCnt(0xF2000002);
+    ExitCriticalSection();
+    Gpu_Init();
+    Math_Sranda2();
+    g_ns.draw_skip = 0;
     for (i = 0; i < 4; i++) {
         D_8005728C[i] = 0x6396347F;
     }
     for (i = 0; i < 16; i++) {
-        D_800580A0[i].word18 = 0x6396347F;
+        g_slst_buf0[i].word18 = 0x6396347F;
     }
-    if (D_80056410[0] != 0) {
-        func_8002F8C4();
+    if (gp_pause_B_pressed[0] != 0) {
+        Cd_ReadFileSys();
     }
     return -0xFF;
 }
 
-s32 func_8001668C(void)
+s32 Core_Kill(void)
 {
-    if (D_80056410[0] != 0) {
-        func_80043520(8, NULL, NULL);
-        func_8003E7E8();
+    if (gp_pause_B_pressed[0] != 0) {
+        CdControl(8, NULL, NULL);
+        StopCallback();
     }
-    func_8003CD3C();
-    func_8003E490();
-    func_8003FDC0(3);
-    func_8003E1F8();
-    func_8003E3A4(0xF2000002);
-    func_8003E1E8(D_80056708);
-    func_8003E1B8(D_80056708);
-    func_8003E208();
+    Card_Kill();
+    PadStop();
+    ResetGraph(3);
+    EnterCriticalSection();
+    StopRCnt(0xF2000002);
+    DisableEvent(D_80056708);
+    CloseEvent(D_80056708);
+    ExitCriticalSection();
     return -0xFF;
 }
 
-void func_80016718(s32 count)
+void Pad_Init(s32 count)
 {
     PadState *state = &D_8005E718;
     s32 i;
@@ -112,7 +111,7 @@ void func_80016718(s32 count)
         state->slots[i].word08 = 0;
         state->slots[i].word04 = 0;
         D_8005E718.slots[i].word00 = 0;
-        func_8003E410(i);
+        PadInit(i);
     }
 }
 
@@ -139,14 +138,14 @@ typedef struct {
     s32 playback_mode;
 } PlaybackState;
 
-void func_80024040(s32, s32, s32, s32, s32 *);
-u32 func_8003E460(s32);
-extern DemoInput *D_800566A8;
-extern DemoRecording *D_80056704;
-extern DemoBufferView *D_80058404[];
+void Gool_ExecStateCode(s32, s32, s32, s32, s32 *);
+u32 PadRead(s32);
+extern DemoInput *gp_cur_pbak_header;
+extern DemoRecording *gp_cur_pbak_frame;
+extern DemoBufferView *g_db_cur[];
 extern PlaybackState D_800619BC;
 
-void func_800167A4(void)
+void Pad_Update(void)
 {
     s32 i = 0;
     s32 arg[4];
@@ -160,7 +159,7 @@ void func_800167A4(void)
             slot->word10 = slot->word08;
             slot->word08 = slot->word04;
             slot->word0C = slot->word00;
-            raw = func_8003E460(i);
+            raw = PadRead(i);
             if (i == 0) {
                 buttons = raw & 0xFFFF;
             } else {
@@ -182,15 +181,15 @@ void func_800167A4(void)
                     u32 pressed = slot->word04;
                     s32 player;
 
-                    if (D_800566A8 == D_80056704->inputs) {
-                        D_80058404[0]->word84 = D_80056704->seed;
+                    if (gp_cur_pbak_header == gp_cur_pbak_frame->inputs) {
+                        g_db_cur[0]->word84 = gp_cur_pbak_frame->seed;
                     }
-                    slot->word04 = D_800566A8->buttons;
-                    D_800566A8++;
-                    if ((pressed & 0x9F0) || D_800566A8 >= &D_80056704->inputs[D_80056704->count]) {
+                    slot->word04 = gp_cur_pbak_header->buttons;
+                    gp_cur_pbak_header++;
+                    if ((pressed & 0x9F0) || gp_cur_pbak_header >= &gp_cur_pbak_frame->inputs[gp_cur_pbak_frame->count]) {
                         arg[0] = 0;
                         if ((player = D_800619BC.player) != 0) {
-                            func_80024040(0, player, 0xE00, 1, arg);
+                            Gool_ExecStateCode(0, player, 0xE00, 1, arg);
                             D_800619BC.playback_mode = 3;
                         } else {
                             D_800619BC.playback_mode = 0;

@@ -1,14 +1,14 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-void func_8003E4C0(s32, s32 *);                          /* extern */
-void func_8003E4E0(s32);                                 /* extern */
-void func_8003E6F4();                                  /* extern */
+void PAD_init(s32, s32 *);                          /* extern */
+void ChangeClearPAD(s32);                                 /* extern */
+void ResetCallback();                                  /* extern */
 
-void func_8003E410(s32 arg0) {
+void PadInit(s32 arg0) {
     D_8005E33C = arg0;
     D_80057054 = -1;
-    func_8003E6F4();
-    func_8003E4C0(0x20000001, &D_80057054);
-    func_8003E4E0(0);
+    ResetCallback();
+    PAD_init(0x20000001, &D_80057054);
+    ChangeClearPAD(0);
 }

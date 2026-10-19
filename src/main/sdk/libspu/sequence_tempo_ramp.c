@@ -2,25 +2,9 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-typedef struct {
-    u8 gap0[0x44];
-    s16 field_44;
-    u8 gap46[4];
-    s16 field_4A;
-    u8 gap4C[0x70 - 0x4C];
-    s16 field_70;
-    u8 gap72[0x8C - 0x72];
-    u32 field_8C;
-    u32 field_90;
-    u8 gap94[0xA0 - 0x94];
-    u32 field_A0;
-    u32 field_A4;
-    u8 gapA8[0xAC - 0xA8];
-} SequenceState;
 
-extern SequenceState *D_80060418[];
 
-void func_8004CDCC(s16 arg0, s16 arg1) {
+void _SsSndSetRit(s16 arg0, s16 arg1) {
     s32 temp_t0;
     s32 var_v0_2;
     u32 temp_a0;
@@ -31,7 +15,7 @@ void func_8004CDCC(s16 arg0, s16 arg1) {
     u32 var_v0;
     SequenceState *temp_a3;
 
-    temp_a3 = &D_80060418[(s16)arg0][arg1];
+    temp_a3 = &g_ss_score_table[(s16)arg0][arg1];
     temp_t0 = temp_a3->field_44;
     temp_v0 = temp_a3->field_A0 - 1;
     temp_a3->field_A0 = temp_v0;
@@ -68,14 +52,14 @@ block_9:
             }
         }
 block_11:
-        temp_lo = (u32) (temp_a3->field_4A * temp_a3->field_8C * 0xA) / (u32) (D_8005FF4C * 0x3C);
+        temp_lo = (u32) (temp_a3->field_4A * temp_a3->field_8C * 0xA) / (u32) (g_spawns_base * 0x3C);
         temp_a3->field_70 = (s16) temp_lo;
         if ((s32)(temp_lo << 16) <= 0) {
             temp_a3->field_70 = 1;
         }
         if ((temp_a3->field_A0 == 0) || (temp_a3->field_8C == temp_a3->field_A4)) {
-            D_80060418[arg0][arg1].field_90 &= ~0x40;
-            D_80060418[arg0][arg1].field_90 &= ~0x80;
+            g_ss_score_table[arg0][arg1].field_90 &= ~0x40;
+            g_ss_score_table[arg0][arg1].field_90 &= ~0x80;
         }
     }
 }

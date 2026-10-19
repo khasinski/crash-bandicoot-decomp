@@ -3,17 +3,17 @@
 #include "common.h"
 #include "ns.h"
 
-extern s32 D_80056410;
+extern s32 gp_pause_B_pressed;
 void *LIBC_Malloc(s32);
 void *LIBC_Realloc(void *, s32);
-u8 *func_80043A24(s32, u8 *);
-s32 func_80043520(u8, u8 *, u8 *);
-s32 func_800439A4(s32, void *, s32);
-s32 func_80043984(s32, s32);
+u8 *CdIntToPos(s32, u8 *);
+s32 CdControl(u8, u8 *, u8 *);
+s32 CdRead(s32, void *, s32);
+s32 CdReadSync(s32, s32);
 
 /* Return an item span from adjacent offsets in a nonempty resource page. */
 
-s32 func_80012BE4(ResourceEntry *entry)
+s32 Ns_VirtualPagePhysicalIdx(ResourceEntry *entry)
 {
     ResourceHeader *page = (ResourceHeader *)entry;
     s32 *item;
@@ -40,7 +40,7 @@ s32 func_80012BE4(ResourceEntry *entry)
     }
 }
 
-s32 func_80012C74(s32 *page, s32 index)
+s32 Ns_EntryItemSize(s32 *page, s32 index)
 {
     s32 *entry;
     s32 result;
@@ -53,13 +53,13 @@ s32 func_80012C74(s32 *page, s32 index)
     return result;
 }
 
-void *func_80012CA8(void *arg0, void *buffer, s32 read_full)
+void *Ns_ReadSectors(void *arg0, void *buffer, s32 read_full)
 {
     u8 result[8];
     u8 position[4];
     NsFileMap *map;
 
-    if (D_80056410) {
+    if (gp_pause_B_pressed) {
         if (read_full == 1) {
             map = (NsFileMap *)arg0;
             if (buffer == NULL) {
@@ -68,10 +68,10 @@ void *func_80012CA8(void *arg0, void *buffer, s32 read_full)
                     return (void *)-15;
                 }
             }
-            func_80043A24(map->directory_sector & 0x7FFFFF, position);
-            func_80043520(2, position, result);
-            if (!func_800439A4(((map->directory_size & 0x1FFFF) + 0x7FF) / 0x800, buffer, 0x80)
-                || func_80043984(0, 0)) {
+            CdIntToPos(map->directory_sector & 0x7FFFFF, position);
+            CdControl(2, position, result);
+            if (!CdRead(((map->directory_size & 0x1FFFF) + 0x7FF) / 0x800, buffer, 0x80)
+                || CdReadSync(0, 0)) {
                 return (void *)-16;
             }
             buffer = LIBC_Realloc(buffer, map->directory_size & 0x1FFFF);
@@ -80,20 +80,20 @@ void *func_80012CA8(void *arg0, void *buffer, s32 read_full)
     }
 }
 
-s32 func_80012DCC(NsState *ns, s32 type)
+s32 Ns_FileOpen(NsState *ns, s32 type)
 {
     s32 i;
     s32 count = 0;
 
     for (i = 0; i < ns->directory->entry_count; i++) {
-        if (func_800126C0(&ns->directory->entries[i]) == type) {
+        if (Ns_EIDType(&ns->directory->entries[i]) == type) {
             count++;
         }
     }
     return count;
 }
 
-s32 func_80012E64(ResourceHeader *page)
+s32 Ns_PageTranslateOffsets(ResourceHeader *page)
 {
     s32 count = page->count;
     ResourceEntry **entries = page->entries;

@@ -3,11 +3,11 @@
 #include "ns.h"
 #include "zone.h"
 
-ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void func_800134C8(s32 id);
-ResourceSlot *func_80014C08(s32 id, s32 entry_id);
+ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void Ns_Update(s32 id);
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 
-ResourceSlot *func_80015034(u32 *ref);
+ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {
@@ -18,23 +18,23 @@ static __inline__ void ns_slot_unref(ResourceSlot *slot)
         remaining = references - 1;
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
-            func_80014930(slot);
-            D_8005C528.pool.active_count -= 1;
+            Ns_PageDelete(slot);
+            g_ns.pool.active_count -= 1;
         }
     }
 }
 
 static __inline__ void ns_pool_active_inc(void)
 {
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
 }
 
-static __inline__ s32 func_80014E34(s32 id, s32 count)
+static __inline__ s32 Ns_PageClose(s32 id, s32 count)
 {
     ResourceSlot *slot;
     s32 i;
 
-    slot = D_8005C528.page_map[id >> 1];
+    slot = g_ns.page_map[id >> 1];
     if ((s32)slot >= -0xFE) {
         return 0;
     }
@@ -50,7 +50,7 @@ static __inline__ s32 func_80014E34(s32 id, s32 count)
     return slot->references + 1;
 }
 
-static __inline__ ResourceSlot *func_80014F30(s32 addr)
+static __inline__ ResourceSlot *Ns_EntryPageStruct(s32 addr)
 {
     s32 i;
     ResourceSlot *slot;
@@ -59,8 +59,8 @@ static __inline__ ResourceSlot *func_80014F30(s32 addr)
     if (addr & 2) {
         return NULL;
     }
-    for (i = 0; i < D_8005C528.physical_count; i++) {
-        slot = &D_8005C528.physical[i];
+    for (i = 0; i < g_ns.physical_count; i++) {
+        slot = &g_ns.physical[i];
         header = (s32)slot->header;
         if (addr >= header && addr < header + 0x10000) {
             return slot;
@@ -69,7 +69,7 @@ static __inline__ ResourceSlot *func_80014F30(s32 addr)
     return NULL;
 }
 
-s32 func_80015458(u32 *ref, s32 count)
+s32 Ns_Close(u32 *ref, s32 count)
 {
     s32 id;
     ResourceBucket *bucket;
@@ -78,7 +78,7 @@ s32 func_80015458(u32 *ref, s32 count)
 
     id = *ref;
     if (id & 1) {
-        bucket = func_80015978(id);
+        bucket = Ns_Probe(id);
         *ref = (u32)bucket;
     } else {
         bucket = (ResourceBucket *)id;
@@ -89,33 +89,33 @@ s32 func_80015458(u32 *ref, s32 count)
         ret_1:
             return 1;
         }
-        slot = func_80014F30(entry);
+        slot = Ns_EntryPageStruct(entry);
         if (slot == NULL) {
             goto ret_1;
         }
-        return func_80014E34(slot->id, count);
+        return Ns_PageClose(slot->id, count);
     }
     if (count == 0) {
         return 0;
     }
-    return func_80014E34(entry, count);
+    return Ns_PageClose(entry, count);
 }
 
-s32 func_800156D4(void)
+s32 Ns_CountAvailablePages(void)
 {
     s32 free_count;
     s32 i;
     ResourceSlot *slot;
 
-    free_count = D_8005C528.physical_count;
-    for (i = 0; i < D_8005C528.pool.count; i++) {
-        slot = &D_8005C528.pool.slots[i];
+    free_count = g_ns.physical_count;
+    for (i = 0; i < g_ns.pool.count; i++) {
+        slot = &g_ns.pool.slots[i];
         if ((s16)slot->state != 1 && slot->references != 0) {
             free_count--;
         }
     }
-    for (i = 0; i < D_8005C528.physical_count; i++) {
-        slot = &D_8005C528.physical[i];
+    for (i = 0; i < g_ns.physical_count; i++) {
+        slot = &g_ns.physical[i];
         if ((s16)slot->state != 1 && slot->references != 0) {
             free_count--;
         }
@@ -123,7 +123,7 @@ s32 func_800156D4(void)
     return free_count;
 }
 
-s32 func_8001579C(u32 **refs, s32 count)
+s32 Ns_CountAvailablePages2(u32 **refs, s32 count)
 {
     s32 seen_pages[40];
     s32 total = 0;
@@ -139,21 +139,21 @@ s32 func_8001579C(u32 **refs, s32 count)
     for (i = 0; i < count; i++) {
         id = *refs[i];
         if (id & 1) {
-            bucket = func_80015978(id);
+            bucket = Ns_Probe(id);
             *refs[i] = (u32)bucket;
         } else {
             bucket = (ResourceBucket *)id;
         }
         entry = bucket->entry;
         if (!(entry & 1)) {
-            phys_slot = func_80014F30(entry);
+            phys_slot = Ns_EntryPageStruct(entry);
             if (phys_slot != NULL) {
                 if ((s16)phys_slot->state == 1 || phys_slot->references == 0) {
                     total++;
                 }
             }
         } else {
-            page_slot = D_8005C528.page_map[entry >> 1];
+            page_slot = g_ns.page_map[entry >> 1];
             if (page_slot == (ResourceSlot *)-0x12) {
                 for (j = 0; j < seen_count; j++) {
                     if (entry == seen_pages[j]) {

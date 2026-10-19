@@ -188,80 +188,74 @@ typedef struct PadStateView {
     u32 unk84;
 } PadStateView;
 
-extern GoolObj *D_800566B4;
+extern GoolObj *gp_crash_obj;
 
-extern s32 D_80056714[];
-extern ResourceEntry *D_80057914[];
+extern s32 gp_pbak_frame_idx[];
+extern ResourceEntry *g_pads[];
 extern ResourceEntry *D_80057918[];
-extern s32 D_80057960[];
-extern u8 D_80057974[];
-extern PadStateView *D_80058404[];
-extern LevelStateView *D_8005C53C[];
-extern u16 D_8005E348[];
-extern u32 D_8005FF58[];
-extern ObjectRoot D_80060DB8[];
+extern s32 g_draw_stamp[];
+extern PadStateView *g_db_cur[];
+extern LevelStateView *g_ns_page_pool[];
 extern GoolObj D_80060DD8;
-extern u32 D_80060E04[];
-extern s32 D_8006188C[];
 
 typedef s32 (*Visitor)(GoolObj *, void *);
 
-void func_80013798(u32);
-s32 func_80015118(s32 *, s32, s32);
-s32 func_80015458(s32 *, s32);
-s32 func_800156D4(s32 *);
-s32 func_8001579C(s32 *, s32);
-GoolAnimEntry *func_80015A98(u32 *);
-void func_8001AC9C(GoolObj *, s32, Vec3 *);
-s32 func_8001B788(GoolObj *, Visitor, void *);
-s32 func_8001B92C(ObjectRoot *, Visitor, void *);
-s32 func_8001BA90(GoolObj *, void *);
-s32 func_8001BAB0(GoolObj *, void *);
+void Ns_CdSeek(u32);
+s32 Ns_Open(s32 *, s32, s32);
+s32 Ns_Close(s32 *, s32);
+s32 Ns_CountAvailablePages(s32 *);
+s32 Ns_CountAvailablePages2(s32 *, s32);
+GoolAnimEntry *Ns_Lookup(u32 *);
+void Gool_ObjectOrientOnPath(GoolObj *, s32, Vec3 *);
+s32 Gool_ObjectSearchTree(GoolObj *, Visitor, void *);
+s32 Gool_ObjectHandleTraverseTreePostorder(ObjectRoot *, Visitor, void *);
+s32 Gool_ObjectHasPidFlags(GoolObj *, void *);
+s32 Gool_FindNearestObject(GoolObj *, void *);
 GoolObj *GOOL_CreateObject(GoolObj *, u32, u32, s32, s32 *, s32);
-s32 func_8001D11C(GoolObj *, void *);
-void func_8001D33C(GoolObj *, s32 *);
+s32 Gool_ZoneObjectTerminate(GoolObj *, void *);
+void Gool_ObjectLocalBound(GoolObj *, s32 *);
 s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 s32 *GOOL_TranslateGop(GoolObj *, u32);
-s32 *func_8001FC4C(GoolObj *, u32, s32);
-s32 func_8001FDC4(u32, s32);
-void func_80024040(GoolObj *, GoolObj *, s32, s32, s32 *);
-s32 func_800243A0(s32, s32, s32, s32);
-s32 func_800245F0(s32, s32);
-s32 func_80024628(s32, s32, s32);
-void func_8002465C(Vec3 *, Vec3 *, Vec3 *, Vec3 *, Vec3 *);
-void func_800248A0(Vec3 *, Vec3 *, s32);
-void func_800249E0(Vec3 *, Vec3 *);
-void func_80025134(GoolObj *, s32, u32, s32, s32 *);
-void func_800251B8(GoolObj *, GoolObj *, s32, u32, s32, s32 *);
-void func_80026200(s32);
-void func_80026460(GoolObj *, void *, s32);
-void func_80026650(void *);
-s32 func_80026B80(s32 *, GoolBound *);
-ResourceEntry *func_80026DD4(ResourceEntry *, s32 *);
-s32 func_800277EC(Vec3 *, Vec3 *);
-s32 func_80028644(GoolObj *, Vec3 *);
-void func_800289B4(GoolObj *, Vec3 *);
-void func_80028E3C(GoolObj *, Vec3 *, s32, s32);
-void func_8002940C(GoolObj *);
-s32 func_80029B90(Vec3 *, Vec3 *);
-s32 func_80029C90(GoolObj *, Vec3 *, Vec3 *, s32, s32, s32);
-s32 func_80029D30(Vec3 *, Vec3 *);
-s32 func_80029DB0(Vec3 *, s32 *);
-s32 func_80029E10(Vec3 *, Vec3 *);
-s32 func_80029E48(Vec3 *, s32 *);
-s32 func_8002F6B0(s32);
-void func_8002FDD8(s32);
-s32 func_800304C8(GoolObj *, s32 *, s32);
-void func_80030840(s32, u32, s32 *, GoolObj *);
-void func_800313B4(void);
-void func_800313C4(s32);
-s32 func_8003905C(s32);
-s32 func_800390D0(s32);
-s32 func_8003D4EC(s32, s32);
-s32 func_8004301C(s32, s32);
+s32 *Gool_TranslateOutGop(GoolObj *, u32, s32);
+s32 Gool_TestControls(u32, s32);
+void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, s32 *);
+s32 Gool_ObjectRotate(s32, s32, s32, s32);
+s32 Gool_AngDiff(s32, s32);
+s32 Gool_Seek(s32, s32, s32);
+void Gool_Transform(Vec3 *, Vec3 *, Vec3 *, Vec3 *, Vec3 *);
+void Gool_Transform2(Vec3 *, Vec3 *, s32);
+void Gool_Project(Vec3 *, Vec3 *);
+void Gool_SendToColliders(GoolObj *, s32, u32, s32, s32 *);
+void Gool_SendToColliders2(GoolObj *, GoolObj *, s32, u32, s32, s32 *);
+void Level_ResetGlobals(s32);
+void Level_SaveState(GoolObj *, void *, s32);
+void Level_Restart(void *);
+s32 Level_TestPointInBound(s32 *, GoolBound *);
+ResourceEntry *Zone_FindNeighbor(ResourceEntry *, s32 *);
+s32 Zone_ReboundVector(Vec3 *, Vec3 *);
+s32 Zone_FindNearestObjectNode(GoolObj *, Vec3 *);
+void Zone_FindNearestObjectNode2(GoolObj *, Vec3 *);
+void Zone_FindNearestObjectNode3(GoolObj *, Vec3 *, s32, s32);
+void Zone_ColorsScaleSeekByEntityNode(GoolObj *);
+s32 Math_ApxDist(Vec3 *, Vec3 *);
+s32 Math_OutOfRange(GoolObj *, Vec3 *, Vec3 *, s32, s32, s32);
+s32 Math_EucDist(Vec3 *, Vec3 *);
+s32 Math_EucDistXZ(Vec3 *, s32 *);
+s32 Math_AngDistXZ(Vec3 *, Vec3 *);
+s32 Math_AngDistXY(Vec3 *, s32 *);
+s32 Math_Randa(s32);
+void Cd_Stub_22(s32);
+s32 Audio_VoiceCreate(GoolObj *, s32 *, s32);
+void Audio_Control(s32, u32, s32 *, GoolObj *);
+void Midi_ResetFadeStep(void);
+void Midi_TogglePlayback(s32);
+s32 sin(s32);
+s32 cos(s32);
+s32 Card_Control(s32, s32);
+s32 ratan2(s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (D_80058404[0]->unk84 < 0x67U ? D_80058404[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -328,7 +322,7 @@ static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words
     return -0xFF;
 }
 
-static __inline__ s32 func_8001D97C(GoolObj *object, s32 *flags, u32 cur_flags)
+static __inline__ s32 Gool_ObjectPopFrame(GoolObj *object, s32 *flags, u32 cur_flags)
 {
     u32 packed;
     u32 frame_offset;
@@ -380,13 +374,13 @@ static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *cont
     }
     while (child != NULL && result == 0) {
         next = child->next;
-        result = func_8001B788(child, visitor, context);
+        result = Gool_ObjectSearchTree(child, visitor, context);
         child = next;
     }
     return result;
 }
 
-static __inline__ s32 func_8001B56C(GoolObj *object, GoolObj *new_parent)
+static __inline__ s32 Gool_RemoveLevelSpawn(GoolObj *object, GoolObj *new_parent)
 {
     GoolObj *parent;
     GoolObj *prev;
@@ -417,26 +411,26 @@ static __inline__ s32 func_8001B56C(GoolObj *object, GoolObj *new_parent)
     return -0xFF;
 }
 
-static __inline__ void func_8001D200(void *object)
+static __inline__ void Gool_ZoneObjectsTerminate(void *object)
 {
     s32 index;
 
     for (index = 0; index < 8; index++) {
-        func_8001B92C(&D_80060DB8[index], func_8001D11C, object);
+        Gool_ObjectHandleTraverseTreePostorder(&((ObjectRoot *)g_free_objects)[index], Gool_ZoneObjectTerminate, object);
     }
 }
 
-static __inline__ void func_8001D264(void)
+static __inline__ void Gool_ZoneObjectTerminateSingle(void)
 {
     ZoneHeaderView *zone;
     s32 i;
     void *entry;
 
-    if (D_80057914[0] != NULL) {
-        zone = D_80057914[0]->data;
+    if (g_pads[0] != NULL) {
+        zone = g_pads[0]->data;
         for (i = 0; i < zone->neighbor_count; i++) {
-            entry = func_80015A98(&zone->neighbors[i]);
-            func_8001D200(entry);
+            entry = Ns_Lookup(&zone->neighbors[i]);
+            Gool_ZoneObjectsTerminate(entry);
         }
     }
 }
@@ -639,9 +633,9 @@ next_ins:
                         if (rate < 0) {
                             rate = -rate;
                         }
-                        *obj->sp++ = func_80024628(s_val, target, rate);
+                        *obj->sp++ = Gool_Seek(s_val, target, rate);
                     } else {
-                        *obj->sp++ = func_800243A0(s_val, target, rate, 0);
+                        *obj->sp++ = Gool_ObjectRotate(s_val, target, rate, 0);
                     }
                 } else {
                     *obj->sp++ = 0;
@@ -673,7 +667,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             s_val = *TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
             d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
-            *obj->sp++ = func_800245F0(*d_ptr, s_val);
+            *obj->sp++ = Gool_AngDiff(*d_ptr, s_val);
             break;
 
         }
@@ -709,7 +703,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             s_val = *TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
             d_val = *TRANS_GOP_IN(obj, ins & 0xFFF);
-            *obj->sp++ = func_8002F6B0(s_val - d_val) + d_val;
+            *obj->sp++ = Math_Randa(s_val - d_val) + d_val;
             break;
 
         }
@@ -824,7 +818,7 @@ next_ins:
         case 0x1A:
         {
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
-            *obj->sp++ = func_8001FDC4(ins & 0x1FFFFF, 0);
+            *obj->sp++ = Gool_TestControls(ins & 0x1FFFFF, 0);
             break;
 
         }
@@ -850,7 +844,7 @@ next_ins:
                 d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
                 phase = (*d_ptr << 11) / period;
                 shift = (period > 0xFFFF) << 1;
-                sin_val = (func_8003905C(phase - 0x400) + 0x1000) >> shift;
+                sin_val = (sin(phase - 0x400) + 0x1000) >> shift;
                 *obj->sp++ = (sin_val * period) >> (0xD - shift);
             }
             break;
@@ -861,7 +855,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             s_val = *TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
             d_val = *TRANS_GOP_IN(obj, ins & 0xFFF);
-            *obj->sp++ = (s_val + D_80057960[0]) % d_val;
+            *obj->sp++ = (s_val + g_draw_stamp[0]) % d_val;
             break;
 
         }
@@ -869,7 +863,7 @@ next_ins:
         {
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
-            *obj->sp++ = D_8006188C[*d_ptr >> 8];
+            *obj->sp++ = g_cur_display_flags[*d_ptr >> 8];
             break;
 
         }
@@ -878,7 +872,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             s_ptr = TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
             d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
-            D_8006188C[*d_ptr >> 8] = *s_ptr;
+            g_cur_display_flags[*d_ptr >> 8] = *s_ptr;
             break;
 
         }
@@ -950,9 +944,9 @@ next_ins:
                             vec_b = &v2;
                         }
                         if (subarg & 1) {
-                            *obj->sp++ = func_80029D30(vec_a, vec_b);
+                            *obj->sp++ = Math_EucDist(vec_a, vec_b);
                         } else {
-                            *obj->sp++ = func_80029B90(vec_a, vec_b);
+                            *obj->sp++ = Math_ApxDist(vec_a, vec_b);
                         }
                     }
                     break;
@@ -960,7 +954,7 @@ next_ins:
                 case 5:
                     {
                         GoolObj *link = (&obj->self)[(ins >> 12) & 7];
-                        s32 diff = func_80029E10(&obj->trans, &link->trans) - (obj->rot.y & 0xFFF);
+                        s32 diff = Math_AngDistXZ(&obj->trans, &link->trans) - (obj->rot.y & 0xFFF);
                         if (ABS(diff) >= 0x800) {
                             diff = (-diff) & 0xFFF;
                         }
@@ -970,9 +964,9 @@ next_ins:
 
                 case 2:
                     if (!(obj->status_b & 0x200200)) {
-                        *obj->sp++ = func_80029E10(&(&obj->self)[(ins >> 12) & 7]->trans, (Vec3 *)s_ptr);
+                        *obj->sp++ = Math_AngDistXZ(&(&obj->self)[(ins >> 12) & 7]->trans, (Vec3 *)s_ptr);
                     } else {
-                        *obj->sp++ = func_80029E48(&(&obj->self)[(ins >> 12) & 7]->trans, s_ptr);
+                        *obj->sp++ = Math_AngDistXY(&(&obj->self)[(ins >> 12) & 7]->trans, s_ptr);
                     }
                     break;
 
@@ -989,12 +983,12 @@ next_ins:
 
                 case 7:
                     if (s_ptr != NULL) {
-                        if (*s_ptr != 0 && (D_8005FF58[(u32)*s_ptr >> 8] & 1)) {
+                        if (*s_ptr != 0 && (g_spawns[(u32)*s_ptr >> 8] & 1)) {
                             s32 i = 3;
                             s32 found = 0;
                             do {
-                                ObjectRoot *root = &D_80060DB8[i++];
-                                found = inline_8001B788((GoolObj *)root, func_8001BA90, (void *)*s_ptr);
+                                ObjectRoot *root = &((ObjectRoot *)g_free_objects)[i++];
+                                found = inline_8001B788((GoolObj *)root, Gool_ObjectHasPidFlags, (void *)*s_ptr);
                             } while (found == 0 && i < 5);
                             *obj->sp++ = found;
                         } else {
@@ -1006,9 +1000,9 @@ next_ins:
                 case 8:
                     if (s_ptr != NULL) {
                         if (subarg != 0) {
-                            D_8005FF58[(u32)*s_ptr >> 8] &= ~2;
+                            g_spawns[(u32)*s_ptr >> 8] &= ~2;
                         } else {
-                            D_8005FF58[(u32)*s_ptr >> 8] |= 2;
+                            g_spawns[(u32)*s_ptr >> 8] |= 2;
                         }
                     }
                     break;
@@ -1017,15 +1011,15 @@ next_ins:
                     if (s_ptr != NULL) {
                         switch (subarg) {
                         case 0:
-                            D_8005FF58[(u32)*s_ptr >> 8] &= ~4;
+                            g_spawns[(u32)*s_ptr >> 8] &= ~4;
                             break;
                         case 1:
-                            D_8005FF58[(u32)*s_ptr >> 8] |= 4;
+                            g_spawns[(u32)*s_ptr >> 8] |= 4;
                             break;
                         case 4:
                             {
-                                u16 *p = D_8005E348;
-                                u16 tag = (*s_ptr >> 8) | (D_8005C53C[0]->level_id << 9);
+                                u16 *p = g_level_spawns;
+                                u16 tag = (*s_ptr >> 8) | (g_ns_page_pool[0]->level_id << 9);
                                 while (*p != 0) {
                                     if (*p == tag) {
                                         if (p[1] != 0) {
@@ -1039,14 +1033,14 @@ next_ins:
                                 }
                             }
                         case 2:
-                            D_8005FF58[(u32)*s_ptr >> 8] &= ~8;
+                            g_spawns[(u32)*s_ptr >> 8] &= ~8;
                             break;
                         case 5:
                             {
-                                u16 *p = D_8005E348;
+                                u16 *p = g_level_spawns;
                                 u16 *free_slot = NULL;
-                                s32 tag = (*s_ptr >> 8) | (D_8005C53C[0]->level_id << 9);
-                                if (!(D_80057914[0]->data->flags2FC & 0x2000)) {
+                                s32 tag = (*s_ptr >> 8) | (g_ns_page_pool[0]->level_id << 9);
+                                if (!(g_pads[0]->data->flags2FC & 0x2000)) {
                                     while (*p != 0) {
                                         if (*p == (u16)tag) {
                                             goto set_bit_3;
@@ -1064,13 +1058,13 @@ next_ins:
                             }
                         case 3:
                         set_bit_3:
-                            D_8005FF58[(u32)*s_ptr >> 8] |= 8;
+                            g_spawns[(u32)*s_ptr >> 8] |= 8;
                             break;
                         case 9:
-                            D_8005FF58[(u32)*s_ptr >> 8] |= 1;
+                            g_spawns[(u32)*s_ptr >> 8] |= 1;
                             break;
                         case 8:
-                            D_8005FF58[(u32)*s_ptr >> 8] &= ~1;
+                            g_spawns[(u32)*s_ptr >> 8] &= ~1;
                             break;
                         }
                     }
@@ -1079,13 +1073,13 @@ next_ins:
                 case 11:
                     switch (subarg) {
                     case 1:
-                        *obj->sp++ = s_ptr ? (((D_8005FF58[(u32)*s_ptr >> 8] >> 1) ^ 1) & 1) : 0;
+                        *obj->sp++ = s_ptr ? (((g_spawns[(u32)*s_ptr >> 8] >> 1) ^ 1) & 1) : 0;
                         break;
                     case 2:
-                        *obj->sp++ = s_ptr ? (D_8005FF58[(u32)*s_ptr >> 8] & 4) : 0;
+                        *obj->sp++ = s_ptr ? (g_spawns[(u32)*s_ptr >> 8] & 4) : 0;
                         break;
                     case 3:
-                        *obj->sp++ = s_ptr ? (D_8005FF58[(u32)*s_ptr >> 8] & 8) : 0;
+                        *obj->sp++ = s_ptr ? (g_spawns[(u32)*s_ptr >> 8] & 8) : 0;
                         break;
                     }
                     break;
@@ -1094,9 +1088,9 @@ next_ins:
                     {
                         ResourceEntry *zone;
                         if (s_ptr == NULL) {
-                            zone = D_80057914[0];
+                            zone = g_pads[0];
                         } else {
-                            zone = func_80026DD4(D_80057914[0], s_ptr);
+                            zone = Zone_FindNeighbor(g_pads[0], s_ptr);
                         }
                         if ((s32)zone < -0xFE) {
                             (&obj->self)[(ins >> 12) & 7]->zone = zone;
@@ -1107,14 +1101,14 @@ next_ins:
                 case 12:
                     switch (subarg) {
                     case 0:
-                        func_80026460(obj, D_80057974, 0);
+                        Level_SaveState(obj, D_80057974, 0);
                         break;
                     case 1:
-                        func_80026650(D_80057974);
+                        Level_Restart(D_80057974);
                         break;
                     case 2:
                         {
-                            GoolObj *new_parent = (GoolObj *)&D_80060DB8[(u32)*s_ptr >> 8];
+                            GoolObj *new_parent = (GoolObj *)&((ObjectRoot *)g_free_objects)[(u32)*s_ptr >> 8];
                             GoolObj *parent = obj->parent;
                             GoolObj *prev;
 
@@ -1144,35 +1138,35 @@ next_ins:
                         }
                         break;
                     case 3:
-                        func_8002FDD8(*s_ptr);
+                        Cd_Stub_22(*s_ptr);
                         break;
                     case 4:
                         ((GoolObj *)*s_ptr)->zone = D_80057918[0];
                         break;
                     case 5:
-                        func_800313B4();
+                        Midi_ResetFadeStep();
                         break;
                     case 6:
-                        func_800313C4(*s_ptr);
+                        Midi_TogglePlayback(*s_ptr);
                         break;
                     case 7:
-                        func_8001D264();
+                        Gool_ZoneObjectTerminateSingle();
                         break;
                     case 8:
                         {
                             GoolObj *link = (&obj->self)[(ins >> 12) & 7];
-                            s32 dist = func_80029DB0(&link->trans, s_ptr);
-                            *obj->sp++ = func_8004301C(link->trans.y - s_ptr[1], dist);
+                            s32 dist = Math_EucDistXZ(&link->trans, s_ptr);
+                            *obj->sp++ = ratan2(link->trans.y - s_ptr[1], dist);
                         }
                         break;
                     case 9:
-                        D_80056714[0] = (u32)*s_ptr >> 8;
+                        gp_pbak_frame_idx[0] = (u32)*s_ptr >> 8;
                         break;
                     case 10:
-                        func_80013798((u32)*s_ptr >> 8);
+                        Ns_CdSeek((u32)*s_ptr >> 8);
                         break;
                     case 11:
-                        func_80026200(1);
+                        Level_ResetGlobals(1);
                         break;
                     }
                     break;
@@ -1185,7 +1179,7 @@ next_ins:
                         query.result = NULL;
                         query.best_dist = 0x7FFFFFFF;
                         query.max_dist = *s_ptr;
-                        inline_8001B788(&D_80060DD8, func_8001BAB0, &query);
+                        inline_8001B788(&D_80060DD8, Gool_FindNearestObject, &query);
                         if (query.result != NULL) {
                             *obj->sp++ = (s32)query.result;
                         } else {
@@ -1205,12 +1199,12 @@ next_ins:
                         bound.p2.x = link->trans.x + link->bound.p2.x;
                         bound.p2.y = link->trans.y + link->bound.p2.y;
                         bound.p2.z = link->trans.z + link->bound.p2.z;
-                        *obj->sp++ = func_80026B80(s_ptr, &bound);
+                        *obj->sp++ = Level_TestPointInBound(s_ptr, &bound);
                     }
                     break;
 
                 case 15:
-                    obj->unkF4 = func_8003D4EC(subarg, *s_ptr);
+                    obj->unkF4 = Card_Control(subarg, *s_ptr);
                     break;
                 }
             }
@@ -1245,14 +1239,14 @@ next_ins:
                     out_state->flag = (opcode != 0x88);
                     switch (mode) {
                     case 2:
-                        res = func_8001D97C(obj, NULL, 0);
+                        res = Gool_ObjectPopFrame(obj, NULL, 0);
                         if (res >= -0xFE) {
                             return res;
                         }
                         out_state->state = 0xFF;
                         return -0xFF;
                     case 1:
-                        res = func_8001D97C(obj, NULL, 0);
+                        res = Gool_ObjectPopFrame(obj, NULL, 0);
                         if (res >= -0xFE) {
                             return res;
                         }
@@ -1292,7 +1286,7 @@ next_ins:
                         {
                             s32 saved_flags;
                             ((struct { s32 v; } *)&saved_flags)->v = flags;
-                            res = func_8001D97C(obj, &saved_flags, flags);
+                            res = Gool_ObjectPopFrame(obj, &saved_flags, flags);
                             if (flags & 8) {
                                 if (flags & 0x20) {
                                     out_state->state = 0xFF;
@@ -1383,8 +1377,8 @@ next_ins:
                 break;
             }
             if (obj->status_b & 0x18) {
-                if (!func_80029C90(obj, &obj->trans, &D_800566B4->trans, 0x7D000, 0xAF000, 0x7D000) || (s32)obj->status_b < 0) {
-                    func_8001D33C(obj, &obj->scale.x);
+                if (!Math_OutOfRange(obj, &obj->trans, &gp_crash_obj->trans, 0x7D000, 0xAF000, 0x7D000) || (s32)obj->status_b < 0) {
+                    Gool_ObjectLocalBound(obj, &obj->scale.x);
                 }
             }
             if (flags & 4) {
@@ -1414,7 +1408,7 @@ next_ins:
                 obj->scale.x = -obj->scale.x;
                 break;
             }
-            func_8001D33C(obj, &obj->scale.x);
+            Gool_ObjectLocalBound(obj, &obj->scale.x);
             if (flags & 4) {
                 return -0xFF;
             }
@@ -1424,28 +1418,28 @@ next_ins:
         case 0x8B:
         {
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
-            s_val = *func_8001FC4C(obj, (ins >> 12) & 0xFFF, 0);
-            s_ptr = func_8001FC4C(obj, ins & 0xFFF, 0);
+            s_val = *Gool_TranslateOutGop(obj, (ins >> 12) & 0xFFF, 0);
+            s_ptr = Gool_TranslateOutGop(obj, ins & 0xFFF, 0);
             switch (s_val) {
             case 1:
-                obj->unkF4 = func_80015118(s_ptr, 0, 1);
+                obj->unkF4 = Ns_Open(s_ptr, 0, 1);
                 break;
             case 6:
-                obj->unkF4 = func_80015118(s_ptr, 1, 1);
+                obj->unkF4 = Ns_Open(s_ptr, 1, 1);
                 break;
             case 2:
-                obj->unkF4 = func_80015458(s_ptr, 1);
+                obj->unkF4 = Ns_Close(s_ptr, 1);
                 break;
             case 3:
-                *obj->sp++ = func_80015458(s_ptr, 0);
+                *obj->sp++ = Ns_Close(s_ptr, 0);
                 break;
             case 4:
-                *obj->sp++ = func_800156D4(s_ptr);
+                *obj->sp++ = Ns_CountAvailablePages(s_ptr);
                 break;
             case 5:
                 {
                     s32 n = *s_ptr;
-                    d_val = func_8001579C(&obj->sp[-n], n);
+                    d_val = Ns_CountAvailablePages2(&obj->sp[-n], n);
                     obj->sp -= n;
                     *obj->sp++ = d_val;
                 }
@@ -1467,18 +1461,18 @@ next_ins:
                     if (s_ptr != NULL && obj->entity != NULL) {
                         Vec3 v2;
                         v2 = *vec_dst;
-                        func_8001AC9C(obj, *s_ptr, &v2);
+                        Gool_ObjectOrientOnPath(obj, *s_ptr, &v2);
                         *vec_dst = v2;
                         obj->floor_y = vec_dst->y;
                     }
                     break;
 
                 case 2:
-                    vec_dst->x = ((func_8003905C(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
+                    vec_dst->x = ((sin(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
                     if (!(obj->status_b & 0x200200)) {
-                        vec_dst->z = ((func_800390D0(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
+                        vec_dst->z = ((cos(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
                     } else {
-                        vec_dst->y = ((func_800390D0(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
+                        vec_dst->y = ((cos(obj->ang_vel.y & 0xFFF) >> 4) * *s_ptr) >> 8;
                     }
                     obj->speed = *s_ptr;
                     break;
@@ -1501,7 +1495,7 @@ next_ins:
                         } else {
                             rot_ptr = &obj->ang_vel;
                         }
-                        func_8002465C(&v1, vec_dst, rot_ptr, scale_ptr, vec_src);
+                        Gool_Transform(&v1, vec_dst, rot_ptr, scale_ptr, vec_src);
                     }
                     break;
 
@@ -1512,12 +1506,12 @@ next_ins:
                         GoolObj *link = (&obj->self)[(ins >> 21) & 7];
                         GoolAnimSeq *anim_seq = link->anim_seq;
                         if (anim_seq != NULL && anim_seq->type == 1) {
-                            GoolAnimFrame *frame = (GoolAnimFrame *)func_80015A98(&anim_seq->eid)->items[(u32)link->anim_frame >> 8];
-                            GoolAnimEntry *model_group = (GoolAnimEntry *)func_80015A98(&link->anim_seq->eid)->items[(u32)link->anim_frame >> 8];
+                            GoolAnimFrame *frame = (GoolAnimFrame *)Ns_Lookup(&anim_seq->eid)->items[(u32)link->anim_frame >> 8];
+                            GoolAnimEntry *model_group = (GoolAnimEntry *)Ns_Lookup(&link->anim_seq->eid)->items[(u32)link->anim_frame >> 8];
                             GoolAnimModel *model;
                             GoolAnimVertex *vert;
 
-                            model_group = func_80015A98((u32 *)model_group + 1);
+                            model_group = Ns_Lookup((u32 *)model_group + 1);
                             model = (GoolAnimModel *)model_group->items[0];
                             vert = &frame->verts[(u32)*s_ptr >> 8];
                             v3.x = ((frame->offset.x - 0x80) + vert->x) << 10;
@@ -1526,7 +1520,7 @@ next_ins:
                             v4.x = (link->scale.x * model->scale.x) >> 12;
                             v4.y = (link->scale.y * model->scale.y) >> 12;
                             v4.z = (link->scale.z * model->scale.z) >> 12;
-                            func_8002465C(&v3, &link->trans, &link->rot, &v4, vec_dst);
+                            Gool_Transform(&v3, &link->trans, &link->rot, &v4, vec_dst);
                         }
                     }
                     break;
@@ -1534,7 +1528,7 @@ next_ins:
                 case 1:
                     {
                         Vec3 *vec_src = &(&obj->trans)[(ins >> 15) & 7];
-                        func_800249E0(vec_dst, vec_src);
+                        Gool_Project(vec_dst, vec_src);
                         if (s_ptr[0] != 0) {
                             s32 z_scaled = vec_src->z >> 8;
                             if (z_scaled != 0) {
@@ -1547,7 +1541,7 @@ next_ins:
                     break;
 
                 case 7:
-                    func_800248A0(vec_dst, &(&obj->trans)[(ins >> 15) & 7], 0);
+                    Gool_Transform2(vec_dst, &(&obj->trans)[(ins >> 15) & 7], 0);
                     break;
                 }
             }
@@ -1561,7 +1555,7 @@ next_ins:
                 Vec3 *vec_src;
 
                 vec_src = &(&obj->trans)[(ins >> 12) & 7];
-                func_8001FC4C(obj, ins & 0xFFF, 0);
+                Gool_TranslateOutGop(obj, ins & 0xFFF, 0);
                 switch ((ins >> 18) & 7) {
                 case 0:
                     {
@@ -1571,7 +1565,7 @@ next_ins:
                         va = obj->trans;
                         vb = *vec_src;
                         va.y += obj->bound.p2.y / 2;
-                        obj->unkF4 = func_800277EC(&va, &vb);
+                        obj->unkF4 = Zone_ReboundVector(&va, &vb);
                         if ((ins & 0xFFF) != 0xBE0) {
                             *(Vec3 *)TRANS_GOP_OUT(obj, ins & 0xFFF) = vb;
                         }
@@ -1587,10 +1581,10 @@ next_ins:
 
                         v_tmp = obj->trans;
                         va = obj->trans;
-                        if (obj == D_800566B4 || obj->parent == D_800566B4) {
-                            func_800289B4(obj, &v_tmp);
+                        if (obj == gp_crash_obj || obj->parent == gp_crash_obj) {
+                            Zone_FindNearestObjectNode2(obj, &v_tmp);
                         }
-                        obj->unkF4 = func_80028644(obj, &va);
+                        obj->unkF4 = Zone_FindNearestObjectNode(obj, &va);
                         if ((ins & 0xFFF) != 0xBE0) {
                             *(Vec3 *)TRANS_GOP_OUT(obj, ins & 0xFFF) = vb;
                         }
@@ -1614,13 +1608,13 @@ next_ins:
 
                         va = obj->trans;
                         va_ptr = &va;
-                        zone = obj->zone ? obj->zone : D_80057914[0];
+                        zone = obj->zone ? obj->zone : g_pads[0];
                         if (zone->data->flags2FC & 1) {
                             mode_flags = is_odd ? 6 : 2;
                         } else {
                             mode_flags = is_odd ? 5 : 1;
                         }
-                        func_80028E3C(obj, va_ptr, mode_flags, !arg3);
+                        Zone_FindNearestObjectNode3(obj, va_ptr, mode_flags, !arg3);
                         if ((ins & 0xFFF) != 0xBE0) {
                             *(Vec3 *)TRANS_GOP_OUT(obj, ins & 0xFFF) = vb;
                         }
@@ -1629,7 +1623,7 @@ next_ins:
                     break;
 
                 case 6:
-                    func_8002940C(obj);
+                    Zone_ColorsScaleSeekByEntityNode(obj);
                     break;
                 }
             }
@@ -1659,13 +1653,13 @@ next_ins:
                     }
                     switch (opcode) {
                     case 0x87:
-                        func_80024040(obj, recipient, *event_ptr, count, args);
+                        Gool_ExecStateCode(obj, recipient, *event_ptr, count, args);
                         break;
                     case 0x90:
-                        func_800251B8(obj, recipient, *event_ptr, (ins >> 21) & 7, count, args);
+                        Gool_SendToColliders2(obj, recipient, *event_ptr, (ins >> 21) & 7, count, args);
                         break;
                     case 0x8F:
-                        func_80025134(obj, *event_ptr, (ins >> 21) & 7, count, args);
+                        Gool_SendToColliders(obj, *event_ptr, (ins >> 21) & 7, count, args);
                         break;
                     }
                 } else {
@@ -1722,7 +1716,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             s_ptr = TRANS_GOP_IN(obj, (ins >> 12) & 0xFFF);
             d_ptr = TRANS_GOP_IN(obj, ins & 0xFFF);
-            obj->voice_id = func_800304C8(obj, d_ptr, *(s16 *)s_ptr);
+            obj->voice_id = Audio_VoiceCreate(obj, d_ptr, *(s16 *)s_ptr);
             break;
 
         }
@@ -1751,7 +1745,7 @@ next_ins:
                 if (ins & 0x80000) {
                     mode |= 0x20000000;
                 }
-                func_80030840(val, mode, d_ptr, obj);
+                Audio_Control(val, mode, d_ptr, obj);
             }
             break;
 

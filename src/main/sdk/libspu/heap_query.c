@@ -1,12 +1,10 @@
 #include "common.h"
-typedef struct {u32 address, size;} SpuBlock;
 
-extern SpuBlock *D_80055944;
-s32 func_80047120(u32 address) {
+s32 _SpuIsInAllocateArea(u32 address) {
     u32 free_flag = 0x80000000;
     u32 end_flag = 0x40000000;
     u32 address_mask = 0x0fffffff;
-    SpuBlock *block = D_80055944;
+    SpuBlock *block = g_spu_memList;
     while (1) {
         u32 base = block->address;
         if (!(base & free_flag)) {
@@ -19,9 +17,9 @@ s32 func_80047120(u32 address) {
     return 0;
 }
 
-s32 func_80047190(u32 address) {
-    SpuBlock *block = D_80055944;
-    address <<= D_80055908;
+s32 _SpuIsInAllocateArea_(u32 address) {
+    SpuBlock *block = g_spu_memList;
+    address <<= g_spu_trans_mode;
     for (;;) {
         u32 base = block->address;
         if (!(base & 0x80000000)) {

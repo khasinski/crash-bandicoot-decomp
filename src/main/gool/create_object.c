@@ -107,24 +107,23 @@ typedef struct NsdTable {
     s32 items[1];
 } NsdTable;
 
-extern NsdTable *D_8005C53C[];
-extern GoolObj *D_80060DB0[];
-extern ResourceEntry *D_80057914[];
+extern NsdTable *g_ns_page_pool[];
+extern GoolObj *g_player[];
+extern ResourceEntry *g_pads[];
 extern GoolObj D_80060DD0;
-GoolExecutable *func_80015118(s32 *, s32, s32);
+GoolExecutable *Ns_Open(s32 *, s32, s32);
 s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
-extern GoolObj *D_800566B4;
+extern GoolObj *gp_crash_obj;
 
-extern u32 D_8005FF58[];
 extern GoolObj D_80060DF8;
-void func_80024040(GoolObj *, GoolObj *, s32, s32, void *);
-void func_80030260(GoolObj *);
+void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, void *);
+void Audio_VoiceFree(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
 
-static __inline__ s32 func_8001B56C(GoolObj *node, GoolObj *new_parent)
+static __inline__ s32 Gool_RemoveLevelSpawn(GoolObj *node, GoolObj *new_parent)
 {
     GoolObj *parent = node->parent;
     GoolObj *prev;
@@ -155,9 +154,9 @@ static __inline__ s32 func_8001B56C(GoolObj *node, GoolObj *new_parent)
 
 typedef s32 (*Visitor)(GoolObj *, void *);
 GoolObj *GOOL_TestObjectStateFlags(GoolObj *, u32);
-s32 func_8001D1E0(GoolObj *, void *);
+s32 Gool_ObjectTerminate(GoolObj *, void *);
 
-s32 func_8001B788(GoolObj *, Visitor, void *);
+s32 Gool_ObjectSearchTree(GoolObj *, Visitor, void *);
 static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *context)
 {
     GoolObj *child;
@@ -180,7 +179,7 @@ static __inline__ s32 inline_8001B788(GoolObj *root, Visitor visitor, void *cont
     }
     while (child != NULL && result == 0) {
         next = child->next;
-        result = func_8001B788(child, visitor, context);
+        result = Gool_ObjectSearchTree(child, visitor, context);
         child = next;
     }
     return result;
@@ -227,16 +226,13 @@ typedef struct ZoneEntryView {
     void *items[1];
 } ZoneEntryView;
 
-extern GoolObj *D_80061A5C[];
-extern s32 D_80061A60[];
+extern GoolObj *g_doctor_cortex_obj[];
 extern ZoneEntity *D_80061A64[];
-extern ObjectRoot D_80060DB8[];
 extern GoolObj D_80060DD8;
-extern s32 D_80056714[];
-extern u8 D_80057974[];
-s32 func_8002F840(s32, s32);
-void func_8001AC9C(GoolObj *, s32, s32 *);
-void func_80026460(GoolObj *, void *, s32);
+extern s32 gp_pbak_frame_idx[];
+s32 Math_Absdiff(s32, s32);
+void Gool_ObjectOrientOnPath(GoolObj *, s32, s32 *);
+void Level_SaveState(GoolObj *, void *, s32);
 
 #define IS_PLAYER_ENTITY(e) \
     ((e)->group == 3 && \
@@ -245,9 +241,9 @@ void func_80026460(GoolObj *, void *, s32);
 
 GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_count, s32 *args, s32 flag);
 s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *args);
-s32 func_8001CDD0(GoolObj *obj, s32 flag);
+s32 Gool_ObjectKill(GoolObj *obj, s32 flag);
 
-GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
+GoolObj *Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
     GoolObj *prev_box;
     ZoneEntity *entity;
     GoolObj *obj;
@@ -268,31 +264,31 @@ GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
             entity = (ZoneEntity *)zone->items[idx + 2];
             break;
         }
-        if (IS_PLAYER_ENTITY(entity) && D_800566B4 != NULL) {
+        if (IS_PLAYER_ENTITY(entity) && gp_crash_obj != NULL) {
             return (GoolObj *)-0xE;
         }
         if (entity->type == 0x22) {
             if (D_80061A64[0] != NULL &&
-                func_8002F840(entity->x, D_80061A64[0]->x) < 10 &&
-                func_8002F840(entity->z, D_80061A64[0]->z) < 10 &&
-                func_8002F840(entity->y, D_80061A64[0]->y + 100) < 10) {
-                prev_box = D_80061A5C[0];
+                Math_Absdiff(entity->x, D_80061A64[0]->x) < 10 &&
+                Math_Absdiff(entity->z, D_80061A64[0]->z) < 10 &&
+                Math_Absdiff(entity->y, D_80061A64[0]->y + 100) < 10) {
+                prev_box = g_doctor_cortex_obj[0];
             } else {
                 D_80061A60[0] = 0x19000;
                 prev_box = NULL;
-                D_80061A5C[0] = NULL;
+                g_doctor_cortex_obj[0] = NULL;
             }
             D_80061A64[0] = entity;
         }
-        if ((D_8005FF58[entity->id] & 1) || (D_8005FF58[entity->id] & 2)) {
+        if ((g_spawns[entity->id] & 1) || (g_spawns[entity->id] & 2)) {
             if (entity->type == 0x22) {
                 D_80061A60[0] += 0x19000;
             }
             return (GoolObj *)-0xE;
         }
         if (IS_PLAYER_ENTITY(entity)) {
-            obj = D_80060DB0[0];
-            D_800566B4 = obj;
+            obj = g_player[0];
+            gp_crash_obj = obj;
             idx = 6;
         } else {
         retry:
@@ -301,23 +297,23 @@ GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
             if (obj == NULL) {
                 victim = (GoolObj *)inline_8001B788(&D_80060DD0, (Visitor)GOOL_TestObjectStateFlags, (void *)0x80000);
                 if (victim != NULL) {
-                    func_8001D1E0(victim, NULL);
+                    Gool_ObjectTerminate(victim, NULL);
                     goto retry;
                 }
                 return (GoolObj *)-0x16;
             }
         }
-        func_8001B56C(obj, (GoolObj *)&D_80060DB8[idx]);
+        Gool_RemoveLevelSpawn(obj, (GoolObj *)&((ObjectRoot *)g_free_objects)[idx]);
         obj->unk04 = entity->group;
         res = GOOL_InitObject(obj, entity->type, entity->subtype, 0, NULL);
         if (res >= -0xFE) {
-            func_8001B56C(obj, &D_80060DF8);
+            Gool_RemoveLevelSpawn(obj, &D_80060DF8);
             return (GoolObj *)res;
         }
-        D_8005FF58[entity->id] |= 1;
+        g_spawns[entity->id] |= 1;
         obj->pid_flags = entity->id << 8;
         if (zone != NULL && zone->kind == 17) {
-            zone = (ZoneEntryView *)D_80057914[0];
+            zone = (ZoneEntryView *)g_pads[0];
         }
         obj->zone = (ResourceEntry *)zone;
         if (IS_PLAYER_ENTITY(entity)) {
@@ -335,12 +331,12 @@ GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
         obj->unkBC = entity->rot_x << 8;
         obj->unkC0 = entity->rot_y << 8;
         obj->unkC4 = entity->rot_z << 8;
-        func_8001AC9C(obj, 0, obj->vectors.trans);
-        if (obj == D_800566B4 && D_80056714[0] == -1) {
-            func_80026460(obj, D_80057974, 1);
+        Gool_ObjectOrientOnPath(obj, 0, obj->vectors.trans);
+        if (obj == gp_crash_obj && gp_pbak_frame_idx[0] == -1) {
+            Level_SaveState(obj, D_80057974, 1);
         }
         if (obj->exec->header->unk04 == 0x300) {
-            func_8001B56C(obj, &D_80060DD8);
+            Gool_RemoveLevelSpawn(obj, &D_80060DD8);
         }
         if (obj->exec->header->unk00 == 0x22) {
             if (prev_box != NULL) {
@@ -352,7 +348,7 @@ GoolObj *func_8001BCC8(ZoneEntryView *zone, s32 idx) {
                 obj->unkA8 = 0;
             }
             obj->vectors.trans[1] += 0x19000 - D_80061A60[0];
-            D_80061A5C[0] = obj;
+            g_doctor_cortex_obj[0] = obj;
             if (!(((ZoneHeaderView *)zone->items[0])->flags2DC & 4)) {
                 tmp = ((obj->vectors.trans[2] >> 4) ^ obj->vectors.trans[0]) & 7;
                 obj->unk104 = tmp;
@@ -372,15 +368,15 @@ GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_co
     s32 res;
 
     if (!exec_id && !subtype) {
-        obj = D_80060DB0[0];
-        D_800566B4 = obj;
+        obj = g_player[0];
+        gp_crash_obj = obj;
     } else {
     retry:
         obj = NODE_CHILDREN(&D_80060DF8);
         if (obj == NULL && flag != 0) {
             victim = (GoolObj *)inline_8001B788(&D_80060DD0, (Visitor)GOOL_TestObjectStateFlags, (void *)0x80000);
             if (victim != NULL) {
-                func_8001D1E0(victim, NULL);
+                Gool_ObjectTerminate(victim, NULL);
                 goto retry;
             }
         }
@@ -388,15 +384,15 @@ GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_co
     if (obj == NULL) {
         return (GoolObj *)-0x16;
     }
-    func_8001B56C(obj, parent);
+    Gool_RemoveLevelSpawn(obj, parent);
     obj->unk04 = 3;
     res = GOOL_InitObject(obj, exec_id, subtype, arg_count, args);
     if (obj->zone != NULL) {
         obj->defaults = ((ZoneHeaderView *)obj->zone->data)->obj_defaults;
-    } else if (obj == D_800566B4) {
-        obj->defaults = ((ZoneHeaderView *)D_80057914[0]->data)->player_defaults;
+    } else if (obj == gp_crash_obj) {
+        obj->defaults = ((ZoneHeaderView *)g_pads[0]->data)->player_defaults;
     } else {
-        obj->defaults = ((ZoneHeaderView *)D_80057914[0]->data)->obj_defaults;
+        obj->defaults = ((ZoneHeaderView *)g_pads[0]->data)->obj_defaults;
     }
     if (res >= -0xFE) {
         return (GoolObj *)res;
@@ -463,9 +459,9 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
     if (obj->unk04 != 3) {
         return -0xE;
     }
-    entry_ptr = &D_8005C53C[0]->items[exec_id];
+    entry_ptr = &g_ns_page_pool[0]->items[exec_id];
     if (*entry_ptr != 0x6396347F && exec_id < 0x40) {
-        obj->exec = func_80015118(entry_ptr, 1, 0);
+        obj->exec = Ns_Open(entry_ptr, 1, 0);
         if ((s32)obj->exec >= -0xFE) {
             return -0xE;
         }
@@ -473,7 +469,7 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
         obj->unk78 = 0;
         obj->unk70 = 0;
         obj->unk7C = 0;
-        obj->player = D_80060DB0[0];
+        obj->player = g_player[0];
         obj->subtype = subtype;
         obj->anim_seq = NULL;
         obj->unkF0 = 0;
@@ -489,7 +485,7 @@ s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *
     return -0xE;
 }
 
-s32 func_8001CDD0(GoolObj *obj, s32 flag) {
+s32 Gool_ObjectKill(GoolObj *obj, s32 flag) {
     GoolObj *child;
     GoolObj *next;
     GoolObj *head;
@@ -497,33 +493,33 @@ s32 func_8001CDD0(GoolObj *obj, s32 flag) {
     if (obj == NULL) {
         return -0xFF;
     }
-    if (obj == D_800566B4 && ((GoolCodeHeader *)D_8005C53C[0])->unk04 != 0x19) {
+    if (obj == gp_crash_obj && ((GoolCodeHeader *)g_ns_page_pool[0])->unk04 != 0x19) {
         return -0xFF;
     }
     if (flag != 0) {
-        func_80024040(NULL, obj, 0x1A00, 0, NULL);
+        Gool_ExecStateCode(NULL, obj, 0x1A00, 0, NULL);
     }
     child = obj->children;
     if (child != NULL) {
         do {
             next = child->next;
-            func_8001CDD0(child, flag);
+            Gool_ObjectKill(child, flag);
             child = next;
         } while (child != NULL);
     }
-    func_80030260(obj);
-    D_8005FF58[obj->pid_flags >> 8] &= ~1;
+    Audio_VoiceFree(obj);
+    g_spawns[obj->pid_flags >> 8] &= ~1;
     obj->kind = 0;
-    if (obj == D_800566B4) {
+    if (obj == gp_crash_obj) {
         head = NODE_CHILDREN(&D_80060DF8);
-        func_8001B56C(obj, &D_80060DF8);
+        Gool_RemoveLevelSpawn(obj, &D_80060DF8);
         *NODE_CHILDREN_PTR(&D_80060DF8) = head;
-        D_80060DB0[0]->parent = NULL;
-        D_80060DB0[0]->children = NULL;
-        D_80060DB0[0]->next = NULL;
-        ((struct { GoolObj *x; } *)&D_800566B4)->x = NULL;
+        g_player[0]->parent = NULL;
+        g_player[0]->children = NULL;
+        g_player[0]->next = NULL;
+        ((struct { GoolObj *x; } *)&gp_crash_obj)->x = NULL;
     } else {
-        func_8001B56C(obj, &D_80060DF8);
+        Gool_RemoveLevelSpawn(obj, &D_80060DF8);
     }
     return -0xFF;
 }

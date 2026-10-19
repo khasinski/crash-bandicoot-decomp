@@ -2,7 +2,7 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-static __inline__ s32 func_8001FB20(s32 value, s32 bits)
+static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 {
     s32 shift = 0x20 - bits;
     return (s32)((u32)value << shift) >> shift;
@@ -54,10 +54,10 @@ typedef struct GoolTimeState {
     u32 unk84;
 } GoolTimeState;
 
-extern GoolTimeState *D_80058404[];
+extern GoolTimeState *g_db_cur[];
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (D_80058404[0]->unk84 < 0x67U ? D_80058404[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
 
 static __inline__ s32 *GoolRegPtr(GoolObjView *obj, u32 reg, s32 mode)
 {
@@ -72,7 +72,7 @@ static __inline__ s32 *GoolRegPtr(GoolObjView *obj, u32 reg, s32 mode)
     }
 }
 
-s32 *func_8001FC4C(GoolObjView *obj, u32 gop, s32 mode)
+s32 *Gool_TranslateOutGop(GoolObjView *obj, u32 gop, s32 mode)
 {
     GoolObjView *link;
     u32 offset;
@@ -102,16 +102,16 @@ s32 *func_8001FC4C(GoolObjView *obj, u32 gop, s32 mode)
                         printf("");
                     }
                 } else {
-                    return &obj->fp[func_8001FB20(gop, 7)];
+                    return &obj->fp[Gool_SignShift(gop, 7)];
                 }
             } else {
-                ptr = (GoolExecView *)&D_80056488[D_8005648C = !D_8005648C];
-                *(s32 *)ptr = func_8001FB20(gop, 8) << 4;
+                ptr = (GoolExecView *)&gp_obj_zone_colors[D_8005648C = !D_8005648C];
+                *(s32 *)ptr = Gool_SignShift(gop, 8) << 4;
                 return (s32 *)ptr;
             }
         } else {
-            ptr = (GoolExecView *)&D_80056488[D_8005648C = !D_8005648C];
-            *(s32 *)ptr = func_8001FB20(gop, 9) << 8;
+            ptr = (GoolExecView *)&gp_obj_zone_colors[D_8005648C = !D_8005648C];
+            *(s32 *)ptr = Gool_SignShift(gop, 9) << 8;
             return (s32 *)ptr;
         }
     } else {
@@ -139,10 +139,10 @@ typedef struct GoolDirEntry {
     s32 speed_scale;
 } GoolDirEntry;
 
-extern GoolPad D_8005E71C[];
-extern GoolDirEntry D_80052B64[];
+extern GoolPad g_gool_pads[];
+extern GoolDirEntry g_move_states[];
 
-s32 func_8001FDC4(u32 arg0, s32 port)
+s32 Gool_TestControls(u32 arg0, s32 port)
 {
     u32 res;
     s32 dir_test;
@@ -150,18 +150,18 @@ s32 func_8001FDC4(u32 arg0, s32 port)
     res = 1;
     switch ((arg0 >> 12) & 3) {
     case 1:
-        res = D_8005E71C[port].unk0 & (arg0 & 0xFFF);
+        res = g_gool_pads[port].unk0 & (arg0 & 0xFFF);
         break;
     case 2:
-        res = D_8005E71C[port].unk4 & (arg0 & 0xFFF);
+        res = g_gool_pads[port].unk4 & (arg0 & 0xFFF);
         break;
     case 4:
         dir_test = arg0 & 0xFFF;
-        res = dir_test & (D_8005E71C[port].unk4 | D_8005E71C[port].unk8);
+        res = dir_test & (g_gool_pads[port].unk4 | g_gool_pads[port].unk8);
         break;
     case 3:
         dir_test = arg0 & 0xFFF;
-        res = dir_test & (D_8005E71C[port].unk0 | D_8005E71C[port].unkC);
+        res = dir_test & (g_gool_pads[port].unk0 | g_gool_pads[port].unkC);
         break;
     }
     if (res == 0) {
@@ -172,46 +172,46 @@ s32 func_8001FDC4(u32 arg0, s32 port)
     case 1:
         switch (dir_test) {
         case 9:
-            res = D_8005E71C[port].unk0 & 0x1000;
+            res = g_gool_pads[port].unk0 & 0x1000;
             break;
         case 10:
-            res = D_8005E71C[port].unk0 & 0x2000;
+            res = g_gool_pads[port].unk0 & 0x2000;
             break;
         case 11:
-            res = D_8005E71C[port].unk0 & 0x4000;
+            res = g_gool_pads[port].unk0 & 0x4000;
             break;
         case 12:
-            res = D_8005E71C[port].unk0 & 0x8000;
+            res = g_gool_pads[port].unk0 & 0x8000;
             break;
         default:
-            res = (dir_test == D_80052B64[(D_8005E71C[port].unk4 & 0xF000) >> 12].dir)
-               && (dir_test != D_80052B64[(D_8005E71C[port].unk8 & 0xF000) >> 12].dir);
+            res = (dir_test == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir)
+               && (dir_test != g_move_states[(g_gool_pads[port].unk8 & 0xF000) >> 12].dir);
             break;
         }
         break;
     case 2:
         switch (dir_test) {
         case 9:
-            res = D_8005E71C[port].unk4 & 0x1000;
+            res = g_gool_pads[port].unk4 & 0x1000;
             break;
         case 10:
-            res = D_8005E71C[port].unk4 & 0x2000;
+            res = g_gool_pads[port].unk4 & 0x2000;
             break;
         case 11:
-            res = D_8005E71C[port].unk4 & 0x4000;
+            res = g_gool_pads[port].unk4 & 0x4000;
             break;
         case 12:
-            res = D_8005E71C[port].unk4 & 0x8000;
+            res = g_gool_pads[port].unk4 & 0x8000;
             break;
         default:
-            res = (dir_test == D_80052B64[(D_8005E71C[port].unk4 & 0xF000) >> 12].dir);
+            res = (dir_test == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir);
             break;
         }
         break;
     case 3:
     case 4:
-        res = ((dir_test = (arg0 >> 16) & 0xF) == D_80052B64[(D_8005E71C[port].unk4 & 0xF000) >> 12].dir)
-           || (dir_test == D_80052B64[(D_8005E71C[port].unk8 & 0xF000) >> 12].dir);
+        res = ((dir_test = (arg0 >> 16) & 0xF) == g_move_states[(g_gool_pads[port].unk4 & 0xF000) >> 12].dir)
+           || (dir_test == g_move_states[(g_gool_pads[port].unk8 & 0xF000) >> 12].dir);
         break;
     }
     dir_test = res;

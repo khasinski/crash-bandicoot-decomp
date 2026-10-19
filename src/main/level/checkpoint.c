@@ -1,8 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 #include "common.h"
-extern s32 D_80057960;
-extern s32 D_800578D0;
+extern s32 g_draw_stamp;
+extern s32 g_view_proj;
 #include "zone.h"
 
 typedef struct {
@@ -17,7 +17,7 @@ typedef struct LevelHeader {
     s32 level_id;
 } LevelHeader;
 
-extern LevelHeader *D_8005C53C[];
+extern LevelHeader *g_ns_page_pool[];
 
 typedef struct SaveVec {
     s32 x, y, z;
@@ -61,34 +61,31 @@ typedef struct LevelSave {
     s32 unk4F8;
 } LevelSave;
 
-extern SaveObj *D_800566B4[2];
+extern SaveObj *gp_crash_obj[2];
 extern u32 D_800619A0[];
 extern SaveVec D_80061A24;
-extern u32 D_8005FF58[0x130];
-extern s32 D_80061984[];
 s32 D_800564A0 = 0;
-extern s32 D_80056714;
+extern s32 gp_pbak_frame_idx;
 
-extern s32 D_800578D0;
-extern s32 D_80061894;
+extern s32 g_view_proj;
 extern struct { s32 v, pad; } D_800566E8;
-extern u32 D_8006189C;
+extern u32 g_fade_counter;
 typedef struct { s32 v, pad; } WordView;
 extern WordView D_800618A0;
 extern WordView D_80061A3C;
 
-void func_80025134(void *, s32, s32, s32, s32);
-ZoneEntry *func_80015A98(u32 *);
-void func_8001D200(ZoneEntry *);
-void func_8001495C(ZoneLoadList *, s32);
-void func_80042FAC(s32);
-ResourceEntry *func_80015118(void *, s32, s32);
-void func_80025A60(ResourceEntry *, ZonePath *, s32, u32);
-void func_80015458(void *, s32);
+void Gool_SendToColliders(void *, s32, s32, s32, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+void Gool_ZoneObjectsTerminate(ZoneEntry *);
+void Ns_ZoneUnload(ZoneLoadList *, s32);
+void SetGeomScreen(s32);
+ResourceEntry *Ns_Open(void *, s32, s32);
+void Level_Update(ResourceEntry *, ZonePath *, s32, u32);
+void Ns_Close(void *, s32);
 SaveObj *GOOL_CreateObject(void *, s32, s32, s32, s32, s32);
-void func_800262DC(s32);
+void Level_InitMisc(s32);
 
-void func_80026460(SaveObj *obj, LevelSave *save, s32 flag)
+void Level_SaveState(SaveObj *obj, LevelSave *save, s32 flag)
 {
     ZoneHeader *header;
     s32 i;
@@ -97,7 +94,7 @@ void func_80026460(SaveObj *obj, LevelSave *save, s32 flag)
         return;
     }
     save->flag34 = flag;
-    save->transform = (*(SaveObj **)&D_800566B4)->transform;
+    save->transform = (*(SaveObj **)&gp_crash_obj)->transform;
     if (!(obj->status_b & 0x200)) {
         save->transform.trans = obj->transform.trans;
     }
@@ -109,7 +106,7 @@ void func_80026460(SaveObj *obj, LevelSave *save, s32 flag)
     save->transform.rot.z = 0;
     save->zone_eid = level_position.zone->id;
     save->progress = level_position.progress;
-    save->level_id = D_8005C53C[0]->level_id;
+    save->level_id = g_ns_page_pool[0]->level_id;
     for (i = 0; i < ((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->path_count; i++) {
         header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
         if ((void *)level_position.path == ((ZoneEntry *)level_position.zone)->items[i + header->path_index]) {
@@ -117,13 +114,13 @@ void func_80026460(SaveObj *obj, LevelSave *save, s32 flag)
             break;
         }
     }
-    save->unk4F8 = D_80061984[0];
-    for (i = 0; i < sizeof(D_8005FF58) / sizeof(u32); i++) {
-        save->flags38[i] = D_8005FF58[i];
+    save->unk4F8 = g_death_count[0];
+    for (i = 0; i < sizeof(g_spawns) / sizeof(u32); i++) {
+        save->flags38[i] = g_spawns[i];
     }
 }
 
-void func_80026650(LevelSave *save)
+void Level_Restart(LevelSave *save)
 {
     u32 zone_eid;
     ZoneHeader *header, *n_header;
@@ -132,48 +129,48 @@ void func_80026650(LevelSave *save)
     s32 i;
 
     D_8006197C[0] = 0;
-    if (save->level_id != D_8005C53C[0]->level_id) {
-        D_80056714 = -2;
+    if (save->level_id != g_ns_page_pool[0]->level_id) {
+        gp_pbak_frame_idx = -2;
         D_800564A0 = 1;
         return;
     }
-    func_80025134(NULL, 0x1300, 0, 0, 0);
+    Gool_SendToColliders(NULL, 0x1300, 0, 0, 0);
     if (level_position.zone != NULL) {
         header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
         level_position.object_zone = (ResourceEntry *)-1;
         for (i = 0; i < header->neighbor_count; i++) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             n_header = (ZoneHeader *)neighbor->items[0];
             if (n_header->display_flags & 1) {
-                func_8001D200(neighbor);
+                Gool_ZoneObjectsTerminate(neighbor);
                 n_header->display_flags &= ~3;
             }
         }
-        func_8001495C(&header->load, 0);
+        Ns_ZoneUnload(&header->load, 0);
     }
     level_position.zone = NULL;
-    func_80042FAC(D_800578D0);
+    SetGeomScreen(g_view_proj);
     if (D_800564A0) {
-        for (i = 0; i < sizeof(D_8005FF58) / sizeof(u32); i++) {
-            D_8005FF58[i] = save->flags38[i];
+        for (i = 0; i < sizeof(g_spawns) / sizeof(u32); i++) {
+            g_spawns[i] = save->flags38[i];
         }
         if (D_800619A0[0] != -1) {
-            D_8005FF58[D_800619A0[0] >> 8] &= ~2;
-            D_8005FF58[D_800619A0[0] >> 8] |= 8;
+            g_spawns[D_800619A0[0] >> 8] &= ~2;
+            g_spawns[D_800619A0[0] >> 8] |= 8;
         }
         for (i = 0; i < 0x130; i++) {
-            D_8005FF58[i] &= ~1;
+            g_spawns[i] &= ~1;
         }
     }
     zone_eid = save->zone_eid;
-    zone = (ZoneEntry *)func_80015118(&zone_eid, 1, 1);
-    func_80025A60((ResourceEntry *)zone, zone->items[save->path_idx + ((ZoneHeader *)zone->items[0])->path_index], save->progress, !D_800564A0);
-    func_80015458(&zone_eid, 1);
-    if (D_800566B4[0] == NULL) {
+    zone = (ZoneEntry *)Ns_Open(&zone_eid, 1, 1);
+    Level_Update((ResourceEntry *)zone, zone->items[save->path_idx + ((ZoneHeader *)zone->items[0])->path_index], save->progress, !D_800564A0);
+    Ns_Close(&zone_eid, 1);
+    if (gp_crash_obj[0] == NULL) {
         GOOL_CreateObject(D_80060DE8, 0, 0, 0, 0, 1);
     }
-    D_800566B4[0]->transform = save->transform;
-    player = D_800566B4[0];
+    gp_crash_obj[0]->transform = save->transform;
+    player = gp_crash_obj[0];
     player->entry = level_position.zone;
     player->unk130 = 0;
     player->unkA4 = 0;
@@ -186,10 +183,10 @@ void func_80026650(LevelSave *save)
         player->unk78->unk78 = NULL;
         player->unk78 = NULL;
     }
-    D_80057960 = 0;
+    g_draw_stamp = 0;
     D_80061894 = 0;
     D_800566E8.v = 0;
-    D_8006189C = 0xFFFF;
+    g_fade_counter = 0xFFFF;
     if (!D_800564A0) {
         D_800618A0.v += 0x100;
         if (save->flag34) {
@@ -198,12 +195,12 @@ void func_80026650(LevelSave *save)
             D_80061A3C.v += 0x100;
         }
     }
-    func_800262DC(0);
+    Level_InitMisc(0);
     if (D_800564A0) {
-        D_80061984[0] = save->unk4F8;
+        g_death_count[0] = save->unk4F8;
         D_800564A0 = 0;
         if (D_800619A0[0] != -1) {
-            D_80061984[0] -= 0x100;
+            g_death_count[0] -= 0x100;
         }
     }
 }

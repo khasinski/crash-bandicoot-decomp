@@ -3,8 +3,8 @@
 /* GCC_VERSION: 2.6.3 */
 
 s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
-s32 func_8001B788(Node *, Visitor, void *);
-s32 func_8001CDD0(Node *, s32);
+s32 Gool_ObjectSearchTree(Node *, Visitor, void *);
+s32 Gool_ObjectKill(Node *, s32);
 s32 GOOL_TraverseObjectTreePostorder(Node *root, Visitor visitor, void *context)
 {
     Node *child = root->children;
@@ -13,14 +13,14 @@ s32 GOOL_TraverseObjectTreePostorder(Node *root, Visitor visitor, void *context)
         do {
             next = child->next;
             if(GOOL_TraverseObjectTreePostorder(child, visitor, context) == -25)
-                func_8001CDD0(root, 0);
+                Gool_ObjectKill(root, 0);
             child = next;
         } while(child != NULL);
     }
     return visitor(root, context);
 }
 
-s32 func_8001B788(Node *root, Visitor visitor, void *context)
+s32 Gool_ObjectSearchTree(Node *root, Visitor visitor, void *context)
 {
     Node *child;
     Node *next;
@@ -42,7 +42,7 @@ s32 func_8001B788(Node *root, Visitor visitor, void *context)
     }
     while (child != NULL && result == 0) {
         next = child->next;
-        result = func_8001B788(child, visitor, context);
+        result = Gool_ObjectSearchTree(child, visitor, context);
         child = next;
     }
     return result;

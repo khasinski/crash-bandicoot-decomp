@@ -2,10 +2,9 @@
 #include "resource.h"
 typedef ResourceHandle Request;
 typedef ResourceEntry Entry;
-s32 func_8003D740(char *,char *,...);
-extern char D_80051728[], D_80056414[], D_80056718[];
+s32 sprintf(char *,char *,...);
 
-s32 func_800126C0(Request *arg0) {
+s32 Ns_EIDType(Request *arg0) {
     s32 temp_v1;
     s32 var_v1;
     u32 temp_a2;
@@ -25,7 +24,7 @@ s32 func_800126C0(Request *arg0) {
             temp_a2 = temp_a2 >> 6;
         } while (var_v1 >= 0);
     } else {
-        func_8003D740(D_80056718, D_80056414, temp_a2);
+        sprintf(D_80056718, D_80056414, temp_a2);
     }
     switch (D_8005671C) {
     case 0x56:

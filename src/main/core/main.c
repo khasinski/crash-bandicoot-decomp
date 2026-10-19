@@ -6,19 +6,19 @@
 
 /* Initialise the runtime, run the game loop for initial level 0x19, then shut down. */
 
-void func_8003E0C0(void);
-void func_8001652C(void);
+void __main(void);
+void Core_Init(void);
 void CORE_Loop(s32);
-void func_8001668C(void);
-extern s32 D_80056410;
+void Core_Kill(void);
+extern s32 gp_pause_B_pressed;
 
 s32 CORE_Main(void)
 {
-    func_8003E0C0();
-    D_80056410 = 1;
-    func_8001652C();
+    __main();
+    gp_pause_B_pressed = 1;
+    Core_Init();
     CORE_Loop(0x19);
-    func_8001668C();
+    Core_Kill();
     return 0;
 }
 
@@ -54,113 +54,103 @@ typedef struct NsState {
 
 /* Object storage from the pause object's parent at 0x80060DF0 through the
  * playback mode at 0x80061A30. The loop addresses all three through one base. */
-typedef struct PauseStateView {
-    u8 pad000[0xACC];
-    s32 pause_object;      /* 0x800618BC; also D_800618BC in engine/state */
-    u8 padAD0[0xBC4 - 0xAD0];
-    s32 pause_override;    /* 0x800619B4: -1 forbids pausing, > 0 forces it */
-    u8 padBC8[0xC40 - 0xBC8];
-    s32 playback_mode;     /* 0x80061A30: nonzero while playback blocks pausing */
-} PauseStateView;
 
 typedef struct DrawStampView {
     u8 pad00[0x7C];
     u32 stamp;
 } DrawStampView;
 
-extern NsState D_8005C528;
-extern s32 D_80056710;
+extern NsState g_ns;
+extern s32 gp_pbak_mode;
 extern s32 D_800618BC;
 
-void func_800167A4(void);
-void func_80015118(void *, s32, s32);
-void func_800262DC(s32);
+void Pad_Update(void);
+void Ns_Open(void *, s32, s32);
+void Level_InitMisc(s32);
 s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, s32 flag);
 
 /* Spawn default HUD objects and load the level's initial resource entries. */
-void func_80011DD0(void)
+void Core_ObjectsCreate(void)
 {
-    func_800167A4();
+    Pad_Update();
     D_800618BC = 0;
-    switch (D_80056710) {
+    switch (gp_pbak_mode) {
     case 0x38:
     case 0x39:
         break;
     case 0x19:
-        func_80015118(&D_8005C528.level->eid24, 0, 1);
-        func_80015118(&D_8005C528.level->eidE4, 0, 1);
+        Ns_Open(&g_ns.level->eid24, 0, 1);
+        Ns_Open(&g_ns.level->eidE4, 0, 1);
         break;
     case 0x2D:
-        func_80015118(&D_8005C528.level->eid88, 0, 1);
-        func_80015118(&D_8005C528.level->eid9C, 0, 1);
-        func_80015118(&D_8005C528.level->eid20, 0, 1);
+        Ns_Open(&g_ns.level->eid88, 0, 1);
+        Ns_Open(&g_ns.level->eid9C, 0, 1);
+        Ns_Open(&g_ns.level->eid20, 0, 1);
         break;
     default:
-        D_800618A8 = GOOL_CreateObject(&D_80060DC0, 4, 0, 0, 0, 0);
-        D_800618A4 = GOOL_CreateObject(&D_80060DC0, 4, 1, 0, 0, 0);
-        D_800618C4 = GOOL_CreateObject(&D_80060DC0, 4, 5, 0, 0, 0);
-        func_80015118(&D_8005C528.level->eid14, 0, 1);
-        func_80015118(&D_8005C528.level->eid28, 0, 1);
-        func_80015118(&D_8005C528.level->eid88, 0, 1);
-        if (D_80056710 != 0x2C) {
-            func_80015118(&D_8005C528.level->eid9C, 0, 1);
+        D_800618A8 = GOOL_CreateObject(&g_handles, 4, 0, 0, 0, 0);
+        D_800618A4 = GOOL_CreateObject(&g_handles, 4, 1, 0, 0, 0);
+        D_800618C4 = GOOL_CreateObject(&g_handles, 4, 5, 0, 0, 0);
+        Ns_Open(&g_ns.level->eid14, 0, 1);
+        Ns_Open(&g_ns.level->eid28, 0, 1);
+        Ns_Open(&g_ns.level->eid88, 0, 1);
+        if (gp_pbak_mode != 0x2C) {
+            Ns_Open(&g_ns.level->eid9C, 0, 1);
         }
-        func_80015118(&D_8005C528.level->eid20, 0, 1);
-        func_80015118(&D_8005C528.level->eid24, 0, 1);
+        Ns_Open(&g_ns.level->eid20, 0, 1);
+        Ns_Open(&g_ns.level->eid24, 0, 1);
         break;
     }
-    func_800262DC(1);
+    Level_InitMisc(1);
 }
-extern u32 engine_counter[];
-extern PauseStateView D_80060DF0;
-extern s32 D_8005E71C;
-extern s32 D_800619B4;
-extern DrawStampView *D_80058408;
+extern s32 g_gool_pads;
+extern s32 g_key_count;
+extern DrawStampView *g_db_prev;
 extern u32 D_800566B0;
-extern void *D_800566B4;
-extern s32 D_80056714;
-extern s32 D_800618D0;
+extern void *gp_crash_obj;
+extern s32 gp_pbak_frame_idx;
 
-extern s32 D_800618A0, D_80061A3C, D_800619A0;
-extern s32 D_80057974[];
-extern s32 D_800618B0;
+extern s32 D_800618A0;
+extern s32 D_80061A3C;
+extern s32 D_800619A0;
+extern s32 g_cur_lid_ro;
 
 /* .sdata owned by this unit (gp-addressed only here). */
-s32 D_800563FC = 0;
-s32 D_80056400 = 0;
-s32 D_80056404 = 0x1000;
+s32 gp_cur_lid = 0;
+s32 gp_next_lid = 0;
+s32 gp_paused = 0x1000;
 s32 D_80056408 = 0x200000;
-s32 D_8005640C = 0;
+s32 gp_use_cd = 0;
 
 /* .sbss owned by this unit. */
-asm(".globl D_800565B8, D_800565BC");
-u32 D_800565B8;
+asm(".globl gp_rcnt_event, D_800565BC");
+u32 gp_rcnt_event;
 u32 D_800565BC;
 
-void func_80026140(void);
-void func_80015B58(NsState *ns, s32 level);
-void func_80011DD0(void);
+void Level_InitGlobals(void);
+void Ns_Init(NsState *ns, s32 level);
+void Core_ObjectsCreate(void);
 s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, s32 flag);
-void func_80024040(s32 sender, s32 object, s32 event, s32 argc, s32 *argv);
-void func_8002E98C(u32 *eid);
-void func_80025134(s32, s32, s32, s32, s32);
-void func_80016420(NsState *ns);
-void func_80025928(void);
-void func_80026650(s32 *state);
-void func_800134C8(s32);
-void func_8002EC68(s32);
-void func_8002EBB4(s32);
-void func_8002B2BC(void);
-void func_80017A14(void);
-void func_8001A2E0(u32 *);
-void func_8001A0CC(u32 *);
-void func_80019BCC(u32 *);
-void func_80019DE0(u32 *);
-void func_80019F90(u32 *);
-void func_80019508(u32 *);
-void func_8001D5EC(s32);
-void func_800326D8(u32 *);
-void func_80016E5C(void);
+void Gool_ExecStateCode(s32 sender, s32 object, s32 event, s32 argc, s32 *argv);
+void Pbak_Play(u32 *eid);
+void Gool_SendToColliders(s32, s32, s32, s32, s32);
+void Ns_Kill(NsState *ns);
+void Level_SpawnObjects2(void);
+void Level_Restart(s32 *state);
+void Ns_Update(s32);
+void Shader_ParamsUpdate(s32);
+void Shader_ParamsUpdateRipple(s32);
+void Cam_Update(void);
+void Gfx_UpdateMatrices(void);
+void Gfx_TransformWorldsDark2(u32 *);
+void Gfx_TransformWorldsDark(u32 *);
+void Gfx_TransformWorldsFog(u32 *);
+void Gfx_TransformWorldsRipple(u32 *);
+void Gfx_TransformWorldsLightning(u32 *);
+void Gfx_TransformWorlds(u32 *);
+void Gool_UpdateObjects(s32);
+void Title_Update(u32 *);
+void Gpu_Update(void);
 
 /* Run levels until the exit flag is set: pause toggling, demo playback,
  * level transitions, per-frame update and zone-specific drawing. */
@@ -173,128 +163,128 @@ void CORE_Loop(s32 level)
     u32 flags;
     ZoneHeaderView *zone;
 
-    func_80026140();
-    func_80015B58(&D_8005C528, level);
-    func_80011DD0();
+    Level_InitGlobals();
+    Ns_Init(&g_ns, level);
+    Core_ObjectsCreate();
     do {
         /* Start toggles pause outside the title, map and intro levels. */
-        if ((D_8005E71C & 0x800) && D_80060DF0.playback_mode == 0
-            && (((id = D_8005C528.level->level_id) != 0x19 && id != 0x2D && id != 0x38
-                 && D_80060DF0.pause_override != -1) || D_800619B4 > 0)) {
-            if ((D_80056400 = 1 - D_80056400) != 0) {
-                if (D_80060DF0.pause_object == 0) {
-                    D_80060DF0.pause_object = GOOL_CreateObject(&D_80060DF0, 4, 4, 0, 0, 0);
-                    if (D_80060DF0.pause_object >= -0xFE) {
-                        D_80056400 = 0;
-                        D_80060DF0.pause_object = 0;
+        if ((g_gool_pads & 0x800) && g_pause_state.playback_mode == 0
+            && (((id = g_ns.level->level_id) != 0x19 && id != 0x2D && id != 0x38
+                 && g_pause_state.pause_override != -1) || g_key_count > 0)) {
+            if ((gp_next_lid = 1 - gp_next_lid) != 0) {
+                if (g_pause_state.pause_object == 0) {
+                    g_pause_state.pause_object = GOOL_CreateObject(&g_pause_state, 4, 4, 0, 0, 0);
+                    if (g_pause_state.pause_object >= -0xFE) {
+                        gp_next_lid = 0;
+                        g_pause_state.pause_object = 0;
                         goto not_paused;
                     }
-                    D_8005640C = 1;
-                    D_800565B8 = engine_counter[0];
-                    D_800565BC = D_80058408->stamp;
+                    gp_use_cd = 1;
+                    gp_rcnt_event = engine_counter[0];
+                    D_800565BC = g_db_prev->stamp;
                 }
-            } else if (D_80060DF0.pause_object != 0) {
+            } else if (g_pause_state.pause_object != 0) {
                 arg = 0;
-                func_80024040(0, D_80060DF0.pause_object, 0xC00, 1, &arg);
-                D_80060DF0.pause_object = 0;
-                D_8005640C = -1;
-                engine_counter[0] = D_800565B8;
-                D_80058408->stamp = D_800565BC;
+                Gool_ExecStateCode(0, g_pause_state.pause_object, 0xC00, 1, &arg);
+                g_pause_state.pause_object = 0;
+                gp_use_cd = -1;
+                engine_counter[0] = gp_rcnt_event;
+                g_db_prev->stamp = D_800565BC;
             }
         } else {
 not_paused:
-            D_8005640C = 0;
+            gp_use_cd = 0;
         }
 
         /* 0x6396347F is the null resource ID. */
-        if (D_800566B4 != 0 && D_800566B0 != 0x6396347F) {
-            func_8002E98C(&D_800566B0);
+        if (gp_crash_obj != 0 && D_800566B0 != 0x6396347F) {
+            Pbak_Play(&D_800566B0);
         }
 
         /* Game over and continue states return to the map (level 0x19). */
-        if (D_80056714 == -1 && D_8005C528.level->level_id != 0x19
+        if (gp_pbak_frame_idx == -1 && g_ns.level->level_id != 0x19
             && (D_800618D0 == 0x200 || D_800618D0 == 0x300 || D_800618D0 == 0x400)) {
-            D_80056714 = 0x19;
+            gp_pbak_frame_idx = 0x19;
         }
         /* Level change; -2 restores the saved level after a bonus round. */
-        if (D_80056714 != -1) {
+        if (gp_pbak_frame_idx != -1) {
             restore = 0;
-            level = D_80056714;
-            func_80025134(0, 0x2900, 0, 0, 0);
-            if (D_80056714 == -2) {
+            level = gp_pbak_frame_idx;
+            Gool_SendToColliders(0, 0x2900, 0, 0, 0);
+            if (gp_pbak_frame_idx == -2) {
                 level = D_800579A4;
                 restore = 1;
-                D_80056490 = 1;
+                gp_cur_zone = 1;
             } else {
-                D_80056490 = 0;
+                gp_cur_zone = 0;
             }
-            D_8005C528.draw_skip = 2;
-            func_80016420(&D_8005C528);
-            D_80056400 = 0;
+            g_ns.draw_skip = 2;
+            Ns_Kill(&g_ns);
+            gp_next_lid = 0;
             if (level == 0x19) {
                 D_800618A0 = 0;
                 D_80061A3C = 0;
-                D_800618F8 = 0;
+                g_checkpoint_id = 0;
                 D_800618FC = 0;
-                D_80061900 = 0;
+                g_mono = 0;
                 D_800619A0 = -1;
             }
-            func_80015B58(&D_8005C528, level);
-            func_80011DD0();
+            Ns_Init(&g_ns, level);
+            Core_ObjectsCreate();
             if (restore) {
-                D_80056714 = -2;
-                func_80025928();
-                D_80056714 = -1;
-                func_80026650(D_80057974);
+                gp_pbak_frame_idx = -2;
+                Level_SpawnObjects2();
+                gp_pbak_frame_idx = -1;
+                Level_Restart(D_80057974);
             }
-            D_80056490 = 0;
+            gp_cur_zone = 0;
         }
 
-        func_800134C8(-1);
-        func_80025928();
-        if (D_80056400 == 0) {
-            if (((ZoneHeaderView *)D_80057914->data)->flags & 0x600) {
-                func_8002EC68(0);
+        Ns_Update(-1);
+        Level_SpawnObjects2();
+        if (gp_next_lid == 0) {
+            if (((ZoneHeaderView *)g_pads->data)->flags & 0x600) {
+                Shader_ParamsUpdate(0);
             }
-            if (D_80056400 == 0) {
-                if (((ZoneHeaderView *)D_80057914->data)->flags & 0x100) {
-                    func_8002EBB4(0);
+            if (gp_next_lid == 0) {
+                if (((ZoneHeaderView *)g_pads->data)->flags & 0x100) {
+                    Shader_ParamsUpdateRipple(0);
                 }
-                if (D_80056400 == 0) {
-                    func_8002B2BC();
+                if (gp_next_lid == 0) {
+                    Cam_Update();
                 }
             }
         }
-        func_80017A14();
+        Gfx_UpdateMatrices();
 
-        if (D_800618B0 & 1) {
-            zone = (ZoneHeaderView *)D_80057914->data;
-            if (zone->word00 != 0 && D_800563FC == 0) {
+        if (g_cur_lid_ro & 1) {
+            zone = (ZoneHeaderView *)g_pads->data;
+            if (zone->word00 != 0 && gp_cur_lid == 0) {
                 flags = zone->flags;
                 if (flags & 0x400) {
-                    func_8001A2E0(D_8005840C->ordering_table);
+                    Gfx_TransformWorldsDark2(g_ot_cur->ordering_table);
                 } else if ((flags & 0x210) == 0x210) {
-                    func_8001A0CC(D_8005840C->ordering_table);
+                    Gfx_TransformWorldsDark(g_ot_cur->ordering_table);
                 } else if (flags & 0x10) {
-                    func_80019BCC(D_8005840C->ordering_table);
+                    Gfx_TransformWorldsFog(g_ot_cur->ordering_table);
                 } else if (flags & 0x100) {
-                    func_80019DE0(D_8005840C->ordering_table);
+                    Gfx_TransformWorldsRipple(g_ot_cur->ordering_table);
                 } else if (flags & 0x200) {
-                    func_80019F90(D_8005840C->ordering_table);
+                    Gfx_TransformWorldsLightning(g_ot_cur->ordering_table);
                 } else {
-                    func_80019508(D_8005840C->ordering_table);
+                    Gfx_TransformWorlds(g_ot_cur->ordering_table);
                 }
             }
         }
-        func_8001D5EC(D_80056400 == 0);
-        if (D_8005C528.level->level_id == 0x19) {
-            func_800326D8(D_8005840C->ordering_table);
+        Gool_UpdateObjects(gp_next_lid == 0);
+        if (g_ns.level->level_id == 0x19) {
+            Title_Update(g_ot_cur->ordering_table);
         }
-        func_80016E5C();
-    } while (D_80056428 == 0);
+        Gpu_Update();
+    } while (gp_bonus_return == 0);
 
-    D_800618B0 = 0;
-    func_80016E5C();
-    func_80016E5C();
-    func_80016420(&D_8005C528);
+    g_cur_lid_ro = 0;
+    Gpu_Update();
+    Gpu_Update();
+    Ns_Kill(&g_ns);
 }

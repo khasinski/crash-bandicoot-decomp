@@ -32,16 +32,15 @@ typedef struct {
     u16 reserved3;
 } ProgAtr;
 
-s32 func_8004DDD4(void);
-void func_8004DDA8(s32);
-s32 func_8005115C(s32);
+s32 KeyOnCheck(void);
+void SsSetMono(s32);
+s32 SpuMalloc(s32);
 
-extern u16 D_80060CE8;
 
 extern VabHdr *D_80057EB0[];
 extern ProgAtr *D_80057E70[];
 
-s16 func_80050D60(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
+s16 SsVabOpenHeadWithMode(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
     u32 vag_len[256];
     s32 i;
     s16 var_s2;
@@ -53,36 +52,36 @@ s16 func_80050D60(u8 *addr, s16 vabid, s16 mode, u32 sbaddr) {
     u32 var_a3;
 
     var_s2 = 0x10;
-    if (func_8004DDD4() == 1) {
+    if (KeyOnCheck() == 1) {
         return -1;
     }
-    func_8004DDA8(1);
+    SsSetMono(1);
     if (vabid < 0x10) {
         if (vabid == -1) {
             for (i = 0; i < 0x10; i++) {
-                if (D_8005E578[i] == 0) {
+                if (g_midi_tracks[i] == 0) {
                     goto found;
                 }
             }
             goto check_s2;
         found:
-            D_8005E578[i] = 1;
+            g_midi_tracks[i] = 1;
             var_s2 = i;
             D_80060CE8 += 1;
         } else {
-            if (D_8005E578[vabid] == 0) {
-                D_8005E578[vabid] = 1;
+            if (g_midi_tracks[vabid] == 0) {
+                g_midi_tracks[vabid] = 1;
                 var_s2 = vabid;
                 D_80060CE8 += 1;
             }
         }
     } else {
-        func_8004DDA8(0);
+        SsSetMono(0);
         return -1;
     }
 check_s2:
     if (var_s2 >= 0x10) {
-        func_8004DDA8(0);
+        SsSetMono(0);
         return -1;
     }
     ptr = addr;
@@ -90,8 +89,8 @@ check_s2:
     ptr += 0x20;
     vab_hdr = D_80057EB0[var_s2];
     if (((u32)vab_hdr->form >> 8) != 0x564142) {
-        D_8005E578[var_s2] = 0;
-        func_8004DDA8(0);
+        g_midi_tracks[var_s2] = 0;
+        SsSetMono(0);
         D_80060CE8 -= 1;
         return -1;
     }
@@ -105,8 +104,8 @@ check_s2:
         D_8005CFC4 = 0x40;
     }
     if (vab_hdr->ps > D_8005CFC4) {
-        D_8005E578[var_s2] = 0;
-        func_8004DDA8(0);
+        g_midi_tracks[var_s2] = 0;
+        SsSetMono(0);
         D_80060CE8 -= 1;
         return -1;
     }
@@ -139,10 +138,10 @@ check_s2:
     }
     D_80060D30[var_s2] = ptr;
     if (mode == 0) {
-        var_a3 = func_8005115C(var_s0);
+        var_a3 = SpuMalloc(var_s0);
         if (var_a3 == -1) {
-            D_8005E578[var_s2] = 0;
-            func_8004DDA8(0);
+            g_midi_tracks[var_s2] = 0;
+            SsSetMono(0);
             D_80060CE8 -= 1;
             return -1;
         }
@@ -150,8 +149,8 @@ check_s2:
         var_a3 = sbaddr;
     }
     if ((u32)(var_a3 + var_s0) > 0x80000U) {
-        D_8005E578[var_s2] = 0;
-        func_8004DDA8(0);
+        g_midi_tracks[var_s2] = 0;
+        SsSetMono(0);
         D_80060CE8 -= 1;
         return -1;
     }
@@ -166,6 +165,6 @@ check_s2:
         }
     }
     D_80060CA8[var_s2] = var_s0;
-    D_8005E578[var_s2] = 2;
+    g_midi_tracks[var_s2] = 2;
     return var_s2;
 }

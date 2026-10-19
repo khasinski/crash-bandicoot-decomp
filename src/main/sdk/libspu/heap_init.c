@@ -3,19 +3,17 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-typedef struct { u32 address; s32 size; } HeapEntry;
 
-extern HeapEntry *D_80055944;
 
-s32 func_80045D70(s32 capacity, HeapEntry *entries)
+s32 SpuInitMalloc(s32 capacity, SpuBlock *entries)
 {
     s32 result = capacity;
     if (result > 0) {
         entries->address = 0x40001010;
-        D_80055944 = entries;
-        D_80055940 = 0;
+        g_spu_memList = entries;
+        g_spu_alloc_num = 0;
         D_8005593C = result;
-        entries->size = (s32)(((u32)0x10000 << D_80055908) - 0x1010);
+        entries->size = (s32)(((u32)0x10000 << g_spu_trans_mode) - 0x1010);
     } else {
         return 0;
     }

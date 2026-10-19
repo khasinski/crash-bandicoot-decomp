@@ -1,13 +1,13 @@
 #include "common.h"
+extern s32 *gp_grid_rows;
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 
 /* Set or clear the clipped rectangle in the 32-row grid. */
 
-extern s32 *D_800566F4;
 
-void func_8002D69C(s32 x, s32 y) {
+void Solid_PlotWall(s32 x, s32 y) {
     s32 i;
     s32 end;
     u32 *p;
@@ -35,7 +35,7 @@ void func_8002D69C(s32 x, s32 y) {
         i = 0;
         end = 32 - y;
     }
-    p = (u32 *)&D_800566F4[y >= 0 ? y : 0];
+    p = (u32 *)&gp_grid_rows[y >= 0 ? y : 0];
     if (x < 0) {
         x = -x;
         for (; i < end; i++, p++) {
@@ -48,7 +48,7 @@ void func_8002D69C(s32 x, s32 y) {
     }
 }
 
-void func_8002D7D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void Solid_PlotWallB(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 *var_v1;
     s32 temp_a0;
     s32 temp_a2;
@@ -80,7 +80,7 @@ block_3:
                     var_a3 = 0x20;
                 }
                 if (var_a1 < 0x20) {
-                    var_v1 = D_800566F4 + var_a1;
+                    var_v1 = gp_grid_rows + var_a1;
                     if (arg4 != 0) {
                         if (var_a1 < var_a3) {
                             do {

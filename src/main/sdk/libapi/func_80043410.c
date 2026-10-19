@@ -1,7 +1,7 @@
 #include "common.h"
 /* GCC_VERSION: 2.6.3 */
 
-s32 func_80043410(s32 arg0) {
+s32 CdSetDebug(s32 arg0) {
     s32 temp_v0;
 
     temp_v0 = D_800555AC;

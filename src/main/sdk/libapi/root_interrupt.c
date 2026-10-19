@@ -15,26 +15,26 @@ typedef struct {
     u32 stack[0x3F0];
 } IntrState;
 
-extern IntrState D_80053934;
+extern IntrState g_event_handlers;
 
-s32 func_8003D730(const char *, ...);
-void func_8003E1F8(void);
-void func_8003E4E0(s32);
-void func_8003E6E4(s32, s32);
-void func_8003EE24(void);
-void func_8003EE34(void);
+s32 BIOS_Printf(const char *, ...);
+void EnterCriticalSection(void);
+void ChangeClearPAD(s32);
+void ChangeClearRCnt(s32, s32);
+void ReturnFromException(void);
+void ResetEntryInt(void);
 
-void func_8003E968(void)
+void trapIntr(void)
 {
     u16 pending;
     s32 i;
 
-    if (D_80053934.initialized == 0) {
-        func_8003D730(D_80011034, *D_800549C0);
-        func_8003EE24();
+    if (g_event_handlers.initialized == 0) {
+        BIOS_Printf(D_80011034, *D_800549C0);
+        ReturnFromException();
     }
-    D_80053934.in_interrupt = 1;
-    pending = (D_80053934.mask & *D_800549C0) & *D_800549C4;
+    g_event_handlers.in_interrupt = 1;
+    pending = (g_event_handlers.mask & *D_800549C0) & *D_800549C4;
     while (pending != 0) {
         for (i = 0; pending != 0; i++, pending >>= 1) {
             if (i >= 11) {
@@ -42,74 +42,74 @@ void func_8003E968(void)
             }
             if (pending & 1) {
                 *D_800549C0 = ~(1 << i);
-                if (D_80053934.callbacks[i] != NULL) {
-                    D_80053934.callbacks[i]();
+                if (g_event_handlers.callbacks[i] != NULL) {
+                    g_event_handlers.callbacks[i]();
                 }
             }
         }
-        pending = (D_80053934.mask & *D_800549C0) & *D_800549C4;
+        pending = (g_event_handlers.mask & *D_800549C0) & *D_800549C4;
     }
     if ((*D_800549C0 & *D_800549C4) != 0) {
         if (D_800549CC++ > 0x800) {
-            func_8003D730(D_80011050, *D_800549C0, *D_800549C4);
+            BIOS_Printf(D_80011050, *D_800549C0, *D_800549C4);
             D_800549CC = 0;
             *D_800549C0 = 0;
         }
     } else {
         D_800549CC = 0;
     }
-    D_80053934.in_interrupt = 0;
-    func_8003EE24();
+    g_event_handlers.in_interrupt = 0;
+    ReturnFromException();
 }
 
-Callback func_8003EB50(s32 index, Callback callback)
+Callback setIntr(s32 index, Callback callback)
 {
-    Callback previous = D_80053934.callbacks[index];
+    Callback previous = g_event_handlers.callbacks[index];
     s32 imask;
 
-    if (callback != previous && D_80053934.initialized != 0) {
+    if (callback != previous && g_event_handlers.initialized != 0) {
         imask = *D_800549C4;
         *D_800549C4 = 0;
         if (callback != NULL) {
             imask |= 1 << index;
-            D_80053934.callbacks[index] = callback;
-            D_80053934.mask |= 1 << index;
+            g_event_handlers.callbacks[index] = callback;
+            g_event_handlers.mask |= 1 << index;
         } else {
             imask &= ~(1 << index);
-            D_80053934.callbacks[index] = NULL;
-            D_80053934.mask &= ~(1 << index);
+            g_event_handlers.callbacks[index] = NULL;
+            g_event_handlers.mask &= ~(1 << index);
         }
         if (index == 0) {
-            func_8003E4E0(callback == NULL);
-            func_8003E6E4(3, callback == NULL);
+            ChangeClearPAD(callback == NULL);
+            ChangeClearRCnt(3, callback == NULL);
         }
         if (index == 4) {
-            func_8003E6E4(0, callback == NULL);
+            ChangeClearRCnt(0, callback == NULL);
         }
         if (index == 5) {
-            func_8003E6E4(1, callback == NULL);
+            ChangeClearRCnt(1, callback == NULL);
         }
         if (index == 6) {
-            func_8003E6E4(2, callback == NULL);
+            ChangeClearRCnt(2, callback == NULL);
         }
         *D_800549C4 = imask;
     }
     return previous;
 }
 
-void *func_8003ECA4(void)
+void *stopIntr(void)
 {
     void *result;
 
-    if (D_80053934.initialized != 0) {
-        func_8003E1F8();
-        D_80053934.saved_imask = *D_800549C4;
-        D_80053934.saved_dpcr = *D_800549C8;
+    if (g_event_handlers.initialized != 0) {
+        EnterCriticalSection();
+        g_event_handlers.saved_imask = *D_800549C4;
+        g_event_handlers.saved_dpcr = *D_800549C8;
         *D_800549C0 = *D_800549C4 = 0;
         *D_800549C8 &= 0x77777777;
-        func_8003EE34();
-        D_80053934.initialized = 0;
-        result = &D_80053934;
+        ResetEntryInt();
+        g_event_handlers.initialized = 0;
+        result = &g_event_handlers;
     } else {
         result = NULL;
     }

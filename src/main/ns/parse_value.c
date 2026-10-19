@@ -2,10 +2,9 @@
 
 /* GCC_VERSION: 2.6.3 */
 s32 BIOS_AToI(u8 *);
-s32 func_800128A4(s32, s32, s32, s32);
-extern u8 D_80051728[];
+s32 Ns_GetFilename2(s32, s32, s32, s32);
 
-static __inline__ s32 func_80012834(u8 ch)
+static __inline__ s32 Ns_AlphaNumIndex(u8 ch)
 {
     s32 index;
     for (index = 0; index < 0x40; index++) {
@@ -17,7 +16,7 @@ static __inline__ s32 func_80012834(u8 ch)
     return -0xE;
 }
 
-__inline__ s32 func_8001297C(u32 type, u8 *text) {
+__inline__ s32 Ns_Atoi(u32 type, u8 *text) {
     s32 end_address;
     s32 packed;
     s32 alphabet_index;
@@ -52,12 +51,12 @@ search_packed_character:
     case 1:
     case 13:
     case 14:
-        return func_80012834(*text);
+        return Ns_AlphaNumIndex(*text);
     default:
         return BIOS_AToI(text);
     }
 }
 
-s32 func_80012A84(u32 type, u8 *text) {
-    return func_800128A4(type, func_8001297C(type, text), 0, 0);
+s32 Ns_GetFilenameStr(u32 type, u8 *text) {
+    return Ns_GetFilename2(type, Ns_Atoi(type, text), 0, 0);
 }

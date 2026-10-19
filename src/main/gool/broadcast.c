@@ -7,10 +7,10 @@
 #include "ns.h"
 
 s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
-s32 func_8001CDD0(Node *, s32);
-s32 func_80024CC8(Node *, void *);
+s32 Gool_ObjectKill(Node *, s32);
+s32 Gool_SendIfColliding(Node *, void *);
 
-s32 func_800251B8(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
+s32 Gool_SendToColliders2(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
 {
     struct { Node *sender; s32 word04, word08, word0C, word10, word14; } message;
     void *context = &message;
@@ -34,14 +34,14 @@ s32 func_800251B8(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5
             if (child != NULL) {
                 do {
                     next_child = child->next;
-                    if (GOOL_TraverseObjectTreePostorder(child, func_80024CC8, context) == -25) {
-                        func_8001CDD0(node, 0);
+                    if (GOOL_TraverseObjectTreePostorder(child, Gool_SendIfColliding, context) == -25) {
+                        Gool_ObjectKill(node, 0);
                     }
                     child = next_child;
                 } while (child != NULL);
             }
-            if (func_80024CC8(node, context) == -25) {
-                func_8001CDD0(arg1, 0);
+            if (Gool_SendIfColliding(node, context) == -25) {
+                Gool_ObjectKill(arg1, 0);
             }
             node = next;
         } while (node != NULL);
@@ -65,7 +65,7 @@ typedef struct GoolStackObj {
 
 s32 GOOL_InterpretObject(GoolStackObj *, s32, s32);
 
-s32 func_800252C0(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
+s32 Gool_ObjectInterrupt(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
 {
     s32 i;
     u32 *sp;
@@ -88,13 +88,13 @@ s32 func_800252C0(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
 
 void BIOS_MemSet(void *, s32, s32);
 void GOOL_InitLevelSpawns(s32);
-void func_80017790(void);
-ResourceEntry *func_80015118(void *, s32, s32);
-void func_80015458(void *, s32);
-void func_8002EABC(u32 *);
-void func_80025A60(ZoneEntry *, void *, s32, s32);
-void func_8002EC68(s32);
-void func_8002EBB4(s32);
+void Gfx_InitMatrices(void);
+ResourceEntry *Ns_Open(void *, s32, s32);
+void Ns_Close(void *, s32);
+void Pbak_Choose(u32 *);
+void Level_Update(ZoneEntry *, void *, s32, s32);
+void Shader_ParamsUpdate(s32);
+void Shader_ParamsUpdateRipple(s32);
 
 typedef struct LevelDesc {
     s32 unk0;
@@ -103,52 +103,49 @@ typedef struct LevelDesc {
     s32 path_idx;
 } LevelDesc;
 
-extern s32 D_80061A30[];
 
-extern LevelDesc *D_8005C53C[];
+extern LevelDesc *g_ns_page_pool[];
 
-s32 D_80056490 = 0;
-s32 D_80056494 = 1;
+s32 gp_cur_zone = 0;
+s32 gp_cur_path = 1;
 
 extern s32 D_800566E8[];
-extern s32 D_8006189C[];
-extern s32 D_800618B0[];
-extern u32 D_8005FF58[];
-extern s32 D_800618D0[];
+extern s32 g_fade_counter[];
+extern s32 g_cur_lid_ro[];
 
 extern u32 D_800566B0[2];
 extern u8 D_80057968[];
 extern u32 D_80057970[];
-extern u32 func_80034520[];
-extern s32 D_80056400[];
+extern u32 engine_counter[];
+extern s32 gp_next_lid[];
 
-s32 func_800253A0(void)
+s32 Level_LdatInit(void)
 {
     s32 progress;
     s32 mode;
     ZoneEntry *zone;
 
-    D_80061A30[0] = 0;
+    D_80061A30 = 0;
     if (*D_8005C538[0] != 0x6396347F) {
         D_800566E4 = 0;
         D_800566E8[0] = 0;
-        D_8006189C[0] = 0xFFFF;
-        D_800618B0[0] = 0xFFFF;
-        BIOS_MemSet(D_8005FF58, 0, 0x4C0);
+        g_fade_counter[0] = 0xFFFF;
+        g_cur_lid_ro[0] = 0xFFFF;
+        BIOS_MemSet(g_spawns, 0, 0x4C0);
         progress = 0;
-        GOOL_InitLevelSpawns(D_8005C53C[0]->unk4);
+        GOOL_InitLevelSpawns(g_ns_page_pool[0]->unk4);
         mode = (D_8005C52C[0] == 0x11 || D_8005C52C[0] == 0x1E) ? 2 : 1;
-        func_80017790();
-        if (D_8005C52C[0] == 0x19 && D_800618D0[0] == 0x200 && D_80056494 == 0) {
-            D_8005C53C[0]->eid = func_80012660(D_80056498);
+        Gfx_InitMatrices();
+        if (D_8005C52C[0] == 0x19 && D_800618D0 == 0x200 && gp_cur_path == 0) {
+            g_ns_page_pool[0]->eid = Ns_StringToEID(gp_cur_progress);
         }
-        if (D_80056490 == 1) {
-            D_8005C53C[0]->eid = D_80057998[0];
-            D_80056490 = 0;
-            D_8005C53C[0]->path_idx = D_8005799C[0];
+        if (gp_cur_zone == 1) {
+            g_ns_page_pool[0]->eid = D_80057998[0];
+            gp_cur_zone = 0;
+            g_ns_page_pool[0]->path_idx = D_8005799C[0];
             progress = D_800579A0[0];
         }
-        zone = (ZoneEntry *)func_80015118(&D_8005C53C[0]->eid, 1, mode);
+        zone = (ZoneEntry *)Ns_Open(&g_ns_page_pool[0]->eid, 1, mode);
         D_800566B0[0] = 0x6396347F;
         level_position.zone = NULL;
         level_position.path = NULL;
@@ -157,19 +154,19 @@ s32 func_800253A0(void)
         D_80057969[0] = 0;
         D_8005796A[0] = 0;
         D_8005796B[0] = 0;
-        D_80057970[0] = func_80034520[0];
-        if (D_800618D0[0] == 0x600) {
-            func_8002EABC(D_800566B0);
+        D_80057970[0] = engine_counter[0];
+        if (D_800618D0 == 0x600) {
+            Pbak_Choose(D_800566B0);
         }
-        func_80025A60(zone, zone->items[D_8005C53C[0]->path_idx + ((ZoneHeader *)zone->items[0])->path_index], progress, 0);
-        func_80015458(&D_8005C53C[0]->eid, 1);
+        Level_Update(zone, zone->items[g_ns_page_pool[0]->path_idx + ((ZoneHeader *)zone->items[0])->path_index], progress, 0);
+        Ns_Close(&g_ns_page_pool[0]->eid, 1);
     } else {
-        D_8005C53C[0]->unk0 = 0;
+        g_ns_page_pool[0]->unk0 = 0;
     }
-    if (D_80056400[0] == 0) {
-        func_8002EC68(1);
-        func_8002EBB4(1);
+    if (gp_next_lid[0] == 0) {
+        Shader_ParamsUpdate(1);
+        Shader_ParamsUpdateRipple(1);
     }
-    D_80056494 = 0;
+    gp_cur_path = 0;
     return -0xFF;
 }

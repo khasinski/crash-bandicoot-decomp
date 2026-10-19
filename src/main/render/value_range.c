@@ -3,7 +3,7 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Select 0x11, 0x22 or 0x33 for the observed input ranges. */
-s32 func_800175D0(s32 arg0)
+s32 Gfx_TgeoGetTexinfoArray(s32 arg0)
 {
     if (arg0 < 0) {
         arg0 = 0x22;
@@ -30,32 +30,32 @@ typedef struct {
     RenderEntryData *data;
 } RenderEntry;
 
-extern s32 D_80056710;
-void func_80015118(u32 *, s32, s32);
-u32 func_80015978(u32);
-void func_80015A98(u32 *);
+extern s32 gp_pbak_mode;
+void Ns_Open(u32 *, s32, s32);
+u32 Ns_Probe(u32);
+void Ns_Lookup(u32 *);
 
-s32 func_80017610(RenderEntry *entry)
+s32 Gfx_TgeoLookupEntry(RenderEntry *entry)
 {
     RenderEntryData *data = entry->data;
     u32 i;
 
     for (i = 0; i < data->words[6]; i++) {
-        func_80015A98(&data->words[i + 8]);
+        Ns_Lookup(&data->words[i + 8]);
     }
     return -0xFF;
 }
 
-s32 func_8001767C(RenderEntry *entry)
+s32 Gfx_TgeoOnLoad(RenderEntry *entry)
 {
     RenderEntryData *data = entry->data;
     u32 i = 0;
 
-    if (D_80056710 == 0x19 || D_80056710 == 0x38) {
+    if (gp_pbak_mode == 0x19 || gp_pbak_mode == 0x38) {
         while (i < data->words[4]) {
             if (data->entries[i].flags & 0x80) {
                 if (data->words[i + 6] & 1) {
-                    data->words[i + 6] = func_80015978(data->words[i + 6]);
+                    data->words[i + 6] = Ns_Probe(data->words[i + 6]);
                 }
                 i += 3;
             } else {
@@ -65,7 +65,7 @@ s32 func_8001767C(RenderEntry *entry)
     } else {
         while (i < data->words[4]) {
             if (data->entries[i].flags & 0x80) {
-                func_80015118(&data->words[i + 6], 0, 1);
+                Ns_Open(&data->words[i + 6], 0, 1);
                 i += 3;
             } else {
                 i += 1;

@@ -2,10 +2,10 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern s32 GOOL_TraverseObjectTreePreorder(Node *, Visitor, void *); /* extern */
-extern s32 func_8001CDD0(Node *, s32);                         /* extern */
+s32 GOOL_TraverseObjectTreePreorder(Node *, Visitor, void *); /* extern */
+s32 Gool_ObjectKill(Node *, s32);                         /* extern */
 
-s32 func_8001B84C(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
+s32 Gool_ObjectHandleTraverseTreePreorder(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
     Node *temp_s0;
     Node *temp_s1;
     Node *var_a0;
@@ -20,7 +20,7 @@ s32 func_8001B84C(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
         do {
             temp_s1 = var_s0->next;
             if (arg1(var_s0, arg2) == -0x19) {
-                func_8001CDD0(var_s0, 0);
+                Gool_ObjectKill(var_s0, 0);
                 var_s0 = temp_s1;
             } else {
                 var_a0 = var_s0->children;

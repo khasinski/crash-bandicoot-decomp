@@ -9,9 +9,9 @@ typedef struct {
     u8 length;
     u32 mode;
 } GpuModePacket;
-s32 func_80040144(void);
+s32 GetGraphType(void);
 
-u32 func_8003FA44(GpuModePacket *arg0, s32 arg1, s32 arg2, s32 arg3) {
+u32 SetDrawTPage(GpuModePacket *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_a3;
     s32 var_v0;
     s32 var_v0_2;
@@ -19,7 +19,7 @@ u32 func_8003FA44(GpuModePacket *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_v1;
 
     arg0->length = 1;
-    if ((func_80040144() == 1) || (func_80040144() == 2)) {
+    if ((GetGraphType() == 1) || (GetGraphType() == 2)) {
         var_v1 = 0xE1000000;
         if (arg2 != 0) {
             var_v1 = 0xE1000800;

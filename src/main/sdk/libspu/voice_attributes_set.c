@@ -2,10 +2,9 @@
 /* GCC_CPU: r3000 */
 #include "common.h"
 #include "sdk/libspu/voice_attributes.h"
-extern volatile u16 *D_800558E4;
 
-u32 func_80046E00(s32,u32);
-s32 func_80048EC4(s32,s32,s32,s32);
+u32 _spu_FsetRXXa(s32,u32);
+s32 _spu_note2pitch(s32,s32,s32,s32);
 static inline u16 encode_attack(s32 mode) {
     switch (mode) {
     case 1: return 0;
@@ -34,7 +33,7 @@ static inline u16 clamp_rate4(const u16 *rate) {
     if (value < 16) return *rate;
     return 15;
 }
-s32 func_80047F84(VoiceAttributes *attr, s32 first, s32 last, s32 skip_wait) {
+s32 _SpuSetVoiceAttr(VoiceAttributes *attr, s32 first, s32 last, s32 skip_wait) {
     volatile s32 delay_count;
     volatile s32 delay_product;
     /* ADSR words and the MMIO base occupy this scratch value in separate phases. */
@@ -91,7 +90,7 @@ valid:
             if ((1 << voice) & attr->field_0) {
                 word_index = voice * 8;
                 if ((all_fields != 0) || (field_mask & 0x10)) {
-                    D_800558E4[(voice * 8) + 2] = (u16) attr->field_14;
+                    g_spu_RXX[(voice * 8) + 2] = (u16) attr->field_14;
                 }
                 if ((all_fields != 0) || (field_mask & 0x40)) {
                     D_80055970[voice] = attr->field_18;
@@ -99,10 +98,10 @@ valid:
                 if ((all_fields != 0) || ((field_mask & 0x20) != 0)) {
                     base_note = D_80055970[voice];
                     note = attr->field_16;
-                    D_800558E4[word_index + 2] = func_80048EC4(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
+                    g_spu_RXX[word_index + 2] = _spu_note2pitch(base_note >> 8, base_note & 0xFF, note >> 8, note & 0xFF);
                 }
                 if ((all_fields != 0) || (field_mask & 0x80)) {
-                    func_80046E00(word_index | 3, attr->field_1C);
+                    _spu_FsetRXXa(word_index | 3, attr->field_1C);
                 }
                 if (all_fields == 0) {
                     if (field_mask & 0x800) {
@@ -120,19 +119,19 @@ set_attack_rate:
                     if ((u16) attr->field_30 < 0x80U) {
                         rate = attr->field_30;
                     }
-                    attack_regs = D_800558E4 + word_index;
+                    attack_regs = g_spu_RXX + word_index;
                     operand.word = attack_regs[4] & 0xFF;
                     attack_regs[4] = (u16) (operand.word | ((rate | adsr_mode) << 8));
                 }
                 if ((all_fields != 0) || (field_mask & 0x1000)) {
                     rate = clamp_rate4(&attr->field_32);
-                    decay_regs = D_800558E4 + word_index;
+                    decay_regs = g_spu_RXX + word_index;
                     operand.word = decay_regs[4] & 0xFF0F;
                     decay_regs[4] = (u16) (operand.word | (rate * 0x10));
                 }
                 if ((all_fields != 0) || (field_mask & 0x8000)) {
                     rate = clamp_rate4(&attr->field_38);
-                    level_regs = D_800558E4 + word_index;
+                    level_regs = g_spu_RXX + word_index;
                     level_regs[4] = (u16) (rate | (level_regs[4] & 0xFFF0));
                 }
                 if (all_fields == 0) {
@@ -151,7 +150,7 @@ set_sustain_rate:
                     if ((u16) attr->field_34 < 0x80U) {
                         rate = attr->field_34;
                     }
-                    sustain_regs = D_800558E4 + word_index;
+                    sustain_regs = g_spu_RXX + word_index;
                     operand.word = sustain_regs[5] & 0x3F;
                     sustain_regs[5] = (u16) (operand.word | ((rate | adsr_mode) << 6));
                 }
@@ -171,20 +170,20 @@ set_release_rate:
                     if ((u16) attr->field_36 < 0x20U) {
                         rate = attr->field_36;
                     }
-                    release_regs = D_800558E4 + word_index;
+                    release_regs = g_spu_RXX + word_index;
                     operand.word = release_regs[5] & 0xFFC0;
                     release_regs[5] = (u16) (operand.word | (rate | adsr_mode));
                 }
                 if ((all_fields != 0) || ((field_mask & 0x20000) != 0)) {
                     operand.word = attr->field_3A;
-                    D_800558E4[word_index + 4] = (u16) operand.word;
+                    g_spu_RXX[word_index + 4] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || ((field_mask & 0x40000) != 0)) {
                     operand.word = attr->field_3C;
-                    D_800558E4[word_index + 5] = (u16) operand.word;
+                    g_spu_RXX[word_index + 5] = (u16) operand.word;
                 }
                 if ((all_fields != 0) || (field_mask & 0x10000)) {
-                    func_80046E00(word_index | 7, attr->field_20);
+                    _spu_FsetRXXa(word_index | 7, attr->field_20);
                 }
                 if ((all_fields != 0) || (field_mask & 1)) {
                     if ((all_fields != 0) || (field_mask & 4)) {
@@ -234,7 +233,7 @@ set_release_rate:
                     }
                     encoded_volume = left_volume & 0x7FFF;
                     voice_address = word_index * 2;
-                    operand.base = D_800558E4;
+                    operand.base = g_spu_RXX;
                     voice_address += (u32)operand.base;
                     *(volatile u16 *)(voice_address + 0) = encoded_volume | volume_mode;
                 }
@@ -286,7 +285,7 @@ set_release_rate:
                     }
                     encoded_volume = right_volume & 0x7FFF;
                     voice_address = word_index * 2;
-                    operand.base = D_800558E4;
+                    operand.base = g_spu_RXX;
                     voice_address += (u32)operand.base;
                     ((volatile u16 *)voice_address)[1] = encoded_volume | volume_mode;
                 }

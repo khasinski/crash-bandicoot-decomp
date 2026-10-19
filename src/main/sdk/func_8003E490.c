@@ -1,7 +1,7 @@
 #include "common.h"
 /* GCC_VERSION: 2.6.3 */
-void func_8003E4B0(void);
+void StopPAD(void);
 
-void func_8003E490(void) {
-    func_8003E4B0();
+void PadStop(void) {
+    StopPAD();
 }

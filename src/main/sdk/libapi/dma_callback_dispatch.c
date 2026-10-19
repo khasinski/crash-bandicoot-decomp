@@ -3,12 +3,10 @@
 
 typedef void (*Callback)(void);
 
-extern volatile u32 *D_800549F8;
-extern Callback D_800549FC[];
 
-s32 func_8003D730(const char *, ...);
+s32 BIOS_Printf(const char *, ...);
 
-void func_8003EFCC(void) {
+void trapIntrDMA(void) {
     s32 i;
     u32 pending;
 
@@ -28,14 +26,14 @@ void func_8003EFCC(void) {
         pending = (*D_800549F8 >> 24) & 0x7F;
     }
     if ((*D_800549F8 & 0xFF000000) == 0x80000000 || (*D_800549F8 & 0x8000)) {
-        func_8003D730(D_8001106C, *D_800549F8);
+        BIOS_Printf(D_8001106C, *D_800549F8);
         for (i = 0; i < 7; i++) {
-            func_8003D730(D_80011088, i, D_80054A1C[i * 4]);
+            BIOS_Printf(D_80011088, i, D_80054A1C[i * 4]);
         }
     }
 }
 
-Callback func_8003F150(s32 index, Callback callback) {
+Callback setIntrDMA(s32 index, Callback callback) {
     Callback previous = D_800549FC[index];
 
     if (callback != previous) {
@@ -50,7 +48,7 @@ Callback func_8003F150(s32 index, Callback callback) {
     return previous;
 }
 
-void func_8003F1F8(Callback *table, s32 count) {
+void dma_memclr(Callback *table, s32 count) {
     while (--count != -1) {
         *table++ = NULL;
     }

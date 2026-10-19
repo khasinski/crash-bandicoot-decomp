@@ -112,7 +112,7 @@ file "$CPP" | grep -q Mach-O || [ "$(uname -s)" != Darwin ] || CPP="$TC/gcc-2.6.
             split($2, a, ",");
             sz = $3 + 0;
             if (sz == 0) sz = a[2] + 0;
-            if (sz > 0 && sz <= g && (a[1] ~ /^D_8005(6[4567]|E340)/ || (a[1] !~ /^D_800/ && a[1] != "frame_counter" && a[1] != "level_position")))
+            if (sz > 0 && sz <= g && (a[1] ~ /^(gp_|D_8005(6[4567]|E340))/ || (a[1] !~ /^(g_|D_800)/ && a[1] != "frame_counter" && a[1] != "level_position")))
                 printf ".sdata\n.size %s,%d\n.text\n", a[1], sz;
         }
     }' \

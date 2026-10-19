@@ -2,24 +2,16 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern volatile u16 *D_80056270;
-extern u16 D_8005724C;
-extern u16 D_80057254;
-extern u16 D_8005725C;
-extern u16 D_80057264;
+extern volatile u16 *g_snd_tempo;
 typedef struct { s16 pitch; u8 pad[50]; } VoicePitch;
 extern VoicePitch D_800572B0[];
 typedef struct { u8 flags; u8 pad[51]; } VoiceFlags;
 extern VoiceFlags D_800572C7[];
 
-extern u16 D_8005E56E;
 typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
-extern VoiceVol D_8005E588[];
-typedef struct { u8 gap00[0x74]; u16 left, right; u8 gap78[0xAC - 0x78]; } State;
-extern State *D_80060418[];
-extern u16 D_80061A68;
+extern VoiceVol g_midi_seq_table[];
 
-void func_8004EBDC(s32 arg0) {
+void vmNoiseOn(s32 arg0) {
     s32 dummy;
     s32 *unused_ptr = &dummy;
     s16 var_a1_2;
@@ -36,17 +28,17 @@ void func_8004EBDC(s32 arg0) {
     s32 left_scale, right_scale;
     u16 control;
     u32 packed_id;
-    State *temp_v1;
+    SequenceState *temp_v1;
 
-    packed_id = D_8005E56E;
-    temp_v1 = D_80060418[packed_id & 255] + (packed_id >> 8);
-    left_scale = temp_v1->left;
+    packed_id = (*(u16 *)&D_8005E56E);
+    temp_v1 = g_ss_score_table[packed_id & 255] + (packed_id >> 8);
+    left_scale = temp_v1->field_74;
     temp_lo = (u32)(((left_scale << 7) + left_scale) * D_8005E562) / 127U;
-    right_scale = temp_v1->right;
+    right_scale = temp_v1->field_76;
     temp_lo_2 = (u32)(((right_scale << 7) + right_scale) * D_8005E562) / 127U;
     temp_lo = (temp_lo * D_8005E565) / 127U;
     temp_lo_2 = (temp_lo_2 * D_8005E565) / 127U;
-    control = D_80056270[0x1AA / 2];
+    control = g_snd_tempo[0x1AA / 2];
     if ((u8) D_8005E566 < 0x40U) {
         var_a2 = (u32) (temp_lo_2 * D_8005E566) / 63U;
         var_a1 = temp_lo;
@@ -73,12 +65,12 @@ void func_8004EBDC(s32 arg0) {
     }
     control &= 0xC0FF;
     control |= ((D_8005E55A - D_8005E568) & 0x3F) << 8;
-    D_80056270[0x1AA / 2] = control;
+    g_snd_tempo[0x1AA / 2] = control;
     temp_a0 = arg0 & 0xFF;
     temp_v1_2 = temp_a0 * 0x10;
-    *(s16 *)((u32)&D_8005E588[0].right + temp_v1_2) = (s16) var_a2;
-    *(s16 *)((u32)&D_8005E588[0].left + temp_v1_2) = (s16) var_a1;
-    D_800577A4[temp_a0] = D_800577A4[temp_a0] | 3;
+    *(s16 *)((u32)&g_midi_seq_table[0].right + temp_v1_2) = (s16) var_a2;
+    *(s16 *)((u32)&g_midi_seq_table[0].left + temp_v1_2) = (s16) var_a1;
+    g_card_ev_table[temp_a0] = g_card_ev_table[temp_a0] | 3;
     if (temp_a0 < 0x10U) {
         var_a3 = 1 << temp_a0;
         var_a2_2 = 0;
@@ -88,11 +80,11 @@ void func_8004EBDC(s32 arg0) {
     }
     D_800572B0[arg0 & 0xFF].pitch = 0xA;
     var_a1_2 = 0;
-    if (D_8005E340 != 0) {
+    if (gp_spawn_count != 0) {
         do {
             D_800572C7[var_a1_2].flags &= 1;
             var_a1_2++;
-        } while (var_a1_2 < D_8005E340);
+        } while (var_a1_2 < gp_spawn_count);
     }
     D_800572C7[arg0 & 0xFF].flags = 2;
     temp_v0_2 = var_a3 | D_8005724C;
@@ -108,6 +100,6 @@ void func_8004EBDC(s32 arg0) {
         D_8005725C &= ~var_a3;
         D_80057264 &= ~var_a2_2;
     }
-    D_80056270[0x194 / 2] = var_a3;
-    D_80056270[0x196 / 2] = var_a2_2;
+    g_snd_tempo[0x194 / 2] = var_a3;
+    g_snd_tempo[0x196 / 2] = var_a2_2;
 }

@@ -3,76 +3,71 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-typedef struct {
-    u32 address;
-    u32 size;
-} SpuBlock;
 
-extern SpuBlock *D_80055944;
 
-void func_80050964(void) {
+void _spu_gcSPU(void) {
     s32 i;
     s32 j;
     u32 temp_addr;
     u32 temp_size;
 
-    for (i = 0; i <= D_80055940; ) {
-        if (D_80055944[i].address & 0x80000000) {
+    for (i = 0; i <= g_spu_alloc_num; ) {
+        if (g_spu_memList[i].address & 0x80000000) {
             for (j = i + 1; ; j++) {
-                if (D_80055944[j].address != 0x2FFFFFFF) {
+                if (g_spu_memList[j].address != 0x2FFFFFFF) {
                     goto found;
                 }
             }
         found:
-            if ((D_80055944[j].address & 0x80000000) &&
-                ((D_80055944[j].address & 0x0FFFFFFF) == (D_80055944[i].address & 0x0FFFFFFF) + D_80055944[i].size)) {
-                D_80055944[j].address = 0x2FFFFFFF;
-                D_80055944[i].size += D_80055944[j].size;
+            if ((g_spu_memList[j].address & 0x80000000) &&
+                ((g_spu_memList[j].address & 0x0FFFFFFF) == (g_spu_memList[i].address & 0x0FFFFFFF) + g_spu_memList[i].size)) {
+                g_spu_memList[j].address = 0x2FFFFFFF;
+                g_spu_memList[i].size += g_spu_memList[j].size;
                 continue;
             }
         }
         i++;
     }
-    for (i = 0; i <= D_80055940; i++) {
-        if (D_80055944[i].size == 0) {
-            D_80055944[i].address = 0x2FFFFFFF;
+    for (i = 0; i <= g_spu_alloc_num; i++) {
+        if (g_spu_memList[i].size == 0) {
+            g_spu_memList[i].address = 0x2FFFFFFF;
         }
     }
-    for (i = 0; i <= D_80055940; i++) {
-        if (D_80055944[i].address & 0x40000000) {
+    for (i = 0; i <= g_spu_alloc_num; i++) {
+        if (g_spu_memList[i].address & 0x40000000) {
             break;
         }
-        for (j = i + 1; j <= D_80055940; j++) {
-            if (D_80055944[j].address & 0x40000000) {
+        for (j = i + 1; j <= g_spu_alloc_num; j++) {
+            if (g_spu_memList[j].address & 0x40000000) {
                 break;
             }
-            if ((D_80055944[j].address & 0x0FFFFFFF) < (D_80055944[i].address & 0x0FFFFFFF)) {
-                temp_addr = D_80055944[i].address;
-                D_80055944[i].address = D_80055944[j].address;
-                temp_size = D_80055944[i].size;
-                D_80055944[i].size = D_80055944[j].size;
-                D_80055944[j].address = temp_addr;
-                D_80055944[j].size = temp_size;
+            if ((g_spu_memList[j].address & 0x0FFFFFFF) < (g_spu_memList[i].address & 0x0FFFFFFF)) {
+                temp_addr = g_spu_memList[i].address;
+                g_spu_memList[i].address = g_spu_memList[j].address;
+                temp_size = g_spu_memList[i].size;
+                g_spu_memList[i].size = g_spu_memList[j].size;
+                g_spu_memList[j].address = temp_addr;
+                g_spu_memList[j].size = temp_size;
             }
         }
     }
-    for (i = 0; i <= D_80055940; i++) {
-        if (D_80055944[i].address & 0x40000000) {
+    for (i = 0; i <= g_spu_alloc_num; i++) {
+        if (g_spu_memList[i].address & 0x40000000) {
             break;
         }
-        if (D_80055944[i].address == 0x2FFFFFFF) {
-            D_80055944[i].address = D_80055944[D_80055940].address;
-            D_80055944[i].size = D_80055944[D_80055940].size;
-            D_80055940 = i;
+        if (g_spu_memList[i].address == 0x2FFFFFFF) {
+            g_spu_memList[i].address = g_spu_memList[g_spu_alloc_num].address;
+            g_spu_memList[i].size = g_spu_memList[g_spu_alloc_num].size;
+            g_spu_alloc_num = i;
             break;
         }
     }
-    for (i = D_80055940 - 1; i >= 0; i--) {
-        if (!(D_80055944[i].address & 0x80000000)) {
+    for (i = g_spu_alloc_num - 1; i >= 0; i--) {
+        if (!(g_spu_memList[i].address & 0x80000000)) {
             break;
         }
-        D_80055944[i].address = (D_80055944[i].address & 0x0FFFFFFF) | 0x40000000;
-        D_80055944[i].size += D_80055944[D_80055940].size;
-        D_80055940 = i;
+        g_spu_memList[i].address = (g_spu_memList[i].address & 0x0FFFFFFF) | 0x40000000;
+        g_spu_memList[i].size += g_spu_memList[g_spu_alloc_num].size;
+        g_spu_alloc_num = i;
     }
 }

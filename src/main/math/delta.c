@@ -4,7 +4,7 @@
 
 s32 abs(s32);
 
-s32 func_800245F0(s32 current,s32 target) {
+s32 Gool_AngDiff(s32 current,s32 target) {
     s32 delta;
     current &= 0xFFF;
     target &= 0xFFF;
@@ -13,7 +13,7 @@ s32 func_800245F0(s32 current,s32 target) {
     return delta > 0 ? delta - 0x1000 : delta + 0x1000;
 }
 
-s32 func_80024628(s32 current, s32 target, s32 step) {
+s32 Gool_Seek(s32 current, s32 target, s32 step) {
     s32 delta = target - current;
     if (step > 0 && abs(delta) < step) return target;
     return delta > 0 ? current + step : current - step;

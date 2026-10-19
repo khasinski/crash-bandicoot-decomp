@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
+extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -98,19 +99,18 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern s32 *D_800566F4;
 
-ZoneEntry *func_80015A98(u32 *);
-s32 func_80024040(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *func_80026DD4(ZoneEntry *, ZqVec *);
-void func_80027F50(void *, SubObj *, s32, s32);
-s32 func_80037D50(ZqZoneRect *, ZqBound *, void *, s32);
-void func_8003864C(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void func_8002D8B8(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 func_8002CD9C(SubObj *, ZqVec *, SubWorkspace *);
-s32 func_8002C8EC(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 func_8002E0A0(s32, s32, ZqVec *, SubObj *);
-s32 func_8002E3F8(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
+ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
+void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
+s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
+void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
+void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
+s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
+s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
+s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
+s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -122,11 +122,11 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-extern SubBoxList D_80060E08;
+extern SubBoxList g_obj_bounds;
 
-void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 func_80038DF8(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
+void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
+void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
+s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -138,7 +138,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -147,7 +147,7 @@ static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 {
     if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
         && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
@@ -156,10 +156,10 @@ static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void func_8002D69C(s32, s32);
-s32 func_80042B9C(s32);
+void Solid_PlotWall(s32, s32);
+s32 SquareRoot0(s32);
 
-static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
+static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
     s32 *p;
     u32 mask;
@@ -193,7 +193,7 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     if (y1 >= 32) {
         return;
     }
-    p = &D_800566F4[y1];
+    p = &gp_grid_rows[y1];
     if (set) {
         for (; y1 < y2; y1++, p++) {
             *p |= mask;
@@ -206,9 +206,9 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     }
 }
 
-void func_8002DF50(ZqVec *v, SubObj *obj, SubWorkspace *ws);
+void Solid_PlotWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws);
 
-void func_8002D8B8(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
+void Solid_PlotObjWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
 {
     ZqBound bound1;
     ZqBound bound2;
@@ -222,7 +222,7 @@ void func_8002D8B8(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
     no_grid = !(((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000);
     vx = v->x;
     vz = v->z;
-    if (D_80060E08.count != 0) {
+    if (g_obj_bounds.count != 0) {
         unk78 = obj->unk78;
         bound1.p1.x = v->x + obj->bound.p1.x;
         bound1.p1.y = v->y + obj->bound.p1.y;
@@ -237,11 +237,11 @@ void func_8002D8B8(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
         bound2.p2.y = bound1.p2.y;
         bound2.p2.z = bound1.p2.z + 0x6400;
         ws->unk104C += 0x100;
-        box = D_80060E08.boxes;
-        for (i = D_80060E08.count - 1; i >= 0; i--, box++) {
+        box = g_obj_bounds.boxes;
+        for (i = g_obj_bounds.count - 1; i >= 0; i--, box++) {
             cand_obj = box->obj;
             if ((cand_obj != unk78 || !flag || box->bound.p2.y > bound2.p1.y)
-                && func_80026CA8(&bound2, &box->bound)) {
+                && Level_TestBoundIntersection(&bound2, &box->bound)) {
                 bound3.p1.x = box->bound.p1.x + cand_obj->unk148;
                 bound3.p1.y = box->bound.p1.y;
                 bound3.p1.z = box->bound.p1.z + cand_obj->unk148;
@@ -258,38 +258,38 @@ void func_8002D8B8(ZqVec *v, SubObj *obj, SubWorkspace *ws, s32 flag)
                     && (cand_obj->unk20->header->type != 0xB
                         || (diff.x = (v->x - cand_obj->trans.x) >> 8,
                             diff.z = (v->z - cand_obj->trans.z) >> 8,
-                            (func_80042B9C(diff.x * diff.x + diff.z * diff.z) << 8) > 0x19000))) {
+                            (SquareRoot0(diff.x * diff.x + diff.z * diff.z) << 8) > 0x19000))) {
                     x = ((bound3.p1.x - vx) << 2) / 0x2000;
                     x1 = x;
                     x2 = ((bound3.p2.x - vx) << 2) / 0x2000;
                     z1 = ((bound3.p1.z - vz) << 2) / 0x2000;
                     z = z1;
                     z2 = ((bound3.p2.z - vz) << 2) / 0x2000;
-                    func_8002D7D4(x, z1, x2, z2, 1);
+                    Solid_PlotWallB(x, z1, x2, z2, 1);
                     if (flag) {
                         for (; x < x2; x += 8) {
-                            func_8002D69C(x, z);
+                            Solid_PlotWall(x, z);
                         }
                         for (x = x2; z < z2; z += 8) {
-                            func_8002D69C(x, z);
+                            Solid_PlotWall(x, z);
                         }
                         for (z = z2; x > x1; x -= 8) {
-                            func_8002D69C(x, z);
+                            Solid_PlotWall(x, z);
                         }
                         for (x = x1; z > z1; z -= 8) {
-                            func_8002D69C(x, z);
+                            Solid_PlotWall(x, z);
                         }
                     }
                 }
-                if (flag && func_80026CA8(&bound1, &box->bound)) {
-                    func_80024AD4(obj, &bound1, box->obj, &box->bound);
+                if (flag && Level_TestBoundIntersection(&bound1, &box->bound)) {
+                    Gool_Collide(obj, &bound1, box->obj, &box->bound);
                 }
             }
         }
     }
 }
 
-void func_8002DF50(ZqVec *v, SubObj *obj, SubWorkspace *ws)
+void Solid_PlotWalls(ZqVec *v, SubObj *obj, SubWorkspace *ws)
 {
     u8 unused[0x30];
     s32 i, state, status_c, a, c;
@@ -299,7 +299,7 @@ void func_8002DF50(ZqVec *v, SubObj *obj, SubWorkspace *ws)
 
     if (!(((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000)) {
         i = 0x1F;
-        p1 = &D_800566F4[0x1F];
+        p1 = &gp_grid_rows[0x1F];
         do {
             *p1 = 0;
             i--;
@@ -320,9 +320,9 @@ void func_8002DF50(ZqVec *v, SubObj *obj, SubWorkspace *ws)
         } else {
             c = a;
         }
-        func_8003864C(ws, bound, c,
-                      obj->trans.y + D_800564BC, obj->trans.y + 0x3200, v->y + 0x29900, v->x, v->z);
+        Solid_RPlotQueryWalls(ws, bound, c,
+                      obj->trans.y + gp_wall_bitmap, obj->trans.y + 0x3200, v->y + 0x29900, v->x, v->z);
     }
-    func_8002D8B8(v, obj, ws, 1);
+    Solid_PlotObjWalls(v, obj, ws, 1);
 }
 

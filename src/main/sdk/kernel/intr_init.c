@@ -3,7 +3,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-/* --- func_8003E88C --- */
+/* --- startIntr --- */
 
 typedef void (*Callback)(void);
 
@@ -18,7 +18,7 @@ typedef struct {
     u32 stack[0x400];
 } IntrState;
 
-extern IntrState D_80053934;
+extern IntrState g_event_handlers;
 
 typedef struct {
     u32 word00;
@@ -32,33 +32,33 @@ typedef struct {
 
 extern Dispatch *D_800549BC;
 
-void func_8003EDD8(void *, s32);
+void intr_memclr(void *, s32);
 s32 setjmp(void *);
-void func_8003E968(void);
-void func_8003EE44(void *);
-s32 func_8003EE54(void);
-s32 func_8003EF7C(void);
-void func_8003EE14(void *);
-void func_8003E208(void);
+void trapIntr(void);
+void HookEntryInt(void *);
+s32 startIntrVSync(void);
+s32 startIntrDMA(void);
+void _96_remove(void *);
+void ExitCriticalSection(void);
 
-void *func_8003E88C(void) {
+void *startIntr(void) {
     void *result;
 
-    if (D_80053934.initialized == 0) {
+    if (g_event_handlers.initialized == 0) {
         *D_800549C0 = *D_800549C4 = 0;
         *D_800549C8 = 0x33333333;
-        func_8003EDD8(&D_80053934, sizeof(IntrState) / 4);
-        if (setjmp(D_80053934.context) != 0) {
-            func_8003E968();
+        intr_memclr(&g_event_handlers, sizeof(IntrState) / 4);
+        if (setjmp(g_event_handlers.context) != 0) {
+            trapIntr();
         }
-        D_80053934.context[1] = (u32)&D_80053934.stack[0x3EC];
-        func_8003EE44(D_80053934.context);
-        D_80053934.initialized = 1;
-        D_800549BC->slot14 = func_8003EE54();
-        D_800549BC->slot04 = func_8003EF7C();
-        func_8003EE14(D_800549BC);
-        func_8003E208();
-        result = &D_80053934;
+        g_event_handlers.context[1] = (u32)&g_event_handlers.stack[0x3EC];
+        HookEntryInt(g_event_handlers.context);
+        g_event_handlers.initialized = 1;
+        D_800549BC->slot14 = startIntrVSync();
+        D_800549BC->slot04 = startIntrDMA();
+        _96_remove(D_800549BC);
+        ExitCriticalSection();
+        result = &g_event_handlers;
     } else {
         result = NULL;
     }

@@ -1,10 +1,10 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-s32 func_8003F514(s32,s32,s32,s32);                /* extern */
-void func_80040484(GpuRect *,s32);                        /* extern */
+s32 GetTPage(s32,s32,s32,s32);                /* extern */
+void LoadImage(GpuRect *,s32);                        /* extern */
 
-s32 func_8003F24C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+s32 LoadTPage(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     GpuRect rect;
     s32 var_v0;
 
@@ -26,6 +26,6 @@ s32 func_8003F24C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
         rect.w = (s16) arg5;
         break;
     }
-    func_80040484(&rect, arg0);
-    return func_8003F514(arg1, arg2, arg3, arg4) & 0xFFFF;
+    LoadImage(&rect, arg0);
+    return GetTPage(arg1, arg2, arg3, arg4) & 0xFFFF;
 }

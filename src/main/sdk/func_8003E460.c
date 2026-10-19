@@ -1,8 +1,8 @@
 #include "common.h"
 /* GCC_VERSION: 2.6.3 */
-void func_8003E4D0(void);
+void PAD_dr(void);
 
-s32 func_8003E460(void) {
-    func_8003E4D0();
+s32 PadRead(void) {
+    PAD_dr();
     return ~D_80057054;
 }

@@ -33,32 +33,30 @@ typedef struct {
     s16 unk1E;
 } SvmCur;
 
-extern SvmCur D_8005E558;
+extern SvmCur g_midi_sep;
 extern VoiceU16 D_800572B2[];
 
-extern u32 D_8005CFE4;
 
-extern u16 D_80057EF0;
-void func_8004DA78(s32, s32);
+void _SpuVmSetNoiseVoice(s32, s32);
 
-void func_8004E80C(void) {
+void SpuVmDoAllocate(void) {
     s32 var_t0;
     s32 pad[2];
 
-    D_8005E558.unk1C = D_8005E558.unk1A * 8;
-    D_8005E558.unk1E = (D_8005E558.unk7 << 4) + D_8005E558.unkC;
-    D_800572B2[D_8005E558.unk1A].value = 0x7FFF;
+    g_midi_sep.unk1C = g_midi_sep.unk1A * 8;
+    g_midi_sep.unk1E = (g_midi_sep.unk7 << 4) + g_midi_sep.unkC;
+    D_800572B2[g_midi_sep.unk1A].value = 0x7FFF;
     for (var_t0 = 0; var_t0 < 0x10; var_t0++) {
-        D_80060D70[var_t0] &= ~(1 << D_8005E558.unk1A);
+        D_80060D70[var_t0] &= ~(1 << g_midi_sep.unk1A);
     }
-    if ((D_8005E558.unk18 & 1) > 0) {
-        D_8005E58E[D_8005E558.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) D_8005E558.unk18 - 1) / 2) * 0x10) + 0xC);
-        D_800577A4[D_8005E558.unk1A] |= 8;
+    if ((g_midi_sep.unk18 & 1) > 0) {
+        D_8005E58E[g_midi_sep.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xC);
+        g_card_ev_table[g_midi_sep.unk1A] |= 8;
     } else {
-        D_8005E58E[D_8005E558.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) D_8005E558.unk18 - 1) / 2) * 0x10) + 0xE);
-        D_800577A4[D_8005E558.unk1A] |= 8;
+        D_8005E58E[g_midi_sep.unk1C] = *(u16 *)(D_8005CFCC + ((((s16) g_midi_sep.unk18 - 1) / 2) * 0x10) + 0xE);
+        g_card_ev_table[g_midi_sep.unk1A] |= 8;
     }
-    D_8005E590[D_8005E558.unk1C] = *(u16 *)(((((D_8005E558.unk7 << 4) + D_8005E558.unkC) << 5) + D_8005CFE4) + 0x10);
-    D_8005E592[D_8005E558.unk1C] = *(u16 *)(((((D_8005E558.unk7 << 4) + D_8005E558.unkC) << 5) + D_8005CFE4) + 0x12) + D_80057EF0;
-    D_800577A4[D_8005E558.unk1A] |= 0x30;
+    D_8005E590[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x10);
+    D_8005E592[g_midi_sep.unk1C] = *(u16 *)(((((g_midi_sep.unk7 << 4) + g_midi_sep.unkC) << 5) + (*(u32 *)&g_ns_vpage_pool)) + 0x12) + D_80057EF0;
+    g_card_ev_table[g_midi_sep.unk1A] |= 0x30;
 }

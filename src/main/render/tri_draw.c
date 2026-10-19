@@ -3,17 +3,17 @@
 #include "common.h"
 #include "gpu.h"
 #include "gte.h"
-extern s32 D_80057960;
+extern s32 g_draw_stamp;
 
-extern s32 D_800578D0;
-void func_80042E9C(void *);
+extern s32 g_view_proj;
+void SetRotMatrix(void *);
 typedef struct PrimBuf9398 {
     u8 pad00[0x78];
     void *prim_ptr;
 } PrimBuf9398;
 
-extern PrimBuf9398 *D_8005840C;
-extern s32 D_800578D0;
+extern PrimBuf9398 *g_ot_cur;
+extern s32 g_view_proj;
 
 typedef struct Vert9DCC {
     u32 v0;
@@ -80,14 +80,12 @@ typedef struct PolyG3_9DCC {
     u32 xy2;
 } PolyG3_9DCC;
 
-extern ZoneEntry9DCC *D_80057914;
-extern u8 D_800577E4[];
-extern SortList9DCC *D_800566B8;
-extern UvEntry9DCC D_80051774[];
+extern ZoneEntry9DCC *g_pads;
+extern SortList9DCC *gp_level_entry;
 
-void func_80042ECC(void *);
+void SetLightMatrix(void *);
 
-void func_800195CC(u32 *arg0)
+void Gfx_UpdateCamMatrices(u32 *arg0)
 {
     Group9DCC *groups;
     s32 ot_idx;
@@ -117,13 +115,13 @@ void func_800195CC(u32 *arg0)
     PolyG3_9DCC *poly_g3;
     s32 pad[2];
 
-    groups = (Group9DCC *)(D_80057914->header + 4);
+    groups = (Group9DCC *)(g_pads->header + 4);
     ot_idx = 0x7FF;
-    func_80042E9C(D_800577E4);
-    func_80042ECC(D_800577E4 + 0x110);
+    SetRotMatrix(g_m_view);
+    SetLightMatrix(g_m_view + 0x110);
     prev_group = -1;
-    for (i = D_800566B8->count - 1; i >= 0; i--) {
-        entry = D_800566B8->entries[i];
+    for (i = gp_level_entry->count - 1; i >= 0; i--) {
+        entry = gp_level_entry->entries[i];
         if ((s32)(entry >> 12) != prev_group) {
             s32 trx, try, trz;
             prev_group = entry >> 12;
@@ -161,8 +159,8 @@ void func_800195CC(u32 *arg0)
         gte_ldrgb(w0);
         w0 >>= 24;
         if (w0 & 0x80) {
-            void *p = D_8005840C->prim_ptr;
-            D_8005840C->prim_ptr = (PolyGT3_9DCC *)p + 1;
+            void *p = g_ot_cur->prim_ptr;
+            g_ot_cur->prim_ptr = (PolyGT3_9DCC *)p + 1;
             t3 = **(u32 ***)(((tri_w0 & 0xE0) >> 3) + (u32)group_ptr->tex_tab - 0x20);
             poly = (PolyGT3_9DCC *)p;
             poly->color0 = vtx0->v0;
@@ -170,7 +168,7 @@ void func_800195CC(u32 *arg0)
             poly->color2 = vtx2->v0;
             if (tri_w1 & 0x1E) {
                 a0 = (tri_w1 & 0x1E) | 1;
-                w1 = ((u32 *)xy)[1 + (((D_80057960 >> ((tri_w1 >> 5) & 7)) + (tri_w0 & 0x1F)) & a0)];
+                w1 = ((u32 *)xy)[1 + (((g_draw_stamp >> ((tri_w1 >> 5) & 7)) + (tri_w0 & 0x1F)) & a0)];
             } else {
                 w1 = ((u32 *)xy)[1];
             }
@@ -180,7 +178,7 @@ void func_800195CC(u32 *arg0)
             uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (t3 & 0x80)) << 8);
             poly->clut = ((t3 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
             poly->tpage = tpage | (t3 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-            uv_ptr = &D_80051774[w1 >> 22];
+            uv_ptr = &((UvEntry9DCC *)D_80051774)[w1 >> 22];
             xy = uv_ptr->lo;
             z = uv_ptr->hi;
             poly->uv0 = xy + uv_base;
@@ -194,14 +192,14 @@ void func_800195CC(u32 *arg0)
             gte_getsz3(xy);
             gte_stsxy2(poly->xy2);
             temp = 0x800 - ((u32)(sz1 + (s32)xy) >> 5);
-            sz1 = temp - (D_800578D0 / 2);
+            sz1 = temp - (g_view_proj / 2);
             ot_idx = (sz1 >= ot_idx) ? ot_idx : ((sz1 >= 0) ? sz1 : 0);
             xy = (u32)&arg0[ot_idx];
             poly->tag = *(u32 *)xy | 0x09000000;
             *(u32 *)xy = (u32)poly & 0xFFFFFF;
         } else {
-            void *p = D_8005840C->prim_ptr;
-            D_8005840C->prim_ptr = (PolyG3_9DCC *)p + 1;
+            void *p = g_ot_cur->prim_ptr;
+            g_ot_cur->prim_ptr = (PolyG3_9DCC *)p + 1;
             poly_g3 = (PolyG3_9DCC *)p;
             poly_g3->color0 = vtx0->v0;
             poly_g3->color1 = vtx1->v0;
@@ -215,7 +213,7 @@ void func_800195CC(u32 *arg0)
             gte_getsz3(xy);
             gte_stsxy2(poly_g3->xy2);
             temp = 0x800 - ((u32)(sz1 + (s32)xy) >> 5);
-            sz1 = temp - (D_800578D0 / 2);
+            sz1 = temp - (g_view_proj / 2);
             ot_idx = (sz1 >= ot_idx) ? ot_idx : ((sz1 >= 0) ? sz1 : 0);
             xy = (u32)&arg0[ot_idx];
             poly_g3->tag = *(u32 *)xy | 0x06000000;

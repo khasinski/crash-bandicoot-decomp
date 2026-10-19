@@ -3,7 +3,7 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-s32 func_8004EA24(void) {
+s32 note2pitch(void) {
     s32 temp_v0;
     s32 semitone_index;
     s32 quotient;

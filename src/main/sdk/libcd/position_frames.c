@@ -6,7 +6,7 @@ typedef struct {
     u8 second;
     u8 frame;
 } DiscPositionView;
-s32 func_80043B28(DiscPositionView *arg0) {
+s32 CdPosToInt(DiscPositionView *arg0) {
     u8 temp_a1;
     u8 temp_a2;
     u8 temp_v1;

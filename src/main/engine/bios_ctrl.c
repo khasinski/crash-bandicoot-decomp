@@ -4,25 +4,25 @@
 
 #include "engine_state.h"
 
-extern EngineState *D_80056564;
-extern s32 engine_flag_shadow[];
-extern EngineByteRecord D_80056590[], D_8005703C[];
+extern EngineState *gp_card;
+extern EngineByteRecord D_80056590[];
+extern EngineByteRecord g_card_filename[];
 
-void func_8003CD60(s32);
-s32 func_8003D094(void);
-s32 func_8003D1F0(void);
-s32 func_8003D308(void);
-s32 func_8003D444(void);
+void Card_ResetStateAndFlags(s32);
+s32 Card_StartWriteNamedPart(void);
+s32 Card_CheckNewDevice(void);
+s32 Card_ProbeTimeout(void);
+s32 Card_StartFormat(void);
 
 static __inline__ s32 func_8003D008_inline(void)
 {
-    D_80056564->word04 &= ~0x20;
+    gp_card->word04 &= ~0x20;
     return 0;
 }
 
 static __inline__ s32 func_8003D028_inline(s32 value)
 {
-    EngineState *state = D_80056564;
+    EngineState *state = gp_card;
     s32 result = 0;
 
     if (state->word04 & 13) {
@@ -40,7 +40,7 @@ static __inline__ s32 func_8003D028_inline(s32 value)
 
 static __inline__ s32 func_8003D3D8_inline(s32 value)
 {
-    EngineState *state = D_80056564;
+    EngineState *state = gp_card;
     s32 result = 0;
 
     if (state->word04 & 13) {
@@ -58,15 +58,15 @@ static __inline__ s32 func_8003D3D8_inline(s32 value)
 
 static __inline__ s32 func_8003D1B4_inline(void)
 {
-    D_8005703C[0] = D_80056590[0];
+    g_card_filename[0] = D_80056590[0];
     return 0;
 }
 
 static __inline__ s32 func_8003D4AC_inline(void)
 {
     s32 result;
-    if (D_80056564) {
-        func_8003CD60((D_80056564->word04 & 0x10) | 4);
+    if (gp_card) {
+        Card_ResetStateAndFlags((gp_card->word04 & 0x10) | 4);
         result = 0;
     } else {
         result = 1;
@@ -74,7 +74,7 @@ static __inline__ s32 func_8003D4AC_inline(void)
     return result;
 }
 
-s32 func_8003D4EC(s32 op, s32 value)
+s32 Card_Control(s32 op, s32 value)
 {
     switch (op) {
     case 0:
@@ -87,13 +87,13 @@ s32 func_8003D4EC(s32 op, s32 value)
     case 4:
         return func_8003D3D8_inline(value);
     case 5:
-        return func_8003D444();
+        return Card_StartFormat();
     case 6:
-        return func_8003D094();
+        return Card_StartWriteNamedPart();
     case 7:
-        return func_8003D1F0();
+        return Card_CheckNewDevice();
     case 8:
-        return func_8003D308();
+        return Card_ProbeTimeout();
     case 9:
         return func_8003D1B4_inline();
     case 10:

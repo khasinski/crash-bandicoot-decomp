@@ -4,7 +4,7 @@
 
 /* Exchange the hardware interrupt mask. */
 
-u16 func_8003E870(u16 arg0) {
+u16 SetIntrMask(u16 arg0) {
     u16 temp_v0;
 
     temp_v0 = *D_800549C4;

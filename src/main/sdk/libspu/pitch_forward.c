@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 func_80048EC4(s32 base_note, s32 base_fine, s32 note, s32 fine) {
+s32 _spu_note2pitch(s32 base_note, s32 base_fine, s32 note, s32 fine) {
     s16 octave_shift;
     s16 semitone;
     s16 fine_steps;

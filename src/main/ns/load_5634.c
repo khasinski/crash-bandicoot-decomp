@@ -5,11 +5,11 @@
 
 extern ResourceSlot D_8005C554[];
 
-ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void func_800134C8(s32 id);
-ResourceSlot *func_80014C08(s32 id, s32 entry_id);
-s32 func_80014E34(s32 id, s32 count);
-ResourceSlot *func_80015034(u32 *ref);
+ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void Ns_Update(s32 id);
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
+s32 Ns_PageClose(s32 id, s32 count);
+ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {
@@ -20,23 +20,23 @@ static __inline__ void ns_slot_unref(ResourceSlot *slot)
         remaining = references - 1;
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
-            func_80014930(slot);
-            D_8005C528.pool.active_count -= 1;
+            Ns_PageDelete(slot);
+            g_ns.pool.active_count -= 1;
         }
     }
 }
 
 static __inline__ void ns_pool_active_inc(void)
 {
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
 }
 
-s32 func_80014E34(s32 id, s32 count)
+s32 Ns_PageClose(s32 id, s32 count)
 {
     ResourceSlot *slot;
     s32 i;
 
-    slot = D_8005C528.page_map[id >> 1];
+    slot = g_ns.page_map[id >> 1];
     if ((s32)slot >= -0xFE) {
         return 0;
     }
@@ -52,7 +52,7 @@ s32 func_80014E34(s32 id, s32 count)
     return slot->references + 1;
 }
 
-__inline__ ResourceSlot *func_80014F30(s32 addr)
+__inline__ ResourceSlot *Ns_EntryPageStruct(s32 addr)
 {
     s32 i;
     ResourceSlot *slot;
@@ -61,8 +61,8 @@ __inline__ ResourceSlot *func_80014F30(s32 addr)
     if (addr & 2) {
         return NULL;
     }
-    for (i = 0; i < D_8005C528.physical_count; i++) {
-        slot = &D_8005C528.physical[i];
+    for (i = 0; i < g_ns.physical_count; i++) {
+        slot = &g_ns.physical[i];
         header = (s32)slot->header;
         if (addr >= header && addr < header + 0x10000) {
             return slot;
@@ -71,9 +71,9 @@ __inline__ ResourceSlot *func_80014F30(s32 addr)
     return NULL;
 }
 
-ResourceHeader *func_80014FA8(s32 addr)
+ResourceHeader *Ns_EntryPage(s32 addr)
 {
-    ResourceSlot *slot = func_80014F30(addr);
+    ResourceSlot *slot = Ns_EntryPageStruct(addr);
 
     if (slot != NULL) {
         return slot->header;
@@ -81,7 +81,7 @@ ResourceHeader *func_80014FA8(s32 addr)
     return NULL;
 }
 
-ResourceSlot *func_80015034(u32 *ref)
+ResourceSlot *Ns_PageStruct(u32 *ref)
 {
     s32 id;
     ResourceBucket *bucket;
@@ -90,16 +90,16 @@ ResourceSlot *func_80015034(u32 *ref)
 
     id = *ref;
     if (id & 1) {
-        bucket = func_80015978(id);
+        bucket = Ns_Probe(id);
         *ref = (u32)bucket;
     } else {
         bucket = (ResourceBucket *)id;
     }
     entry = bucket->entry;
     if (entry & 1) {
-        return D_8005C528.page_map[entry >> 1];
+        return g_ns.page_map[entry >> 1];
     }
-    slot = func_80014F30(entry);
+    slot = Ns_EntryPageStruct(entry);
     if (slot != NULL) {
         return slot;
     }
@@ -113,7 +113,7 @@ static __inline__ ResourceSlot *ns_find_physical(s32 addr)
     s32 header;
 
     if (!(addr & 2)) {
-        for (i = 0; i < D_8005C528.physical_count; i++) {
+        for (i = 0; i < g_ns.physical_count; i++) {
             slot = &D_8005C554[i];
             header = (s32)slot->header;
             if (addr >= header && addr < header + 0x10000) {

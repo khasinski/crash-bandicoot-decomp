@@ -4,7 +4,7 @@
 
 /* The second resource pool has 38 slots, each 0x2C bytes long. */
 
-void func_800148C4(ResourceSlot *slot)
+void Ns_PageDecRef(ResourceSlot *slot)
 {
     s16 references = slot->references;
     s16 remaining;
@@ -13,7 +13,7 @@ void func_800148C4(ResourceSlot *slot)
         remaining = references - 1;
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
-            func_80014930(slot);
+            Ns_PageDelete(slot);
             D_8005C91C.active_count -= 1;
         }
     }

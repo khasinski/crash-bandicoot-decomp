@@ -12,11 +12,11 @@ extern FormatSpec D_800538DC;
 
 s32 BIOS_StrLen(const char *);
 void *BIOS_MemChr(const void *,s32,s32);
-u8 *func_8003DFAC(u8 *,const u8 *,s32);
+u8 *memmove(u8 *,const u8 *,s32);
 
 static __inline__ u32 *next_argument(u32 **arguments){u32 *next=*arguments;*arguments=next+1;return next;}
 
-s32 func_8003D740(s8 *arg0, s8 *arg1, ...) {
+s32 sprintf(s8 *arg0, s8 *arg1, ...) {
     s32 plus,minus,space;
     s32 alternate; s32 zero;
     u8 digits[512];
@@ -372,7 +372,7 @@ block_109:
                         } while (var_s0 < temp_v0_3);
                             }
                 }
-                func_8003DFAC(&arg0[var_s2], var_s1, var_s0);
+                memmove(&arg0[var_s2], var_s1, var_s0);
                 var_s2 += var_s0;
                 if (var_s0 < format.width) {
                     var_v1_3 = (s8 *)(var_s2+(u32)arg0);

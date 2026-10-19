@@ -21,23 +21,21 @@ typedef struct {
     void *sep;
 } MidiResourceEntry;
 
-extern s32 D_800564FC;
-extern u16 D_80056648;
 
-MidiResourceEntry *func_80015118(s32 *, s32, s32);
-s32 func_80015458(s32 *, s32);
-void func_80049404(s16);
-s16 func_80050D30(void *, s32, s32);
+MidiResourceEntry *Ns_Open(s32 *, s32, s32);
+s32 Ns_Close(s32 *, s32);
+void SsSepClose(s16);
+s16 SsVabFakeHead(void *, s32, s32);
 typedef void noreturn_fn(s32);
-volatile noreturn_fn func_8003D680;
-s16 func_80050C64(s16);
-void func_8004BB3C(void);
-s16 func_80049844(void *, s16, s16);
-void func_80031964(AudioChannel *, s32, s32, s32);
-void func_80049504(s16, s16, s16, s32);
-s32 func_80031A40(AudioChannel *, s32, s32);
+volatile noreturn_fn BIOS_Abs;
+s16 SsVabFakeBody(s16);
+void SsStart(void);
+s16 SsSepOpen(void *, s16, s16);
+void Midi_SeqInit(AudioChannel *, s32, s32, s32);
+void SsSepSetCrescendo(s16, s16, s16, s32);
+s32 Midi_Control(AudioChannel *, s32, s32);
 
-s32 func_800314C4(s32 *arg0) {
+s32 Midi_OpenAndPlay(s32 *arg0) {
     s32 sp10;
     s32 i;
     MidiResourceEntry *entry;
@@ -48,18 +46,18 @@ s32 func_800314C4(s32 *arg0) {
     if (D_8005666C != 0) {
         return -1;
     }
-    if (D_800566C0 == 1) {
+    if (gp_card_chan == 1) {
         if (D_80056650 != 0x6396347F) {
-            func_80049404(D_80056654);
+            SsSepClose(gp_midi_vol);
             sp10 = D_80056650;
-            func_80015458(&sp10, 1);
+            Ns_Close(&sp10, 1);
         }
         if (*arg0 != 0x6396347F) {
-            entry = func_80015118(arg0, 1, 1);
+            entry = Ns_Open(arg0, 1, 1);
             D_80056650 = entry->id;
             for (i = 0; i < 7; i++) {
                 if (entry->header->refs[i] != 0x6396347F) {
-                    func_80015118(&entry->header->refs[i], 0, 1);
+                    Ns_Open(&entry->header->refs[i], 0, 1);
                 }
             }
         } else {
@@ -67,42 +65,42 @@ s32 func_800314C4(s32 *arg0) {
             return 0;
         }
     }
-    D_800566C0 = 2;
-    entry = func_80015118(arg0, 1, 0);
-    D_800564FC = 0;
+    gp_card_chan = 2;
+    entry = Ns_Open(arg0, 1, 0);
+    gp_midi_vab_id = 0;
     for (i = 0; i < 7; i++) {
         if (entry->header->refs[i] != 0x6396347F) {
-            if (func_80015458(&entry->header->refs[i], 0) == 0) {
+            if (Ns_Close(&entry->header->refs[i], 0) == 0) {
                 return 0;
             }
         }
     }
-    D_800566C0 = 3;
+    gp_card_chan = 3;
     D_8005665C = entry->header->count;
     if (D_80056658 == -1) {
-        func_80015118(&entry->header->bank_ref, 1, 1);
-        D_80056658 = func_80050D30(entry->vh, -1, (D_8005CFB0[0] << 16) | 0x2000);
+        Ns_Open(&entry->header->bank_ref, 1, 1);
+        D_80056658 = SsVabFakeHead(entry->vh, -1, (D_8005CFB0[0] << 16) | 0x2000);
         if (D_80056658 == -1) {
-            func_8003D680(-1);
+            BIOS_Abs(-1);
         }
-        D_80056658 = func_80050C64(D_80056658);
+        D_80056658 = SsVabFakeBody(D_80056658);
         if (D_80056658 == -1) {
-            func_8003D680(-1);
+            BIOS_Abs(-1);
         }
-        func_8004BB3C();
+        SsStart();
     }
-    D_80056654 = func_80049844(entry->sep, D_80056658, D_8005665C);
-    if (D_80056654 == -1) {
-        func_8003D680(-1);
+    gp_midi_vol = SsSepOpen(entry->sep, D_80056658, D_8005665C);
+    if (gp_midi_vol == -1) {
+        BIOS_Abs(-1);
     }
     for (i = 0; i < D_8005665C; i++) {
         if (is_new) {
             s32 vol = (s16)D_80056648 >> 7;
-            func_80031964(&D_80056EBC[i], vol | (vol << 16), i, arg3);
+            Midi_SeqInit(&D_80056EBC[i], vol | (vol << 16), i, arg3);
         } else {
-            func_80031964(&D_80056EBC[i], 0, i, arg3);
-            func_80049504(D_80056654, D_80056EBC[i].channel, (s16)D_80056648 >> 7, 30);
+            Midi_SeqInit(&D_80056EBC[i], 0, i, arg3);
+            SsSepSetCrescendo(gp_midi_vol, D_80056EBC[i].channel, (s16)D_80056648 >> 7, 30);
         }
     }
-    return func_80031A40(D_80056EBC, 0, 0);
+    return Midi_Control(D_80056EBC, 0, 0);
 }

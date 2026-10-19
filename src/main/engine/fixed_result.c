@@ -1,15 +1,15 @@
 #include "common.h"
+extern s32 *gp_grid_rows;
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 
-extern s32 *D_800566F4;
 
-s32 func_8002D638(void)
+s32 Solid_BinfInit(void)
 {
     s32 i;
 
-    D_800566F4 = (s32 *)0x1F800100;
+    gp_grid_rows = (s32 *)0x1F800100;
     D_800566AC = (u32 *)0x1F800180;
     D_8005670C = (u32 *)0x1F800380;
     for (i = 0; i < 32; i++) {
@@ -18,7 +18,7 @@ s32 func_8002D638(void)
     return -255;
 }
 
-s32 func_8002D694(void)
+s32 Solid_BinfKill(void)
 {
     return -255;
 }

@@ -3,17 +3,16 @@
 #include "common.h"
 
 extern s16 D_800572BA[][26];
-extern s16 D_8005E572;
-void func_8004F0D4(s32);
-void func_80050060(s16 selector) {
+void SpuVmKeyOffNow(s32);
+void SpuVmSeqKeyOff(s16 selector) {
     u8 voice=0;
-    if (D_8005E340!=0) {
+    if (gp_spawn_count!=0) {
         do {
             if (D_800572BA[voice&0xFF][0]==selector) {
-                D_8005E572=voice&0xFF;
-                func_8004F0D4(0);
+                D_8005E572[0]=voice&0xFF;
+                SpuVmKeyOffNow(0);
             }
             voice++;
-        } while ((u32)(voice&0xFF)<D_8005E340);
+        } while ((u32)(voice&0xFF)<gp_spawn_count);
     }
 }

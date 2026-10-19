@@ -5,7 +5,7 @@
 
 /* Prepare an image-upload packet; reject payloads outside its small inline capacity. */
 
-void func_8003FAF8(u32 *packet,GpuRect *rect)
+void SetDrawLoad(u32 *packet,GpuRect *rect)
 {
     s32 words=(rect->w*rect->h+1)/2;
     s8 length=words+4;

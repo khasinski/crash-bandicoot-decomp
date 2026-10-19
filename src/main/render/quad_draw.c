@@ -41,11 +41,10 @@ typedef struct PolyFT4_9398 {
     u16 pad26;
 } PolyFT4_9398;
 
-extern PrimBuf9398 *D_8005840C;
-extern s32 D_800578D0;
-extern UvPair9398 D_80051774[];
+extern PrimBuf9398 *g_ot_cur;
+extern s32 g_view_proj;
 
-void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
+void Gfx_TransformFragment(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
 {
     u32 *p0;
     u32 y1;
@@ -78,8 +77,8 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
         return;
     }
 
-    p = D_8005840C->prim_ptr;
-    D_8005840C->prim_ptr = (PolyFT4_9398 *)p + 1;
+    p = g_ot_cur->prim_ptr;
+    g_ot_cur->prim_ptr = (PolyFT4_9398 *)p + 1;
     w0 = p0[0];
     poly = (PolyFT4_9398 *)p;
     poly->color_code = w0;
@@ -93,7 +92,7 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
     gte_stsxy1(poly->xy1);
 
     ot_bias = arg1 + 0x800;
-    ot_bias -= D_800578D0 / 2;
+    ot_bias -= g_view_proj / 2;
     sz1 = ot_bias - ((u32)(sz1 + v) >> 5);
     if (sz1 < 0x7FF) {
         s32 idx = sz1;
@@ -119,7 +118,7 @@ void func_80018B98(u32 *arg0, s32 arg1, u32 arg2, Rect9398 *arg3, u32 *arg4)
     uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (arg2 & 0x80)) << 8);
     poly->clut = ((arg2 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
     poly->tpage = tpage | (arg2 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-    uv_ptr = &D_80051774[w1 >> 22];
+    uv_ptr = &((UvPair9398 *)D_80051774)[w1 >> 22];
     v = uv_ptr->lo;
     uv1 = uv_ptr->hi;
     poly->uv0 = v + uv_base;
@@ -165,7 +164,7 @@ typedef struct LightCols9398 {
     s16 c[4][3];
 } LightCols9398;
 
-void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 *arg4, u32 *arg5, s32 arg6)
+void Gfx_TransformFontChar(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 *arg4, u32 *arg5, s32 arg6)
 {
     u32 y1;
     u32 x0;
@@ -196,8 +195,8 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
         return;
     }
 
-    p = D_8005840C->prim_ptr;
-    D_8005840C->prim_ptr = (PolyGT4_9398 *)p + 1;
+    p = g_ot_cur->prim_ptr;
+    g_ot_cur->prim_ptr = (PolyGT4_9398 *)p + 1;
     w0 = arg1[0];
     poly = (PolyGT4_9398 *)p;
     if (arg6 != 0) {
@@ -229,7 +228,7 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
     gte_stsxy1(poly->xy1);
 
     ot_bias = arg2 + 0x800;
-    ot_bias -= D_800578D0 / 2;
+    ot_bias -= g_view_proj / 2;
     sz1 = ot_bias - ((u32)(sz1 + v) >> 5);
     if (sz1 < 0x7FF) {
         s32 idx = sz1;
@@ -255,7 +254,7 @@ void func_80018DBC(LightCols9398 *arg0, u32 *arg1, s32 arg2, u32 arg3, Rect9398 
     uv_base = ((w1 & 0x3E000) >> (uv_base + 10)) | ((((w1 & 0x1F) << 2) | (arg3 & 0x80)) << 8);
     poly->clut = ((arg3 >> 4) & 0xFFF0) | (w1 & 0x1FC0) | (w0 & 0xF);
     poly->tpage = tpage | (arg3 & 0x1C) | ((w1 >> 18) & 3) | (w0 & 0x60);
-    uv_ptr = &D_80051774[w1 >> 22];
+    uv_ptr = &((UvPair9398 *)D_80051774)[w1 >> 22];
     v = uv_ptr->lo;
     uv1 = uv_ptr->hi;
     poly->uv0 = v + uv_base;

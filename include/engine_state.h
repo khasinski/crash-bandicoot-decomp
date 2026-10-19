@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-/* Partial prefix of the 0x6F4-byte allocation in func_8003CE20.
+/* Partial prefix of the 0x6F4-byte allocation in Card_Alloc.
  * The allocation size is not evidence for the unknown trailing fields. */
 typedef struct EngineState {
     s32 word00, word04, word08, word0C, word10, word14, word18;
@@ -31,7 +31,7 @@ typedef struct EngineDrawModePacket {
     u32 words[3];
 } EngineDrawModePacket;
 
-/* Separate allocation in func_80031BAC; last observed word is at 0x35D4. */
+/* Separate allocation in Title_Init; last observed word is at 0x35D4. */
 typedef struct EngineMode25State {
     /* Encoded map reference, derived words, and metadata copied by 31EB4. */
     u32 word00;
@@ -43,7 +43,7 @@ typedef struct EngineMode25State {
     u16 word3560, word3562, word3564, word3566;
     EngineDrawModePacket draw_modes[4];
     s32 word3598, word359C;
-    /* func_80031BF8 copies the word at D_8006194C into both fields.
+    /* Title_LoadNextState copies the word at D_8006194C into both fields.
      * The instructions establish word width, not pointer semantics. */
     u32 word35A0, word35A4;
     u8 pad35A8[0x28];
@@ -114,19 +114,19 @@ typedef struct EngineDirectoryState {
 /* GCC 2.6.3 emits tentative storage in declaration order. The owner defines
  * these globals in retail order instead of declaring them ahead of that list. */
 #ifndef CRASH_ENGINE_STATE_STORAGE
-extern s32 D_80056500, D_80056678;
-extern char D_80056504[8], D_8005650C[8], D_80056514[8], D_8005651C[8];
-extern char D_80056524[8], D_8005652C[8], D_80056534[8], D_8005653C[8];
-extern char D_80056544[8], D_8005654C[8], D_80056554[8], D_8005655C[8];
-extern EngineState *D_80056564;
-extern EngineMode25State *D_800566E0;
+extern s32 gp_title_once, gp_title_not_seen;
+extern char gp_game_over_zone_name[8], gp_main_menu_zone_name[8], gp_naughty_dog_zone_name[8], gp_load_menu_zone_name[8];
+extern char gp_options_menu_zone_name[8], gp_island_1b_zone_name[8], gp_island_1a_zone_name[8], gp_island_2_zone_name[8];
+extern char gp_island_3_zone_name[8], gp_scea_universal_zone_name[8], gp_mdat_fmt_name[8], gp_mdat_default_name[8];
+extern EngineState *gp_card;
+extern EngineMode25State *gp_title;
 #endif
-void func_8003AE08(EngineFileRequest *request);
-void func_8003AED8(EngineFileRequest *request);
-void func_80031D50(s32 *reference, s32 mode);
-s32 func_80031BF8(void);
-void func_8003BE40(EngineSaveRecord *record);
-s32 func_8003BF34(EngineSaveRecord *record);
-s32 func_8003C714(const char *path, EngineDirectoryRecord *entries);
+void Card_OnWriteError(EngineFileRequest *request);
+void Card_OnReadGlobalsError(EngineFileRequest *request);
+void Title_LoadScreen(s32 *reference, s32 mode);
+s32 Title_LoadNextState(void);
+void Card_SaveGlobals(EngineSaveRecord *record);
+s32 Card_LoadGlobals(EngineSaveRecord *record);
+s32 Card_CountFiles(const char *path, EngineDirectoryRecord *entries);
 
 #endif

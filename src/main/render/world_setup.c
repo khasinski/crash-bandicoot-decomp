@@ -3,7 +3,6 @@
 #include "common.h"
 #include "gpu.h"
 
-extern s32 D_80057868;
 
 typedef struct WgeoHeader {
     s32 x;
@@ -32,7 +31,7 @@ typedef struct ZoneHeader9A2C {
     ZoneWorld worlds[8];
 } ZoneHeader9A2C;
 
-void func_8001922C(ZoneHeader9A2C *arg0);
+void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0);
 
 typedef struct ResourceItem {
     u8 pad00[0x10];
@@ -42,19 +41,19 @@ typedef struct ResourceItem {
 } ResourceItem;
 
 extern s32 D_80057864;
-extern s16 D_80057804;
+extern s16 g_m_light;
 
 extern struct {
     s32 unk0;
     s32 level_id;
-} *D_8005C53C;
+} *g_ns_page_pool;
 
 extern s32 D_800618D4;
 
-ResourceItem *func_80015A98(void *);
-void func_8001A460(s32, s32);
+ResourceItem *Ns_Lookup(void *);
+void Gfx_FreezeMapTextures(s32, s32);
 
-void func_8001922C(ZoneHeader9A2C *arg0)
+void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0)
 {
     s32 v[3];
     s32 i;
@@ -64,7 +63,7 @@ void func_8001922C(ZoneHeader9A2C *arg0)
     s32 *trans;
 
     for (i = 0; i < arg0->world_count; i++) {
-        entry = func_80015A98(&arg0->worlds[i].eid);
+        entry = Ns_Lookup(&arg0->worlds[i].eid);
         wgeo = (WgeoHeader *)entry->item0;
         if (wgeo->flags == 1) {
             arg0->worlds[i].trans[0] = 0;
@@ -73,7 +72,7 @@ void func_8001922C(ZoneHeader9A2C *arg0)
         } else {
             trans = (s32 *)(i * 64 + (s32)arg0);
             trans += 2;
-            trans[0] = (D_80057804 * (v[0] = wgeo->x - (D_80057864 >> 8))
+            trans[0] = (g_m_light * (v[0] = wgeo->x - (D_80057864 >> 8))
                       + D_80057806 * (v[1] = wgeo->y - (D_80057868 >> 8))
                       + D_80057808 * (v[2] = wgeo->z - (D_8005786C >> 8))) >> 12;
             trans[1] = (D_8005780A * v[0]
@@ -88,10 +87,10 @@ void func_8001922C(ZoneHeader9A2C *arg0)
         arg0->worlds[i].item2 = entry->item2;
         arg0->worlds[i].polys = wgeo + 1;
         for (j = 0; j < wgeo->tpage_count; j++) {
-            arg0->worlds[i].tpages[j] = func_80015A98(&wgeo->tpages[j]);
+            arg0->worlds[i].tpages[j] = Ns_Lookup(&wgeo->tpages[j]);
         }
     }
-    if (D_8005C53C->level_id == 0x19 && D_800618D4 == 0xF) {
-        func_8001A460(D_800619B0, D_800619B8);
+    if (g_ns_page_pool->level_id == 0x19 && D_800618D4 == 0xF) {
+        Gfx_FreezeMapTextures(g_gem_count, D_800619B8);
     }
 }

@@ -2,33 +2,28 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-void func_80041F60(s32 arg0);
-s32 func_80041FAC(s32 arg0);
-void func_80042864(void);
-s32 func_80042898(void);
+void _cwc(s32 arg0);
+s32 _param(s32 arg0);
+void set_alarm(void);
+s32 get_alarm(void);
 extern volatile s16 D_80054A70[];
 extern volatile s16 D_80054A72[];
-extern volatile u32 *D_80054B3C;
-extern volatile u32 *D_80054B40;
-extern volatile u32 *D_80054B44;
-extern volatile u32 *D_80054B48;
-extern volatile u32 *D_80054B4C;
 
-s32 func_800416E4(u32 *table, s32 count)
+s32 _otc(u32 *table, s32 count)
 {
     *D_80054B5C |= 0x08000000;
     *D_80054B58 = 0;
     *D_80054B50 = (u32)(table - 1 + count);
     *D_80054B54 = count;
     *D_80054B58 = 0x11000002;
-    func_80042864();
+    set_alarm();
     while (*D_80054B58 & 0x01000000) {
-        if (func_80042898()) return -1;
+        if (get_alarm()) return -1;
     }
     return count;
 }
 
-s32 func_800417CC(GpuRect *rect, u32 color)
+s32 _clr(GpuRect *rect, u32 color)
 {
     rect->w = (rect->w < 0) ? 0 : ({ s32 max_x = D_80054A70[0] - 1; (rect->w > max_x) ? max_x : rect->w; });
     rect->h = (rect->h < 0) ? 0 : ({ s32 max_y = D_80054A72[0] - 1; (rect->h > max_y) ? max_y : rect->h; });
@@ -43,9 +38,9 @@ s32 func_800417CC(GpuRect *rect, u32 color)
         D_80057058[6] = *(u32 *)&rect->x;
         D_80057058[7] = *(u32 *)&rect->w;
         D_80057078[0] = 0x03FFFFFF;
-        D_80057078[1] = func_80041FAC(3) | 0xE3000000;
-        D_80057078[2] = func_80041FAC(4) | 0xE4000000;
-        D_80057078[3] = func_80041FAC(5) | 0xE5000000;
+        D_80057078[1] = _param(3) | 0xE3000000;
+        D_80057078[2] = _param(4) | 0xE4000000;
+        D_80057078[3] = _param(5) | 0xE5000000;
     } else {
         D_80057058[0] = 0x04FFFFFF;
         D_80057058[1] = 0xE6000000;
@@ -53,15 +48,15 @@ s32 func_800417CC(GpuRect *rect, u32 color)
         D_80057058[3] = *(u32 *)&rect->x;
         D_80057058[4] = *(u32 *)&rect->w;
     }
-    func_80041F60((s32)D_80057058);
+    _cwc((s32)D_80057058);
     return 0;
 }
 
-s32 func_800419E4(GpuRect *rect, u32 *data)
+s32 _dws(GpuRect *rect, u32 *data)
 {
     s32 total, blocks, rem, flag;
 
-    func_80042864();
+    set_alarm();
     flag = 0;
     rect->w = (rect->w < 0) ? 0 : (D_80054A70[0] < rect->w) ? D_80054A70[0] : rect->w;
     rect->h = (rect->h < 0) ? 0 : (D_80054A72[0] < rect->h) ? D_80054A72[0] : rect->h;
@@ -71,12 +66,12 @@ s32 func_800419E4(GpuRect *rect, u32 *data)
     }
     rem = total % 16;
     blocks = total / 16;
-    while (!(*D_80054B40 & 0x04000000)) {
-        if (func_80042898()) {
+    while (!(*g_gpu_stat_reg & 0x04000000)) {
+        if (get_alarm()) {
             return -1;
         }
     }
-    *D_80054B40 = 0x04000000;
+    *g_gpu_stat_reg = 0x04000000;
     *D_80054B3C = 0x01000000;
     *D_80054B3C = flag ? 0xB0000000 : 0xA0000000;
     *D_80054B3C = *(u32 *)&rect->x;
@@ -85,7 +80,7 @@ s32 func_800419E4(GpuRect *rect, u32 *data)
         *D_80054B3C = *data++;
     }
     if (blocks != 0) {
-        *D_80054B40 = 0x04000002;
+        *g_gpu_stat_reg = 0x04000002;
         *D_80054B44 = (u32)data;
         *D_80054B48 = (blocks << 16) | 0x10;
         *D_80054B4C = 0x01000201;
@@ -93,11 +88,11 @@ s32 func_800419E4(GpuRect *rect, u32 *data)
     return 0;
 }
 
-s32 func_80041C38(GpuRect *rect, u32 *data)
+s32 _drs(GpuRect *rect, u32 *data)
 {
     s32 total, blocks, rem;
 
-    func_80042864();
+    set_alarm();
     rect->w = (rect->w < 0) ? 0 : (D_80054A70[0] < rect->w) ? D_80054A70[0] : rect->w;
     rect->h = (rect->h < 0) ? 0 : (D_80054A72[0] < rect->h) ? D_80054A72[0] : rect->h;
     total = (rect->w * rect->h + 1) / 2;
@@ -106,18 +101,18 @@ s32 func_80041C38(GpuRect *rect, u32 *data)
     }
     rem = total % 16;
     blocks = total / 16;
-    while (!(*D_80054B40 & 0x04000000)) {
-        if (func_80042898()) {
+    while (!(*g_gpu_stat_reg & 0x04000000)) {
+        if (get_alarm()) {
             return -1;
         }
     }
-    *D_80054B40 = 0x04000000;
+    *g_gpu_stat_reg = 0x04000000;
     *D_80054B3C = 0x01000000;
     *D_80054B3C = 0xC0000000;
     *D_80054B3C = *(u32 *)&rect->x;
     *D_80054B3C = *(u32 *)&rect->w;
-    while (!(*D_80054B40 & 0x08000000)) {
-        if (func_80042898()) {
+    while (!(*g_gpu_stat_reg & 0x08000000)) {
+        if (get_alarm()) {
             return -1;
         }
     }
@@ -125,7 +120,7 @@ s32 func_80041C38(GpuRect *rect, u32 *data)
         *data++ = *D_80054B3C;
     }
     if (blocks != 0) {
-        *D_80054B40 = 0x04000003;
+        *g_gpu_stat_reg = 0x04000003;
         *D_80054B44 = (u32)data;
         *D_80054B48 = (blocks << 16) | 0x10;
         *D_80054B4C = 0x01000200;

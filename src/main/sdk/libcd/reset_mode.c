@@ -1,19 +1,19 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
-void func_80044E1C(void);
-s32 func_80044E8C(void);
-s32 func_80044D28(void);
+void CD_init(void);
+s32 CD_reset(void);
+s32 CD_initintr(void);
 
-s32 func_80043384(s32 mode) {
+s32 CdReset(s32 mode) {
     if (mode == 2) {
-        func_80044E1C();
+        CD_init();
         return 1;
     }
-    if (func_80044E8C() != 0) {
+    if (CD_reset() != 0) {
         return 0;
     }
-    if (mode == 1 && func_80044D28() != 0) {
+    if (mode == 1 && CD_initintr() != 0) {
         return 0;
     }
     return 1;

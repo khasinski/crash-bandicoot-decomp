@@ -3,7 +3,7 @@
 #include "common.h"
 
 void LIBC_Free(void *);
-s32 func_80029AD8(void) {
+s32 Slst_Kill(void) {
  LIBC_Free(D_80056700);
  LIBC_Free(D_800566BC);
  return -255;

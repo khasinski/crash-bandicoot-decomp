@@ -3,36 +3,16 @@
 /* ASPSX_VERSION: 2.34 */
 
 #include "common.h"
-s32 func_8003D730(const char *, ...);
-s32 func_8004AEB8(s16, s16);
+s32 BIOS_Printf(const char *, ...);
+s32 _SsReadDeltaValue(s16, s16);
 
-typedef struct {
-    u8 gap0[4];
-    u8 *field_4,*field_8,*field_C;
-    u8 field_10,field_11,field_12,field_13,field_14,field_15,field_16;
-    u8 field_17[16];
-    u8 field_27,field_28,field_29,field_2A,field_2B;
-    u8 field_2C[16];
-    u8 gap3C[12];
-    u16 field_48;
-    s16 field_4A;
-    s16 field_4C;
-    s16 gains[16];
-    s16 field_6E;
-    u16 field_70,field_72;
-    u8 gap74[8];
-    s32 field_7C,field_80,field_84,field_88,field_8C;
-    u8 gap90[24];
-    u16 field_A8,field_AA;
-} SequenceState;
-extern SequenceState *D_80060418[];
 
 /* A quarter of the shared 60-tick divisor is used for rounding below. */
 static __inline__ u32 clock_divisor(u32 ticks) {
     return ticks << 2;
 }
 
-s32 func_8004B078(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
+s32 _SsInitSoundSep(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
     s32 fifteen_ticks;
     u32 tempo_mid;
     s32 temp_lo;
@@ -58,7 +38,7 @@ s32 func_8004B078(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
     u8 *temp_v1_2;
     u8 *var_v1;
 
-    temp_s0 = D_80060418[arg0] + arg1;
+    temp_s0 = g_ss_score_table[arg0] + arg1;
     var_s1 = 0;
     temp_s0->field_10 = 0;
     temp_s0->field_11 = 0;
@@ -101,7 +81,7 @@ s32 func_8004B078(s16 arg0, s16 arg1, s16 arg2, u8 *arg3) {
         case 0x70:
             temp_s0->field_4 = (u8 *) (arg3 + 6);
             if (arg3[0x5] != 0) {
-                func_8003D730(D_8001174C);
+                BIOS_Printf(D_8001174C);
                 return -1;
             }
             temp_s0->field_4 = (u8 *) (arg3 + 8);
@@ -143,7 +123,7 @@ block_9:
     temp_a3 = operand.bytes[0x4];
     temp_s0->field_4 = (u8 *) (operand.bytes + 6);
     temp_s2 = (temp_a2 << 0x18) + (temp_v1 << 16) + (temp_a3 << 8) + operand.bytes[0x5];
-    temp_v0_3 = func_8004AEB8(arg0, arg1);
+    temp_v0_3 = _SsReadDeltaValue(arg0, arg1);
     temp_v1_2 = temp_s0->field_4;
     var_s1 += 6;
     temp_lo_2 = temp_s0->field_4A * temp_s0->field_84;
@@ -151,12 +131,12 @@ block_9:
     temp_a0 = temp_s0->field_4;
     temp_s0->field_88 = temp_v0_3;
     temp_s0->field_C = temp_a0;
-    fifteen_ticks = D_8005FF4C << 4;
-    fifteen_ticks -= D_8005FF4C;
+    fifteen_ticks = g_spawns_base << 4;
+    fifteen_ticks -= g_spawns_base;
     operand.divisor = clock_divisor(fifteen_ticks);
     temp_s0->field_8 = temp_v1_2;
     if ((u32) (temp_lo_2 * 0xA) < operand.divisor) {
-        temp_lo_3 = (u32) (D_8005FF4C * 0x258) / temp_lo_2;
+        temp_lo_3 = (u32) (g_spawns_base * 0x258) / temp_lo_2;
         temp_s0->field_6E = (s16) temp_lo_3;
         temp_s0->field_70 = (u16) temp_lo_3;
     } else {

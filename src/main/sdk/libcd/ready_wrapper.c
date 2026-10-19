@@ -4,9 +4,9 @@
 
 /* Forward the CD controller request with its original arguments. */
 
-void func_80044C40(void);
-s32 func_800440EC(s32,u8 *);
-s32 func_80044370(s32,u8 *);
-s32 func_800434B8(s32 mode,u8 *result) {
-    return func_80044370(mode,result);
+void CD_initvol(void);
+s32 CD_sync(s32,u8 *);
+s32 CD_ready(s32,u8 *);
+s32 CdReady(s32 mode,u8 *result) {
+    return CD_ready(mode,result);
 }

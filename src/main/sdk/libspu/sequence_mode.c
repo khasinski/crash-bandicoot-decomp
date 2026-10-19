@@ -1,11 +1,11 @@
 #include "common.h"
 
-void func_8004B8B8(s32);
+void _SsStart(s32);
 
-void func_8004BB3C(void) {
-    func_8004B8B8(1);
+void SsStart(void) {
+    _SsStart(1);
 }
 
-void func_8004BB5C(void) {
-    func_8004B8B8(0);
+void SsStart2(void) {
+    _SsStart(0);
 }

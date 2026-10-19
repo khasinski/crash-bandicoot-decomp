@@ -6,7 +6,7 @@
 /* Hash buckets point into eight-byte resource entries. */
 typedef ResourceBucket Entry;
 typedef ResourceHashMetadata Metadata;
-Entry *func_800159C4(u32 id) {
+Entry *Ns_ProbeSafe(u32 id) {
     Entry *cursor = D_8005C530[(id >> 15) & 255];
     if (cursor->id == id) goto done;
     {

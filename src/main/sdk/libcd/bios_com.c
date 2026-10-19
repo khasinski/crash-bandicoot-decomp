@@ -18,28 +18,20 @@ typedef struct {
     s32 param_count[32];
 } CdCmdTable;
 
-extern CdCallback D_800555A0;
-extern CdCallback D_800555A4;
 
-extern u8 D_800555C0;
-extern u8 D_800555C1[];
-extern const char * const D_800555C4[];
 
 extern CdCmdTable D_800556E4;
-extern volatile u8 *D_80055864;
+extern volatile u8 *g_cd_reg0;
 extern volatile u8 *D_80055868;
 extern volatile u8 *D_8005586C;
-extern volatile CdStatus D_8005587C;
-extern u8 D_80057198[8];
-extern u8 D_800571A0[8];
-extern u8 D_800571A8[8];
+extern volatile CdStatus g_cd_status;
 
 s32 VSync(s32);
-s32 func_8003D730(const char *, ...);
-s32 func_8003E6D4(const char *, ...);
-s32 func_8003E848(void);
-s32 func_80043BA8(void);
-void func_80044C40(void);
+s32 BIOS_Printf(const char *, ...);
+s32 puts(const char *, ...);
+s32 CheckCallback(void);
+s32 getintr(void);
+void CD_initvol(void);
 
 static inline void cd_set_timeout(const char *name)
 {
@@ -51,9 +43,9 @@ static inline void cd_set_timeout(const char *name)
 static inline s32 cd_check_timeout(void)
 {
     if (VSync(-1) > D_800571B0 || D_800571B4++ > 0x1E0000) {
-        func_8003E6D4(D_800114F8);
-        func_8003D730(D_80011508, D_800571B8[0], D_800555C4[D_800555C1[0]], D_80055644[D_8005587C.sync], D_80055644[D_8005587C.ready]);
-        func_80044C40();
+        puts(D_800114F8);
+        BIOS_Printf(D_80011508, D_800571B8[0], D_800555C4[D_800555C1[0]], D_80055644[g_cd_status.sync], D_80055644[g_cd_status.ready]);
+        CD_initvol();
         return -1;
     }
     return 0;
@@ -62,16 +54,16 @@ static inline s32 cd_check_timeout(void)
 static inline void cd_poll_interrupts(void)
 {
     s32 event;
-    u8 bank = *D_80055864 & 3;
-    while ((event = func_80043BA8()) != 0) {
+    u8 bank = *g_cd_reg0 & 3;
+    while ((event = getintr()) != 0) {
         if ((event & 4) && D_800555A4 != NULL) {
-            D_800555A4(D_8005587C.ready, D_800571A0);
+            D_800555A4(g_cd_status.ready, D_800571A0);
         }
-        if ((event & 2) && D_800555A0 != NULL) {
-            D_800555A0(D_8005587C.sync, D_80057198);
+        if ((event & 2) && g_cd_sync_cb != NULL) {
+            g_cd_sync_cb(g_cd_status.sync, D_80057198);
         }
     }
-    *D_80055864 = bank;
+    *g_cd_reg0 = bank;
 }
 
 static inline void cd_publish_response(u8 *dst, u8 *src)
@@ -89,7 +81,7 @@ static inline void cd_publish_response(u8 *dst, u8 *src)
     }
 }
 
-s32 func_800440EC(s32 mode, u8 *result)
+s32 CD_sync(s32 mode, u8 *result)
 {
     s32 status;
     cd_set_timeout(D_80011580);
@@ -97,12 +89,12 @@ s32 func_800440EC(s32 mode, u8 *result)
         if (cd_check_timeout() != 0) {
             return -1;
         }
-        if (func_8003E848() != 0) {
+        if (CheckCallback() != 0) {
             cd_poll_interrupts();
         }
-        status = D_8005587C.sync;
+        status = g_cd_status.sync;
         if (status == 2 || status == 5) {
-            D_8005587C.sync = 2;
+            g_cd_status.sync = 2;
             cd_publish_response(result, D_80057198);
             return status;
         }
@@ -110,7 +102,7 @@ s32 func_800440EC(s32 mode, u8 *result)
     return 0;
 }
 
-s32 func_80044370(s32 mode, u8 *result)
+s32 CD_ready(s32 mode, u8 *result)
 {
     s32 status;
     cd_set_timeout(D_80011588);
@@ -118,18 +110,18 @@ s32 func_80044370(s32 mode, u8 *result)
         if (cd_check_timeout() != 0) {
             return -1;
         }
-        if (func_8003E848() != 0) {
+        if (CheckCallback() != 0) {
             cd_poll_interrupts();
         }
-        status = D_8005587C.data;
+        status = g_cd_status.data;
         if (status != 0) {
-            D_8005587C.data = 0;
+            g_cd_status.data = 0;
             cd_publish_response(result, D_800571A8);
             return status;
         }
-        status = D_8005587C.ready;
+        status = g_cd_status.ready;
         if (status != 0) {
-            D_8005587C.ready = 0;
+            g_cd_status.ready = 0;
             cd_publish_response(result, D_800571A0);
             return status;
         }
@@ -137,29 +129,29 @@ s32 func_80044370(s32 mode, u8 *result)
     return 0;
 }
 
-s32 func_80044640(u8 com, u8 *param, u8 *result, s32 arg3)
+s32 CD_cw(u8 com, u8 *param, u8 *result, s32 arg3)
 {
     s32 i;
     if (D_800555AC >= 2) {
-        func_8003D730(D_80011594, D_800555C4[com]);
+        BIOS_Printf(D_80011594, D_800555C4[com]);
     }
     if (D_800556E4.param_count[com] != 0 && param == NULL) {
         if (D_800555AC > 0) {
-            func_8003D730(D_8001159C, D_800555C4[com]);
+            BIOS_Printf(D_8001159C, D_800555C4[com]);
         }
         return -2;
     }
-    func_800440EC(0, NULL);
+    CD_sync(0, NULL);
     if (com == 2) {
         for (i = 0; i < 4; i++) {
             D_800555BC[i] = param[i];
         }
     }
-    D_8005587C.sync = 0;
+    g_cd_status.sync = 0;
     if (D_800556E4.ack_clear[com] != 0) {
-        D_8005587C.ready = 0;
+        g_cd_status.ready = 0;
     }
-    *D_80055864 = 0;
+    *g_cd_reg0 = 0;
     for (i = 0; i < D_800556E4.param_count[com]; i++) {
         *D_8005586C = param[i];
     }
@@ -169,17 +161,17 @@ s32 func_80044640(u8 com, u8 *param, u8 *result, s32 arg3)
         return 0;
     }
     cd_set_timeout(D_800115AC);
-    while (D_8005587C.sync == 0) {
+    while (g_cd_status.sync == 0) {
         if (cd_check_timeout() != 0) {
             return -1;
         }
-        if (func_8003E848() != 0) {
+        if (CheckCallback() != 0) {
             cd_poll_interrupts();
         }
     }
-    if (D_8005587C.sync == 2 && com == 0x0E) {
+    if (g_cd_status.sync == 2 && com == 0x0E) {
         D_800555C0 = *param;
     }
     cd_publish_response(result, D_80057198);
-    return -(D_8005587C.sync == 5);
+    return -(g_cd_status.sync == 5);
 }

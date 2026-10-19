@@ -2,14 +2,14 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-/* Pass the matrix at D_800577C4 to the two GTE setup routines. */
+/* Pass the matrix at g_m_rot to the two GTE setup routines. */
 
-extern u8 D_800577C4[];
-void func_80042E9C(void *);
-void func_80042F2C(void *);
+extern u8 g_m_rot[];
+void SetRotMatrix(void *);
+void SetTransMatrix(void *);
 
-void func_8001892C(void)
+void Gfx_SetGteMatrices(void)
 {
-    func_80042E9C(D_800577C4);
-    func_80042F2C(D_800577C4);
+    SetRotMatrix(g_m_rot);
+    SetTransMatrix(g_m_rot);
 }

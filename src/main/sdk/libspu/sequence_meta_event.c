@@ -3,45 +3,17 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-typedef struct {
-    u8 field_0;
-    u8 pad1[3];
-    u8 *field_4;
-    u8 *field_8;
-    u8 *field_C;
-    u8 pad10[0x17];
-    u8 field_27;
-    u8 pad28[3];
-    u8 field_2B;
-    u8 pad2C[0x10];
-    u8 field_3C;
-    u8 pad3D[9];
-    s16 field_46;
-    u16 field_48;
-    s16 field_4A;
-    u8 pad4C[0x22];
-    s16 field_6E;
-    s16 field_70;
-    u8 pad72[0xE];
-    s32 field_80;
-    s32 field_84;
-    s32 field_88;
-    s32 field_8C;
-    s32 field_90;
-    u8 pad94[0x18];
-} SequenceState;
 
-extern SequenceState *D_80060418[];
 
-s32 func_8004AEB8(s16, s16);
-void func_8004AF70(s16, s16);
-void func_80050060(s16);
+s32 _SsReadDeltaValue(s16, s16);
+void _SsSndNextSep(s16, s16);
+void SpuVmSeqKeyOff(s16);
 
 static __inline__ u32 clock_divisor(u32 ticks) {
     return ticks << 2;
 }
 
-void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
+void _SsGetMetaEvent(s16 arg0, s16 arg1, u8 arg2) {
     s32 fifteen_ticks;
     u32 b0, b1;
     s32 val;
@@ -49,7 +21,7 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
     s32 prod;
     u8 *bytes;
     u32 divisor;
-    SequenceState *state = D_80060418[arg0] + arg1;
+    SequenceState *state = g_ss_score_table[arg0] + arg1;
 
     switch (arg2) {
     case 0x51:
@@ -62,12 +34,12 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
         val = (b0 << 16) | (b1 << 8) | bytes[2];
         bpm = 60000000 / val;
         prod = state->field_4A * bpm;
-        fifteen_ticks = D_8005FF4C << 4;
-        fifteen_ticks -= D_8005FF4C;
+        fifteen_ticks = g_spawns_base << 4;
+        fifteen_ticks -= g_spawns_base;
         divisor = clock_divisor(fifteen_ticks);
         state->field_8C = bpm;
         if ((u32)(prod * 10) < divisor) {
-            u32 tmp = (u32)(D_8005FF4C * 600) / (u32)prod;
+            u32 tmp = (u32)(g_spawns_base * 600) / (u32)prod;
             state->field_6E = tmp;
             state->field_70 = tmp;
             {
@@ -95,7 +67,7 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
             }
         }
     L_end:
-        state->field_88 = func_8004AEB8(arg0, arg1);
+        state->field_88 = _SsReadDeltaValue(arg0, arg1);
         break;
     case 0x2F:
         state->field_48++;
@@ -111,19 +83,19 @@ void func_8004A9FC(s16 arg0, s16 arg1, u8 arg2) {
             state->field_4 = state->field_8;
             state->field_C = state->field_8;
         } else {
-            (D_80060418[arg0] + arg1)->field_90 &= ~1;
-            (D_80060418[arg0] + arg1)->field_90 &= ~8;
-            (D_80060418[arg0] + arg1)->field_90 &= ~2;
-            (D_80060418[arg0] + arg1)->field_90 |= 0x200;
-            (D_80060418[arg0] + arg1)->field_90 |= 4;
+            (g_ss_score_table[arg0] + arg1)->field_90 &= ~1;
+            (g_ss_score_table[arg0] + arg1)->field_90 &= ~8;
+            (g_ss_score_table[arg0] + arg1)->field_90 &= ~2;
+            (g_ss_score_table[arg0] + arg1)->field_90 |= 0x200;
+            (g_ss_score_table[arg0] + arg1)->field_90 |= 4;
             state->field_2B = 0;
             state->field_C = state->field_8;
             if (state->field_3C != 0xFF) {
                 state->field_2B = 0;
-                func_8004AF70(state->field_3C, state->field_0);
-                func_80050060((arg1 << 8) | arg0);
+                _SsSndNextSep(state->field_3C, state->field_0);
+                SpuVmSeqKeyOff((arg1 << 8) | arg0);
             }
-            func_80050060((arg1 << 8) | arg0);
+            SpuVmSeqKeyOff((arg1 << 8) | arg0);
             state->field_88 = state->field_70;
         }
         break;

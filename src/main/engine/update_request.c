@@ -4,6 +4,6 @@
 
 /* Storage is owned by engine/state. */
 
-void func_800317DC(void) {
-    if (D_800566C0 == 0) D_800566C0 = 1;
+void Midi_SetStateStopped(void) {
+    if (gp_card_chan == 0) gp_card_chan = 1;
 }

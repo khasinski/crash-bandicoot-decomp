@@ -9,7 +9,7 @@ typedef struct {
     u32 word04, word08;
 } MaskPacket;
 
-void func_8004102C(MaskPacket *arg0, s32 arg1, s32 arg2)
+void SetPriority(MaskPacket *arg0, s32 arg1, s32 arg2)
 {
     s32 mode;
 

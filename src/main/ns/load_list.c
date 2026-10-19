@@ -3,11 +3,11 @@
 #include "ns.h"
 #include "zone.h"
 
-ResourceSlot *func_800146F0(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void func_800134C8(s32 id);
-ResourceSlot *func_80014C08(s32 id, s32 entry_id);
+ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
+void Ns_Update(s32 id);
+ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 
-ResourceSlot *func_80015034(u32 *ref);
+ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {
@@ -18,31 +18,31 @@ static __inline__ void ns_slot_unref(ResourceSlot *slot)
         remaining = references - 1;
         slot->references = remaining;
         if ((remaining << 16) <= 0 && slot->word06 == 0) {
-            func_80014930(slot);
-            D_8005C528.pool.active_count -= 1;
+            Ns_PageDelete(slot);
+            g_ns.pool.active_count -= 1;
         }
     }
 }
 
 static __inline__ void ns_pool_active_inc(void)
 {
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
 }
 
-void func_8001495C(ZoneLoadList *load)
+void Ns_ZoneUnload(ZoneLoadList *load)
 {
     s32 i;
     ResourceSlot *slot;
 
     if (load != NULL) {
         for (i = 0; i < load->entry_count; i++) {
-            slot = func_80015034(&load->entries[i]);
+            slot = Ns_PageStruct(&load->entries[i]);
             if ((s32)slot < -0xFE && slot != (ResourceSlot *)-0xFF) {
                 ns_slot_unref(slot);
             }
         }
         for (i = 0; i < load->page_count; i++) {
-            func_80014E34(load->pages[i], 1);
+            Ns_PageClose(load->pages[i], 1);
         }
     }
 }

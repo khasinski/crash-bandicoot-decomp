@@ -33,16 +33,16 @@ typedef struct {
     s16 unk1E;
 } SvmCur;
 
-extern SvmCur D_8005E558;
+extern SvmCur g_midi_sep;
 
 extern VoiceStruct D_800572AC[];
 extern VoiceU16 D_800572AE[];
 extern VoiceU16 D_800572B2[];
 extern VoiceS16 D_800572C4[];
 extern VoiceU8 D_800572C7[];
-void func_8004DA78(s32, s32);
+void _SpuVmSetNoiseVoice(s32, s32);
 
-u8 func_8004E59C(void)
+u8 SpuVmAlloc(void)
 {
     u8 var_s0;
     u16 var_t3;
@@ -56,9 +56,9 @@ u8 func_8004E59C(void)
     var_t3 = 0xFFFF;
     var_t2 = 0;
     var_t0 = 0;
-    var_t4 = D_8005E558.unkF;
+    var_t4 = g_midi_sep.unkF;
     var_t1 = 0x63;
-    for (var_a3 = 0; var_a3 < D_8005E340; var_a3++) {
+    for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
         if ((D_800572C7[var_a3].value == 0) && (D_800572B2[var_a3].value == 0)) {
             var_s0 = var_a3;
             break;
@@ -86,17 +86,17 @@ u8 func_8004E59C(void)
     if (var_s0 == 0x63) {
         var_s0 = var_t1;
         if (var_t2 == 0) {
-            var_s0 = D_8005E340;
+            var_s0 = gp_spawn_count;
         }
     }
-    if (var_s0 < D_8005E340) {
-        for (var_a3 = 0; var_a3 < D_8005E340; var_a3++) {
+    if (var_s0 < gp_spawn_count) {
+        for (var_a3 = 0; var_a3 < gp_spawn_count; var_a3++) {
             (D_800572AC + var_a3)->unk2 = D_800572AE[var_a3].value + 1;
         }
         D_800572AE[var_s0].value = 0;
-        D_800572C4[var_s0].value = D_8005E558.unkF;
+        D_800572C4[var_s0].value = g_midi_sep.unkF;
         if (D_800572C7[var_s0].value == 2) {
-            func_8004DA78(0, 0xFFFFFF);
+            _SpuVmSetNoiseVoice(0, 0xFFFFFF);
         }
     }
     return var_s0;

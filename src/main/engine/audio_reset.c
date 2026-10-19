@@ -42,71 +42,71 @@ typedef struct {
     u8 pad24[0x20];
 } VoiceEntry;
 
-extern VoiceEntry D_80056804[];
-extern VoiceEntry D_80056E78;
+extern VoiceEntry g_voices[];
+extern VoiceEntry g_audio_vol_scale;
 
-extern s32 D_80056710[];
-extern s32 D_80061914[];
+extern s32 gp_pbak_mode[];
+extern s32 g_cur_map_level[];
 
-void func_800497F4(void);
-void func_8004C990(void *, s16, s16);
-s32 func_80045D70(s32, void *);
-void func_80048B30(SpuCommonAttributes *);
-void func_80048A54(s32);
-s32 func_80030008(s32, s16, s16, s32, s32);
-void func_8002FFFC(s16);
-void func_8004B7D8(s16, s16);
+void SsInit(void);
+void SsSetTableSize(void *, s16, s16);
+s32 SpuInitMalloc(s32, void *);
+void SpuSetCommonAttr(SpuCommonAttributes *);
+void SpuSetTransferMode(s32);
+s32 Audio_SetReverbAttr(s32, s16, s16, s32, s32);
+void Audio_SetVoiceMVol(s16);
+void SsSetMVol(s16, s16);
 
-void func_8002FDE0(void) {
+void Audio_Init(void) {
     s32 i;
     SpuCommonAttributes attr;
 
     for (i = 0; i < 24; i++) {
-        D_80056804[i].b3 = 0;
+        g_voices[i].b3 = 0;
     }
-    func_800497F4();
-    func_8004C990(D_80056EE4, 1, 2);
-    func_80045D70(0, D_80056670);
+    SsInit();
+    SsSetTableSize(D_80056EE4, 1, 2);
+    SpuInitMalloc(0, D_80056670);
     attr.mask = 3;
     attr.volume_left = 0x3FFF;
     attr.volume_right = 0x3FFF;
-    func_80048B30(&attr);
-    func_80048A54(0);
-    D_80056E78.unk0C = NULL;
-    D_80056E78.unk10 = 1;
-    D_80056E78.unk11 = 0x80;
-    D_80056E78.unk12 = 0x3FFF;
-    D_80056E78.unk14 = 0;
-    D_80056E78.unk16 = 0x1000;
-    D_80056E78.unk18 = 0;
-    D_80056E78.unk1C = 0;
-    D_80056E78.unk20 = 0;
-    D_80056E78.b1 = 0;
-    D_80056E78.b0 = 0;
-    D_80056E78.b2 = 0;
-    D_80056E78.b3 = 0;
-    D_80056E78.b4 = 0;
-    D_80056E78.b5 = 0;
-    D_80056E78.b6 = 0;
-    D_80056E78.b7 = 0;
-    D_80056E78.b8 = 0;
-    D_80056E78.b9 = 1;
-    D_80056E78.b10 = 1;
-    D_80056E78.b11 = 0;
-    switch (D_80056710[0]) {
+    SpuSetCommonAttr(&attr);
+    SpuSetTransferMode(0);
+    g_audio_vol_scale.unk0C = NULL;
+    g_audio_vol_scale.unk10 = 1;
+    g_audio_vol_scale.unk11 = 0x80;
+    g_audio_vol_scale.unk12 = 0x3FFF;
+    g_audio_vol_scale.unk14 = 0;
+    g_audio_vol_scale.unk16 = 0x1000;
+    g_audio_vol_scale.unk18 = 0;
+    g_audio_vol_scale.unk1C = 0;
+    g_audio_vol_scale.unk20 = 0;
+    g_audio_vol_scale.b1 = 0;
+    g_audio_vol_scale.b0 = 0;
+    g_audio_vol_scale.b2 = 0;
+    g_audio_vol_scale.b3 = 0;
+    g_audio_vol_scale.b4 = 0;
+    g_audio_vol_scale.b5 = 0;
+    g_audio_vol_scale.b6 = 0;
+    g_audio_vol_scale.b7 = 0;
+    g_audio_vol_scale.b8 = 0;
+    g_audio_vol_scale.b9 = 1;
+    g_audio_vol_scale.b10 = 1;
+    g_audio_vol_scale.b11 = 0;
+    switch (gp_pbak_mode[0]) {
     case 0x5:
     case 0x1C:
     case 0x1D:
     case 0x34:
-        func_80030008(5, 0x2000, 0x2000, 0, 0);
+        Audio_SetReverbAttr(5, 0x2000, 0x2000, 0, 0);
         break;
     case 0x25:
-        func_80030008(3, 0x2000, 0x2000, 0, 0);
+        Audio_SetReverbAttr(3, 0x2000, 0x2000, 0, 0);
         break;
     }
-    func_8002FFFC((D_80061914[0] * 0x3FFF) >> 8);
+    Audio_SetVoiceMVol((g_cur_map_level[0] * 0x3FFF) >> 8);
     D_80056660 = 0x3FFF;
     D_80056664 = 0;
-    func_8004B7D8(0x7F, 0x7F);
+    SsSetMVol(0x7F, 0x7F);
     D_8005666C = 0;
 }

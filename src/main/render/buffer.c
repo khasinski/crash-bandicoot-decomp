@@ -6,21 +6,21 @@
 
 #include "render.h"
 
-void func_800342D8(void *, s32);
+void Gpu_RResetOT(void *, s32);
 
-void func_80016DCC(RenderBuffer *buffer)
+void Gpu_ResetPrims(RenderBuffer *buffer)
 {
     buffer->word78 = buffer->word74;
-    func_800342D8(buffer->ordering_table, 0x800);
+    Gpu_RResetOT(buffer->ordering_table, 0x800);
 }
 
-void func_80016DF8(s32 amount)
+void Gpu_GetPrimsTail(s32 amount)
 {
-    amount += D_8005840C->word78;
-    D_8005840C->word78 = amount;
+    amount += g_ot_cur->word78;
+    g_ot_cur->word78 = amount;
 }
 
-s32 *func_80016E18(void)
+s32 *Gpu_GetCurPrimsTail(void)
 {
-    return &D_8005840C->word78;
+    return &g_ot_cur->word78;
 }

@@ -2,37 +2,36 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-s32 func_8004E330(s16,s16,s16,u16);
+s32 SpuVmKeyOff(s16,s16,s16,u16);
 /* The retail call passes an unused mode value; allocation returns an index. */
-s32 func_8004E59C(s32);
-void func_8004E80C(void);
-s32 func_8004EA24(void);
-void func_8004EBDC(s16);
-void func_8004F090(s32);
-void func_8004F0D4(s32);
-void func_8004F1A4(u8,u16);
-s32 func_800500F8(u8 *,u8 *);
-s32 func_80050728(s16,s16);
-typedef struct {
-    u8 gap00[0x12];
-    u8 channel;
-    u8 gap13[0x4E - 0x13];
-    s16 gains[16];
-    u8 gap6E[0xAC - 0x6E];
-} SequenceState;
+s32 SpuVmAlloc(s32);
+void SpuVmDoAllocate(void);
+s32 note2pitch(void);
+void vmNoiseOn(s16);
+void vmNoiseOff(s32);
+void SpuVmKeyOffNow(s32);
+void SpuVmKeyOnNow(u8,u16);
+s32 SpuVmSelectToneAndVag(u8 *,u8 *);
+s32 SpuVmVSetUp(s16,s16);
 typedef struct {
     u8 gap00[0x12];
     u16 programs;
 } VabHeader;
-extern u8 D_800572AC[], D_800572AE[], D_800572B4[], D_800572B6[], D_800572BA[], D_800572BE[], D_800572C0[], D_800572C2[], D_800572C4[], D_800572C7[];
-extern u8 *D_8005CFE4;
+extern u8 D_800572AC[];
+extern u8 D_800572AE[];
+extern u8 D_800572B4[];
+extern u8 D_800572B6[];
+extern u8 D_800572BA[];
+extern u8 D_800572BE[];
+extern u8 D_800572C0[];
+extern u8 D_800572C2[];
+extern u8 D_800572C4[];
+extern u8 D_800572C7[];
 extern VabHeader *D_8005CFDC;
 
 /* Shared note context; the sample cursor points 24 bytes into it. */
-extern u8 D_8005E558[32];
-extern s16 D_8005E56E, D_8005E572;
-extern SequenceState *D_80060418[];
-s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
+extern u8 g_midi_sep[32];
+s32 SpuVmKeyOn(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
     /* The selector writes parallel byte lists of samples and tone indices. */
     u8 sp10[128];
     u8 sp90[128];
@@ -47,8 +46,8 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
     u8 *temp_v1;
 
     var_s2 = 0;
-    temp_s0 = &D_80060418[arg0&255][((u32) arg0 << 0x10) >> 0x18];
-    if (func_80050728(arg1, arg2) != 0) {
+    temp_s0 = &g_ss_score_table[arg0&255][((u32) arg0 << 0x10) >> 0x18];
+    if (SpuVmVSetUp(arg1, arg2) != 0) {
         return -1;
     }
     {
@@ -58,29 +57,29 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
         if (arg0 == 0x21) {
             D_8005E55C = (s8) arg4;
         } else {
-            D_8005E55C = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->channel]) / 127);
+            D_8005E55C = (s8) ((s32) (arg4 * temp_s0->gains[temp_s0->field_12]) / 127);
         }
-        D_8005E558[5] = (s8) arg5;
+        g_midi_sep[5] = (s8) arg5;
         temp_v0 = (arg2 * 0x10) + D_8005CFCC;
         D_8005E562 = temp_v0[1];
         D_8005E563 = temp_v0[4];
-        D_8005E558[0] = temp_v0[0];
+        g_midi_sep[0] = temp_v0[0];
         if ((u8)D_8005E55F >= D_8005CFDC->programs) {
             return -1;
         }
         {
             if (arg4 == 0) {
-                var_s2 = func_8004E330(arg0, arg1, arg2, arg3 & 0xFFFF);
+                var_s2 = SpuVmKeyOff(arg0, arg1, arg2, arg3 & 0xFFFF);
             } else {
-                temp_v0_2 = func_800500F8(sp90, sp10);
+                temp_v0_2 = SpuVmSelectToneAndVag(sp90, sp10);
                 var_s1 = 0;
                 if (temp_v0_2 & 0xFF) {
-                    temp_s0_2 = D_8005E558 + 0x18;
+                    temp_s0_2 = g_midi_sep + 0x18;
                     do {
                         var_v1 = var_s1 & 0xFF;
                         *(u16*)temp_s0_2 = (u16) sp10[var_v1];
                         temp_s0_2[-0xC] = (u8) sp90[var_v1];
-                        temp_v1 = ((temp_s0_2[-0xC] + (temp_s0_2[-0x11] * 0x10)) << 5) + D_8005CFE4;
+                        temp_v1 = ((temp_s0_2[-0xC] + (temp_s0_2[-0x11] * 0x10)) << 5) + g_ns_vpage_pool;
                         temp_s0_2[-0x9] = (u8) temp_v1[0];
                         temp_s0_2[-0xB] = (u8) temp_v1[2];
                         temp_s0_2[-0xA] = (u8) temp_v1[3];
@@ -89,9 +88,9 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
                         temp_s0_2[-0x4] = (u8) temp_v1[1];
                         temp_s0_2[-0x6] = (u8) temp_v1[6];
                         temp_s0_2[-0x5] = (u8) temp_v1[7];
-                        temp_v0_3 = func_8004E59C(0);
+                        temp_v0_3 = SpuVmAlloc(0);
                         ((s16 *)temp_s0_2)[1] = temp_v0_3;
-                        if (temp_v0_3 < (s32) D_8005E340) {
+                        if (temp_v0_3 < (s32) gp_spawn_count) {
                             *(u8*)(D_800572C7 + (temp_v0_3 * 0x34)) = 1;
                             *(s16*)(D_800572AE + (((s16 *)temp_s0_2)[1] * 0x34)) = 0;
                             *(s16*)(D_800572BA + (((s16 *)temp_s0_2)[1] * 0x34)) = arg0;
@@ -106,13 +105,13 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
                             *(s16*)(D_800572B8 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) arg3;
                             *(s16*)(D_800572C4 + (((s16 *)temp_s0_2)[1] * 0x34)) = (s16) temp_s0_2[-0x9];
                             *(s16*)(D_800572AC + (((s16 *)temp_s0_2)[1] * 0x34)) = *(u16*)temp_s0_2;
-                            func_8004E80C();
+                            SpuVmDoAllocate();
                             if ((s16) *(u16*)temp_s0_2 == 0xFF) {
-                                func_8004EBDC(((s16 *)temp_s0_2)[1]);
+                                vmNoiseOn(((s16 *)temp_s0_2)[1]);
                             } else {
-                                func_8004F1A4(temp_v0_2 & 0xFF, func_8004EA24() & 0xFFFF);
+                                SpuVmKeyOnNow(temp_v0_2 & 0xFF, note2pitch() & 0xFFFF);
                             }
-                            var_s2 |= 1 << D_8005E572;
+                            var_s2 |= 1 << D_8005E572[0];
                         } else {
                             var_s2 = -1;
                         }
@@ -126,23 +125,23 @@ s32 func_8004DDE4(s16 arg0, s16 arg1, s16 arg2, u16 arg3, u16 arg4, u16 arg5) {
     return var_s2;
 }
 
-s32 func_8004E330(s16 arg0, s16 arg1, s16 arg2, u16 arg3) {
+s32 SpuVmKeyOff(s16 arg0, s16 arg1, s16 arg2, u16 arg3) {
     u8 i;
     s32 count;
     s32 offset;
 
     count = 0;
-    for (i = 0; i < D_8005E340; i++) {
+    for (i = 0; i < gp_spawn_count; i++) {
         offset = i * 0x34;
         if (*(s16 *)(D_800572B8 + offset) == arg3) {
             if (*(s16 *)(D_800572BE + offset) == arg2) {
                 if (*(s16 *)(D_800572BA + offset) == arg0) {
                     if (*(s16 *)(D_800572C2 + offset) == arg1) {
                         if (*(s16 *)(D_800572AC + offset) == 0xFF) {
-                            func_8004F090(i);
+                            vmNoiseOff(i);
                         } else {
-                            D_8005E572 = i;
-                            func_8004F0D4(0);
+                            D_8005E572[0] = i;
+                            SpuVmKeyOffNow(0);
                         }
                         count += 1;
                     }

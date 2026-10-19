@@ -6,7 +6,7 @@
 
 #include "resource.h"
 
-void func_80014930(ResourceSlot *slot)
+void Ns_PageDelete(ResourceSlot *slot)
 {
     slot->state = 1;
     D_8005CFBC[slot->id >> 1] = -0x12;

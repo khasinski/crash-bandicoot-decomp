@@ -1,7 +1,7 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-void func_80027F00(s16 *current, s16 *target, s32 step) {
+void Zone_ColorSeek(s16 *current, s16 *target, s32 step) {
     s16 start;
     s16 result;
     s32 delta;

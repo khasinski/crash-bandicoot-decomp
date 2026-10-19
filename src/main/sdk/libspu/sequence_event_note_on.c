@@ -17,47 +17,39 @@ typedef struct {
     s16 reserved[4];
 } ToneAttributes;
 
-typedef struct {
-    u8 bytes[0x4C];
-    s16 vab_id;
-    u8 gap4E[0x88 - 0x4E];
-    s32 ticks;
-    u8 gap8C[0xAC - 0x8C];
-} State;
 
 typedef void (*ContCallback)(s16, s16, u8, ToneAttributes, s16, u8);
 
-extern State *D_80060418[];
 extern ContCallback D_800583A4[];
 
-s32 func_8004D080(s16, s16, ProgramAttributes *);
-s32 func_8004D184(s16, s16, s32, ToneAttributes *);
-s32 func_8004D498(s16, s16, s32, const ToneAttributes *);
-s32 func_8004AEB8(s16, s16);
+s32 SsUtGetProgAtr(s16, s16, ProgramAttributes *);
+s32 SsUtGetVagAtr(s16, s16, s32, ToneAttributes *);
+s32 SsUtSetVagAtr(s16, s16, s32, const ToneAttributes *);
+s32 _SsReadDeltaValue(s16, s16);
 
-void func_80049C20(s16 sequence, s16 channel, u8 value) {
+void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
     ProgramAttributes prog_attr;
     ToneAttributes tone_attr;
     s32 dummy[1];
-    State *state = D_80060418[sequence] + channel;
+    SequenceState *state = g_ss_score_table[sequence] + channel;
     s32 i;
-    u8 index = state->bytes[0x12];
+    u8 index = state->field_12;
     u16 var;
     s32 var2;
     s32 z;
 
-    func_8004D080(state->vab_id, state->bytes[0x2C + index], &prog_attr);
-    if (state->bytes[0x27] == 1 && state->bytes[0x10] == 0) {
-        state->bytes[0x28] = value;
-        state->bytes[0x10] = 1;
-        state->ticks = func_8004AEB8(sequence, channel);
+    SsUtGetProgAtr(state->field_4C, state->field_2C[index], &prog_attr);
+    if (state->field_27 == 1 && state->field_10 == 0) {
+        state->field_28 = value;
+        state->field_10 = 1;
+        state->field_88 = _SsReadDeltaValue(sequence, channel);
         return;
     }
-    if (state->bytes[0x29] == 2) {
-        if (state->bytes[0x14] == 0) {
+    if (state->field_29 == 2) {
+        if (state->field_14 == 0) {
             for (i = 0; i < prog_attr.tones; i++) {
-                func_8004D184(state->vab_id, state->bytes[0x2C + index], i, &tone_attr);
-                switch (state->bytes[0x13]) {
+                SsUtGetVagAtr(state->field_4C, state->field_2C[index], i, &tone_attr);
+                switch (state->field_13) {
                 case 0:
                     /* Force GCC 2.5.7 loop/cse2 to hoist value * 3 into $s3/$fp before combine/jump2 elides block. */
                     z = tone_attr.vol & 1;
@@ -88,24 +80,24 @@ void func_80049C20(s16 sequence, s16 channel, u8 value) {
                     tone_attr.center += var;
                     break;
                 }
-                func_8004D498(state->vab_id, state->bytes[0x2C + index], i, &tone_attr);
+                SsUtSetVagAtr(state->field_4C, state->field_2C[index], i, &tone_attr);
             }
         }
-        state->ticks = func_8004AEB8(sequence, channel);
-        state->bytes[0x29] = 0;
+        state->field_88 = _SsReadDeltaValue(sequence, channel);
+        state->field_29 = 0;
         return;
     }
-    if (state->bytes[0x2A] == 2) {
-        if (state->bytes[0x16] == 0x10) {
+    if (state->field_2A == 2) {
+        if (state->field_16 == 0x10) {
             for (i = 0; i < prog_attr.tones; i++) {
-                D_800583A4[state->bytes[0x15]](state->vab_id, state->bytes[0x2C + index], i, tone_attr, state->bytes[0x15], value);
+                D_800583A4[state->field_15](state->field_4C, state->field_2C[index], i, tone_attr, state->field_15, value);
             }
         } else {
-            D_800583A4[state->bytes[0x15]](state->vab_id, state->bytes[0x2C + index], state->bytes[0x16], tone_attr, state->bytes[0x15], value);
+            D_800583A4[state->field_15](state->field_4C, state->field_2C[index], state->field_16, tone_attr, state->field_15, value);
         }
-        state->ticks = func_8004AEB8(sequence, channel);
-        state->bytes[0x2A] = 0;
+        state->field_88 = _SsReadDeltaValue(sequence, channel);
+        state->field_2A = 0;
         return;
     }
-    state->ticks = func_8004AEB8(sequence, channel);
+    state->field_88 = _SsReadDeltaValue(sequence, channel);
 }

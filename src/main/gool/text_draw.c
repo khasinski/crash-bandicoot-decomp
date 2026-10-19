@@ -131,17 +131,16 @@ typedef struct GoolFont {
     GoolGlyph backdrop;
 } GoolFont;
 
-extern CamTransformState D_800577E4;
-extern RenderProjectionState D_800578D0;
+extern RenderProjectionState g_view_proj;
 
-void *func_80015A98(u32 *);
-s32 func_8003A144(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-void func_8003D740(u8 *, u8 *, u32, u32, u32, u32);
-s32 func_8001E3D4(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot);
+void *Ns_Lookup(u32 *);
+s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
+void sprintf(u8 *, u8 *, u32, u32, u32, u32);
+s32 Gool_TextStringTransform(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-void func_8001E7D8(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot, u32 center_flag)
+void Gool_TextObjectTransform(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot, u32 center_flag)
 {
     u8 buf[80];
     s32 shift;
@@ -155,13 +154,13 @@ void func_8001E7D8(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot,
     s32 width;
 
     shift = ABS(obj->vectors.scale[0]) / 27279;
-    if (func_8003A144(
+    if (Gte_RCalcSpriteRotMatrix(
             &obj->vectors,
-            &D_800577E4.vec888,
+            &(*(CamTransformState *)g_m_view).vec888,
             obj->status_b & 0x200,
             shift,
-            &D_800577E4.mat844,
-            D_800578D0.distance,
+            &(*(CamTransformState *)g_m_view).mat844,
+            g_view_proj.distance,
             0x3C00,
             ((obj->status_b >> 18) ^ 1) & 1)) {
         anim4 = anim_seq;
@@ -174,8 +173,8 @@ void func_8001E7D8(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot,
         }
         font_offset = (u32)obj->invincibility_state >> 8;
         font = (GoolFont *)(obj->exec->anims + (font_offset ? font_offset : anim4->count));
-        tex = func_80015A98(&font->eid);
-        func_8003D740(buf, str, *(obj->sp - 2), *(obj->sp - 3), *(obj->sp - 4), *(obj->sp - 5));
+        tex = Ns_Lookup(&font->eid);
+        sprintf(buf, str, *(obj->sp - 2), *(obj->sp - 3), *(obj->sp - 4), *(obj->sp - 5));
         str = buf;
         p = str;
         while (*p != '\0') {
@@ -193,8 +192,8 @@ void func_8001E7D8(GoolObj *obj, GoolAnimSeq *anim_seq, u32 anim_frame, u32 *ot,
         }
         width = 0;
         if (center_flag) {
-            width = func_8001E3D4(obj, str, 0, font, tex, shift, NULL);
+            width = Gool_TextStringTransform(obj, str, 0, font, tex, shift, NULL);
         }
-        func_8001E3D4(obj, str, -width / 2, font, tex, shift, ot);
+        Gool_TextStringTransform(obj, str, -width / 2, font, tex, shift, ot);
     }
 }

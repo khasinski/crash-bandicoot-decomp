@@ -4,22 +4,19 @@
 
 /* Clear the cached display environment when disabling GPU output. */
 typedef struct {u8 debug;u8 pad01[13];u8 drawing[92];u8 display[20];} GpuState;
-typedef struct {u8 pad00[16];void (*command10)(u32);} GpuApi;
-extern GpuState D_80054A6E;
-extern GpuApi *D_80054A64;
-extern s32 (*D_80054A68)(const char *,...);
+extern GpuState g_gpu_debug_level;
 
-void func_80042AE0(void *,s32,s32);
-void func_800401C0(s32 enabled) {
-    GpuState *state = &D_80054A6E;
+void memset(void *,s32,s32);
+void SetDispMask(s32 enabled) {
+    GpuState *state = &g_gpu_debug_level;
     u32 command;
     GpuApi *api;
     u8 *display;
-    if (state->debug >= 2) D_80054A68(D_80011244,enabled);
+    if (state->debug >= 2) g_gpu_ot_status(D_80011244,enabled);
     display = state->display;
-    if (!enabled) func_80042AE0(display,-1,20);
-    api = D_80054A64;
+    if (!enabled) memset(display,-1,20);
+    api = g_gpu_ctl;
     command = 0x03000001;
     if (enabled) command = 0x03000000;
-    api->command10(command);
+    api->ctl10(command);
 }

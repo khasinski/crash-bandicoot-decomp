@@ -2,21 +2,18 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-extern void (*D_80056260)(void);
-extern void (*D_80056264)(void);
 
-extern u8 D_80056269;
 
-void func_8003E1F8(void);
-void func_8003E208(void);
-s32 func_8003E298();
-s32 func_8003E3D8(u32);
-void *func_8003E724(s32, void (*)(void));
-s32 func_8003E784(void (*)(void));
-void func_8004B828(void);
-void func_8004B868(void);
+void EnterCriticalSection(void);
+void ExitCriticalSection(void);
+s32 SetRCnt();
+s32 ResetRCnt(u32);
+void *InterruptCallback(s32, void (*)(void));
+s32 VSyncCallback(void (*)(void));
+void _SsTrapIntrVSync(void);
+void _SsSeqCalledTbyT_1per2(void);
 
-void func_8004B8B8(s32 arg0) {
+void _SsStart(s32 arg0) {
     s32 i;
     u16 target;
     u32 rcnt;
@@ -80,20 +77,20 @@ loop:
         break;
     }
     if (D_80056268 != 0) {
-        func_8003E1F8();
-        func_8003E784(D_80056260);
+        EnterCriticalSection();
+        VSyncCallback(D_80056260);
     } else {
-        func_8003E1F8();
-        func_8003E3D8(rcnt);
-        func_8003E298(rcnt, target, 0x1000);
+        EnterCriticalSection();
+        ResetRCnt(rcnt);
+        SetRCnt(rcnt, target, 0x1000);
         if (D_8005626A == 0) {
-            D_80056264 = func_8003E724(0, 0);
-            func_8003E724(D_8005626A, func_8004B828);
+            D_80056264 = InterruptCallback(0, 0);
+            InterruptCallback(D_8005626A, _SsTrapIntrVSync);
         } else if (D_80056269 == 0) {
-            func_8003E724(D_8005626A, D_80056260);
+            InterruptCallback(D_8005626A, D_80056260);
         } else {
-            func_8003E724(D_8005626A, func_8004B868);
+            InterruptCallback(D_8005626A, _SsSeqCalledTbyT_1per2);
         }
     }
-    func_8003E208();
+    ExitCriticalSection();
 }

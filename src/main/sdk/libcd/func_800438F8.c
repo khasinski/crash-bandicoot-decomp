@@ -1,8 +1,8 @@
 #include "common.h"
 /* GCC_VERSION: 2.6.3 */
 
-s32 func_80044AA8(u8 *);
-s32 func_800438F8(u8 *arg0) {
-    func_80044AA8(arg0);
+s32 CD_vol(u8 *);
+s32 CdMix(u8 *arg0) {
+    CD_vol(arg0);
     return 1;
 }

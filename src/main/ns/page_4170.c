@@ -4,19 +4,19 @@
 #include "ns.h"
 #include "zone.h"
 
-extern s32 D_80056410;
-extern ResourceSlot D_80057F40[8];
+extern s32 gp_pause_B_pressed;
+extern ResourceSlot g_spu_slots[8];
 
-s32 func_80043984(s32, s32);
-s32 func_80043498(s32, s32);
-u8 *func_80043A24(s32, u8 *);
-s32 func_80043668(u8, u8 *);
-s32 func_800439A4(s32, void *, s32);
-void func_80012F10(s32);
-void func_80048A18(u32);
-void func_800489B8(void *, s32);
-s32 func_80048A88(s32);
-void func_8001331C(ResourceSlot *);
+s32 CdReadSync(s32, s32);
+s32 CdSync(s32, s32);
+u8 *CdIntToPos(s32, u8 *);
+s32 CdControlF(u8, u8 *);
+s32 CdRead(s32, void *, s32);
+void Ns_PageUpdateEntries(s32);
+void SpuSetTransferStartAddr(u32);
+void SpuWrite(void *, s32);
+s32 SpuIsTransferCompleted(s32);
+void Ns_PageFree(ResourceSlot *);
 
 typedef struct NsDirectoryExt {
     s32 bucket_offsets[0x100];
@@ -48,7 +48,7 @@ typedef struct PageSlot {
     u32 word28;
 } PageSlot;
 
-void func_80013970(u8 *src, u8 *dst)
+void Ns_PageDecompress(u8 *src, u8 *dst)
 {
     u32 b0, b1, b2, b3;
     u32 b4, b5, b6, b7;
@@ -149,7 +149,7 @@ static __inline__ s32 ns_page_resolve(ResourceHeader *page)
 
 static __inline__ s32 ns_cd_check(s32 enabled)
 {
-    s32 result = func_80043984(enabled == 0, 0);
+    s32 result = CdReadSync(enabled == 0, 0);
     if (result < 0)
         return 0;
     return result == 0;
@@ -167,15 +167,15 @@ static __inline__ s32 ns_cd_read(PageSlot *slot, s32 count)
     if (slot->word0E != 0) {
         sectors = (count << 5) - slot->word0C;
         buf = slot->header + (slot->word0C << 11);
-        pos = D_8005C528.nsf_sector + (((NsDirectoryExt *)D_8005C528.directory)->words420[id >> 1] >> 6);
+        pos = g_ns.nsf_sector + (((NsDirectoryExt *)g_ns.directory)->words420[id >> 1] >> 6);
     } else {
         sectors = count << 5;
-        pos = D_8005C528.nsf_sector + ((NsDirectoryExt *)D_8005C528.directory)->word418 + ((id >> 1) << 5);
+        pos = g_ns.nsf_sector + ((NsDirectoryExt *)g_ns.directory)->word418 + ((id >> 1) << 5);
         buf = slot->header;
     }
-    func_80043A24(pos, loc);
-    func_80043668(2, loc);
-    if (func_800439A4(sectors, buf, 0x80) == 0) {
+    CdIntToPos(pos, loc);
+    CdControlF(2, loc);
+    if (CdRead(sectors, buf, 0x80) == 0) {
         return -0x10;
     }
     return -0xFF;
@@ -193,20 +193,20 @@ PageSlot *NS_13B30(PageSlot *slot)
 
     if (state == 3 || state == 0xD) {
         if (slot->word0E != 0) {
-            func_80013970(slot->header + (slot->word0C << 11), slot->header);
+            Ns_PageDecompress(slot->header + (slot->word0C << 11), slot->header);
         }
         slot->state = 4;
         ns_page_resolve((ResourceHeader *)slot->header);
         return NULL;
     }
 
-    compressed = (slot->id >> 1) < ((NsDirectoryExt *)D_8005C528.directory)->word41C && D_8005C528.wordA98 != 0;
+    compressed = (slot->id >> 1) < ((NsDirectoryExt *)g_ns.directory)->word41C && g_ns.wordA98 != 0;
     for (i = 0; i < count; i++) {
         if (state == 2) {
             slot->word0E = compressed;
             if (compressed != 0) {
                 next_offset = offset + 0x20;
-                offset = next_offset - (((NsDirectoryExt *)D_8005C528.directory)->words420[slot->id >> 1] & 0x3F);
+                offset = next_offset - (((NsDirectoryExt *)g_ns.directory)->words420[slot->id >> 1] & 0x3F);
                 slot->word0C = offset;
             }
             if ((s16)slot->state == state) {
@@ -214,7 +214,7 @@ PageSlot *NS_13B30(PageSlot *slot)
             } else {
                 slot->state = 0xD;
                 if (compressed != 0) {
-                    slot->word10 = (u32)(slot->header + (((((NsDirectoryExt *)D_8005C528.directory)->words420[slot->id >> 1] & 0x3F) + slot->word0C) << 11));
+                    slot->word10 = (u32)(slot->header + (((((NsDirectoryExt *)g_ns.directory)->words420[slot->id >> 1] & 0x3F) + slot->word0C) << 11));
                 } else {
                     slot->word10 = (u32)slot[1].header;
                 }
@@ -227,7 +227,7 @@ PageSlot *NS_13B30(PageSlot *slot)
     return prev;
 }
 
-void func_80013D48(PageSlot *slot, s32 id)
+void Ns_PageUpdate(PageSlot *slot, s32 id)
 {
     PageSlot *next_slot;
     s32 shifted_id;
@@ -252,11 +252,11 @@ loop:
         }
         NS_13B30(slot);
         if (id != -1 && slot != slot->slot) {
-            func_80013D48(slot + 1, id);
+            Ns_PageUpdate(slot + 1, id);
         }
         goto case_4;
     case 2:
-        if (D_8005C528.wordA84 != 0) {
+        if (g_ns.wordA84 != 0) {
             break;
         }
         if (id != -1) {
@@ -267,20 +267,20 @@ loop:
                 break;
             }
         }
-        D_8005C528.wordA90 = slot->id;
-        if (D_80056410 == 0) {
+        g_ns.wordA90 = slot->id;
+        if (gp_pause_B_pressed == 0) {
             goto abort_cd;
         }
-        if (func_80043498(1, 0) != 2 && id == -1) {
+        if (CdSync(1, 0) != 2 && id == -1) {
             break;
         }
         next_slot = NS_13B30(slot);
-        D_8005C528.wordA84 = (s32)slot;
+        g_ns.wordA84 = (s32)slot;
         ns_cd_read(next_slot, slot->word1C);
         slot = next_slot;
         goto loop;
     case 3:
-        if (D_80056410 != 0 && (PageSlot *)D_8005C528.wordA84 == slot) {
+        if (gp_pause_B_pressed != 0 && (PageSlot *)g_ns.wordA84 == slot) {
             if (id == -1) {
                 if (ns_cd_check(0)) {
                     goto finish_cd;
@@ -294,24 +294,24 @@ loop:
             }
         finish_cd:
             NS_13B30(slot);
-            D_8005C528.wordA84 = 0;
+            g_ns.wordA84 = 0;
         } else {
         abort_cd:
-            func_80014930((ResourceSlot *)slot);
-            D_8005C528.wordA84 = 0;
-            D_8005C528.pool.active_count--;
+            Ns_PageDelete((ResourceSlot *)slot);
+            g_ns.wordA84 = 0;
+            g_ns.pool.active_count--;
             break;
         }
     case 4:
     case_4:
         if ((u16)(((ResourceHeader *)slot->header)->kind - 3) >= 2) {
-            func_80012F10(slot->word08);
-            D_8005C528.pool.active_count--;
+            Ns_PageUpdateEntries(slot->word08);
+            g_ns.pool.active_count--;
             break;
         }
         slot->state = 10;
     case 10:
-        if (D_8005C528.wordA8C != 0) {
+        if (g_ns.wordA8C != 0) {
             break;
         }
         if (id != -1 && id != slot->id) {
@@ -320,34 +320,34 @@ loop:
         arg1 = -1;
         kind = ((ResourceHeader *)slot->header)->kind;
         if (kind == 4) {
-            arg1 = *(s32 *)(((ResourceHeader *)slot->header)->entries[0]->data) + D_8005C528.audio_page_count;
+            arg1 = *(s32 *)(((ResourceHeader *)slot->header)->entries[0]->data) + g_ns.audio_page_count;
         }
-        idx = func_800145C8(kind, arg1);
+        idx = Ns_AudioPageAllocate(kind, arg1);
         if (idx == -12) {
-            func_80014930((ResourceSlot *)slot);
-            D_8005C528.pool.active_count--;
+            Ns_PageDelete((ResourceSlot *)slot);
+            g_ns.pool.active_count--;
             break;
         }
-        spu_slot = &D_80057F40[idx];
+        spu_slot = &g_spu_slots[idx];
         slot->state = 11;
         slot->slot = (PageSlot *)spu_slot;
-        D_8005C528.wordA8C = (s32)slot;
+        g_ns.wordA8C = (s32)slot;
         spu_slot->state = 11;
         spu_slot->id = slot->id;
-        func_80048A18((u32)spu_slot->base);
+        SpuSetTransferStartAddr((u32)spu_slot->base);
         header = (ResourceHeader *)slot->header;
         if (header->kind == 3) {
-            func_800489B8(header, 0x10000);
+            SpuWrite(header, 0x10000);
         } else if (header->kind == 4) {
             entry = header->entries[0];
-            func_800489B8((&entry->data)[1], ((s32 *)entry->data)[1]);
+            SpuWrite((&entry->data)[1], ((s32 *)entry->data)[1]);
         }
     case 11:
-        if ((PageSlot *)D_8005C528.wordA8C == slot) {
-            if (func_80048A88(id == slot->id)) {
-                func_80012F10(slot->word08);
-                D_8005C528.wordA8C = 0;
-                D_8005C528.pool.active_count--;
+        if ((PageSlot *)g_ns.wordA8C == slot) {
+            if (SpuIsTransferCompleted(id == slot->id)) {
+                Ns_PageUpdateEntries(slot->word08);
+                g_ns.wordA8C = 0;
+                g_ns.pool.active_count--;
             }
         }
         break;
@@ -357,7 +357,7 @@ loop:
     }
 }
 
-s32 func_800141F4(s32 *count)
+s32 Ns_PageAllocate(s32 *count)
 {
     s32 best_start = -1;
     s32 best_len;
@@ -369,10 +369,10 @@ s32 func_800141F4(s32 *count)
     ResourceSlot *phys;
     s16 state;
 
-    for (i = 0; i < D_8005C528.physical_count; i++) {
-        phys = D_8005C528.physical;
+    for (i = 0; i < g_ns.physical_count; i++) {
+        phys = g_ns.physical;
         cost = 0;
-        for (j = 0; j < (*count < D_8005C528.physical_count - i ? *count : D_8005C528.physical_count - i); j++) {
+        for (j = 0; j < (*count < g_ns.physical_count - i ? *count : g_ns.physical_count - i); j++) {
             slot = (ResourceSlot *)((i + j) * sizeof(ResourceSlot) + (s32)phys);
             state = slot->state;
             if (state != 1) {
@@ -393,7 +393,7 @@ s32 func_800141F4(s32 *count)
     }
     if (best_start != -1) {
         for (j = best_start; j < best_start + best_len; j++) {
-            func_8001331C(&D_8005C528.physical[j]);
+            Ns_PageFree(&g_ns.physical[j]);
         }
         *count = best_len;
         return best_start;

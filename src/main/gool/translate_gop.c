@@ -2,7 +2,7 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-static __inline__ s32 func_8001FB20(s32 value, s32 bits)
+static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 {
     s32 shift = 0x20 - bits;
     return (s32)((u32)value << shift) >> shift;
@@ -75,16 +75,16 @@ s32 *GOOL_TranslateGop(GoolObjView *obj, u32 gop)
                         printf(0);
                     }
                 } else {
-                    return &obj->fp[func_8001FB20(gop, 7)];
+                    return &obj->fp[Gool_SignShift(gop, 7)];
                 }
             } else {
-                ptr = (GoolExecView *)&D_80056480[D_80056484 = !D_80056484];
-                *(s32 *)ptr = func_8001FB20(gop, 8) << 4;
+                ptr = (GoolExecView *)&gp_crash[D_80056484 = !D_80056484];
+                *(s32 *)ptr = Gool_SignShift(gop, 8) << 4;
                 return (s32 *)ptr;
             }
         } else {
-            ptr = (GoolExecView *)&D_80056480[D_80056484 = !D_80056484];
-            *(s32 *)ptr = func_8001FB20(gop, 9) << 8;
+            ptr = (GoolExecView *)&gp_crash[D_80056484 = !D_80056484];
+            *(s32 *)ptr = Gool_SignShift(gop, 9) << 8;
             return (s32 *)ptr;
         }
     } else {

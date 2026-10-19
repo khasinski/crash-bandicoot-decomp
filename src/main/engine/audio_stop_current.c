@@ -2,11 +2,11 @@
 #include "common.h"
 
 /* Export the real small-common state object. */
-asm(".globl D_80056654");
-s16 D_80056654;
-void func_800319DC(s16,s32);
-void func_80049648(void);
-void func_80031938(void) {
-    func_800319DC(D_80056654,1);
-    func_80049648();
+asm(".globl gp_midi_vol");
+s16 gp_midi_vol;
+void Midi_Close(s16,s32);
+void SsQuit(void);
+void Midi_Kill(void) {
+    Midi_Close(gp_midi_vol,1);
+    SsQuit();
 }

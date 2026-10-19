@@ -2,17 +2,14 @@
 /* CC1_FLAGS: -O2 */
 #include "common.h"
 #include "gpu.h"
-extern s32 D_80057960;
+extern s32 g_draw_stamp;
 
-extern s16 D_800577C4;
+extern s16 g_m_rot;
 
-extern s16 D_800577E4;
-extern s16 D_80057824;
+extern s16 g_m_color;
 
 extern s16 D_80057844;
-extern s32 D_80057868;
 
-extern s32 D_80061894, D_8006193C, D_80061940;
 
 typedef struct Copy32 {
     s32 w[8];
@@ -51,15 +48,15 @@ typedef struct CamBlock {
     s32 w938;
 } CamBlock;
 
-extern CamBlock D_80057804;
+extern CamBlock g_m_light;
 
-void func_80026138(void);
-s32 func_8003905C(s32);
-s32 func_800390D0(s32);
-void func_80042C2C(void *, void *);
-void func_80042F6C(u32, u32, u32);
-void func_80042D3C(void *, void *);
-void func_80042F8C(s32, s32);
+void Level_Noop(void);
+s32 sin(s32);
+s32 cos(s32);
+void MulMatrix(void *, void *);
+void SetBackColor(u32, u32, u32);
+void TransMatrix(void *, void *);
+void SetGeomOffset(s32, s32);
 
 typedef struct WgeoHeader {
     s32 x;
@@ -88,9 +85,9 @@ typedef struct ZoneHeader9A2C {
     ZoneWorld worlds[8];
 } ZoneHeader9A2C;
 
-void func_8001922C(ZoneHeader9A2C *arg0);
+void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0);
 
-void func_80017A14(void)
+void Gfx_UpdateMatrices(void)
 {
     s16 sp10[16];
     s32 sp30[4];
@@ -101,10 +98,10 @@ void func_80017A14(void)
     s32 *t1;
     s32 *s0_5;
 
-    func_80026138();
-    s0_1 = func_8003905C(-D_80057878);
-    v0 = func_800390D0(-D_80057878);
-    asm("" : "=r"(cam) : "0"((Copy32 *)&D_80057864));
+    Level_Noop();
+    s0_1 = sin(-D_80057878);
+    v0 = cos(-D_80057878);
+    KEEP_REGISTER_VALUE(cam, (Copy32 *)&D_80057864);
     m = (s16 *)(cam - 5);
     *m = v0;
     D_800577C6 = -s0_1;
@@ -116,8 +113,8 @@ void func_80017A14(void)
     D_800577D2 = 0;
     D_800577D4 = 0x1000;
 
-    s0_2 = func_8003905C(-D_80057870);
-    v0_2 = func_800390D0(-D_80057870);
+    s0_2 = sin(-D_80057870);
+    v0_2 = cos(-D_80057870);
     sp10[0] = 0x1000;
     sp10[1] = 0;
     sp10[2] = 0;
@@ -127,10 +124,10 @@ void func_80017A14(void)
     sp10[6] = 0;
     sp10[7] = s0_2;
     sp10[8] = v0_2;
-    func_80042C2C(m, sp10);
+    MulMatrix(m, sp10);
 
-    s0_3 = func_8003905C(-D_80057874);
-    v0_3 = func_800390D0(-D_80057874);
+    s0_3 = sin(-D_80057874);
+    v0_3 = cos(-D_80057874);
     sp10[0] = v0_3;
     sp10[1] = 0;
     sp10[2] = s0_3;
@@ -140,15 +137,15 @@ void func_80017A14(void)
     sp10[6] = -s0_3;
     sp10[7] = 0;
     sp10[8] = v0_3;
-    func_80042C2C(m, sp10);
+    MulMatrix(m, sp10);
 
-    func_80042F6C(D_80057804.z914->data->bg_color[0], D_80057804.z914->data->bg_color[1], D_80057804.z914->data->bg_color[2]);
+    SetBackColor(g_m_light.z914->data->bg_color[0], g_m_light.z914->data->bg_color[1], g_m_light.z914->data->bg_color[2]);
     sp30[0] = *(s32 *)cam >> 8;
     sp30[1] = D_80057868 >> 8;
     sp30[2] = D_8005786C >> 8;
-    func_80042D3C(m, sp30);
+    TransMatrix(m, sp30);
 
-    D_800577E4 = D_800577C4;
+    (*(s16 *)g_m_view) = g_m_rot;
     D_800577E6 = D_800577C6;
     D_800577E8 = D_800577C8;
     D_800577EA = -(D_800577CA * 5) >> 3;
@@ -158,12 +155,12 @@ void func_80017A14(void)
     D_800577F2 = -D_800577D2;
     D_800577F4 = -D_800577D4;
 
-    D_80057804.m804 = *(cam - 4);
+    g_m_light.m804 = *(cam - 4);
 
-    if (D_80057804.z914->data->flags & 0x1000) {
-        *(((s32 *)cam) + 10) = __builtin_abs(((D_80057960 % 128) - 64) * 800) + 0xDC1E0;
-        s0_4 = func_8003905C(0x7D);
-        v0_4 = func_800390D0(0x7D);
+    if (g_m_light.z914->data->flags & 0x1000) {
+        *(((s32 *)cam) + 10) = __builtin_abs(((g_draw_stamp % 128) - 64) * 800) + 0xDC1E0;
+        s0_4 = sin(0x7D);
+        v0_4 = cos(0x7D);
         *(((s16 *)cam) - 0x20) = 0x1000;
         *(((s16 *)cam) - 0x1F) = 0;
         *(((s16 *)cam) - 0x1E) = 0;
@@ -174,7 +171,7 @@ void func_80017A14(void)
         ((ShortMat *)(cam - 2))->m[7] = s0_4;
         ((ShortMat *)(cam - 2))->m[8] = v0_4;
 
-        D_80057844 = D_80057824;
+        D_80057844 = g_m_color;
         D_80057846 = D_80057826;
         D_80057848 = D_80057828;
         D_8005784A = -(D_8005782A * 5) >> 3;
@@ -188,7 +185,7 @@ void func_80017A14(void)
         *(cam - 1) = *(cam - 4);
     }
 
-    func_80042F8C(D_8006193C, (D_80061894 >> 8) + D_80061940);
+    SetGeomOffset(D_8006193C[0], (D_80061894 >> 8) + g_item_pool1[0]);
     val = D_80061894 >> 8;
     if (val == 0) {
         D_80061894 = 0;
@@ -202,24 +199,24 @@ void func_80017A14(void)
     }
 
     t1 = &D_80057864.w[0];
-    D_80061920 = *t1;
+    g_title_pause_state = *t1;
     D_80061924 = D_80057868;
     D_80061928 = D_8005786C;
-    D_8006192C = D_80057870;
-    D_80061930 = D_80057874;
+    g_saved_item_pool1 = D_80057870;
+    g_saved_item_pool2 = D_80057874;
     D_80061934 = D_80057878;
 
-    if (!(*(u32 *)(void *)&(*(ZoneCamData **)(void *)&D_80057804.z914->data)->flags & 0x1000)) {
-        D_80057804.m888 = *(Copy12 *)t1;
-        D_80057930.w[0] = D_80057804.w938 & 0xFFF;
+    if (!(*(u32 *)(void *)&(*(ZoneCamData **)(void *)&g_m_light.z914->data)->flags & 0x1000)) {
+        g_m_light.m888 = *(Copy12 *)t1;
+        D_80057930.w[0] = g_m_light.w938 & 0xFFF;
     } else {
         D_80057930.w[0] = 0;
     }
 
     s0_5 = &D_80057930.w[0];
-    D_800618C8 = *s0_5;
-    D_8005794C = func_8003905C(*s0_5) >> 4;
+    g_ticks_cur_frame = *s0_5;
+    D_8005794C = sin(*s0_5) >> 4;
     D_80057950 = 0;
-    D_80057954 = func_800390D0(*s0_5) >> 4;
-    func_8001922C(*(ZoneHeader9A2C **)(void *)&D_80057804.z914->data);
+    D_80057954 = cos(*s0_5) >> 4;
+    Gfx_LoadWorldsFog(*(ZoneHeader9A2C **)(void *)&g_m_light.z914->data);
 }

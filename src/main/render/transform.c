@@ -4,7 +4,7 @@
 
 /* Clear the first six transform words and initialise the three scales to 1.0 (12-bit fixed point). */
 
-void func_800180A0(s32 *transform)
+void Gfx_ResetCam(s32 *transform)
 {
     transform[3] = 0;
     transform[4] = 0;

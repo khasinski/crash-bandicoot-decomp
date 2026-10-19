@@ -4,11 +4,11 @@
 
 /* Dispatch the display operation only when the pointed-to halfword is nonzero. */
 
-extern u16 *D_800566B8;
-void func_800195CC(void);
+extern u16 *gp_level_entry;
+void Gfx_UpdateCamMatrices(void);
 
-void func_800194D0(void)
+void Gfx_UpdateMatrices2(void)
 {
-    if (*D_800566B8)
-        func_800195CC();
+    if (*gp_level_entry)
+        Gfx_UpdateCamMatrices();
 }

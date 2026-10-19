@@ -3,15 +3,9 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-/* --- func_80040A0C --- */
+/* --- PutDispEnv --- */
 
-typedef struct {
-    u8 pad00[0x10];
-    void (*ctl10)(u32);
-} GpuApi;
 
-extern GpuApi *D_80054A64;
-extern s32 (*D_80054A68)(const char *, ...);
 
 typedef struct {
     u8 version;
@@ -24,13 +18,13 @@ typedef struct {
     void (* volatile callback)(void);
 } GpuState;
 
-extern GpuState D_80054A6C;
+extern GpuState g_gpu_mode;
 
 typedef struct {
     u8 debug;
     u8 pad[15];
 } GpuDebugState;
-extern volatile GpuDebugState D_80054A6E;
+extern volatile GpuDebugState g_gpu_debug_level;
 
 typedef struct {
     u8 reverse;
@@ -40,31 +34,31 @@ extern volatile GpuReverseState D_80054A6F;
 
 extern volatile GpuDisplayEnv D_80054AD8;
 
-s32 func_8003F23C(void);
-s32 func_80041610(GpuRect *rect);
+s32 GetVideoMode(void);
+s32 get_dx(GpuRect *rect);
 void *BIOS_MemCpy(void *, void *, s32);
 
 #define CLAMP(val, min, max) ((val) < (min) ? (min) : ((val) > (max) ? (max) : (val)))
 
-GpuDisplayEnv *func_80040A0C(GpuDisplayEnv *env)
+GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
 {
     u32 mode;
     s32 hx1, hx2, vy1, vy2;
 
     mode = 0x08000000;
-    if (D_80054A6E.debug >= 2) {
-        D_80054A68(D_80011338, env);
+    if (g_gpu_debug_level.debug >= 2) {
+        g_gpu_ot_status(D_80011338, env);
     }
 
-    D_80054A64->ctl10(((u32)(D_80054A6C.version - 1) < 2)
-        ? ((((env->display.y & 0xFFF) << 12) | (func_80041610(&env->display) & 0xFFF)) | 0x05000000)
+    g_gpu_ctl->ctl10(((u32)(g_gpu_mode.version - 1) < 2)
+        ? ((((env->display.y & 0xFFF) << 12) | (get_dx(&env->display) & 0xFFF)) | 0x05000000)
         : ((((env->display.y & 0x3FF) << 10) | (env->display.x & 0x3FF)) | 0x05000000));
 
     if (D_80054AD8.screen.x != env->screen.x ||
         D_80054AD8.screen.y != env->screen.y ||
         D_80054AD8.screen.w != env->screen.w ||
         D_80054AD8.screen.h != env->screen.h) {
-        env->pad12 = func_8003F23C();
+        env->pad12 = GetVideoMode();
         hx1 = 0x260 + env->screen.x * 10;
         vy1 = env->screen.y + (env->pad12 ? 0x13 : 0x10);
         hx2 = hx1 + (env->screen.w ? env->screen.w * 10 : 0xA00);
@@ -75,8 +69,8 @@ GpuDisplayEnv *func_80040A0C(GpuDisplayEnv *env)
         vy1 = CLAMP(vy1, 0x10, env->pad12 ? 0x136 : 0x100);
         vy2 = CLAMP(vy2, vy1 + 2, env->pad12 ? 0x138 : 0x102);
 
-        D_80054A64->ctl10(0x06000000 | ((hx2 & 0xFFF) << 12) | (hx1 & 0xFFF));
-        D_80054A64->ctl10(0x07000000 | ((vy2 & 0x3FF) << 10) | (vy1 & 0x3FF));
+        g_gpu_ctl->ctl10(0x06000000 | ((hx2 & 0xFFF) << 12) | (hx1 & 0xFFF));
+        g_gpu_ctl->ctl10(0x07000000 | ((vy2 & 0x3FF) << 10) | (vy1 & 0x3FF));
     }
 
     if (*(s32 *)&D_80054AD8.interlaced != *(s32 *)&env->interlaced ||
@@ -86,7 +80,7 @@ GpuDisplayEnv *func_80040A0C(GpuDisplayEnv *env)
         D_80054AD8.display.h != env->display.h) {
         s32 small_h;
 
-        env->pad12 = func_8003F23C();
+        env->pad12 = GetVideoMode();
         if (env->pad12 == 1) {
             mode |= 0x08;
         }
@@ -114,7 +108,7 @@ GpuDisplayEnv *func_80040A0C(GpuDisplayEnv *env)
         if (!small_h) {
             mode |= 0x24;
         }
-        D_80054A64->ctl10(mode);
+        g_gpu_ctl->ctl10(mode);
     }
 
     BIOS_MemCpy(&D_80054AD8, env, 0x14);

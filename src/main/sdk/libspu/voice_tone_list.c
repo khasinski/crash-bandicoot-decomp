@@ -1,12 +1,11 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-extern u8 *D_8005CFE4;
-extern u8 D_8005E558[];
-s32 func_800500F8(u8 *tones,u8 *channels) {
+extern u8 g_midi_sep[];
+s32 SpuVmSelectToneAndVag(u8 *tones,u8 *channels) {
     u8 count=0;
     u8 tone=0;
-    u8 *state=D_8005E558;
+    u8 *state=g_midi_sep;
     u8 *program;
     u8 *count_state;
     u8 *attrs;
@@ -18,7 +17,7 @@ s32 func_800500F8(u8 *tones,u8 *channels) {
         program=state+7;
         count_state=state;
         do {
-            attrs=D_8005CFE4+((*program*16+(tone&0xFF))<<5);
+            attrs=g_ns_vpage_pool+((*program*16+(tone&0xFF))<<5);
             lower=attrs[6];
             note = *(program - 5);
             if (note>=lower) {

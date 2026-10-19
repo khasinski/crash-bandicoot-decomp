@@ -20,7 +20,7 @@ s32 GOOL_CreateObjectStackFrame(Object *object, s32 arg_words, s32 flags)
     return -0xFF;
 }
 
-s32 func_8001D97C(Object *object,s32 *flags) {
+s32 Gool_ObjectPopFrame(Object *object,s32 *flags) {
     u32 packed;
     u32 frame_offset;
     u32 stack_offset;

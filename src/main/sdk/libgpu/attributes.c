@@ -5,7 +5,7 @@
 
 /* Set or clear the transparency and raw-texture command bits. */
 
-void func_8003F7F0(GpuPacketHeader *packet,s32 enabled)
+void SetSemiTrans(GpuPacketHeader *packet,s32 enabled)
 {
     u8 command;
     if(enabled) command=packet->command|2;
@@ -13,7 +13,7 @@ void func_8003F7F0(GpuPacketHeader *packet,s32 enabled)
     packet->command=command;
 }
 
-void func_8003F818(GpuPacketHeader *packet,s32 enabled)
+void SetShadeTex(GpuPacketHeader *packet,s32 enabled)
 {
     u8 command;
     if(enabled) command=packet->command|1;

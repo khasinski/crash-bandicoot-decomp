@@ -8,28 +8,28 @@ typedef ResourceHeader Header;
 typedef ResourceSlot Slot;
 typedef ResourceBucket Bucket;
 typedef ResourceHandler Handler;
-extern Slot D_8005C554[], D_800580A0[];
+extern Slot D_8005C554[];
+extern Slot g_slst_buf0[];
 extern Handler D_800514EC[];
-extern u32 D_8005728C[];
-GpuRect D_80056420 = { 0, 0, 0x100, 0x80 };
+GpuRect gp_ns_StringTable = { 0, 0, 0x100, 0x80 };
 
-void func_80040484(GpuRect *, Header *);
+void LoadImage(GpuRect *, Header *);
 
-u8 *func_80012F10(s32 index) {
-    Slot *request = &D_8005C528.physical[index], *slot;
+u8 *Ns_PageUpdateEntries(s32 index) {
+    Slot *request = &g_ns.physical[index], *slot;
     Header *header;
     Bucket *bucket;
     s32 i, quotient;
     Entry *entry;
     s32 (*callback)(Entry *);
 
-    if ((Slot *)D_8005C528.wordA84 == request)
-        D_8005C528.wordA84 = 0;
+    if ((Slot *)g_ns.wordA84 == request)
+        g_ns.wordA84 = 0;
     request->state = 30;
     header = request->header;
     switch (header->kind) {
     case 0:
-        bucket = D_8005C528.buckets[(header->entries[0]->id >> 15) & 255];
+        bucket = g_ns.buckets[(header->entries[0]->id >> 15) & 255];
         i = 0;
         while (i < request->header->count) {
             entry = request->header->entries[i];
@@ -47,31 +47,31 @@ u8 *func_80012F10(s32 index) {
         break;
     case 1: {
         Slot *texture_slot;
-        i = func_8001439C();
+        i = Ns_TexturePageAllocate();
         if (i == -12) {
             i = 15;
             if (request->references == 0)
                 goto texture_done;
         }
-        texture_slot = &D_800580A0[i];
+        texture_slot = &g_slst_buf0[i];
         quotient = i / 4;
-        D_80056420.x = (i - quotient * 4) << 8;
-        D_80056420.y = quotient << 7;
-        func_80040484(&D_80056420, request->header);
+        gp_ns_StringTable.x = (i - quotient * 4) << 8;
+        gp_ns_StringTable.y = quotient << 7;
+        LoadImage(&gp_ns_StringTable, request->header);
         texture_slot->state = 20;
         texture_slot->word18 = request->header->id;
         texture_slot->id = request->id;
-        texture_slot->mapping = (u32 *)func_80015978(texture_slot->word18);
+        texture_slot->mapping = (u32 *)Ns_Probe(texture_slot->word18);
         *texture_slot->mapping = (u32)texture_slot->base;
     texture_done:
         request->state = 1;
-        D_8005C528.page_map[request->id >> 1] = texture_slot;
+        g_ns.page_map[request->id >> 1] = texture_slot;
         return (u8 *)(i * 2);
     }
     case 3:
     case 4:
         header = request->header;
-        bucket = D_8005C528.buckets[(header->entries[0]->id >> 15) & 255];
+        bucket = g_ns.buckets[(header->entries[0]->id >> 15) & 255];
         slot = request->slot;
         i = 0;
         while (i < header->count) {
@@ -96,7 +96,7 @@ u8 *func_80012F10(s32 index) {
         }
         slot->state = 20;
         request->state = 1;
-        D_8005C528.page_map[request->id >> 1] = slot;
+        g_ns.page_map[request->id >> 1] = slot;
         return slot->base;
     }
     request->state = 20;

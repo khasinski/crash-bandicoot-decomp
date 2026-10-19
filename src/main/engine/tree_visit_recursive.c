@@ -2,12 +2,12 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 func_8001CDD0(Node *, s32);
+s32 Gool_ObjectKill(Node *, s32);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (n)->word04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? &(n)->word04 : &(n)->children)
 
-s32 func_8001B56C(Node *node, Node *new_parent)
+s32 Gool_RemoveLevelSpawn(Node *node, Node *new_parent)
 {
     Node *parent = node->parent;
     Node *prev;
@@ -41,7 +41,7 @@ s32 GOOL_TraverseObjectTreePreorder(Node *root, Visitor visitor, void *context)
     Node *child, *next;
     s32 result = visitor(root, context);
     if(result == -25) {
-        func_8001CDD0(root, 0);
+        Gool_ObjectKill(root, 0);
         return -25;
     }
     child = root->children;

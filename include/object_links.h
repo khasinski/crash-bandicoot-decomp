@@ -13,8 +13,8 @@ typedef struct Node {
 typedef s32 (*Visitor)(Node *, void *);
 typedef s32 (*Traversal)(Node *, Visitor, void *);
 
-s32 func_8001B92C(Node *root, Visitor visitor, void *context);
-void func_8001BA18(Traversal traversal, Visitor visitor, void *context);
-s32 func_8001D1E0(Node *object, void *context);
+s32 Gool_ObjectHandleTraverseTreePostorder(Node *root, Visitor visitor, void *context);
+void Gool_ForEachObjectHandle(Traversal traversal, Visitor visitor, void *context);
+s32 Gool_ObjectTerminate(Node *object, void *context);
 
 #endif

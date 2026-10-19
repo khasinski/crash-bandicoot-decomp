@@ -24,7 +24,7 @@ typedef struct GpuRect {
     s16 x, y, w, h;
 } GpuRect;
 
-u32 func_8004158C(GpuRect *rect);
+u32 get_tw(GpuRect *rect);
 
 typedef struct GpuDrawEnv {
     GpuRect clip;
@@ -41,7 +41,7 @@ typedef struct GpuDisplayEnv {
     u8 interlaced, rgb24, pad12, pad13;
 } GpuDisplayEnv;
 
-/* func_80040834 copies exactly 0x5C bytes, including the command packet. */
+/* PutDrawEnv copies exactly 0x5C bytes, including the command packet. */
 typedef struct GpuDrawing {
     GpuDrawEnv env;
     u32 packet[16];
@@ -52,12 +52,12 @@ typedef struct GpuTile {
     GpuRect rect;
 } GpuTile;
 
-GpuDrawEnv *func_8003F408(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h);
-void func_8003F7D8(u32 *packet);
-void func_8003FA14(GpuPacketHeader *packet);
-void func_80040760(GpuPacketHeader *packet);
-void *func_80040834(GpuDrawing *drawing);
-void func_800408F8(s32 tag, GpuDrawing *drawing);
-void func_800410AC(u32 *packet, GpuDrawing *drawing);
+GpuDrawEnv *SetDefDrawEnv(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h);
+void TermPrim(u32 *packet);
+void SetBlockFill(GpuPacketHeader *packet);
+void DrawPrim(GpuPacketHeader *packet);
+void *PutDrawEnv(GpuDrawing *drawing);
+void DrawOTagEnv(s32 tag, GpuDrawing *drawing);
+void SetDrawEnv(u32 *packet, GpuDrawing *drawing);
 
 #endif

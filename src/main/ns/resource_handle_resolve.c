@@ -2,8 +2,8 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 #include "resource.h"
-s32 func_80014C08();
-s32 func_80015A98(u32 *reference) {
+s32 Ns_PagePhysical();
+s32 Ns_Lookup(u32 *reference) {
     u32 id = *reference;
     ResourceHandle *resolved;
     u32 value;
@@ -29,7 +29,7 @@ s32 func_80015A98(u32 *reference) {
     value = resolved->entry;
     result = value;
     if (value & 1) {
-        func_80014C08(value,resolved->id);
+        Ns_PagePhysical(value,resolved->id);
         value = resolved->entry;
         result = -10;
         if (!(value & 1)) {

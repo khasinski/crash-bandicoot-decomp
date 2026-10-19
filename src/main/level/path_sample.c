@@ -8,8 +8,8 @@ typedef struct {
     s32 sx, sy, sz;
 } CamSample;
 
-ZoneEntry *func_80015A98(u32 *);
-s32 func_800245F0(s32, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+s32 Gool_AngDiff(s32, s32);
 
 typedef struct {
     s32 x, y, z;
@@ -17,7 +17,7 @@ typedef struct {
 
 #define PATH_POINT(p, i) (((ZonePath *)((i) * sizeof(ZonePoint) + (u32)(p)))->points[0])
 
-u16 func_800296A8(ZonePath *path, s32 progress, CamSample *out)
+u16 Zone_PathProgressToLoc(ZonePath *path, s32 progress, CamSample *out)
 {
     CamSample next;
     s32 pt;
@@ -44,7 +44,7 @@ u16 func_800296A8(ZonePath *path, s32 progress, CamSample *out)
     if (pt == path->length - 1 && frac != 0) {
         for (i = 0; i < path->neighbor_count; i++) {
             if (path->neighbors[i].relation & 2) {
-                n_zone = func_80015A98(&((ZoneHeader *)((ZoneEntry *)path->zone)->items[0])->neighbors[path->neighbors[i].zone]);
+                n_zone = Ns_Lookup(&((ZoneHeader *)((ZoneEntry *)path->zone)->items[0])->neighbors[path->neighbors[i].zone]);
                 n_path = (ZonePath *)n_zone->items[path->neighbors[i].path + ((ZoneHeader *)n_zone->items[0])->path_index];
                 n_base = (ZoneBase *)n_zone->items[1];
                 if (n_path->cam_mode != 1) {
@@ -80,7 +80,7 @@ u16 func_800296A8(ZonePath *path, s32 progress, CamSample *out)
     out->y += ((next.y - out->y) * frac) >> 8;
     out->z += ((next.z - out->z) * frac) >> 8;
     out->rx += ((next.rx - out->rx) * frac) >> 8;
-    out->ry += (func_800245F0(out->ry, next.ry) * frac) >> 8;
+    out->ry += (Gool_AngDiff(out->ry, next.ry) * frac) >> 8;
     out->rz += ((next.rz - out->rz) * frac) >> 8;
     return path->length;
 }

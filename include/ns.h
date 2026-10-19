@@ -19,8 +19,8 @@ typedef struct NsDirectory {
     ResourceBucket entries[1];
 } NsDirectory;
 
-/* Paging state at D_8005C528. The 22 physical page slots, the 38-slot pool
- * of virtual pages and the page map are set up by func_80015B58. */
+/* Paging state at g_ns. The 22 physical page slots, the 38-slot pool
+ * of virtual pages and the page map are set up by Ns_Init. */
 typedef struct NsState {
     s32 initialized;
     s32 level;
@@ -61,12 +61,12 @@ typedef struct NsSubsystem {
     u32 word18;
 } NsSubsystem;
 
-extern NsState D_8005C528;
+extern NsState g_ns;
 extern ResourceSlot D_8005C920[];
-extern NsFileMap D_8005E03C[];
+extern NsFileMap g_file_map[];
 extern NsSubsystem D_800514E0[];
 
-s32 func_80015B58(NsState *ns, s32 level);
-s32 func_80016420(NsState *ns);
+s32 Ns_Init(NsState *ns, s32 level);
+s32 Ns_Kill(NsState *ns);
 
 #endif

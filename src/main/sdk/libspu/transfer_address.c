@@ -4,10 +4,9 @@
 
 /* Cache the encoded SPU transfer address and return the supplied address. */
 
-s32 func_80046E00(s32,s32);
-extern s16 D_800558E0;
+s32 _spu_FsetRXXa(s32,s32);
 
-s32 func_80048A18(s32 arg0) {
-    D_800558E0 = func_80046E00(-1, arg0);
+s32 SpuSetTransferStartAddr(s32 arg0) {
+    D_800558E0 = _spu_FsetRXXa(-1, arg0);
     return arg0;
 }

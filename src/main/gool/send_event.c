@@ -2,7 +2,7 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-static __inline__ s32 func_8001FB20(s32 value, s32 bits)
+static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
 {
     s32 shift = 0x20 - bits;
     return (s32)((u32)value << shift) >> shift;
@@ -54,12 +54,12 @@ typedef struct GoolTimeState {
     u32 unk84;
 } GoolTimeState;
 
-extern GoolTimeState *D_80058404[];
+extern GoolTimeState *g_db_cur[];
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
-#define SCALE_DT(x) (((s32)((x) * (D_80058404[0]->unk84 < 0x67U ? D_80058404[0]->unk84 : 0x66))) / 1024)
+#define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
 
-extern GoolObjView *D_800566B4;
+extern GoolObjView *gp_crash_obj;
 s32 GOOL_InterpretObject(GoolObjView *, s32, void *);
 s32 GOOL_ChangeObjectState(GoolObjView *, s32, s32, s32 *);
 
@@ -79,7 +79,7 @@ static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObjView *object, s32 arg_w
     return -0xFF;
 }
 
-s32 func_80024040(GoolObjView *sender, GoolObjView *recipient, s32 event, s32 argc, s32 *argv)
+s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s32 argc, s32 *argv)
 {
     s32 sp10[2];
     s32 res;
@@ -139,7 +139,7 @@ s32 func_80024040(GoolObjView *sender, GoolObjView *recipient, s32 event, s32 ar
                 i &= ~2;
             }
             target_flags = *(u32 *)((state << 4) + (u32)recipient->exec->unk20);
-            if (recipient == D_800566B4) {
+            if (recipient == gp_crash_obj) {
                 anim_type = recipient->anim_type;
                 if ((u32)(anim_type - 3) < 2 || anim_type == 2) {
                     test = (i | 0x1002) & target_flags;
@@ -165,7 +165,7 @@ s32 func_80024040(GoolObjView *sender, GoolObjView *recipient, s32 event, s32 ar
     return -0xFF;
 }
 
-s32 func_800243A0(s32 cur_ang, s32 tgt_ang, s32 speed, GoolObjView *obj)
+s32 Gool_ObjectRotate(s32 cur_ang, s32 tgt_ang, s32 speed, GoolObjView *obj)
 {
     s32 diff;
     s32 wrapped_diff;
@@ -221,7 +221,7 @@ s32 func_800243A0(s32 cur_ang, s32 tgt_ang, s32 speed, GoolObjView *obj)
     return cur_ang;
 }
 
-s32 func_80024528(s32 cur_ang, s32 tgt_ang, s32 speed, GoolObjView *obj)
+s32 Gool_ObjectRotate2(s32 cur_ang, s32 tgt_ang, s32 speed, GoolObjView *obj)
 {
     s32 step;
     s32 diff;

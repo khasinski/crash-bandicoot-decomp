@@ -14,9 +14,8 @@ typedef struct {
     s32 ext_reverb, ext_mix;
 } CommonAttributes;
 
-extern volatile u16 *D_800558E4;
 
-void func_80048B30(CommonAttributes *attr) {
+void SpuSetCommonAttr(CommonAttributes *attr) {
     volatile u16 *control_registers;
     s16 right_input;
     s16 left_input;
@@ -89,7 +88,7 @@ void func_80048B30(CommonAttributes *attr) {
         } else {
             left_word = left_volume & 0x7FFF;
         }
-        D_800558E4[0x180 / 2] = (s16) (left_word | left_encoding);
+        g_spu_RXX[0x180 / 2] = (s16) (left_word | left_encoding);
     }
     if ((all_fields != 0) || (field_mask & 2)) {
         if ((all_fields != 0) || (field_mask & 8)) {
@@ -141,21 +140,21 @@ void func_80048B30(CommonAttributes *attr) {
         } else {
             right_word = right_volume & 0x7FFF;
         }
-        D_800558E4[0x182 / 2] = (s16) (right_word | right_encoding);
+        g_spu_RXX[0x182 / 2] = (s16) (right_word | right_encoding);
     }
     if ((all_fields != 0) || (field_mask & 0x40)) {
-        D_800558E4[0x1B0 / 2] = (u16) attr->cd_left;
+        g_spu_RXX[0x1B0 / 2] = (u16) attr->cd_left;
     }
     if ((all_fields != 0) || (field_mask & 0x80)) {
-        D_800558E4[0x1B2 / 2] = (u16) attr->cd_right;
+        g_spu_RXX[0x1B2 / 2] = (u16) attr->cd_right;
     }
     if ((all_fields != 0) || (field_mask & 0x100)) {
         if (attr->cd_reverb == 0) {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             cd_reverb_word = control_registers[0x1AA / 2];
             cd_reverb_word &= 0xFFFB;
         } else {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             cd_reverb_word = control_registers[0x1AA / 2];
             cd_reverb_word |= 4;
         }
@@ -163,29 +162,29 @@ void func_80048B30(CommonAttributes *attr) {
     }
     if ((all_fields != 0) || (field_mask & 0x200)) {
         if (attr->cd_mix == 0) {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             cd_mix_word = control_registers[0x1AA / 2];
             cd_mix_word &= 0xFFFE;
         } else {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             cd_mix_word = control_registers[0x1AA / 2];
             cd_mix_word |= 1;
         }
         control_registers[0x1AA / 2] = cd_mix_word;
     }
     if ((all_fields != 0) || (field_mask & 0x400)) {
-        D_800558E4[0x1B4 / 2] = (u16) attr->ext_left;
+        g_spu_RXX[0x1B4 / 2] = (u16) attr->ext_left;
     }
     if ((all_fields != 0) || (field_mask & 0x800)) {
-        D_800558E4[0x1B6 / 2] = (u16) attr->ext_right;
+        g_spu_RXX[0x1B6 / 2] = (u16) attr->ext_right;
     }
     if ((all_fields != 0) || (field_mask & 0x1000)) {
         if (attr->ext_reverb == 0) {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             ext_reverb_word = control_registers[0x1AA / 2];
             ext_reverb_word &= 0xFFF7;
         } else {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             ext_reverb_word = control_registers[0x1AA / 2];
             ext_reverb_word |= 8;
         }
@@ -193,11 +192,11 @@ void func_80048B30(CommonAttributes *attr) {
     }
     if ((all_fields != 0) || (field_mask & 0x2000)) {
         if (attr->ext_mix == 0) {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             ext_mix_word = control_registers[0x1AA / 2];
             ext_mix_word &= 0xFFFD;
         } else {
-            control_registers = D_800558E4;
+            control_registers = g_spu_RXX;
             ext_mix_word = control_registers[0x1AA / 2];
             ext_mix_word |= 2;
         }

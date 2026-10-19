@@ -1,12 +1,10 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gpu.h"
-extern u8 D_80054A6E;
-extern s32 (*D_80054A68)(const char *, ...);
+extern u8 g_gpu_debug_level;
 
-extern u32 D_80054B28;
 
-u32 *func_80040610(u32 *ot,s32 count) {
-    if (D_80054A6E >= 2) D_80054A68(D_800112C0,ot,count);
+u32 *ClearOTag(u32 *ot,s32 count) {
+    if (g_gpu_debug_level >= 2) g_gpu_ot_status(D_800112C0,ot,count);
     count--;
     if (count) {
         u32 address_mask = 0x00ffffff;

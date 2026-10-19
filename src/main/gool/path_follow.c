@@ -139,12 +139,12 @@ typedef struct Unk4Bytes {
 
 extern GoolVec3 D_80051768;
 extern Unk4Bytes D_8005647C;
-s32 func_80042B9C(s32);
-s32 func_8004301C(s32, s32);
+s32 SquareRoot0(s32);
+s32 ratan2(s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-s32 func_8001AC9C(GoolObj *obj, s32 progress, s32 *trans_arr) {
+s32 Gool_ObjectOrientOnPath(GoolObj *obj, s32 progress, s32 *trans_arr) {
     GoolVec3 *trans = (GoolVec3 *)trans_arr;
     GoolVec3 next_pt;
     GoolVec3 diff;
@@ -195,7 +195,7 @@ s32 func_8001AC9C(GoolObj *obj, s32 progress, s32 *trans_arr) {
     diff.z = next_pt.z - trans->z;
     if (obj->status_b & 0x8000) {
         dot = (next_pt.z - trans->z) >> 8;
-        dist = func_80042B9C(
+        dist = SquareRoot0(
             ((next_pt.x - trans->x) >> 8) * ((next_pt.x - trans->x) >> 8) +
             dot * dot);
         if (dist != 0) {
@@ -209,7 +209,7 @@ s32 func_8001AC9C(GoolObj *obj, s32 progress, s32 *trans_arr) {
             dot = temp / dist;
             frac = dot / dist;
             if (frac >= 0x100 && (progress >> 8) < entity->path_length - 1) {
-                return func_8001AC9C(obj, (idx + 1) << 8, (s32 *)trans);
+                return Gool_ObjectOrientOnPath(obj, (idx + 1) << 8, (s32 *)trans);
             }
             proj.x = (((dot >> 4) * ((next_pt.x - trans->x) >> 4)) / dist) + trans->x;
             proj.z = (((dot >> 4) * ((next_pt.z - trans->z) >> 4)) / dist) + trans->z;
@@ -247,21 +247,21 @@ s32 func_8001AC9C(GoolObj *obj, s32 progress, s32 *trans_arr) {
     }
     if (obj->status_b & 4) {
         if ((obj->status_b & 2) && (obj->status_a & 4)) {
-            obj->unkB4 = func_8004301C(-diff.x, -diff.z);
+            obj->unkB4 = ratan2(-diff.x, -diff.z);
         } else {
-            obj->unkB4 = func_8004301C(diff.x, diff.z);
+            obj->unkB4 = ratan2(diff.x, diff.z);
         }
         if (obj->status_b & 0x800) {
             s32 abs_dx = ABS(diff.x);
             s32 abs_dz = ABS(diff.z);
-            obj->vectors.rot[2] = func_8004301C(diff.x, diff.z);
-            obj->unkB8 = -func_8004301C(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
+            obj->vectors.rot[2] = ratan2(diff.x, diff.z);
+            obj->unkB8 = -ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
         }
     } else if (obj->status_b & 0x800) {
         s32 abs_dx = ABS(diff.x);
         s32 abs_dz = ABS(diff.z);
-        obj->unkB8 = func_8004301C(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
-        obj->vectors.rot[2] = func_8004301C(-diff.x, -diff.z);
+        obj->unkB8 = ratan2(diff.y, abs_dz < abs_dx ? abs_dx + abs_dz / 2 : abs_dz + abs_dx / 2);
+        obj->vectors.rot[2] = ratan2(-diff.x, -diff.z);
     }
     next_pt.x = ((next_pt.x - trans->x) * frac) >> 8;
     next_pt.y = ((next_pt.y - trans->y) * frac) >> 8;

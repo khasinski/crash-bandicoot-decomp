@@ -40,7 +40,7 @@ typedef struct GoolResourceState {
     u32 flags2DC;
 } GoolResourceState;
 
-/* Default block copied by func_8001EA00; halfword updates at 0x2A..0x2E. */
+/* Default block copied by Gool_ObjectColorByZone; halfword updates at 0x2A..0x2E. */
 typedef struct GoolDefaults {
     u8 bytes[0x2A];
     u16 field2A, field2C, field2E;
@@ -54,7 +54,7 @@ typedef struct GoolDefaultsObject {
     GoolDefaults defaults;
 } GoolDefaultsObject;
 
-/* Message/collision view from func_80024CC8. Its resource points to a
+/* Message/collision view from Gool_SendIfColliding. Its resource points to a
  * two-word entry prefix whose type is at +4, unlike ResourceEntry.kind (+8).
  * Keep that distinct format explicit rather than merging by similar names. */
 typedef struct GoolMessageEntry {
@@ -81,11 +81,11 @@ typedef struct GoolMessage {
     s32 word04, word08, selector, count, word14;
 } GoolMessage;
 
-s32 func_8001D97C(GoolRuntimeObject *object, s32 *flags);
+s32 Gool_ObjectPopFrame(GoolRuntimeObject *object, s32 *flags);
 GoolRuntimeObject *GOOL_TestObjectStateFlags(GoolRuntimeObject *, u32 flags);
-void func_8001EA00(GoolDefaultsObject *object, s32 mode);
-void func_800257B4(ObjectView *object);
-void func_80025804(ObjectView *object);
-void func_80027A08(GoolRuntimeObject *object, s32 index, s32 fallback);
+void Gool_ObjectColorByZone(GoolDefaultsObject *object, s32 mode);
+void Level_MdatOnLoad2(ObjectView *object);
+void Zone_TerminateObjects(ObjectView *object);
+void sub_80027A08(GoolRuntimeObject *object, s32 index, s32 fallback);
 
 #endif

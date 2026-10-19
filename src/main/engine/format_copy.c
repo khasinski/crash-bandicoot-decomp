@@ -4,7 +4,7 @@
  * Retail returns the advanced destination for forward copies and the
  * original destination for backward copies. Keep this asymmetric result.
  */
-u8 *func_8003DFAC(u8 *destination,const u8 *source,s32 length)
+u8 *memmove(u8 *destination,const u8 *source,s32 length)
 {
     if (destination >= source) {
         u8 *last;

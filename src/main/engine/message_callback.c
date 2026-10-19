@@ -2,11 +2,11 @@
 #include "gool.h"
 typedef GoolActorView Actor;
 typedef GoolMessage Message;
-void func_80024040(Actor *, Actor *, s32, s32, s32);     /* extern */
-s32 func_80026B80(s32 *, s32 *);                   /* extern */
-s32 func_80026CA8(s32 *, s32 *);                    /* extern */
+void Gool_ExecStateCode(Actor *, Actor *, s32, s32, s32);     /* extern */
+s32 Level_TestPointInBound(s32 *, s32 *);                   /* extern */
+s32 Level_TestBoundIntersection(s32 *, s32 *);                    /* extern */
 
-s32 func_80024CC8(Actor *arg0, Message *arg1) {
+s32 Gool_SendIfColliding(Actor *arg0, Message *arg1) {
     s32 first[6],second[6];
     s32 temp_a0;
     s32 temp_v0;
@@ -57,7 +57,7 @@ s32 func_80024CC8(Actor *arg0, Message *arg1) {
             second[4] = temp_v1_6->bounds[4] + temp_v1_6->position[1];
             temp_v1_7 = arg1->source;
             second[5] = temp_v1_7->bounds[5] + temp_v1_7->position[2];
-            if (func_80026CA8(&first[0], &second[0]) == 0) {
+            if (Level_TestBoundIntersection(&first[0], &second[0]) == 0) {
                 return -0xFF;
             }
             goto send_message;
@@ -79,7 +79,7 @@ s32 func_80024CC8(Actor *arg0, Message *arg1) {
             second[4] = temp_v1_13->bounds[4] + temp_v1_13->position[1];
             temp_v1_14 = arg1->source;
             second[5] = temp_v1_14->bounds[5] + temp_v1_14->position[2];
-            if (func_80026B80(arg0->position, &second[0]) == 0) {
+            if (Level_TestPointInBound(arg0->position, &second[0]) == 0) {
                 return -0xFF;
             }
             goto send_message;
@@ -107,7 +107,7 @@ s32 func_80024CC8(Actor *arg0, Message *arg1) {
             second[4] = temp_v1_20->radius[1] + temp_v1_20->position[1];
             temp_v1_21 = arg1->source;
             second[5] = temp_v1_21->radius[2] + temp_v1_21->position[2];
-            if (func_80026CA8(&first[0], &second[0]) != 0) {
+            if (Level_TestBoundIntersection(&first[0], &second[0]) != 0) {
                 temp_a0 = arg1->count;
                 if ((temp_a0 >= 3) && (temp_a0 != ((arg1->count / 5) * 5))) {
                     arg1->count = (s32) (temp_a0 + 1);
@@ -121,6 +121,6 @@ s32 func_80024CC8(Actor *arg0, Message *arg1) {
     return -0xFF;
 send_message:
     arg1->count++;
-    func_80024040(arg1->source, arg0, arg1->word04, arg1->word08, arg1->word14);
+    Gool_ExecStateCode(arg1->source, arg0, arg1->word04, arg1->word08, arg1->word14);
     return -0xFF;
 }

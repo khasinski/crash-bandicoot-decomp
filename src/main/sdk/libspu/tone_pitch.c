@@ -3,9 +3,8 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-extern u32 D_8005CFE4;
 
-s32 func_8004EADC(s32 arg0, s32 arg1) {
+s32 note2pitch2(s32 arg0, s32 arg1) {
     s16 temp_v0;
     s16 temp_v0_2;
     s32 temp_a1;
@@ -16,7 +15,7 @@ s32 func_8004EADC(s32 arg0, s32 arg1) {
     u16 var_v1;
     u8 *temp_v1;
 
-    temp_v1 = (u8 *)(((D_8005E564 + (D_8005E55F * 0x10)) << 5) + D_8005CFE4);
+    temp_v1 = (u8 *)(((D_8005E564 + (D_8005E55F * 0x10)) << 5) + g_ns_vpage_pool);
     var_v0 = (arg1 & 0xFFFF) + temp_v1[5];
     var_a2 = 0;
     if (var_v0 < 0) {

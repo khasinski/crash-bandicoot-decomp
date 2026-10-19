@@ -3,8 +3,8 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 extern s32 D_80061910;
-extern s32 D_80061918;
-extern s32 D_80061914;
+extern s32 g_levels_unlocked;
+extern s32 g_cur_map_level;
 
 /* =========================================================================
  * Section 2: Audio / SPU Voice Management (asm/USA/main/text_20878.s)
@@ -93,61 +93,61 @@ typedef struct {
     s32 id;
 } LevelHeaderInfo;
 
-extern LevelHeaderInfo *D_8005C53C;
-s32 D_800564F4 = 0x1E;
-asm(".globl D_8005663C, D_80056640, D_80056642, D_80056644");
-s32 D_8005663C;
-s16 D_80056640;
+extern LevelHeaderInfo *g_ns_page_pool;
+s32 gp_midi_state = 0x1E;
+asm(".globl gp_sfx_vol, gp_mus_vol, D_80056642, D_80056644");
+s32 gp_sfx_vol;
+s16 gp_mus_vol;
 s16 D_80056642;
 s16 D_80056644;
 
-extern struct { s32 v, pad; } D_8005640C;
-extern VoiceEntry D_80056804[24];
+extern struct { s32 v, pad; } gp_use_cd;
+extern VoiceEntry g_voices[24];
 
-extern VoiceParams D_80056E7C;
+extern VoiceParams g_audio_voices_end;
 extern u8 D_80056ED0[];
 typedef struct {
     u8 pad00[0x10];
     s32 unk10;
 } ZonePtr57914;
-extern ZonePtr57914 *D_80057914;
+extern ZonePtr57914 *g_pads;
 
-s32 func_80034580(s32, s32, s32);
-s32 func_80034524();
-s32 func_8004301C(s32, s32);
-s32 func_800390D0(s32);
-void func_800485E0(SpuVoiceAttrLocal *);
-s32 func_8002F778(s32);
-s32 func_80015A98(u32);
-void func_800248A0(Vec3 *, Vec3 *, s32);
-void func_80047F5C(SpuVoiceAttrLocal *);
-void func_80047C60(s32, u32);
-void func_80047EE4(s32, u32);
-void func_800311B0(s32);
-void func_800317F8(s32);
-void func_8004B7D8(s32, s32);
-void func_80031A40(u8 *, s32, s32);
-void func_800491E0(u8 *);
+s32 RSqrMagnitude3(s32, s32, s32);
+s32 RSqrMagnitude2();
+s32 ratan2(s32, s32);
+s32 cos(s32);
+void SpuGetVoiceAttr(SpuVoiceAttrLocal *);
+s32 Math_Randb(s32);
+s32 Ns_Lookup(u32);
+void Gool_Transform2(Vec3 *, Vec3 *, s32);
+void SpuSetVoiceAttr(SpuVoiceAttrLocal *);
+void SpuSetReverbVoice(s32, u32);
+void SpuSetKey(s32, u32);
+void Midi_ResetSeqVol(s32);
+void Midi_Update(s32);
+void SsSetMVol(s32, s32);
+void Midi_Control(u8 *, s32, s32);
+void SpuGetAllKeysStatus(u8 *);
 
-s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj);
+s32 Audio_Control(s32 id, u32 op, void *arg2, GoolObjectAudio *obj);
 
-AudioVolume *func_80030078(Vec3 *pos, s32 vol) {
+AudioVolume *Audio_Spatialize(Vec3 *pos, s32 vol) {
     s32 x, z, y, dist, pan, base_vol, left, right;
 
     x = pos->x / 32;
     z = (pos->z - 0x4B000) / 32;
-    if (D_8005C53C->id == 0x22 || D_8005C53C->id == 0x2E) {
+    if (g_ns_page_pool->id == 0x22 || g_ns_page_pool->id == 0x2E) {
         y = pos->y / 32;
-        dist = func_80034580(x, z, y);
-        func_80034524(x, z, y);
+        dist = RSqrMagnitude3(x, z, y);
+        RSqrMagnitude2(x, z, y);
     } else {
-        dist = func_80034524(x, z);
+        dist = RSqrMagnitude2(x, z);
     }
     if (dist <= 0x7FFF) {
-        D_80056640 = vol;
+        gp_mus_vol = vol;
         D_80056642 = vol;
     } else {
-        pan = func_800390D0(func_8004301C(z, x)) + 0x1000;
+        pan = cos(ratan2(z, x)) + 0x1000;
         base_vol = (vol << 15) / dist;
         if (D_80061910 == 0) {
             left = (base_vol + base_vol * (0x2000 - pan)) >> 11;
@@ -155,25 +155,25 @@ AudioVolume *func_80030078(Vec3 *pos, s32 vol) {
         } else {
             left = right = base_vol;
         }
-        D_80056640 = left >= vol ? vol : (left < 0 ? 0 : left);
+        gp_mus_vol = left >= vol ? vol : (left < 0 ? 0 : left);
         D_80056642 = right >= vol ? vol : (right < 0 ? 0 : right);
     }
-    return (AudioVolume *)&D_80056640;
+    return (AudioVolume *)&gp_mus_vol;
 }
 
-void func_80030260(GoolObjectAudio *obj) {
+void Audio_VoiceFree(GoolObjectAudio *obj) {
     s32 i;
     s32 zero;
     VoiceEntry *entry;
 
     if (obj != NULL) {
         i = D_80056668;
-        entry = &D_80056804[i];
+        entry = &g_voices[i];
         for (; i < 24; i++, entry++) {
             if ((entry->params.b3) && entry->params.obj == obj) {
                 zero = 0;
-                D_800564F4 = 9;
-                func_80030840(entry->id, 0x40000000, &zero, entry->params.obj);
+                gp_midi_state = 9;
+                Audio_Control(entry->id, 0x40000000, &zero, entry->params.obj);
                 entry->params.obj = NULL;
                 entry->params.priority = 0;
             }
@@ -181,7 +181,7 @@ void func_80030260(GoolObjectAudio *obj) {
     }
 }
 
-s32 func_80030328(void) {
+s32 Audio_VoiceAlloc(void) {
     SpuVoiceAttrLocal attr;
     s32 min_vol = 0x3FFF;
     s32 min_prio = 0xFF;
@@ -191,7 +191,7 @@ s32 func_80030328(void) {
     s32 left, right, vol;
 
     best_idx = D_80056668;
-    entry = &D_80056804[best_idx];
+    entry = &g_voices[best_idx];
     for (; best_idx < 24; best_idx++, entry++) {
         if (entry->params.priority < min_prio) {
             min_prio = entry->params.priority;
@@ -200,16 +200,16 @@ s32 func_80030328(void) {
             return best_idx;
         }
     }
-    if (D_80056E7C.priority < min_prio) {
+    if (g_audio_voices_end.priority < min_prio) {
         return -1;
     }
     i = D_80056668;
-    entry = &D_80056804[i];
+    entry = &g_voices[i];
     best_idx = -1;
     for (; i < 24; i++, entry++) {
         if (entry->params.priority == min_prio) {
             attr.voice = 1 << i;
-            func_800485E0(&attr);
+            SpuGetVoiceAttr(&attr);
             left = attr.volume.left;
             right = attr.volume.right;
             vol = left < 0 ? -left : left;
@@ -223,13 +223,13 @@ s32 func_80030328(void) {
             }
         }
     }
-    if (min_prio == D_80056E7C.priority && min_vol >= 0x800 && func_8002F778(100) >= 50) {
+    if (min_prio == g_audio_voices_end.priority && min_vol >= 0x800 && Math_Randb(100) >= 50) {
         return -1;
     }
     return best_idx;
 }
 
-s32 func_800304C8(GoolObjectAudio *obj, u32 arg1, s32 vol) {
+s32 Audio_VoiceCreate(GoolObjectAudio *obj, u32 arg1, s32 vol) {
     SpuVoiceAttrLocal attr;
     Vec3 pos;
     VoiceEntry *entry;
@@ -237,22 +237,22 @@ s32 func_800304C8(GoolObjectAudio *obj, u32 arg1, s32 vol) {
     s32 res;
     u32 addr;
 
-    if (D_80061914 == 0) {
+    if (g_cur_map_level == 0) {
         return;
     }
-    voice_idx = func_80030328();
+    voice_idx = Audio_VoiceAlloc();
     if (voice_idx > 0) {
-        entry = &D_80056804[voice_idx];
+        entry = &g_voices[voice_idx];
         if (arg1 & 1) {
             addr = arg1 & ~1;
         } else {
-            res = func_80015A98(arg1);
+            res = Ns_Lookup(arg1);
             if (res >= -0xFE) {
                 return -1;
             }
             addr = ((u32)res << 1) >> 3;
         }
-        entry->params = D_80056E7C;
+        entry->params = g_audio_voices_end;
         entry->params.volume = (vol * D_80056644) >> 14;
         if (entry->params.b6) {
             entry->params.vol_step = (entry->params.target_vol - entry->params.volume) / entry->params.vol_ticks;
@@ -260,37 +260,37 @@ s32 func_800304C8(GoolObjectAudio *obj, u32 arg1, s32 vol) {
         entry->params.obj = obj;
         if (obj != NULL) {
             entry->params.world_pos = obj->trans;
-            func_800248A0(&obj->trans, &pos, 1);
+            Gool_Transform2(&obj->trans, &pos, 1);
             entry->params.trans_pos = pos;
         }
-        D_80056E7C.unk0C = 1;
-        D_80056E7C.priority = 0x80;
-        D_80056E7C.volume = 0x3FFF;
-        D_80056E7C.pitch = 0x1000;
-        D_80056E7C.obj = NULL;
-        D_80056E7C.delay = 0;
-        D_80056E7C.trans_pos.x = 0;
-        D_80056E7C.trans_pos.y = 0;
-        D_80056E7C.trans_pos.z = 0;
-        D_80056E7C.b1 = 0;
-        D_80056E7C.b0 = 0;
-        D_80056E7C.b2 = 0;
-        D_80056E7C.b3 = 0;
-        D_80056E7C.b4 = 0;
-        D_80056E7C.b5 = 0;
-        D_80056E7C.b6 = 0;
-        D_80056E7C.b7 = 0;
-        D_80056E7C.b8 = 0;
-        D_80056E7C.b9 = 1;
-        D_80056E7C.b10 = 1;
-        D_80056E7C.b11 = 0;
+        g_audio_voices_end.unk0C = 1;
+        g_audio_voices_end.priority = 0x80;
+        g_audio_voices_end.volume = 0x3FFF;
+        g_audio_voices_end.pitch = 0x1000;
+        g_audio_voices_end.obj = NULL;
+        g_audio_voices_end.delay = 0;
+        g_audio_voices_end.trans_pos.x = 0;
+        g_audio_voices_end.trans_pos.y = 0;
+        g_audio_voices_end.trans_pos.z = 0;
+        g_audio_voices_end.b1 = 0;
+        g_audio_voices_end.b0 = 0;
+        g_audio_voices_end.b2 = 0;
+        g_audio_voices_end.b3 = 0;
+        g_audio_voices_end.b4 = 0;
+        g_audio_voices_end.b5 = 0;
+        g_audio_voices_end.b6 = 0;
+        g_audio_voices_end.b7 = 0;
+        g_audio_voices_end.b8 = 0;
+        g_audio_voices_end.b9 = 1;
+        g_audio_voices_end.b10 = 1;
+        g_audio_voices_end.b11 = 0;
         attr.mask = 0xFF93;
         attr.voice = 1 << voice_idx;
         if (entry->params.obj->status_b & 0x200) {
             attr.volume.left = attr.volume.right = entry->params.volume;
             entry->params.b9 = 0;
         } else {
-            attr.volume = *func_80030078(&entry->params.trans_pos, entry->params.volume);
+            attr.volume = *Audio_Spatialize(&entry->params.trans_pos, entry->params.volume);
         }
         attr.pitch = entry->params.pitch;
         attr.addr = addr;
@@ -302,19 +302,19 @@ s32 func_800304C8(GoolObjectAudio *obj, u32 arg1, s32 vol) {
         attr.sr = 0;
         attr.rr = 0;
         attr.sl = 0xF;
-        func_80047F5C(&attr);
-        func_80047C60(entry->params.b10, attr.voice);
+        SpuSetVoiceAttr(&attr);
+        SpuSetReverbVoice(entry->params.b10, attr.voice);
         if (!entry->params.b4) {
-            func_80047EE4(1, attr.voice);
+            SpuSetKey(1, attr.voice);
         }
-        entry->id = ++D_8005663C;
+        entry->id = ++gp_sfx_vol;
         entry->params.b3 = 1;
         return entry->id;
     }
     return -1;
 }
 
-s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
+s32 Audio_Control(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
     SpuVoiceAttrLocal s_attr;
     u8 c_attr[0x28];
     Vec3 v1;
@@ -324,10 +324,10 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
     VoiceParams *params;
 
     i = D_80056668;
-    entry = &D_80056804[i];
+    entry = &g_voices[i];
     for (; i < 24; i++, entry++) {
         if ((id == 0 || (id == -1 || entry->id == id)) && (id != -1 || entry->params.obj == obj)) {
-            params = &D_80056E7C;
+            params = &g_audio_voices_end;
             if (id != 0) {
                 params = &entry->params;
             }
@@ -345,7 +345,7 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
             case 0:
                 if (params->b2) {
                     params->target_vol = *(s16 *)arg2;
-                    params->vol_ticks = D_800564F4;
+                    params->vol_ticks = gp_midi_state;
                     if (id != 0) {
                         params->vol_step = (params->target_vol - params->volume) / params->vol_ticks;
                     }
@@ -354,15 +354,15 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
                     params->volume = *(s16 *)arg2;
                     if (id != 0) {
                         s_attr.mask |= 3;
-                        s_attr.volume = *func_80030078(&params->trans_pos, params->volume);
+                        s_attr.volume = *Audio_Spatialize(&params->trans_pos, params->volume);
                     }
                 }
                 break;
             case 1:
                 if (params->b2) {
                     params->target_pitch = *(u16 *)arg2;
-                    params->pitch_step = (params->target_pitch - params->pitch) / D_800564F4;
-                    params->pitch_ticks = D_800564F4;
+                    params->pitch_step = (params->target_pitch - params->pitch) / gp_midi_state;
+                    params->pitch_ticks = gp_midi_state;
                     params->b7 = 1;
                 } else {
                     params->pitch = *(u16 *)arg2;
@@ -374,7 +374,7 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
                 break;
             case 2:
                 v1 = *(Vec3 *)arg2;
-                func_800248A0(&v1, (Vec3 *)arg2, 1);
+                Gool_Transform2(&v1, (Vec3 *)arg2, 1);
             case 3:
                 v2 = *(Vec3 *)arg2;
                 if (!params->b2) {
@@ -382,7 +382,7 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
                     if (id != 0) {
                         entry->params.trans_pos = *(Vec3 *)arg2;
                         s_attr.mask = 3;
-                        s_attr.volume = *func_80030078(&params->trans_pos, params->volume);
+                        s_attr.volume = *Audio_Spatialize(&params->trans_pos, params->volume);
                     }
                 }
                 break;
@@ -393,9 +393,9 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
                 params->obj = *(GoolObjectAudio **)arg2;
                 break;
             case 6:
-                D_800564F4 = *(s32 *)arg2;
-                if (D_800564F4 == 0) {
-                    D_800564F4 = 1;
+                gp_midi_state = *(s32 *)arg2;
+                if (gp_midi_state == 0) {
+                    gp_midi_state = 1;
                 }
                 break;
             case 7:
@@ -420,7 +420,7 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
             }
             if (s_attr.mask != 0) {
                 s_attr.voice = 1 << i;
-                func_80047F5C(&s_attr);
+                SpuSetVoiceAttr(&s_attr);
             }
             if (id != -1) {
                 return 0;
@@ -430,7 +430,7 @@ s32 func_80030840(s32 id, u32 op, void *arg2, GoolObjectAudio *obj) {
     return id == -1 ? 0 : -1;
 }
 
-void func_80030CC0(void) {
+void Audio_Update(void) {
     SpuVoiceAttrLocal attr;
     Vec3 pos;
     s32 flag = 0;
@@ -440,18 +440,18 @@ void func_80030CC0(void) {
     u32 tmp;
     GoolObjectAudio *obj;
 
-    tmp = D_8005C53C->id;
+    tmp = g_ns_page_pool->id;
     if (tmp == 0x19) {
-        v = D_80061914;
+        v = g_cur_map_level;
         tmp = v << 14;
         tmp -= v;
         tmp >>= 8;
         D_80056644 = tmp;
-        v = D_80061918;
-        func_800311B0((s16)((v * 0x3FFF) >> 8));
+        v = g_levels_unlocked;
+        Midi_ResetSeqVol((s16)((v * 0x3FFF) >> 8));
     }
-    if (D_80057914 != NULL) {
-        func_800317F8(D_80057914->unk10 + 0x304);
+    if (g_pads != NULL) {
+        Midi_Update(g_pads->unk10 + 0x304);
     }
     if (D_80056664 != 0) {
         if (D_80056664 < 0 && D_80056660 < -D_80056664) {
@@ -463,23 +463,23 @@ void func_80030CC0(void) {
             D_80056664 = 0;
         }
         D_80056660 += D_80056664;
-        func_8004B7D8(D_80056660 >> 7, D_80056660 >> 7);
+        SsSetMVol(D_80056660 >> 7, D_80056660 >> 7);
     }
-    if (D_8005640C.v == 1) {
+    if (gp_use_cd.v == 1) {
         D_80056664 = -0x222;
-        if (D_8005666C != 0 && D_8005665C >= 2 && D_800566C0 == 3) {
-            func_80031A40(D_80056ED0, 2, 0);
+        if (D_8005666C != 0 && D_8005665C >= 2 && gp_card_chan == 3) {
+            Midi_Control(D_80056ED0, 2, 0);
         }
     }
-    if (D_8005640C.v == -1) {
+    if (gp_use_cd.v == -1) {
         D_80056664 = 0x667;
-        if (D_8005666C != 0 && D_8005665C >= 2 && D_800566C0 == 3) {
-            func_80031A40(D_80056ED0, 3, 0);
+        if (D_8005666C != 0 && D_8005665C >= 2 && gp_card_chan == 3) {
+            Midi_Control(D_80056ED0, 3, 0);
         }
     }
-    func_800491E0(D_80056E64);
+    SpuGetAllKeysStatus(D_80056E64);
     i = D_80056668;
-    entry = &D_80056804[i];
+    entry = &g_voices[i];
     for (; i < 24; i++, entry++) {
         if (entry->params.b3) {
             if (entry->params.b4) {
@@ -487,15 +487,15 @@ void func_80030CC0(void) {
                     continue;
                 }
                 entry->params.b4 = 0;
-                func_80047EE4(1, 1 << i);
+                SpuSetKey(1, 1 << i);
             }
             if (D_80056E64[i] == 3) {
                 if (--entry->params.unk0C == 0) {
-                    func_80047EE4(0, 1 << i);
+                    SpuSetKey(0, 1 << i);
                     entry->params.b3 = 0;
                     goto check_end;
                 } else {
-                    func_80047EE4(1, 1 << i);
+                    SpuSetKey(1, 1 << i);
                 }
             }
             attr.mask = 0;
@@ -510,7 +510,7 @@ void func_80030CC0(void) {
                 if (entry->params.obj->status_b & 0x200) {
                     attr.volume.left = attr.volume.right = entry->params.volume;
                 } else {
-                    attr.volume = *func_80030078(&entry->params.trans_pos, entry->params.volume);
+                    attr.volume = *Audio_Spatialize(&entry->params.trans_pos, entry->params.volume);
                 }
             }
             if (entry->params.b7) {
@@ -525,18 +525,18 @@ void func_80030CC0(void) {
             }
             if (entry->params.b9 && (obj = entry->params.obj) != NULL) {
                 entry->params.world_pos = obj->trans;
-                func_800248A0(&obj->trans, &pos, 1);
+                Gool_Transform2(&obj->trans, &pos, 1);
                 entry->params.trans_pos = pos;
                 attr.mask |= 3;
-                attr.volume = *func_80030078(&entry->params.trans_pos, entry->params.volume);
+                attr.volume = *Audio_Spatialize(&entry->params.trans_pos, entry->params.volume);
             }
             if (attr.mask != 0) {
                 attr.voice = 1 << i;
-                func_80047F5C(&attr);
+                SpuSetVoiceAttr(&attr);
             }
         check_end:
             if (entry->params.b0 || (!flag && entry->params.b1)) {
-                func_80047EE4(0, 1 << i);
+                SpuSetKey(0, 1 << i);
                 entry->params.b3 = 0;
             }
         }

@@ -6,7 +6,7 @@
 
 void *LIBC_Malloc(s32);
 
-s32 func_80012BAC(void)
+s32 Ns_MallocPage(void)
 {
     s32 ptr = (s32) LIBC_Malloc(0x10000);
     if (ptr == 0 || ptr >= -0xFE)

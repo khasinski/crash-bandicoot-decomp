@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 typedef RenderTransformWords TransformWords;
-void func_80017968(TransformWords *arg0, TransformWords *arg1) {
+void Gfx_ScreenProj(TransformWords *arg0, TransformWords *arg1) {
     arg0->word00 = (u16) arg1->word00;
     arg0->word02 = (u16) arg1->word02;
     arg0->word04 = (u16) arg1->word04;

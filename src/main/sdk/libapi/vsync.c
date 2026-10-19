@@ -2,12 +2,11 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern volatile s32 D_800549F0;
 
-void func_8003E4E0(s32);
-void func_8003E638(s32, s32);
-s32 func_8003E6D4(const char *);
-void func_8003E6E4(s32, s32);
+void ChangeClearPAD(s32);
+void v_wait(s32, s32);
+s32 puts(const char *);
+void ChangeClearRCnt(s32, s32);
 
 s32 VSync(s32 mode)
 {
@@ -20,9 +19,9 @@ s32 VSync(s32 mode)
     if (mode == 1) {
         return hsync;
     }
-    func_8003E638(mode > 0 ? D_80053930 + (mode - 1) : D_80053930, mode > 0 ? mode - 1 : 0);
+    v_wait(mode > 0 ? D_80053930 + (mode - 1) : D_80053930, mode > 0 ? mode - 1 : 0);
     status = *D_80053924;
-    func_8003E638(D_800549F0 + 1, 1);
+    v_wait(D_800549F0 + 1, 1);
     if (status & 0x80000) {
         while (((status ^ *D_80053924) & 0x80000000) == 0) {
         }
@@ -32,15 +31,15 @@ s32 VSync(s32 mode)
     return hsync;
 }
 
-void func_8003E638(s32 target, s32 count)
+void v_wait(s32 target, s32 count)
 {
     volatile s32 timeout = count << 15;
 
     while (D_800549F0 < target) {
         if (--timeout == -1) {
-            func_8003E6D4(D_80010FF0);
-            func_8003E4E0(0);
-            func_8003E6E4(3, 0);
+            puts(D_80010FF0);
+            ChangeClearPAD(0);
+            ChangeClearRCnt(3, 0);
             break;
         }
     }

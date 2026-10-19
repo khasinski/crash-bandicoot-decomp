@@ -28,7 +28,7 @@ typedef struct ZqZoneRect {
     s16 max_depth_z;
 } ZqZoneRect;
 
-ZoneEntry *func_80015A98(u32 *);
+ZoneEntry *Ns_Lookup(u32 *);
 
 /* Whether v lies inside the zone's 8-bit shifted bounding box. */
 static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
@@ -39,7 +39,7 @@ static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
 }
 
 /* Whether point v lies inside the bounding box [b->p1, b->p2). */
-s32 func_80026B80(ZqVec *v, ZqBound *b)
+s32 Level_TestPointInBound(ZqVec *v, ZqBound *b)
 {
     if (v->x >= b->p1.x && v->y >= b->p1.y && v->z >= b->p1.z
         && v->x < b->p2.x && v->y < b->p2.y && v->z < b->p2.z) {
@@ -49,7 +49,7 @@ s32 func_80026B80(ZqVec *v, ZqBound *b)
 }
 
 /* Whether bounding box b overlaps the 8-bit shifted zone rectangle r. */
-s32 func_80026C04(ZqBound *b, ZqRect *r)
+s32 Level_TestRectIntersectsBound(ZqBound *b, ZqRect *r)
 {
     if ((r->x << 8) < b->p2.x && (r->y << 8) < b->p2.y && (r->z << 8) < b->p2.z
         && ((r->x + r->w) << 8) >= b->p1.x && ((r->y + r->h) << 8) >= b->p1.y
@@ -60,7 +60,7 @@ s32 func_80026C04(ZqBound *b, ZqRect *r)
 }
 
 /* Whether bounding boxes a and b overlap. */
-s32 func_80026CA8(ZqBound *a, ZqBound *b)
+s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -70,7 +70,7 @@ s32 func_80026CA8(ZqBound *a, ZqBound *b)
 }
 
 /* Whether bounding box a is contained in bounding box b. */
-s32 func_80026D40(ZqBound *a, ZqBound *b)
+s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 {
     if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
         && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
@@ -81,7 +81,7 @@ s32 func_80026D40(ZqBound *a, ZqBound *b)
 
 /* ZoneFindNeighbor: find the neighbour of zone (or of the current level zone)
  * whose bounding box contains v, or return -0x17 if none does. */
-ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
+ZoneEntry *Zone_FindNeighbor(ZoneEntry *zone, ZqVec *v)
 {
     ZoneHeader *header;
     ZoneEntry *neighbor;
@@ -89,7 +89,7 @@ ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
 
     header = (ZoneHeader *)zone->items[0];
     for (i = header->neighbor_count - 1; i >= 0; i--) {
-        neighbor = func_80015A98(&header->neighbors[i]);
+        neighbor = Ns_Lookup(&header->neighbors[i]);
         if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], v)) {
             return neighbor;
         }
@@ -97,7 +97,7 @@ ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
     if (zone != (ZoneEntry *)level_position.zone) {
         header = (ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0];
         for (i = header->neighbor_count - 1; i >= 0; i--) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], v)) {
                 return neighbor;
             }
@@ -110,7 +110,7 @@ ZoneEntry *func_80026DD4(ZoneEntry *zone, ZqVec *v)
  * which covers rect. A leaf returns its node and moves va onto the nearest
  * face it crossed (reversing that component of vb); an empty node advances
  * va just past its far side. Recurses into the children that contain va. */
-s32 func_80026FF0(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb, s32 level)
+s32 Zone_FindNode(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb, s32 level)
 {
     u16 *children;
     s32 t, tn, axis, i, j, k, idx, res;
@@ -252,7 +252,7 @@ s32 func_80026FF0(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb
                     if (child.x < va->x && child.y < va->y && child.z < va->z
                         && child.x + child.w >= va->x && child.y + child.h >= va->y
                         && child.z + child.d >= va->z) {
-                        res = func_80026FF0(zone, children[idx], &child, va, vb, level + 1);
+                        res = Zone_FindNode(zone, children[idx], &child, va, vb, level + 1);
                         if (res) {
                             return res;
                         }
@@ -268,7 +268,7 @@ s32 func_80026FF0(ZqZoneRect *zone, u16 node, ZqRect *rect, ZqVec *va, ZqVec *vb
 
 /* Step va along vb across the current zone's neighbours until ZoneFindNode
  * hits a leaf (returned) or va leaves every neighbour's bounds (returns 1). */
-s32 func_800277EC(ZqVec *va, ZqVec *vb)
+s32 Zone_ReboundVector(ZqVec *va, ZqVec *vb)
 {
     ZqVec copy;
     ZqRect rect;
@@ -284,7 +284,7 @@ s32 func_800277EC(ZqVec *va, ZqVec *vb)
     do {
         copy = *va;
         for (i = 0; i < header->neighbor_count; i++) {
-            neighbor = func_80015A98(&header->neighbors[i]);
+            neighbor = Ns_Lookup(&header->neighbors[i]);
             if (zone_rect_contains((ZqZoneRect *)neighbor->items[1], va)) {
                 zone_rect = (ZqZoneRect *)neighbor->items[1];
                 rect.x = zone_rect->x << 8;
@@ -293,7 +293,7 @@ s32 func_800277EC(ZqVec *va, ZqVec *vb)
                 rect.w = zone_rect->w << 8;
                 rect.h = zone_rect->h << 8;
                 rect.d = zone_rect->d << 8;
-                res = func_80026FF0(zone_rect, zone_rect->root, &rect, va, vb, 0);
+                res = Zone_FindNode(zone_rect, zone_rect->root, &rect, va, vb, 0);
                 break;
             }
         }

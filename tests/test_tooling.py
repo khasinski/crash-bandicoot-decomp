@@ -34,26 +34,26 @@ class ToolingTests(unittest.TestCase):
         result = subprocess.run(
             [sys.executable, 'tools/scripts/probe_profiles.py',
              'src/main/engine/state.c', '--profile', 'source',
-             '--function', 'func_80031D50'],
+             '--function', 'Title_LoadScreen'],
             cwd=ROOT, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('func_80031D50: Levenshtein=0', result.stdout)
+        self.assertIn('Title_LoadScreen: Levenshtein=0', result.stdout)
 
     def test_mode_setup_uses_verified_storage_owners(self):
         result = subprocess.run(
             [sys.executable, 'tools/scripts/probe_profiles.py',
              'src/main/engine/state.c', '--profile', 'source',
-             '--function', 'func_80031BF8'],
+             '--function', 'Title_LoadNextState'],
             cwd=ROOT, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('func_80031BF8: Levenshtein=0', result.stdout)
+        self.assertIn('Title_LoadNextState: Levenshtein=0', result.stdout)
 
     def test_render_mode_initialization_matches_retail(self):
         result = self.run_probe(ROOT / 'src/main/render/mode_initialize.c')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('func_80017790', result.stdout)
+        self.assertIn('Gfx_InitMatrices', result.stdout)
         self.assertIn('Levenshtein=0', result.stdout)
 
     def test_sized_extern_gp_assembler_profile(self):
@@ -74,11 +74,11 @@ class ToolingTests(unittest.TestCase):
         # This function remains in a shared assembly unit and uses a rodata
         # jump table, exercising both the lookup fallback and table inputs.
         result = subprocess.run(
-            ['tools/scripts/m2c.sh', 'func_8002EC68'],
+            ['tools/scripts/m2c.sh', 'Shader_ParamsUpdate'],
             cwd=ROOT, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('func_8002EC68(', result.stdout)
+        self.assertIn('Shader_ParamsUpdate(', result.stdout)
         self.assertIn('switch (', result.stdout)
         self.assertNotIn('Decompilation failure', result.stdout)
 
@@ -130,16 +130,16 @@ class ToolingTests(unittest.TestCase):
         # Compiled functions no longer have INCLUDE_ASM files in the main
         # split; their retail instructions are available in expected/.
         result = subprocess.run(
-            ['tools/scripts/m2c.sh', 'func_8003C6E4'],
+            ['tools/scripts/m2c.sh', 'Card_EntryNameIs949'],
             cwd=ROOT, capture_output=True, text=True,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('func_8003C6E4(', result.stdout)
+        self.assertIn('Card_EntryNameIs949(', result.stdout)
         self.assertIn('BIOS_StrNCmp(', result.stdout)
         self.assertNotIn('Decompilation failure', result.stdout)
 
     def test_m2c_reads_switch_table_owned_by_compiled_function(self):
-        for function in ('func_80043BA8', 'func_8003A94C'):
+        for function in ('getintr', 'Card_Update'):
             with self.subTest(function=function):
                 result = subprocess.run(
                     ['tools/scripts/m2c.sh', function],

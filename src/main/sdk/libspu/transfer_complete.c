@@ -1,12 +1,10 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-void func_80043354(u32, u32);
-extern volatile u16 *D_800558E4;
+void BIOS_DeliverEvent(u32, u32);
 /* Retail tests and then reloads this shared completion callback slot. */
-extern void (*volatile D_80055918)(void);
 
-void func_800466A0(void) {
+void _spu_FiDMA(void) {
     /* Retail stores and reloads both delay words on the stack. */
     volatile s32 delay_count;
     volatile u32 delay_value;
@@ -27,7 +25,7 @@ void func_800466A0(void) {
             delay_value *= 3;
         }
     }
-    registers = D_800558E4;
+    registers = g_spu_RXX;
     registers[0xD5] &= 0xFFCF;
     poll_count = 0;
     while ((registers[0xD5] & 0x30) && ++poll_count < 0xF01) {
@@ -35,6 +33,6 @@ void func_800466A0(void) {
     if (D_80055918 != NULL) {
         D_80055918();
     } else {
-        func_80043354(0xF0000009, 0x20);
+        BIOS_DeliverEvent(0xF0000009, 0x20);
     }
 }

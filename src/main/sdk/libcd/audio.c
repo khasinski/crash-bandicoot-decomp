@@ -4,7 +4,7 @@
 
 /* Initialise SPU CD mixing and route CD stereo output. */
 
-s32 func_80044D28(void) {
+s32 CD_initintr(void) {
     u8 volume[4];
     if (D_80055878[0x1B8/2] == 0) {
         if (D_80055878[0x1BA/2] == 0) {

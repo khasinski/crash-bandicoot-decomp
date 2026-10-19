@@ -2,24 +2,22 @@
 /* GNU_AS_G: 4 */
 #include "common.h"
 
-void func_80042E9C(void *);
-void func_80042ECC(void *);
-void func_80033FBC(void *, u32, s32);
-s32 *func_80016E18(void);
-void func_800375EC(u16 *, s32, s32, s32, s32 *, void *);
-void *func_80015A98(void *);
+void SetRotMatrix(void *);
+void SetLightMatrix(void *);
+void RMemcpy(void *, u32, s32);
+s32 *Gpu_GetCurPrimsTail(void);
+void Gte_RTransformWorldsDark2(u16 *, s32, s32, s32, s32 *, void *);
+void *Ns_Lookup(void *);
 
-extern u16 *D_800566B8[];
-extern u8 D_800577E4[];
+extern u16 *gp_level_entry[];
 extern struct {
     u8 pad[0x10];
     u8 *data;
-} *D_80057914[];
-extern s32 D_800578D0[];
-extern s32 D_80057960[];
-extern u8 D_80051774[];
+} *g_pads[];
+extern s32 g_view_proj[];
+extern s32 g_draw_stamp[];
 
-extern void * D_800566B4;
+extern void * gp_crash_obj;
 
 typedef struct {
     u32 words[5];
@@ -27,32 +25,32 @@ typedef struct {
     u32 rest[10];
 } ZoneItem64;
 
-void func_8001A2E0(s32 arg0)
+void Gfx_TransformWorldsDark2(s32 arg0)
 {
     s32 *data;
     s32 i;
     u32 dst;
     ZoneItem64 *ptr;
 
-    data = (s32 *)D_80057914[0]->data;
-    if (*D_800566B8[0] != 0) {
-        func_80042E9C(D_800577E4);
-        func_80042ECC(D_800577E4 + 0x110);
-        func_80033FBC(data + 1, 0x1F800100, 0x100);
+    data = (s32 *)g_pads[0]->data;
+    if (*gp_level_entry[0] != 0) {
+        SetRotMatrix(g_m_view);
+        SetLightMatrix(g_m_view + 0x110);
+        RMemcpy(data + 1, 0x1F800100, 0x100);
         dst = 0x1F800300;
         for (i = 0; i < *data; i++) {
             ptr = (ZoneItem64 *)((u32)data + (i << 6));
-            func_80033FBC(ptr->ptr14, dst, 6);
+            RMemcpy(ptr->ptr14, dst, 6);
             dst += 0x10;
         }
         *(s32 *)0x1F800048 = D_800566D4 >> 8;
         *(s32 *)0x1F80004C = D_800566D8 >> 8;
         *(s32 *)0x1F800050 = D_800566DC >> 8;
-        *(s32 *)0x1F800054 = D_80056460;
+        *(s32 *)0x1F800054 = gp_dark_cone_rot;
         *(s32 *)0x1F800058 = D_80056464;
         *(s32 *)0x1F80005C = D_80056468;
         *(s32 *)0x1F800060 = D_8005646C;
-        func_800375EC(D_800566B8[0], arg0, 0x800 - (D_800578D0[0] / 2), D_80057960[0], func_80016E18(), D_80051774);
+        Gte_RTransformWorldsDark2(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774);
     }
 }
 
@@ -69,7 +67,7 @@ typedef struct {
     u16 *list;
 } WgeoEntry;
 
-void func_8001A460(u32 arg0, u32 arg1)
+void Gfx_FreezeMapTextures(u32 arg0, u32 arg1)
 {
     u8 *data;
     s32 group;
@@ -85,12 +83,12 @@ void func_8001A460(u32 arg0, u32 arg1)
     u32 idx;
     u32 *target;
 
-    data = D_80057914[0]->data;
+    data = g_pads[0]->data;
     group = -1;
     count = *(s32 *)data;
     base = (ZoneItem64 *)(data + 4);
     for (j = 0; j < count; j++) {
-        res = func_80015A98(&base[j]);
+        res = Ns_Lookup(&base[j]);
         if (res->item_count >= 4) {
             list = res->list;
             len = list[0];
@@ -126,7 +124,7 @@ typedef struct {
     u32 word;
 } AnimSpriteDesc;
 
-void func_8001A5F4(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
+void Gfx_GetIconTexinfo(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
 {
     AnimSpriteDesc *ptr;
     u32 res;
@@ -144,7 +142,7 @@ void func_8001A5F4(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
         ptr = (AnimSpriteDesc *)(arg1 + (((arg2 >> 8) << 4) + 12));
         break;
     }
-    res = (u32)func_80015A98(arg1 + 4);
+    res = (u32)Ns_Lookup(arg1 + 4);
     word = ptr->word;
     switch (arg0) {
     case 2:
@@ -170,7 +168,7 @@ void func_8001A5F4(s32 arg0, u8 *arg1, s32 arg2, s16 *arg3)
     }
 }
 
-void func_8001A754(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3)
+void Gfx_FormatCardString(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3)
 {
     s32 offset;
     s32 i;
@@ -208,11 +206,11 @@ void func_8001A754(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3)
     }
 }
 
-void func_80040484(s16 *, u8 *);
-void func_800404E8(s16 *, u8 *);
-void func_8004025C(s32);
+void LoadImage(s16 *, u8 *);
+void StoreImage(s16 *, u8 *);
+void DrawSync(s32);
 
-void func_8001A850(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
+void Gfx_BlitCardIcon(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 {
     u8 buf[0x200];
     s16 rect[4];
@@ -221,30 +219,30 @@ void func_8001A850(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 
     aligned = (u8 *)(((u32)buf + 0x100) & ~0xFF);
     if (arg3 != NULL) {
-        func_8001A5F4(2, arg1, arg2, rect);
+        Gfx_GetIconTexinfo(2, arg1, arg2, rect);
         if (arg0 == 1) {
             for (i = 0; i < rect[2] * rect[3] * 2; i++) {
                 aligned[i] = arg3[i];
             }
-            func_80040484(rect, aligned);
+            LoadImage(rect, aligned);
         } else {
-            func_800404E8(rect, aligned);
-            func_8004025C(0);
+            StoreImage(rect, aligned);
+            DrawSync(0);
             for (i = 0; i < rect[2] * rect[3] * 2; i++) {
                 arg3[i] = aligned[i];
             }
         }
     }
     if (arg4 != NULL) {
-        func_8001A5F4(1, arg1, arg2, rect);
+        Gfx_GetIconTexinfo(1, arg1, arg2, rect);
         if (arg0 == 1) {
             for (i = 0; i < rect[2] * rect[3] * 2; i++) {
                 aligned[i] = arg4[i];
             }
-            func_80040484(rect, aligned);
+            LoadImage(rect, aligned);
         } else {
-            func_800404E8(rect, aligned);
-            func_8004025C(0);
+            StoreImage(rect, aligned);
+            DrawSync(0);
             for (i = 0; i < rect[2] * rect[3] * 2; i++) {
                 arg4[i] = aligned[i];
             }
@@ -274,46 +272,44 @@ typedef struct GoolAllocGlobals {
     s32 e04;
 } GoolAllocGlobals;
 
-extern GoolAllocGlobals gool_alloc_state __asm__("gool_alloc");
-extern GoolObj * volatile gool_alloc[2];
-extern s32 D_80060DB8[];
+extern GoolAllocGlobals gool_alloc;
+extern GoolObj * volatile g_player[];
 extern s32 D_80060DF8[];
-extern void *D_80060E00[];
-extern s32 D_80060E04[];
+extern void *g_savestate[];
 
 s32 GOOL_InitAllocTable(void)
 {
     s32 i;
     GoolObj *obj;
 
-    D_800566B4 = NULL;
-    gool_alloc_state.db4 = LIBC_Malloc(0xE280);
-    gool_alloc_state.db0 = LIBC_Malloc(0x35C);
-    if (gool_alloc_state.db4 == NULL || gool_alloc_state.db0 == NULL) {
+    gp_crash_obj = NULL;
+    gool_alloc.db4 = LIBC_Malloc(0xE280);
+    gool_alloc.db0 = LIBC_Malloc(0x35C);
+    if (gool_alloc.db4 == NULL || gool_alloc.db0 == NULL) {
         return -0xF;
     }
-    D_80060E00[0] = NULL;
+    g_savestate[0] = NULL;
     D_80060E04[0] = 0;
     D_80060DF8[0] = 2;
-    gool_alloc_state.dfc = gool_alloc_state.db4;
+    gool_alloc.dfc = gool_alloc.db4;
     for (i = 0; i < 0x60; i++) {
-        obj = &gool_alloc_state.db4[i];
+        obj = &gool_alloc.db4[i];
         obj->header = 0;
-        obj->parent = &gool_alloc_state.df8;
+        obj->parent = &gool_alloc.df8;
         obj->child = NULL;
         if (i < 0x5F) {
-            obj->sibling = &gool_alloc_state.db4[i + 1];
+            obj->sibling = &gool_alloc.db4[i + 1];
         } else {
             obj->sibling = NULL;
         }
     }
     for (i = 0; i < 8; i++) {
-        D_80060DB8[i * 2] = 2;
-        D_80060DB8[i * 2 + 1] = 0;
+        ((s32 *)g_free_objects)[i * 2] = 2;
+        ((s32 *)g_free_objects)[i * 2 + 1] = 0;
     }
-    gool_alloc[0]->header = 0;
-    gool_alloc[0]->parent = NULL;
-    gool_alloc[0]->child = NULL;
-    gool_alloc[0]->sibling = NULL;
+    g_player[0]->header = 0;
+    g_player[0]->parent = NULL;
+    g_player[0]->child = NULL;
+    g_player[0]->sibling = NULL;
     return -0xFF;
 }

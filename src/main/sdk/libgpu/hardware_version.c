@@ -2,9 +2,9 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-extern u8 D_80054A6C;
+extern u8 g_gpu_mode;
 
-s32 func_80040144(void)
+s32 GetGraphType(void)
 {
-    return D_80054A6C;
+    return g_gpu_mode;
 }

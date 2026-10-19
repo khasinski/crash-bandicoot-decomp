@@ -1,40 +1,33 @@
 #include "common.h"
-extern s32 D_80057960;
+extern s32 g_draw_stamp;
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 
-void func_80042E9C(void *);
-void func_80042ECC(void *);
-void func_80033FBC(void *, u32, s32);
-s32 *func_80016E18(void);
-void func_80035438(u16 *, s32, s32, s32, s32 *, void *);
-void func_80035898(u16 *, s32, s32, s32, s32 *, void *);
-void func_80035E10(u16 *, s32, s32, s32, s32 *, void *);
-void func_80036340(u16 *, s32, s32, s32, s32 *, void *);
-void func_80036BF4(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
-void func_800375EC(u16 *, s32, s32, s32, s32 *, void *);
-void *func_80015A98(void *);
+void SetRotMatrix(void *);
+void SetLightMatrix(void *);
+void RMemcpy(void *, u32, s32);
+s32 *Gpu_GetCurPrimsTail(void);
+void Gte_RTransformWorlds(u16 *, s32, s32, s32, s32 *, void *);
+void Gte_RTransformWorldsFog(u16 *, s32, s32, s32, s32 *, void *);
+void Gte_RTransformWorldsRipple(u16 *, s32, s32, s32, s32 *, void *);
+void Gte_RTransformWorldsLightning(u16 *, s32, s32, s32, s32 *, void *);
+void Gte_RTransformWorldsDark(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
+void Gte_RTransformWorldsDark2(u16 *, s32, s32, s32, s32 *, void *);
+void *Ns_Lookup(void *);
 
 extern struct {
     u8 pad[0x10];
     u8 *data;
-} *D_80057914;
+} *g_pads;
 
 extern struct {
     s32 unk0;
     s32 type;
-} *D_8005C53C;
-extern struct {
-    u8 pad000[0xAA8];
-    s32 wordAA8;
-    u8 padAAC[0xAC8 - 0xAAC];
-    s32 wordAC8;
-} D_80060DF0;
+} *g_ns_page_pool;
 
-extern void *D_800566B4;
-extern void *D_80060E00[2];
-extern s32 D_80060E04[2];
+extern void *gp_crash_obj;
+extern void *g_savestate[2];
 
 typedef struct {
     u8 type;
@@ -114,7 +107,7 @@ typedef struct {
     u32 state_flags;
 } GoolObj;
 
-void func_8001D33C(GoolObj *arg0, s32 *arg1)
+void Gool_ObjectLocalBound(GoolObj *arg0, s32 *arg1)
 {
     s32 bounds[6];
     GoolAnim *anim;
@@ -130,18 +123,18 @@ void func_8001D33C(GoolObj *arg0, s32 *arg1)
         return;
     }
     if (anim->type != 4) {
-        if ((((u32)&anim->eid & 0xFF800003) != 0x80000000) || ((s32)func_80015A98(&anim->eid) >= -0xFE)) {
+        if ((((u32)&anim->eid & 0xFF800003) != 0x80000000) || ((s32)Ns_Lookup(&anim->eid) >= -0xFE)) {
             return;
         }
     }
     if (arg0->anim_seq->type == 1) {
-        res = func_80015A98(&arg0->anim_seq->eid);
+        res = Ns_Lookup(&arg0->anim_seq->eid);
         scale_x = arg1[0];
         model = res[(arg0->anim_frame >> 8) + 4];
         if (scale_x < 0) {
             arg1[0] = -scale_x;
         }
-        if (arg0 == D_800566B4) {
+        if (arg0 == gp_crash_obj) {
             bounds[0] = model->col_x + model->box[0];
             bounds[1] = model->col_y + model->box[1];
             bounds[2] = model->col_z + model->box[2];
@@ -179,10 +172,10 @@ void func_8001D33C(GoolObj *arg0, s32 *arg1)
 extern struct {
     u8 pad[0x7C];
     u32 stamp;
-} *D_80058408[2];
+} *g_db_prev[2];
 
 void GOOL_UpdateObject(void *, s32);
-void func_8001B84C(void *, void *, s32);
+void Gool_ObjectHandleTraverseTreePreorder(void *, void *, s32);
 
 typedef struct GoolUpdateGlobals {
     s32 db8[16];
@@ -194,19 +187,19 @@ typedef struct GoolUpdateGlobals {
 
 extern GoolUpdateGlobals gool_update;
 
-void func_8001D5EC(s32 arg0)
+void Gool_UpdateObjects(s32 arg0)
 {
     s32 i;
     s32 *ptr;
 
     D_80061888 = 0;
-    D_800619C8 = D_80057960;
-    gool_update.e04 = (*D_80058408)->stamp / 34;
-    if (D_800566B4 != NULL) {
+    g_percent_complete = g_draw_stamp;
+    gool_update.e04 = (*g_db_prev)->stamp / 34;
+    if (gp_crash_obj != NULL) {
         i = 0;
         ptr = gool_update.db8;
         do {
-            func_8001B84C(ptr, GOOL_UpdateObject, arg0);
+            Gool_ObjectHandleTraverseTreePreorder(ptr, GOOL_UpdateObject, arg0);
             i++;
             ptr += 2;
         } while (i < 8);
@@ -229,7 +222,7 @@ s32 GOOL_ChangeObjectState(GoolObj *arg0, s32 arg1, s32 arg2, s32 *arg3)
     arg0->state_idx = arg1;
     state_desc = &arg0->global->states[arg1];
     arg0->status_c = state_desc->status_c;
-    arg0->external = func_80015A98(&arg0->global->externs[state_desc->extern_idx]);
+    arg0->external = Ns_Lookup(&arg0->global->externs[state_desc->extern_idx]);
     arg0->pc = (state_desc->pc_code != 0x3FFF)
         ? &arg0->external->code[state_desc->pc_code]
         : NULL;
@@ -259,7 +252,7 @@ s32 GOOL_ChangeObjectState(GoolObj *arg0, s32 arg1, s32 arg2, s32 *arg3)
         *arg0->sp++ = 0;
     }
     arg0->state_stamp = *D_80060E04;
-    if (arg0->tp != NULL && arg0 == *D_80060E00) {
+    if (arg0->tp != NULL && arg0 == *g_savestate) {
         GOOL_CreateObjectStackFrame(arg0, 0, 0xFFFF);
         arg0->pc = arg0->tp;
         i = GOOL_InterpretObject(arg0, 3, 0);

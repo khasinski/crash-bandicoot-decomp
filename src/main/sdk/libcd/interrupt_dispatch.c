@@ -3,19 +3,16 @@
 /* GNU_AS_G: 0 */
 #include "common.h"
 
-s32 func_8003D730(const char *, ...), func_8003E6D4(const char *, ...);
-extern s32 D_800555B0;
-extern u8 D_800555C1[];
-extern const char *D_800555C4[];
+s32 BIOS_Printf(const char *, ...), puts(const char *, ...);
 
-extern volatile u8 *D_80055864[], *D_80055868[], *D_80055870[];
+extern volatile u8 *g_cd_reg0[];
+extern volatile u8 *D_80055868[];
+extern volatile u8 *D_80055870[];
 extern volatile s8 *D_8005586C[];
-extern volatile u8 D_8005587C[], D_8005587D;
-extern u8 D_80057198[], D_800571A0[], D_800571A8[];
+extern volatile u8 g_cd_status[];
+extern volatile u8 D_8005587D;
 
 /* The SDK uses both scalar and array views of these event bytes. */
-extern volatile u8 cd_sync_status;
-extern volatile u8 cd_ready_status[];
 
 static inline void cd_publish_response(u8 *destination, u8 *source)
 {
@@ -30,7 +27,7 @@ static inline void cd_publish_response(u8 *destination, u8 *source)
     }
 }
 
-s32 func_80043BA8(void)
+s32 getintr(void)
 {
     volatile u8 interrupt;
     u8 response[8];
@@ -38,7 +35,7 @@ s32 func_80043BA8(void)
     u8 *write, *remaining;
     u8 sampled;
 
-    *D_80055864[0] = 1;
+    *g_cd_reg0[0] = 1;
     sampled = *D_80055870[0] & 7;
     interrupt = sampled;
     errors = 0;
@@ -49,7 +46,7 @@ s32 func_80043BA8(void)
     write = response;
     count = 0;
 read_response:
-    if (*D_80055864[0] & 0x20) {
+    if (*g_cd_reg0[0] & 0x20) {
         count++;
         *write = *D_80055868[0];
         write++;
@@ -65,7 +62,7 @@ read_response:
             remaining++;
         } while (count < 8);
     }
-    *D_80055864[0] = 1;
+    *g_cd_reg0[0] = 1;
     *D_80055870[0] = 7;
     *D_8005586C[0] = 7;
     if ((interrupt & 0xFF) != 3 || D_80055764[D_800555C1[0]] != 0) {
@@ -76,23 +73,23 @@ read_response:
         D_800555B4 = response[1];
     }
     if ((interrupt & 0xFF) == 5) {
-        func_8003E6D4(D_80011524);
+        puts(D_80011524);
         if (D_800555AC > 0)
-            func_8003D730(D_80011530, D_800555C4[D_800555C1[0]], D_800555B0, D_800555B4);
+            BIOS_Printf(D_80011530, D_800555C4[D_800555C1[0]], D_800555B0, D_800555B4);
     }
     switch (interrupt) {
     case 3:
         if (errors) {
-            D_8005587C[0] = 5;
+            g_cd_status[0] = 5;
             cd_publish_response(D_80057198, response);
             return 2;
         }
         if (D_80055664[D_800555C1[0]]) {
-            D_8005587C[0] = 3;
+            g_cd_status[0] = 3;
             cd_publish_response(D_80057198, response);
             return 1;
         }
-        D_8005587C[0] = 2;
+        g_cd_status[0] = 2;
         cd_publish_response(D_80057198, response);
         return 2;
     case 2:
@@ -111,13 +108,13 @@ read_response:
         return 4;
     case 5:
         D_8005587D = 5;
-        D_8005587C[0] = D_8005587D;
+        g_cd_status[0] = D_8005587D;
         cd_publish_response(D_80057198, response);
         cd_publish_response(D_800571A0, response);
         return 6;
     default:
-        func_8003E6D4(D_8001154C);
-        func_8003D730(D_80011560, (s32)interrupt);
+        puts(D_8001154C);
+        BIOS_Printf(D_80011560, (s32)interrupt);
         return -1;
     }
 }

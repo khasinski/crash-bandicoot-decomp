@@ -15,5 +15,5 @@ typedef struct CdReadState {
     s32 word20;
     s32 word24;
 } CdReadState;
-extern CdReadState D_80055880;
+extern CdReadState g_cd_read_state;
 #endif

@@ -4,22 +4,20 @@
 
 /* Format an encoded resource ID, or encode five characters with the 64-character alphabet. */
 
-extern u8 D_80051728[];
 
-extern char D_80056414[];
-s32 func_8003D740(char *, const char *, ...);
+s32 sprintf(char *, const char *, ...);
 
-char *func_80012604(s32 id)
+char *Ns_EIDValToString(s32 id)
 {
     if (id & 1) {
-        func_8003D740(D_80056728, D_8005641C, id >> 1);
+        sprintf(D_80056728, D_8005641C, id >> 1);
     } else {
-        func_8003D740(D_80056728, D_80056414, id);
+        sprintf(D_80056728, D_80056414, id);
     }
     return D_80056728;
 }
 
-s32 func_80012660(u8 *name)
+s32 Ns_StringToEID(u8 *name)
 {
     s32 id = 0;
     u8 *end = name + 5;

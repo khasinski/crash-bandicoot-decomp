@@ -1,7 +1,7 @@
 #include "vector.h"
 
 /* GCC_VERSION: 2.6.3 */
-s32 func_80029B90(Vec3 *a, Vec3 *b) {
+s32 Math_ApxDist(Vec3 *a, Vec3 *b) {
     Vec3 delta;
     s32 az;
     s32 bz;

@@ -3,12 +3,12 @@
 /* CC1_FLAGS: -O2 -fno-strength-reduce */
 #include "common.h"
 
-void func_8004DA9C(s32);              /* extern */
+void SpuVmInit(s32);              /* extern */
 
 typedef void (*SequenceCallback)();
 extern SequenceCallback D_80060498[];
 
-void func_8004970C(void) {
+void _SsInit(void) {
     u16 *defaults;
     SequenceCallback *row;
     SequenceCallback *slot;
@@ -47,7 +47,7 @@ write_voice_register:
         *registers = global_value;
         registers += 1;
     } while (register_index < 0x10);
-    func_8004DA9C(0x18);
+    SpuVmInit(0x18);
     count = 0;
     row = D_80060498;
     do {
@@ -63,7 +63,7 @@ clear_callback:
         count += 1;
         row += 16;
     } while (count < 0x20);
-    D_8005FF4C = 0x3C;
+    g_spawns_base = 0x3C;
     D_8005E548 = 0;
     D_8005C520 = 0;
 }

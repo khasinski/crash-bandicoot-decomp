@@ -6,20 +6,19 @@
 
 void LIBC_Free(void *);
 
-extern void *D_80060DB0;
-extern s32 *D_8005C53C;
-extern s32 D_8006188C;
+extern void *g_player;
+extern s32 *g_ns_page_pool;
 
 void GOOL_FreeAllocTable(void)
 {
-    LIBC_Free(D_80060DB4);
-    LIBC_Free(D_80060DB0);
+    LIBC_Free(g_objects);
+    LIBC_Free(g_player);
 }
 
-s32 func_8001AC60(void)
+s32 Gool_InitLid(void)
 {
-    s32 *entry = D_8005C53C;
-    D_8006188C = entry[1] << 8;
+    s32 *entry = g_ns_page_pool;
+    g_cur_display_flags[0] = entry[1] << 8;
     if (!entry[0])
         return -0xE;
     return -0xFF;

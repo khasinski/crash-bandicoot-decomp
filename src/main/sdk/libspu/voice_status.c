@@ -2,9 +2,8 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 typedef struct {u16 registers[8];} VoiceRegisters;
-extern volatile VoiceRegisters *D_800558E4;
 
-s32 func_80049110(s32 first,s32 last,u8 *output) {
+s32 SpuRGetAllKeysStatus(s32 first,s32 last,u8 *output) {
     s32 voice;
     s32 end;
     u8 *cursor;
@@ -19,7 +18,7 @@ s32 func_80049110(s32 first,s32 last,u8 *output) {
         s32 on=1,silent=3,off=2;
         cursor=(u8 *)(voice+(u32)output);
         do {
-            level=D_800558E4[voice].registers[6];
+            level=((volatile VoiceRegisters *)g_spu_RXX)[voice].registers[6];
             if((on<<voice)&D_800559A4) {
                 if(level)*cursor=on;else *cursor=silent;
             } else if(level)*cursor=off;else *cursor=0;
@@ -30,14 +29,14 @@ s32 func_80049110(s32 first,s32 last,u8 *output) {
     return 0;
 }
 
-void func_800491E0(u8 *output) {
+void SpuGetAllKeysStatus(u8 *output) {
     s32 end=24;
     s32 voice=0;
     s32 on=1,silent=3,off=2;
     u8 *cursor=output;
     u16 level;
     do {
-        level=D_800558E4[voice].registers[6];
+        level=((volatile VoiceRegisters *)g_spu_RXX)[voice].registers[6];
         if((on<<voice)&D_800559A4) {
             if(level)*cursor=on;else *cursor=silent;
         } else if(level)*cursor=off;else *cursor=0;

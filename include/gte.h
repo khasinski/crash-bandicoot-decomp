@@ -70,4 +70,70 @@
 #define gte_avsz3() asm volatile("avsz3")
 #define gte_avsz4() asm volatile("avsz4")
 
+/* Matrix & vector register block transfers used by libgte */
+#define gte_ldclmv(m, c0, c1, c2, c3, c4) \
+    asm volatile( \
+        "lw $8, 0(%0)\n\t" \
+        "lw $9, 4(%0)\n\t" \
+        "lw $10, 8(%0)\n\t" \
+        "lw $11, 12(%0)\n\t" \
+        "lw $12, 16(%0)\n\t" \
+        "ctc2 $8, $" #c0 "\n\t" \
+        "ctc2 $9, $" #c1 "\n\t" \
+        "ctc2 $10, $" #c2 "\n\t" \
+        "ctc2 $11, $" #c3 "\n\t" \
+        "ctc2 $12, $" #c4 \
+        : : "r"(m) : "$8", "$9", "$10", "$11", "$12")
+
+#define gte_ldrotmatrix(m)   gte_ldclmv(m, 0, 1, 2, 3, 4)
+#define gte_ldlightmatrix(m) gte_ldclmv(m, 8, 9, 10, 11, 12)
+#define gte_ldcolormatrix(m) gte_ldclmv(m, 16, 17, 18, 19, 20)
+
+#define gte_ldtransmatrix(m) \
+    asm volatile( \
+        "lw $8, 20(%0)\n\t" \
+        "lw $9, 24(%0)\n\t" \
+        "lw $10, 28(%0)\n\t" \
+        "ctc2 $8, $5\n\t" \
+        "ctc2 $9, $6\n\t" \
+        "ctc2 $10, $7" \
+        : : "r"(m) : "$8", "$9", "$10")
+
+#define gte_stsz3(sz0, sz1, sz2) \
+    do { \
+        gte_swc2(*(sz0), 17); \
+        gte_swc2(*(sz1), 18); \
+        gte_swc2(*(sz2), 19); \
+    } while (0)
+
+#define gte_ldv0_p(v0) \
+    do { \
+        gte_lwc2(((u32 *)(v0))[0], 0); \
+        gte_lwc2(((u32 *)(v0))[1], 1); \
+    } while (0)
+
+#define gte_rtps_v0(v0) \
+    do { \
+        gte_ldv0_p(v0); \
+        asm volatile("nop\n\trtps"); \
+    } while (0)
+
+#define gte_mvmva_v0(v0) \
+    do { \
+        gte_ldv0_p(v0); \
+        asm volatile("nop\n\tmvmva 1, 0, 0, 0, 0"); \
+    } while (0)
+
+#define gte_stlvnl(v1) \
+    do { \
+        gte_swc2(((u32 *)(v1))[0], 25); \
+        gte_swc2(((u32 *)(v1))[1], 26); \
+        gte_swc2(((u32 *)(v1))[2], 27); \
+    } while (0)
+
+#define gte_obj_align(id) \
+    void __maspsx_include_asm_hack_align_##id(void) { \
+        asm(".balign 16 # maspsx-keep\n"); \
+    }
+
 #endif

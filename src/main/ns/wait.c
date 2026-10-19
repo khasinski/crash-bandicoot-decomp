@@ -4,11 +4,11 @@
 
 /* Set the wait flag and service pending resource operations until the counter reaches zero. */
 
-void func_800134C8(s32);
+void Ns_Update(s32);
 
-void func_80013748(void)
+void Ns_Update2(void)
 {
     D_8005CFC0 = 1;
     while (D_8005CFA8 != 0)
-        func_800134C8(-1);
+        Ns_Update(-1);
 }

@@ -1,6 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
+extern s32 *gp_grid_rows;
 #include "zone.h"
 
 typedef struct ZqVec {
@@ -95,20 +96,19 @@ typedef struct SubWorkspace {
     s32 unk104C;
 } SubWorkspace;
 
-extern s32 *D_800566F4;
 extern SubWorkspace D_8005CFEC;
 
-ZoneEntry *func_80015A98(u32 *);
-s32 func_80024040(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *func_80026DD4(ZoneEntry *, ZqVec *);
-void func_80027F50(void *, SubObj *, s32, s32);
-s32 func_80037D50(ZqZoneRect *, ZqBound *, void *, s32);
-void func_8003864C(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void func_8002D8B8(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 func_8002CD9C(SubObj *, ZqVec *, SubWorkspace *);
-s32 func_8002C8EC(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 func_8002E0A0(s32, s32, ZqVec *, SubObj *);
-s32 func_8002E3F8(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
+ZoneEntry *Ns_Lookup(u32 *);
+s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
+ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
+void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
+s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
+void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
+void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
+s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
+s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
+s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
+s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -120,9 +120,9 @@ typedef struct SubBoxList {
     s32 count;
 } SubBoxList;
 
-void func_80024AD4(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void func_80038AC4(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 func_80038DF8(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
+void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
+void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
+s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -134,7 +134,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -143,7 +143,7 @@ static __inline__ s32 func_80026CA8(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 {
     if (a->p1.x >= b->p1.x && a->p1.y >= b->p1.y && a->p1.z >= b->p1.z
         && a->p2.x < b->p2.x && a->p2.y < b->p2.y && a->p2.z < b->p2.z) {
@@ -152,10 +152,10 @@ static __inline__ s32 func_80026D40(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void func_8002D69C(s32, s32);
-s32 func_80042B9C(s32);
+void Solid_PlotWall(s32, s32);
+s32 SquareRoot0(s32);
 
-static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
+static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
     s32 *p;
     u32 mask;
@@ -189,7 +189,7 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     if (y1 >= 32) {
         return;
     }
-    p = &D_800566F4[y1];
+    p = &gp_grid_rows[y1];
     if (set) {
         for (; y1 < y2; y1++, p++) {
             *p |= mask;
@@ -202,15 +202,15 @@ static __inline__ void func_8002D7D4(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     }
 }
 
-static __inline__ s32 func_8002E060(s32 x, s32 y)
+static __inline__ s32 Solid_TestWallCell(s32 x, s32 y)
 {
-    if ((u32)x < 32 && (u32)y < 32 && (D_800566F4[y] & (0x80000000U >> x)) == 0) {
+    if ((u32)x < 32 && (u32)y < 32 && (gp_grid_rows[y] & (0x80000000U >> x)) == 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_8002E0A0(s32 set, s32 mode, ZqVec *v, SubObj *obj)
+s32 Solid_ReplotWalls(s32 set, s32 mode, ZqVec *v, SubObj *obj)
 {
     ZqBound bound;
     ZqVec size;
@@ -273,7 +273,7 @@ s32 func_8002E0A0(s32 set, s32 mode, ZqVec *v, SubObj *obj)
                 x2 = (bound.p2.x << 2) / 0x2000;
                 z1 = (bound.p1.z << 2) / 0x2000;
                 z2 = (bound.p2.z << 2) / 0x2000;
-                func_8002D7D4(x1, z1, x2, z2, set);
+                Solid_PlotWallB(x1, z1, x2, z2, set);
                 count++;
             }
         }
@@ -281,14 +281,14 @@ s32 func_8002E0A0(s32 set, s32 mode, ZqVec *v, SubObj *obj)
     return count;
 }
 
-s32 func_8002E3F8(ZqVec *v, s32 gx, s32 gz, s32 *out_x, s32 *out_z, SubObj *obj, s32 depth)
+s32 Solid_StopAtWalls(ZqVec *v, s32 gx, s32 gz, s32 *out_x, s32 *out_z, SubObj *obj, s32 depth)
 {
     s32 i, dx, dz, res;
     s8 *p;
 
 start:
     p = D_80052A34;
-    if (func_8002E060(gx, gz) || (((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000)) {
+    if (Solid_TestWallCell(gx, gz) || (((ZoneHeader *)((ZoneEntry *)level_position.zone)->items[0])->flags & 0x100000)) {
         *out_x = gx;
         *out_z = gz;
         return depth + 2;
@@ -302,43 +302,43 @@ start:
         dx = p[0];
         dz = p[1];
         p += 2;
-        if (func_8002E060(gx + dx, gz + dz)) {
+        if (Solid_TestWallCell(gx + dx, gz + dz)) {
             *out_x = gx + dx;
             *out_z = gz + dz;
             return depth + 2;
         }
-        if (func_8002E060(gx + dx, gz - dz)) {
+        if (Solid_TestWallCell(gx + dx, gz - dz)) {
             *out_x = gx + dx;
             *out_z = gz - dz;
             return depth + 2;
         }
-        if (func_8002E060(gx - dx, gz + dz)) {
+        if (Solid_TestWallCell(gx - dx, gz + dz)) {
             *out_x = gx - dx;
             *out_z = gz + dz;
             return depth + 2;
         }
-        if (func_8002E060(gx - dx, gz - dz)) {
+        if (Solid_TestWallCell(gx - dx, gz - dz)) {
             *out_x = gx - dx;
             *out_z = gz - dz;
             return depth + 2;
         }
         if (dx != dz) {
-            if (func_8002E060(gx + dz, gz + dx)) {
+            if (Solid_TestWallCell(gx + dz, gz + dx)) {
                 *out_x = gx + dz;
                 *out_z = gz + dx;
                 return depth + 2;
             }
-            if (func_8002E060(gx + dz, gz - dx)) {
+            if (Solid_TestWallCell(gx + dz, gz - dx)) {
                 *out_x = gx + dz;
                 *out_z = gz - dx;
                 return depth + 2;
             }
-            if (func_8002E060(gx - dz, gz + dx)) {
+            if (Solid_TestWallCell(gx - dz, gz + dx)) {
                 *out_x = gx - dz;
                 *out_z = gz + dx;
                 return depth + 2;
             }
-            if (func_8002E060(gx - dz, gz - dx)) {
+            if (Solid_TestWallCell(gx - dz, gz - dx)) {
                 *out_x = gx - dz;
                 *out_z = gz - dx;
                 return depth + 2;
@@ -348,18 +348,18 @@ start:
     if ((gx != 16 || gz != 16)
         && (obj->unk78 == NULL || *obj->unk78->unk20->header != 0x22)) {
         for (i = 0; i < 32; i++) {
-            if (D_800566F4[i] != -1) {
+            if (gp_grid_rows[i] != -1) {
                 goto retry;
             }
         }
     }
     if (depth < 0x100
         && (obj->unk78 == NULL || *obj->unk78->unk20->header != 0x22)) {
-        if (func_8002E0A0(0, 0, v, obj)) {
-            func_8002E0A0(1, 1, v, obj);
-            func_8002D8B8(v, obj, &D_8005CFEC, 0);
+        if (Solid_ReplotWalls(0, 0, v, obj)) {
+            Solid_ReplotWalls(1, 1, v, obj);
+            Solid_PlotObjWalls(v, obj, &D_8005CFEC, 0);
         }
-        res = func_8002E3F8(v, gx, gz, out_x, out_z, obj, 0x100);
+        res = Solid_StopAtWalls(v, gx, gz, out_x, out_z, obj, 0x100);
         return res;
     }
     obj->status_a |= 0x100000;

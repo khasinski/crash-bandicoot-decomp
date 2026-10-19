@@ -15,21 +15,16 @@ typedef struct {
     s16 values[32];
 } SpuReverbRegisters;
 
-s32 func_80047190(u32);
-void func_80047718(SpuReverbRegisters *);
-s32 func_80047D38(u32);
-void func_80046DB8(s32, u32, s32);
+s32 _SpuIsInAllocateArea_(u32);
+void _spu_setReverbAttr(SpuReverbRegisters *);
+s32 SpuClearReverbWorkArea(u32);
+void _spu_FsetRXX(s32, u32, s32);
 
-extern volatile u16 *D_800558E4;
-extern u32 D_80055958;
 
-extern volatile s16 D_80055964;
-extern volatile s16 D_80055966;
 
-extern u32 D_80055DAC[];
 extern SpuReverbRegisters D_80055DFC[];
 
-s32 func_80047208(SpuReverbAttr *arg0)
+s32 SpuSetReverbModeParam(SpuReverbAttr *arg0)
 {
     SpuReverbRegisters param;
     s32 clear_mode;
@@ -57,15 +52,15 @@ s32 func_80047208(SpuReverbAttr *arg0)
             mode &= ~0x100;
             clear_mode = 1;
         }
-        if ((u32)mode >= 0xA || func_80047190(D_80055DAC[mode]) != 0) {
+        if ((u32)mode >= 0xA || _SpuIsInAllocateArea_(D_80055DAC[mode]) != 0) {
             return -1;
         }
         set_mode = 1;
-        D_80055960 = mode;
+        g_spu_rev_param = mode;
         {
             u8 *dst = (u8 *)&param;
             s32 i = 0x43;
-            s32 idx = *(volatile s32 *)&D_80055960;
+            s32 idx = *(volatile s32 *)&g_spu_rev_param;
             u8 *src;
             D_80055958 = D_80055DAC[idx];
             src = (u8 *)&D_80055DFC[idx];
@@ -73,7 +68,7 @@ s32 func_80047208(SpuReverbAttr *arg0)
                 *dst++ = *src++;
             } while (--i != -1);
         }
-        switch (D_80055960) {
+        switch (g_spu_rev_param) {
         case 7:
             D_8005596C = 0x7F;
             D_80055968 = 0x7F;
@@ -89,14 +84,14 @@ s32 func_80047208(SpuReverbAttr *arg0)
         }
     }
     if (all || (mask & 8)) {
-        switch (D_80055960) {
+        switch (g_spu_rev_param) {
         case 7:
         case 8:
             set_delay = 1;
             if (set_mode == 0) {
                 u8 *dst = (u8 *)&param;
                 s32 i = 0x43;
-                u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&D_80055960];
+                u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&g_spu_rev_param];
                 do {
                     *dst++ = *src++;
                 } while (--i != -1);
@@ -117,7 +112,7 @@ s32 func_80047208(SpuReverbAttr *arg0)
         }
     }
     if (all || (mask & 0x10)) {
-        switch (D_80055960) {
+        switch (g_spu_rev_param) {
         case 7:
         case 8:
             set_feedback = 1;
@@ -125,7 +120,7 @@ s32 func_80047208(SpuReverbAttr *arg0)
                 if (set_delay == 0) {
                     u8 *dst = (u8 *)&param;
                     s32 i = 0x43;
-                    u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&D_80055960];
+                    u8 *src = (u8 *)&D_80055DFC[*(volatile s32 *)&g_spu_rev_param];
                     do {
                         *dst++ = *src++;
                     } while (--i != -1);
@@ -143,41 +138,41 @@ s32 func_80047208(SpuReverbAttr *arg0)
         }
     }
     if (set_mode != 0) {
-        was_on = (D_800558E4[0xD5] >> 7) & 1;
+        was_on = (g_spu_RXX[0xD5] >> 7) & 1;
         if (was_on != 0) {
-            ctrl = D_800558E4[0xD5];
+            ctrl = g_spu_RXX[0xD5];
             ctrl &= 0xFF7F;
-            D_800558E4[0xD5] = ctrl;
+            g_spu_RXX[0xD5] = ctrl;
         }
         goto clear_depth;
     }
     if (all || (mask & 2)) {
-        D_800558E4[0xC2] = arg0->depth_left;
+        g_spu_RXX[0xC2] = arg0->depth_left;
         D_80055964 = arg0->depth_left;
     }
     if (all || (mask & 4)) {
-        D_800558E4[0xC3] = arg0->depth_right;
+        g_spu_RXX[0xC3] = arg0->depth_right;
         D_80055966 = arg0->depth_right;
     }
     if (0) {
 clear_depth:
-        D_800558E4[0xC2] = 0;
-        D_800558E4[0xC3] = 0;
+        g_spu_RXX[0xC2] = 0;
+        g_spu_RXX[0xC3] = 0;
         D_80055964 = 0;
         D_80055966 = 0;
     }
     if (set_mode || set_delay || set_feedback) {
-        func_80047718(&param);
+        _spu_setReverbAttr(&param);
     }
     if (clear_mode) {
-        func_80047D38(D_80055960);
+        SpuClearReverbWorkArea(g_spu_rev_param);
     }
     if (set_mode) {
-        func_80046DB8(0xD1, D_80055958, 0);
+        _spu_FsetRXX(0xD1, D_80055958, 0);
         if (was_on) {
-            ctrl = D_800558E4[0xD5];
+            ctrl = g_spu_RXX[0xD5];
             ctrl |= 0x80;
-            D_800558E4[0xD5] = ctrl;
+            g_spu_RXX[0xD5] = ctrl;
         }
     }
     return 0;

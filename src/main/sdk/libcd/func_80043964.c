@@ -1,7 +1,7 @@
 #include "common.h"
 /* GCC_VERSION: 2.6.3 */
 
-s32 func_800458C8(s32);
-s32 func_80043964(s32 arg0) {
-    return func_800458C8(arg0);
+s32 CD_datasync(s32);
+s32 CdReadCallback(s32 arg0) {
+    return CD_datasync(arg0);
 }

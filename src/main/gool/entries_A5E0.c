@@ -2,26 +2,24 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-void func_80042E9C(void *);
-void func_80042ECC(void *);
-void func_80033FBC(void *, u32, s32);
-s32 *func_80016E18(void);
-void func_80035E10(u16 *, s32, s32, s32, s32 *, void *);
-void func_80036340(u16 *, s32, s32, s32, s32 *, void *);
+void SetRotMatrix(void *);
+void SetLightMatrix(void *);
+void RMemcpy(void *, u32, s32);
+s32 *Gpu_GetCurPrimsTail(void);
+void Gte_RTransformWorldsRipple(u16 *, s32, s32, s32, s32 *, void *);
+void Gte_RTransformWorldsLightning(u16 *, s32, s32, s32, s32 *, void *);
 
-extern u16 *D_800566B8[];
-extern u8 D_800577E4[];
+extern u16 *gp_level_entry[];
 extern struct {
     u8 pad[0x10];
     u8 *data;
-} *D_80057914[];
-extern s32 D_800578D0[];
-extern s32 D_80057960[];
-extern u8 D_80051774[];
+} *g_pads[];
+extern s32 g_view_proj[];
+extern s32 g_draw_stamp[];
 
-extern s32 D_80056400[];
+extern s32 gp_next_lid[];
 
-void func_80019DE0(s32 arg0)
+void Gfx_TransformWorldsRipple(s32 arg0)
 {
     s32 i;
     s32 val;
@@ -32,8 +30,8 @@ void func_80019DE0(s32 arg0)
         }
         return;
     }
-    if (*D_800566B8[0] != 0) {
-        if (D_80056400[0] == 0) {
+    if (*gp_level_entry[0] != 0) {
+        if (gp_next_lid[0] == 0) {
             for (i = 0; i < 16; i++) {
                 val = D_800567B8[i] + D_80056474;
                 D_800567B8[i] = val;
@@ -47,28 +45,28 @@ void func_80019DE0(s32 arg0)
             val = D_800567B8[i];
             ((s32 *)0x1F800048)[i] = val >= 0 ? val : -val;
         }
-        func_80042E9C(D_800577E4);
-        func_80042ECC(D_800577E4 + 0x110);
-        func_80033FBC(D_80057914[0]->data + 4, 0x1F800100, 0x100);
-        func_80035E10(D_800566B8[0], arg0, 0x800 - (D_800578D0[0] / 2), D_80057960[0], func_80016E18(), D_80051774);
+        SetRotMatrix(g_m_view);
+        SetLightMatrix(g_m_view + 0x110);
+        RMemcpy(g_pads[0]->data + 4, 0x1F800100, 0x100);
+        Gte_RTransformWorldsRipple(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774);
     }
 }
 
-void func_80019F90(s32 arg0)
+void Gfx_TransformWorldsLightning(s32 arg0)
 {
-    if (*D_800566B8[0] != 0) {
-        func_80042E9C(D_800577E4);
-        func_80042ECC(D_800577E4 + 0x110);
-        func_80033FBC(D_80057914[0]->data + 4, 0x1F800100, 0x100);
-        *(s32 *)0x1F800048 = D_80056440 << 4;
+    if (*gp_level_entry[0] != 0) {
+        SetRotMatrix(g_m_view);
+        SetLightMatrix(g_m_view + 0x110);
+        RMemcpy(g_pads[0]->data + 4, 0x1F800100, 0x100);
+        *(s32 *)0x1F800048 = gp_fade_step << 4;
         *(s32 *)0x1F80004C = D_80056444 << 4;
         *(s32 *)0x1F800050 = D_80056448 << 4;
-        *(s32 *)0x1F800054 = D_8005644C;
-        *(s32 *)0x1F800058 = D_80056450 << 4;
+        *(s32 *)0x1F800054 = gp_ripple_amp;
+        *(s32 *)0x1F800058 = gp_ripple_freq << 4;
         *(s32 *)0x1F80005C = D_80056454 << 4;
         *(s32 *)0x1F800060 = D_80056458 << 4;
-        *(s32 *)0x1F800064 = D_8005645C;
-        func_80036340(D_800566B8[0], arg0, 0x800 - (D_800578D0[0] / 2), D_80057960[0], func_80016E18(), D_80051774);
+        *(s32 *)0x1F800064 = gp_lightning_state;
+        Gte_RTransformWorldsLightning(gp_level_entry[0], arg0, 0x800 - (g_view_proj[0] / 2), g_draw_stamp[0], Gpu_GetCurPrimsTail(), D_80051774);
     }
 }
 

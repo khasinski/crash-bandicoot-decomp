@@ -2,7 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-void func_80048A54(s32 mode)
+void SpuSetTransferMode(s32 mode)
 {
     s32 enabled;
     switch(mode) {

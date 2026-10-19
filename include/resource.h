@@ -17,7 +17,7 @@ typedef struct ResourceEntry {
     u8 *data;
 } ResourceEntry;
 
-/* Item-pointer view used by func_80031D50 on a resolved resource entry.
+/* Item-pointer view used by Title_LoadScreen on a resolved resource entry.
  * The first item is at +0x10; subsequent items follow at four-byte intervals.
  * Keep separate from ResourceHeader, whose page-header fields differ. */
 typedef struct ResourceItemListView {
@@ -32,14 +32,14 @@ typedef struct ResourceItemSelection {
     u32 word204;
 } ResourceItemSelection;
 
-/* First item of the map resource consumed by func_80031EB4. */
+/* First item of the map resource consumed by Title_LoadState. */
 typedef struct ResourceMapMetadata {
     s32 word00, word04;
     u32 word08;
     s32 count;
 } ResourceMapMetadata;
 
-/* Partial level-data view used by func_8002E98C. Six words at +0x510
+/* Partial level-data view used by Pbak_Play. Six words at +0x510
  * are copied to GoolActorView.bounds. The data beginning at +0x52C
  * has an unknown length; sizeof this view is not the resource size. */
 typedef struct LevelResourceView {
@@ -105,7 +105,7 @@ typedef struct ResourcePool {
     s32 active_count;
 } ResourcePool;
 
-/* View based at slot + 4, used by the D_800580A4 alias in func_80014514.
+/* View based at slot + 4, used by the g_slst_buf1 alias in Ns_TexturePageFree.
  * The array still advances by 0x2C. Do not confuse this base with a full slot. */
 typedef struct ResourceSlotStateView {
     s16 state;
@@ -131,20 +131,20 @@ typedef struct ResourceHandler {
 
 /* Shared owners confirmed by the lookup, allocation and unref units.
  * Offset aliases and the ambiguously typed D_8005CFBC table stay local. */
-extern ResourceEntry *D_80057914;
-extern ResourceSlot D_800580A0[];
+extern ResourceEntry *g_pads;
+extern ResourceSlot g_slst_buf0[];
 extern ResourceBucket **D_8005C530;
 extern ResourceBucket *D_8005C534;
 extern ResourceHashMetadata *D_8005C540;
 extern ResourcePool D_8005C91C;
 
-s32 func_800126C0(ResourceHandle *handle);
-s32 func_80012660(u8 *name);
-s32 func_8001439C(void);
-s32 func_80014514(s32 index);
-void func_800148C4(ResourceSlot *slot);
-void func_80014930(ResourceSlot *slot);
-ResourceBucket *func_80015978(s32 id);
-ResourceBucket *func_800159C4(u32 id);
+s32 Ns_EIDType(ResourceHandle *handle);
+s32 Ns_StringToEID(u8 *name);
+s32 Ns_TexturePageAllocate(void);
+s32 Ns_TexturePageFree(s32 index);
+void Ns_PageDecRef(ResourceSlot *slot);
+void Ns_PageDelete(ResourceSlot *slot);
+ResourceBucket *Ns_Probe(s32 id);
+ResourceBucket *Ns_ProbeSafe(u32 id);
 
 #endif

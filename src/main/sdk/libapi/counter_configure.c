@@ -1,8 +1,7 @@
 /* GCC_VERSION: 2.6.3 */
 /* GCC_CPU: 3000 */
 #include "common.h"
-extern volatile u16 (*D_80053910)[8];
-s32 func_8003E298(s32 counter,s32 target,s32 flags) {
+s32 SetRCnt(s32 counter,s32 target,s32 flags) {
     s32 index=counter&0xFFFF;
     s32 mode=0x48;
     volatile u16 *registers;
@@ -21,7 +20,7 @@ s32 func_8003E298(s32 counter,s32 target,s32 flags) {
     return 1;
 }
 
-s32 func_8003E338(s32 counter)
+s32 GetRCnt(s32 counter)
 {
     s32 index = counter & 0xFFFF;
     if (index >= 3) {

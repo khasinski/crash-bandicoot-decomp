@@ -2,34 +2,33 @@
 #include "common.h"
 #include "ns.h"
 
-extern volatile s32 frame_counter;
 
-s32 func_80013D48(ResourceSlot *slot, s32 arg1);
-s32 func_800141F4(s32 *count_ptr, s32 arg1);
-void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4);
+s32 Ns_PageUpdate(ResourceSlot *slot, s32 arg1);
+s32 Ns_PageAllocate(s32 *count_ptr, s32 arg1);
+void *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4);
 
-ResourceSlot *func_80014644(s32 id, s32 word18)
+ResourceSlot *Ns_PageCreateVirtual(s32 id, s32 word18)
 {
     s32 i;
     ResourceSlot *slot;
 
-    for (i = 0; i < D_8005C528.pool.count; i++) {
-        slot = &D_8005C528.pool.slots[i];
+    for (i = 0; i < g_ns.pool.count; i++) {
+        slot = &g_ns.pool.slots[i];
         if ((s16)slot->state == 1) {
             slot->state = 2;
             slot->id = id;
             slot->references = 0;
             slot->word18 = word18;
             slot->word28 = frame_counter;
-            D_8005C528.page_map[id >> 1] = slot;
-            D_8005C528.pool.active_count++;
+            g_ns.page_map[id >> 1] = slot;
+            g_ns.pool.active_count++;
             return slot;
         }
     }
     return NULL;
 }
 
-void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4)
+void *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4)
 {
     s32 index;
     s32 count;
@@ -38,19 +37,19 @@ void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 
     s32 i;
     s32 base_id;
 
-    index = func_800141F4(count_ptr, arg4);
+    index = Ns_PageAllocate(count_ptr, arg4);
     if (index == -1) {
         return (void *)-12;
     }
     count = *count_ptr;
-    phys = &D_8005C528.physical[index + count - 1];
+    phys = &g_ns.physical[index + count - 1];
     if (slot != NULL) {
         i = count - 1;
         base_id = slot->id;
         head = phys;
         if (i >= 0) {
             do {
-                slot = D_8005C528.page_map[(base_id >> 1) + i];
+                slot = g_ns.page_map[(base_id >> 1) + i];
                 phys->id = slot->id;
                 if (word18 != 0x6396347F) {
                     phys->word18 = word18;
@@ -67,7 +66,7 @@ void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 
                 } else {
                     phys->state = (count = 12);
                 }
-                D_8005C528.page_map[phys->id >> 1] = phys;
+                g_ns.page_map[phys->id >> 1] = phys;
                 phys--;
                 i--;
             } while (i >= 0);
@@ -79,10 +78,10 @@ void *func_800146F0(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 
     phys->word18 = word18;
     phys->references = 0;
     phys->word28 = frame_counter;
-    D_8005C528.pool.active_count++;
+    g_ns.pool.active_count++;
     phys->base = (u8 *)1;
     phys->slot = phys;
     phys->state = 2;
-    D_8005C528.page_map[phys->id >> 1] = phys;
+    g_ns.page_map[phys->id >> 1] = phys;
     return phys;
 }

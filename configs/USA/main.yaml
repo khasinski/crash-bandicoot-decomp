@@ -339,6 +339,7 @@ segments:
       - [0x33204, c, sdk/libgpu/hardware_query]
       - [0x332E0, c, sdk/libcd/memset]
       - [0x3330C, c, sdk/libgte/gte_core]
+      - [0x3369C, c, sdk/libgte/gte_regs]
       - [0x3381C, c, sdk/libgte/atan]
       - [0x3399C, c, sdk/libgte/patch_gte]
       - [0x33A4C, c, sdk/libcd/start_retry]
