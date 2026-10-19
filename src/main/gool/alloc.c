@@ -4,7 +4,6 @@
 
 /* Free the two allocation tables and update the fixed-point value from the current resource. */
 
-void LIBC_Free(void *);
 
 extern void *g_player;
 extern s32 *g_ns_page_pool;

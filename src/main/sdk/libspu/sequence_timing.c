@@ -5,7 +5,6 @@
 /* Select sequence timing using the mode returned by the video-mode query.
  * Flag 0x1000 is stored separately; values below six select preset timings.
  */
-s32 GetVideoMode(void);
 
 void SsSetTickMode(s32 arg0)
 {

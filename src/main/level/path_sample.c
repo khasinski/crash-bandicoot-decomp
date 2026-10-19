@@ -8,8 +8,6 @@ typedef struct {
     s32 sx, sy, sz;
 } CamSample;
 
-ZoneEntry *Ns_Lookup(u32 *);
-s32 Gool_AngDiff(s32, s32);
 
 typedef struct {
     s32 x, y, z;

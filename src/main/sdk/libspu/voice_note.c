@@ -2,17 +2,7 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-s32 SpuVmKeyOff(s16,s16,s16,u16);
 /* The retail call passes an unused mode value; allocation returns an index. */
-s32 SpuVmAlloc(s32);
-void SpuVmDoAllocate(void);
-s32 note2pitch(void);
-void vmNoiseOn(s16);
-void vmNoiseOff(s32);
-void SpuVmKeyOffNow(s32);
-void SpuVmKeyOnNow(u8,u16);
-s32 SpuVmSelectToneAndVag(u8 *,u8 *);
-s32 SpuVmVSetUp(s16,s16);
 typedef struct {
     u8 gap00[0x12];
     u16 programs;

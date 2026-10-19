@@ -2,7 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 Gool_ObjectKill(Node *, s32);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (n)->word04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? &(n)->word04 : &(n)->children)

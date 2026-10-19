@@ -112,24 +112,7 @@ typedef struct {
 } ZonePtr57914;
 extern ZonePtr57914 *g_pads;
 
-s32 RSqrMagnitude3(s32, s32, s32);
-s32 RSqrMagnitude2();
-s32 ratan2(s32, s32);
-s32 cos(s32);
-void SpuGetVoiceAttr(SpuVoiceAttrLocal *);
-s32 Math_Randb(s32);
-s32 Ns_Lookup(u32);
-void Gool_Transform2(Vec3 *, Vec3 *, s32);
-void SpuSetVoiceAttr(SpuVoiceAttrLocal *);
-void SpuSetReverbVoice(s32, u32);
-void SpuSetKey(s32, u32);
-void Midi_ResetSeqVol(s32);
-void Midi_Update(s32);
-void SsSetMVol(s32, s32);
-void Midi_Control(u8 *, s32, s32);
-void SpuGetAllKeysStatus(u8 *);
 
-s32 Audio_Control(s32 id, u32 op, void *arg2, GoolObjectAudio *obj);
 
 AudioVolume *Audio_Spatialize(Vec3 *pos, s32 vol) {
     s32 x, z, y, dist, pan, base_vol, left, right;

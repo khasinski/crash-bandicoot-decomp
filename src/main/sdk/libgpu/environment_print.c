@@ -2,7 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 GetGraphType(void);
 
 
 /* Print the draw environment and hardware-specific texture-page fields. */

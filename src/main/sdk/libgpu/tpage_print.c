@@ -4,7 +4,6 @@
 
 /* Decode a texture-page value for the diagnostic callback. */
 
-s32 GetGraphType(void);
 
 void DumpTPage(s32 page) {
     u32 default_page;

@@ -3,29 +3,10 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-typedef struct {
-    u8 tones, volume, priority, mode, pan, unused;
-    u16 attributes;
-    u8 tail[8];
-} ProgramAttributes;
-
-typedef struct {
-    u8 prior, mode, vol, pan, center, shift, min, max;
-    u8 vibW, vibT, porW, porT, pbmin, pbmax, reserved1, reserved2;
-    u16 adsr1, adsr2;
-    s16 prog, vag;
-    s16 reserved[4];
-} ToneAttributes;
-
-
 typedef void (*ContCallback)(s16, s16, u8, ToneAttributes, s16, u8);
 
 extern ContCallback g_ss_nrpn_attr_fn_00[];
 
-s32 SsUtGetProgAtr(s16, s16, ProgramAttributes *);
-s32 SsUtGetVagAtr(s16, s16, s32, ToneAttributes *);
-s32 SsUtSetVagAtr(s16, s16, s32, const ToneAttributes *);
-s32 _SsReadDeltaValue(s16, s16);
 
 void _SsSetControlChange(s16 sequence, s16 channel, u8 value) {
     ProgramAttributes prog_attr;

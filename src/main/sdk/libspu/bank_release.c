@@ -2,7 +2,6 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-void SpuFree(u32);
 
 
 void SsVabClose(s32 requested)

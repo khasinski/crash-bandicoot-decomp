@@ -8,7 +8,6 @@ static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
     return (s32)((u32)value << shift) >> shift;
 }
 
-void printf(char *, ...);
 
 typedef struct GoolExecView {
     u8 pad00[0x10];

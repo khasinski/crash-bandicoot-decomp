@@ -5,7 +5,6 @@
 /* Format an encoded resource ID, or encode five characters with the 64-character alphabet. */
 
 
-s32 sprintf(char *, const char *, ...);
 
 char *Ns_EIDValToString(s32 id)
 {

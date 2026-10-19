@@ -1,7 +1,6 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-void BIOS_DeliverEvent(u32, u32);
 /* Retail tests and then reloads this shared completion callback slot. */
 
 void _spu_FiDMA(void) {

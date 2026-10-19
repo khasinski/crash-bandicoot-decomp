@@ -2,7 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 abs(s32);
 
 s32 Gool_AngDiff(s32 current,s32 target) {
     s32 delta;

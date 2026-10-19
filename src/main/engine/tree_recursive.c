@@ -2,9 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
-s32 Gool_ObjectSearchTree(Node *, Visitor, void *);
-s32 Gool_ObjectKill(Node *, s32);
 s32 GOOL_TraverseObjectTreePostorder(Node *root, Visitor visitor, void *context)
 {
     Node *child = root->children;

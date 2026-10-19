@@ -1,8 +1,6 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-s32 SpuVmKeyOn();
-s32 SpuVmKeyOff();
 void _SsNoteOn(s16 sequence,s16 channel,u8 note,u8 velocity) {
     SequenceState *state=g_ss_score_table[sequence]+channel;
     s32 index=state->field_12;

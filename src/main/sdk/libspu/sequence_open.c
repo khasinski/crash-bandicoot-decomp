@@ -3,8 +3,6 @@
 #include "common.h"
 /* This unit registers addresses; callbacks have different parameter lists. */
 typedef void (*Callback)();
-s32 BIOS_Printf(const char *, ...);
-s32 _SsInitSoundSep(s16, s16, s16, u8 *);
 
 extern Callback g_ss_cc_data_entry;
 extern Callback g_ss_cc_main_vol;
@@ -18,44 +16,8 @@ extern Callback g_ss_cc_reverb;
 extern Callback g_ss_cc_reset_all;
 extern Callback g_ss_nrpn_attr_fn_00;
 
-void Cd_Stub_01();
-void Cd_Stub_02();
-void Cd_Stub_03();
-void Cd_Stub_04();
-void Cd_Stub_05();
-void Cd_Stub_06();
-void Cd_Stub_07();
-void Cd_Stub_08();
-void Cd_Stub_09();
-void Cd_Stub_10();
-void Cd_Stub_11();
-void Cd_Stub_12();
-void Cd_Stub_13();
-void Cd_Stub_14();
-void Cd_Stub_15();
-void Cd_Stub_16();
-void Cd_Stub_17();
-void Cd_Stub_18();
-void Cd_Stub_19();
-void Cd_Stub_20();
-void _SsSetProgramChange();
-void _SsSetControlChange();
-void _SsContModulation();
-void _SsContPortaTime();
-void _SsContPortamento();
-void _SsContResetAll();
-void _SsContNrpn1();
-void _SsContNrpn2();
-void _SsContRpn1();
-void _SsContRpn2();
-void _SsContDataEntry();
-void _SsSetPitchBend();
-void _SsGetSeqData();
-void _SsGetMetaEvent();
-void _SsNoteOn();
-void _SsNoteOff();
 
-s16 SsSepOpen(s32 data_address, s16 mode, s16 channel_count) {
+s16 SsSepOpen(void *data_address, s16 mode, s16 channel_count) {
     s16 next_channel;
     s16 candidate_id;
     s16 channel;
@@ -64,7 +26,7 @@ s16 SsSepOpen(s32 data_address, s16 mode, s16 channel_count) {
     s32 found;
     s32 cursor;
 
-    cursor = data_address;
+    cursor = (s32)data_address;
     if (g_ss_open_seq_mask == -1) {
         BIOS_Printf(g_str_ss_sep_open_err);
 failed:

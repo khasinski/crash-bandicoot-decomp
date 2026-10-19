@@ -12,23 +12,7 @@ extern EngineState *gp_card;
 
 
 typedef EngineFileRequest FileRequest;
-s32 Card_TestRead(s32);
-s32 Card_ClearFlags(s32);
-s32 Card_SetState(s32);
-s32 Card_BeginLoadIfIdle(void);
-s32 Card_IncRetryCount(void);
-s32 Card_ResetParts(s32);
-s32 Card_SetFlags(s32);
-void Card_Close(s32 *);
-s32 VSync(s32);
-s32 erase(char *);
-s32 TestEvent(s32);
-s32 Math_Randb(s32);
 /* Both cached words are compared before dispatching the current card mode. */
-s32 Card_GetFlags(void), Card_GetState(void), Card_Load(void), Card_Check(void);
-void Card_Noop2(void), Card_Noop3(void), Card_PollEvents(void), Card_PartReadImages(void);
-void Card_PartWrite(s32), Card_Format(void);
-s32 Card_PartReadGlobals(void);
 
 void Card_Update(void)
 {
@@ -56,8 +40,6 @@ void Card_Update(void)
     g_card_prev_state = gp_card->word08;
 }
 
-s32 Card_PollSoftEvent(void), Card_WaitHardEvent(void), Card_ResetRetryCount(s32);
-void Card_ResetHardEvent(void), _card_info(s32), _card_clear(s32);
 
 void Card_PollEvents(void)
 {
@@ -120,8 +102,6 @@ s32 Card_Check(void) {
     return result;
 }
 
-void Card_ResetSoftEvent(void), _card_load(s32), Card_InitEmptyStrings(void);
-void Card_SortEntries(EngineDirectoryRecord *, s32);
 
 s32 Card_Load(void)
 {
@@ -229,15 +209,6 @@ typedef struct {
 typedef struct { s32 v; } WordView;
 typedef struct { u32 v; } UWordView;
 
-s32 sprintf(char *, char *, ...);
-s32 open(char *, s32);
-s32 BIOS_Read(s32, void *, s32);
-s32 Card_EntryNameIs949(const char *);
-void Card_ShiftJisToAscii(u8 *);
-char *BIOS_StrCpy(char *, const char *);
-void Card_StrToUpper(u8 *);
-void Gfx_FormatCardString(s32, s32, void *, s32, s32);
-void Gfx_BlitCardIcon(s32, u32, s32, u16 *, u8 *);
 
 #define ENGINE_CARD_SCAN_RETRY(io, request) ({ \
     s32 retries = 0, failed; \
@@ -370,7 +341,6 @@ void Card_PartReadImages(void)
     gp_card->word08 += blocks;
 }
 
-char *BIOS_StrCpy(char *, const char *);
 
 /* Convert a Shift-JIS memory-card block title in place to printable ASCII. */
 void Card_ShiftJisToAscii(u8 *header)
@@ -468,11 +438,6 @@ void Card_AsciiToShiftJis(char *title, s32 len)
 
 extern EngineByteRecord g_card_filename;
 
-s32 sprintf(char *, char *, ...);
-void BIOS_Printf(char *, s32);
-s32 open(char *, s32), BIOS_Write(s32, void *, s32);
-s32 Card_EntryNameIs949(const char *), Card_SetState(s32), Card_ClearFlags(s32);
-void Gfx_BlitCardIcon(s32, u32, s32, u16 *, u8 *);
 
 static inline EngineDirectorySlot *engine_selected_file(void)
 {
@@ -608,8 +573,6 @@ void Card_PartWrite(s32 mode)
 extern u32 g_stereo_disabled[];
 extern u32 g_cur_map_level[];
 extern u32 g_levels_unlocked[];
-u32 Card_Checksum(u8 *, u32);
-void Level_ResetGlobals(s32);
 
 void Card_SaveGlobals(EngineSaveRecord *record)
 {
@@ -661,10 +624,6 @@ inline s32 Card_LoadGlobals(EngineSaveRecord *record)
 
 #include "engine/checksum.c"
 
-s32 sprintf(char *, char *, ...);
-s32 open(char *, s32);
-s32 BIOS_Read(s32, void *, s32);
-s32 Card_SetState(s32);
 
 /* Retry the I/O expression up to three times and release the event request
  * on failure. The expression is evaluated anew for each attempt. */
@@ -734,11 +693,6 @@ s32 Card_PartReadGlobals(void)
 
 #undef ENGINE_CARD_RETRY
 
-s32 BIOS_Format(const char *);
-s32 Card_IncRetryCount(void);
-s32 Card_ClearFlags(s32);
-s32 Card_SetFlags(s32);
-s32 Card_SetState(s32);
 void Card_Format(void) {
     s32 ready;
     s32 state;
@@ -837,16 +791,12 @@ void Card_ResetHardEvent(void) {
     TestEvent(gp_edesc_h_newdev);
 }
 
-s32 BIOS_StrNCmp(const char *, const char *, s32);                      /* extern */
+                      /* extern */
 
 s32 Card_EntryNameIs949(const char *arg0) {
     return BIOS_StrNCmp(g_str_card_bascus_94900, arg0, 0xC) == 0;
 }
 
-char *BIOS_StrCpy(char *, const char *);
-char *BIOS_StrCat(char *, const char *);
-EngineDirectoryRecord *firstfile(char *, EngineDirectoryRecord *);
-EngineDirectoryRecord *nextfile(EngineDirectoryRecord *);
 
 /* Append the search suffix, enumerate records, and cap the reported count. */
 s32 Card_CountFiles(const char *path, EngineDirectoryRecord *entries)
@@ -868,8 +818,6 @@ s32 Card_CountFiles(const char *path, EngineDirectoryRecord *entries)
     return count;
 }
 
-s32 BIOS_StrCmp(char *, char *);
-void RMemcpy(void *, void *, s32);
 
 /* Sort Crash directory entries ahead of other saves and alphabetically. */
 void Card_SortEntries(EngineDirectoryRecord *entries, s32 count)
@@ -905,7 +853,6 @@ void Card_SortEntries(EngineDirectoryRecord *entries, s32 count)
     }
 }
 
-s32 close(s32);
 
 void Card_Close(s32 *arg0) {
     s32 temp_a0;
@@ -940,7 +887,6 @@ void Card_StrToUpper(u8 *arg0) {
     }
 }
 
-s32 Card_GetFlags(void);
 s32 Card_BeginLoadIfIdle(void)
 {
     if (!(Card_GetFlags() & 13)) {
@@ -967,7 +913,6 @@ s32 Card_ResetParts(s32 flags)
     return 0;
 }
 
-void Gfx_FormatCardString(s32, s32, void *, s32, s32);
 
 void Card_InitEmptyStrings(void)
 {
@@ -1030,10 +975,6 @@ s32 Card_GetFlags(void)
     return gp_card->word04;
 }
 
-s32 OpenEvent(u32,s32,s32,void (*)(void));
-void EnterCriticalSection(void),ExitCriticalSection(void),InitCARD(void),_bu_init(void);
-void _card_auto(s32);
-s32 EnableEvent(s32);
 void Card_Init(void) {
 EnterCriticalSection();
 gp_edesc_s_end_io=OpenEvent(0xF4000001,4,0x2000,NULL);
@@ -1062,7 +1003,6 @@ EnableEvent(gp_edesc_h_timeout);
 EnableEvent(gp_edesc_h_newdev);
 }
 
-void StartCARD(void);
 
 s32 Card_Kill(void) {
     StartCARD();
@@ -1090,8 +1030,6 @@ typedef EngineByteRecord ByteRecord;
 extern ByteRecord gp_str_card_invalid_tag;
 extern ByteRecord g_card_filename;
 
-void Card_ResetStateAndFlags(s32);
-s32 sprintf(char *, char *, ...);
 
 s32 Card_Alloc(void)
 {
@@ -1118,8 +1056,6 @@ s32 Card_Free(void)
     return 0;
 }
 
-void BIOS_BZero(void *, s32);
-void _card_read(void), StopCARD(s32, s32, void *);
 
 /* Each event corresponds to one of the four native completion statuses. */
 static inline s32 engine_card_status(void)
@@ -1214,7 +1150,6 @@ s32 Card_InvalidateFilename(void) {
     return 0;
 }
 
-void _card_info(s32);
 
 s32 Card_CheckNewDevice(void)
 {

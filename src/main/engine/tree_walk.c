@@ -4,8 +4,6 @@
 
 /* Partial linked-object layout; word04 is used when kind is two. */
 
-s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
-s32 Gool_ObjectKill(Node *, s32);
 s32 Gool_ObjectHandleTraverseTreePostorder(Node *root, Visitor visitor, void *context)
 {
     Node *node, *next, *child, *next_child;

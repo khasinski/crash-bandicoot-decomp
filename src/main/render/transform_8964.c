@@ -126,12 +126,6 @@ typedef struct ZoneEntry8964 {
 extern s32 g_view_proj[];
 extern ZoneEntry8964 *g_pads[];
 
-ResourceEntry *Ns_Lookup(void *);
-s32 *Gpu_GetCurPrimsTail(void);
-s32 Gfx_CalcObjectMatrices(u8 *, void *, GoolObj *, s32, s32 *);
-void Gte_RTransformSvtx(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-void Gte_RTransformCvtx(u8 *, u32 *, void *, void *, s32, s32, s32 *, void *, s32);
-s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
 
 void Gfx_LoadWorlds(u8 *arg0, u32 *arg1, GoolObj *arg2) {
     ResourceEntry *res;

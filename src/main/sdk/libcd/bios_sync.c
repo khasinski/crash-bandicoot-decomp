@@ -30,14 +30,6 @@ typedef struct {
 extern volatile u8 *g_cd_reg0;
 extern volatile CdStatus g_cd_status;
 
-s32 VSync(s32);
-s32 BIOS_Printf(const char *, ...);
-s32 puts(const char *, ...);
-s32 CheckCallback(void);
-s32 getintr(void);
-void CD_initvol(void);
-s32 CD_read(void);
-s32 CD_datasync(s32);
 
 static inline void cd_set_timeout(const char *name)
 {

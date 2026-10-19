@@ -1,8 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "gpu.h"
 #include "render.h"
-s32 VSync(s32);
-void *PutDispEnv(GpuDisplayEnv *);
 
 void Gpu_SwapBuffers(void)
 {

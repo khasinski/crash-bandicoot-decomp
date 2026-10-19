@@ -6,7 +6,6 @@
 typedef GpuDrawing Drawing;
 typedef struct {u8 debug;u8 pad01[13];u8 drawing[sizeof(Drawing)];} GpuState;
 extern GpuState g_gpu_debug_level;
-void *BIOS_MemCpy(void *,void *,s32);
 
 void *PutDrawEnv(Drawing *arg0) {
     u32 *temp_s0;

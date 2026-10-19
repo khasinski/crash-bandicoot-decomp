@@ -2,8 +2,8 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 GOOL_TraverseObjectTreePreorder(Node *, Visitor, void *); /* extern */
-s32 Gool_ObjectKill(Node *, s32);                         /* extern */
+ /* extern */
+                         /* extern */
 
 s32 Gool_ObjectHandleTraverseTreePreorder(Node *arg0, s32 (*arg1)(Node *, void *), void * arg2) {
     Node *temp_s0;

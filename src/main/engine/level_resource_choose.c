@@ -2,10 +2,6 @@
 /* GNU_AS_G: 8 */
 #include "resource.h"
 
-void *BIOS_MemSet(void *, s32, s32);
-u8 Ns_AlphaNumChar(s32);
-s32 Ns_FileOpen(s32 *, s32);
-s32 Math_Randb(s32);
 
 extern s32 gp_pbak_mode;
 /* Unsized storage views retain the native absolute addressing. Only the

@@ -2,9 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 SetIntrMask(s32);
-s32 _version(s32);
-void *memset(void *, s32, u32);
 
 /* The queue consumer callback also updates this index. */
 

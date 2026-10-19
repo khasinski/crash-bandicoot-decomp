@@ -1,4 +1,5 @@
 #include "common.h"
+#include "resource.h"
 
 /* GCC_VERSION: 2.6.3 */
 
@@ -31,9 +32,6 @@ typedef struct {
 } RenderEntry;
 
 extern s32 gp_pbak_mode;
-void Ns_Open(u32 *, s32, s32);
-u32 Ns_Probe(u32);
-void Ns_Lookup(u32 *);
 
 s32 Gfx_TgeoLookupEntry(RenderEntry *entry)
 {

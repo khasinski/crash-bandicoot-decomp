@@ -1,9 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
-void CD_init(void);
-s32 CD_reset(void);
-s32 CD_initintr(void);
 
 s32 CdReset(s32 mode) {
     if (mode == 2) {

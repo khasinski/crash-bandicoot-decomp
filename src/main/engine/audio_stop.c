@@ -3,13 +3,13 @@
 
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
-void SsSepClose(s16);                               /* extern */
-void SsSepPause(s16, s16);                          /* extern */
-void SsSepPlay(s16, s16, s16, s16);                /* extern */
-void SsSepReplay(s16, s16);                          /* extern */
-void SsSepStop(s16, s16);                          /* extern */
-void SsSepSetVol(s16, s16, s16, s16);                /* extern */
-void SsVabClose(s16);                               /* extern */
+                               /* extern */
+                          /* extern */
+                /* extern */
+                          /* extern */
+                          /* extern */
+                /* extern */
+                               /* extern */
 
 /* Export the real small-common channel identifier. */
 asm(".globl gp_midi_vab_id_2");

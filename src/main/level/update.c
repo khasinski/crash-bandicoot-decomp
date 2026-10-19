@@ -33,18 +33,6 @@ extern s32 g_mdat_title_str_ptr[];
 /* SLST polygon id lists: current, and the two buffers swapped per step. */
 extern void *gp_level_entry;
 
-ResourceEntry *Ns_Open(void *, s32, s32);
-void Ns_Close(void *, s32);
-ZoneEntry *Ns_Lookup(u32 *);
-void Ns_ZoneUnload(ZoneLoadList *, s32);
-void Ns_PageOpen(u32, s32, s32, u32);
-void Ns_Update2(void);
-void Gool_ObjectSpawn(ZoneEntry *, s32);
-void Gool_ZoneObjectsTerminate(ZoneEntry *);
-void *Slst_Update(void *, void *, void *, s32);
-void Level_UpdateMisc(void *, u32);
-void Zone_PathProgressToLoc(ZonePath *, s32, LvlVec *);
-void Midi_SetStateStopped(void *);
 
 /* Whether one of the header's neighbour links resolves to entry. */
 static __inline__ s32 zone_has_neighbor(ZoneHeader *header, ZoneEntry *entry)

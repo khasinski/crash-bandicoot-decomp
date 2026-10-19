@@ -13,7 +13,6 @@ extern Slot g_slst_buf0[];
 extern Handler g_ns_page_free_sentinel[];
 GpuRect gp_ns_StringTable = { 0, 0, 0x100, 0x80 };
 
-void LoadImage(GpuRect *, Header *);
 
 u8 *Ns_PageUpdateEntries(s32 index) {
     Slot *request = &g_ns.physical[index], *slot;

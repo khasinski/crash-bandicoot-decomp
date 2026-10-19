@@ -1,12 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
-void BIOS_Printf(const char *);
-s32 CdReset(s32);
 typedef void (*Callback)(void);
-Callback CdSyncCallback(Callback);
-Callback CdReadyCallback(Callback);
-Callback CdDataCallback(Callback);
-void def_cbsync(void),def_cbready(void),def_cbread(void);
 
 s32 CdInit(void)
 {

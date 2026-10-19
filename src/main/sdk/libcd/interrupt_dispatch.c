@@ -3,7 +3,6 @@
 /* GNU_AS_G: 0 */
 #include "common.h"
 
-s32 BIOS_Printf(const char *, ...), puts(const char *, ...);
 
 extern volatile u8 *g_cd_reg0[];
 extern volatile u8 *g_cd_reg1_ptr[];

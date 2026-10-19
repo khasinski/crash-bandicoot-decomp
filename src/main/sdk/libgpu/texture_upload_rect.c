@@ -1,8 +1,8 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-s32 GetTPage(s32,s32,s32,s32);                /* extern */
-void LoadImage(GpuRect *,s32);                        /* extern */
+                /* extern */
+                        /* extern */
 
 s32 LoadTPage(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     GpuRect rect;

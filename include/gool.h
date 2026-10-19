@@ -82,7 +82,7 @@ typedef struct GoolMessage {
 } GoolMessage;
 
 s32 Gool_ObjectPopFrame(GoolRuntimeObject *object, s32 *flags);
-GoolRuntimeObject *GOOL_TestObjectStateFlags(GoolRuntimeObject *, u32 flags);
+void *GOOL_TestObjectStateFlags();
 void Gool_ObjectColorByZone(GoolDefaultsObject *object, s32 mode);
 void Level_MdatOnLoad2(ObjectView *object);
 void Zone_TerminateObjects(ObjectView *object);

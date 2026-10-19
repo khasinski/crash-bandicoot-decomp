@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-s16 SpuVmSetSeqVol();
 void Snd_SetPlayMode(s16 sequence,s16 channel,u8 mode,s16 repeat) {
     SequenceState *state = &g_ss_score_table[sequence][channel];
     state->field_90 &= ~0x200;

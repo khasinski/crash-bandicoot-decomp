@@ -3,8 +3,6 @@
 #include "common.h"
 #include "audio_channels.h"
 /* GNU_AS_G: 8 */
-void Midi_Control(AudioChannel *, u32, s32);
-void SsSepSetVol();
 
 extern AudioChannel g_midi_seq_slot_b[];
 extern s32 g_cur_map_level[];

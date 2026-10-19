@@ -35,11 +35,6 @@ extern volatile GpuActiveEntry g_gpu_queue_enabled;
 
 extern volatile GpuQueueEntry g_gpu_queue_entries[64];
 
-s32 DMACallback(s32, void *);
-s32 SetIntrMask(s32);
-s32 _exeque(void);
-void set_alarm(void);
-s32 get_alarm(void);
 
 s32 _addque2(void (*func)(void *, s32), u32 *buf, s32 size, s32 arg)
 {

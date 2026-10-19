@@ -111,14 +111,10 @@ extern NsdTable *g_ns_page_pool[];
 extern GoolObj *g_player[];
 extern ResourceEntry *g_pads[];
 extern GoolObj g_gool_obj_list_3;
-GoolExecutable *Ns_Open(s32 *, s32, s32);
-s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
 extern GoolObj *gp_crash_obj;
 
 extern GoolObj g_gool_obj_list_7;
-void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, void *);
-void Audio_VoiceFree(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -153,10 +149,7 @@ static __inline__ s32 Gool_RemoveLevelSpawn(GoolObj *node, GoolObj *new_parent)
 }
 
 typedef s32 (*Visitor)(GoolObj *, void *);
-GoolObj *GOOL_TestObjectStateFlags(GoolObj *, u32);
-s32 Gool_ObjectTerminate(GoolObj *, void *);
 
-s32 Gool_ObjectSearchTree(GoolObj *, Visitor, void *);
 static __inline__ s32 Gool_FindObject_inline(GoolObj *root, Visitor visitor, void *context)
 {
     GoolObj *child;
@@ -230,20 +223,14 @@ extern GoolObj *g_doctor_cortex_obj[];
 extern ZoneEntity *g_mdat_title_str_ptr[];
 extern GoolObj g_gool_obj_list_4;
 extern s32 gp_pbak_frame_idx[];
-s32 Math_Absdiff(s32, s32);
-void Gool_ObjectOrientOnPath(GoolObj *, s32, s32 *);
-void Level_SaveState(GoolObj *, void *, s32);
 
 #define IS_PLAYER_ENTITY(e) \
     ((e)->group == 3 && \
      ((e)->type == 0 || ((e)->id != 0 && (e)->id < 5) || \
       (((e)->type == 0x2C || (e)->type == 0x30) && (e)->subtype == 0)))
 
-GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_count, s32 *args, s32 flag);
-s32 GOOL_InitObject(GoolObj *obj, s32 exec_id, s32 subtype, s32 arg_count, s32 *args);
-s32 Gool_ObjectKill(GoolObj *obj, s32 flag);
 
-GoolObj *Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
+void * Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
     GoolObj *prev_box;
     ZoneEntity *entity;
     GoolObj *obj;
@@ -362,7 +349,7 @@ GoolObj *Gool_ObjectSpawn(ZoneEntryView *zone, s32 idx) {
     return (GoolObj *)-0xE;
 }
 
-GoolObj *GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_count, s32 *args, s32 flag) {
+void * GOOL_CreateObject(GoolObj *parent, s32 exec_id, s32 subtype, s32 arg_count, s32 *args, s32 flag) {
     GoolObj *obj;
     GoolObj *victim;
     s32 res;

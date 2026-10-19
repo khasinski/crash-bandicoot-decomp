@@ -1,6 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
-void sprintf(u8 *, u8 *, u32);
 
 u8 *Ns_EIDToString(u32 id)
 {

@@ -1,9 +1,6 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-s32 _SsReadDeltaValue(s16,s16);
-void SpuVmDamperOff(void);
-void SpuVmDamperOn(void);
 void _SsContPortamento(sequence,channel,value)
 s16 sequence,channel;
 u8 value;

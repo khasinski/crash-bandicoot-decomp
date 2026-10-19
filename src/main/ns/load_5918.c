@@ -5,11 +5,7 @@
 
 extern ResourceSlot g_ns_physical_pages[];
 
-ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void Ns_Update(s32 id);
-ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 __inline__ s32 Ns_PageClose(s32 id, s32 count);
-ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_pool_active_inc(void)
 {
@@ -68,7 +64,7 @@ static __inline__ void ns_pool_active_inc(void)
         } \
     }
 
-ResourceEntry *Ns_Open(u32 *ref, s32 sync, s32 delta)
+void * Ns_Open(u32 *ref, s32 sync, s32 delta)
 {
     s32 id;
     ResourceBucket *bucket;

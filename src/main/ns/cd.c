@@ -5,7 +5,6 @@ extern void *g_ns_nsd_header;
 
 /* Call the CD routine with the inverted flag; report success only for a zero result. */
 
-s32 CdReadSync(s32, s32);
 
 s32 Ns_ReadSync(s32 enabled)
 {
@@ -43,9 +42,6 @@ typedef struct CdResourceSlot {
     CdResourceEntry *word24;
 } CdResourceSlot;
 
-u8 *CdIntToPos(s32, u8 *);
-s32 CdControlF(u8, u8 *);
-s32 CdRead(s32, void *, s32);
 
 s32 Ns_ReadSectorAsync(CdResourceSlot *slot, s32 count)
 {

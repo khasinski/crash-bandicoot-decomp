@@ -122,7 +122,6 @@ typedef struct GoolColor {
 
 extern GoolObj * gp_crash_obj;
 extern s32 g_draw_stamp[];
-void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, s32 *);
 
 static __inline__ void Gool_ObjectColorByZone(GoolObj *object, s32 mode) {
     ResourceEntry *entry;
@@ -234,10 +233,6 @@ typedef struct GoolBoundsGlobals {
 } GoolBoundsGlobals;
 
 extern GoolBoundsGlobals g_obj_bounds;
-void Gool_ObjectLocalBound(GoolObj *, s32 *);
-void Gool_Transform(s32 *, s32 *, s32 *, s32 *, s32 *);
-s32 Level_TestBoundIntersection(GoolBound *, GoolBound *);
-void Gool_Collide(GoolObj *, GoolBound *, GoolObj *, GoolBound *);
 
 void Gool_ObjectControlDir(GoolObj *obj) {
     s32 trans[3];
@@ -340,13 +335,6 @@ extern s32 g_cam_dir_rot_y[];
 extern GoolTimeState *g_db_cur[];
 extern u8 g_solid_wall_plot_buf[];
 
-s32 sin(s32);
-s32 cos(s32);
-s32 Gool_ObjectRotate(s32, s32, s32, GoolObj *);
-s32 Gool_ObjectRotate2(s32, s32, s32, GoolObj *);
-void Solid_TransSmoothStopAtSolid(GoolObj *, s32 *, void *);
-s32 Gool_ObjectOrientOnPath(GoolObj *, s32, s32 *);
-s32 Math_OutOfRange(GoolObj *, s32 *, s32 *, s32, s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define SCALE_DT(x) (((s32)((g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66) * (x))) / 1024)

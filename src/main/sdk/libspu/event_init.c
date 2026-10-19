@@ -4,12 +4,6 @@
 
 /* Register the SPU callback and enable its event once. */
 
-void EnterCriticalSection(void);
-void _spu_FiDMA(void);
-void _SpuCallback(void (*callback)(void));
-s32 OpenEvent(u32,s32,s32,s32);
-void EnableEvent(s32);
-void ExitCriticalSection(void);
 void SpuStart(void) {
     if (!g_spu_event_started) {
         g_spu_event_started = 1;

@@ -8,10 +8,6 @@ typedef struct LevelCacheView {
     u32 word7C;
 } LevelCacheView;
 
-ResourceEntry *Ns_Open(s32 *, s32, s32);
-void GOOL_CreateObject(void *, s32, s32, s32, s32 *, s32);
-void Level_Restart(void *);
-void Math_Sranda(s32);
 extern u8 *gp_cur_pbak_header;
 extern GoolActorView *gp_crash_obj;
 extern LevelResourceView *gp_cur_pbak_frame;

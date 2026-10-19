@@ -2,7 +2,6 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-s32 SpuVmKeyOn(s16,s16,s16,u16,u16,u16);
 void SpuVmSeKeyOn(s16 arg0, s16 arg1, s16 arg2, s32 arg3, u16 arg4, u16 arg5) {
     s16 var_v1;
     u16 var_a0;

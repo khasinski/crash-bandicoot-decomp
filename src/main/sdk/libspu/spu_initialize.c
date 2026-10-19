@@ -3,7 +3,7 @@
 /* CC1_FLAGS: -O2 -fno-strength-reduce */
 #include "common.h"
 
-void SpuVmInit(s32);              /* extern */
+              /* extern */
 
 typedef void (*SequenceCallback)();
 extern SequenceCallback g_ss_mark_callbacks[];

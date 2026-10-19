@@ -3,7 +3,6 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 #include "audio_channels.h"
-void SsSepSetVol();
 
 void Midi_SeqInit(AudioChannel *record, s32 packed_volume, s32 channel) {
     if (gp_midi_open_seq_cnt >= 2 && channel == 1) {

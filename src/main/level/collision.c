@@ -102,17 +102,6 @@ typedef struct SubWorkspace {
 extern LevelStateView *g_ns_page_pool[];
 
 
-ZoneEntry *Ns_Lookup(u32 *);
-s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
-void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
-s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
-void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
-s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
-s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -127,9 +116,6 @@ typedef struct SubBoxList {
 extern SubBoxList g_obj_bounds;
 extern ZqVec gp_solid_prev_vel;
 
-void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -141,7 +127,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection_inline(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -159,8 +145,6 @@ static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void Solid_PlotWall(s32, s32);
-s32 SquareRoot0(s32);
 
 static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
@@ -211,16 +195,8 @@ static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 
-s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws);
-void Solid_TransPullStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel);
-s32 ProcessNode(SubObj *obj, u32 node);
 __inline__ void Solid_StopAtFloor(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 div_val, s32 *out);
-s32 Solid_StopAtHighestObjectBelow(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
-s32 Solid_StopAtFloorZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws, s32 *out_y);
-s32 Solid_StopAtCeil(SubObj *obj, ZqVec *v, SubWorkspace *ws);
 __inline__ void Solid_StopAtCeilZone(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspace *ws);
-s32 Solid_StopAtZone(SubObj *obj, ZqVec *v);
-void Solid_TransStopAtSolid(SubObj *obj, SubWorkspace *ws, s32 *pos, s32 *vel, s32 *out);
 
 s32 Solid_TransSmoothStopAtSolid(SubObj *obj, ZqVec *in_vel, SubWorkspace *ws)
 {
@@ -438,7 +414,7 @@ s32 Solid_StopAtHighestObjectBelow(SubObj *obj, ZqVec *v1, ZqVec *v2, SubWorkspa
         cand_obj = box->obj;
         if ((cand_y <= max_y || (cand_obj->status_b & 0x400000))
             && cand_y > res
-            && Level_TestBoundIntersection(bound, &box->bound)) {
+            && Level_TestBoundIntersection_inline(bound, &box->bound)) {
             hit_box = box;
             if (cand_obj->status_b & 0x20000) {
                 if (!(((obj->flags120 & 0x10) || obj->anim_state == 5)
@@ -568,7 +544,7 @@ s32 Solid_StopAtCeil(SubObj *obj, ZqVec *v, SubWorkspace *ws)
     for (i = 0, box = g_obj_bounds.boxes; i < g_obj_bounds.count; i++, box++) {
         cand_obj = box->obj;
         if ((cand_obj->status_b & 0x8000000)
-            && Level_TestBoundIntersection(bound, &box->bound)) {
+            && Level_TestBoundIntersection_inline(bound, &box->bound)) {
             hit_obj = cand_obj;
             if (res1 == -0x3B9AC9FF) {
                 res1 = box->bound.p1.y;

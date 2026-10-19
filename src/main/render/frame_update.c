@@ -61,21 +61,6 @@ typedef struct ZoneEntry8214 {
 
 extern ZoneEntry8214 *g_pads[];
 
-void Gpu_DrawOverlay(u32);
-void Gpu_DrawRect(s32, s32, s32, s32, u8, u8, u8);
-void Audio_Update(void);
-void DrawSync(s32);
-s32 VSync(s32);
-void EnterCriticalSection(void);
-void StopRCnt(u32);
-void StartRCnt(u32);
-void ExitCriticalSection(void);
-void Card_Update(void);
-s32 Gfx_TgeoGetTexinfoArray(s32);
-void *PutDispEnv(GpuDisplayEnv *);
-void *PutDrawEnv(GpuDrawing *);
-void DrawOTag(u32 *);
-void Gpu_RResetOT(void *, s32);
 
 static __inline__ BufferToken *Gpu_RoundTicks_inline(void)
 {

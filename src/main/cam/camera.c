@@ -115,21 +115,6 @@ extern s32 g_gool_pads;      /* pad buttons pressed this frame */
 extern s32 g_cam_trans_x;
 extern CamLevelView *g_ns_page_pool;
 
-ZoneEntry *Ns_Lookup(u32 *);
-s32 Gool_ObjectRotate(s32, s32, s32, s32);
-s32 Gool_AngDiff(s32, s32);
-s32 Gool_Seek(s32, s32, s32);
-void Gool_Transform(CamVec *, CamVec *, CamVec *, CamVec *, CamVec *);
-void Level_Update(ResourceEntry *, ZonePath *, s32, s32);
-void Level_SaveState(void *, s32 *, s32);
-void Cam_AdjustProgress(s32, CamCandidate *);
-s32 Cam_GetProgress(CamVec *, ZonePath *, CamCandidate *, u8, s32);
-s32 Cam_GetProgress2(CamVec *, ZonePath *, CamCandidate *, s32, s32);
-s32 Cam_Death(s32 *);
-s32 sin(s32);
-s32 cos(s32);
-s32 SquareRoot0(s32);
-s32 ratan2(s32, s32);
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

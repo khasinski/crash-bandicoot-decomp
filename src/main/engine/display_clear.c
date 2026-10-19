@@ -13,17 +13,6 @@ typedef struct {
 extern RenderSystem g_context;
 extern s32 gp_pbak_mode;
 
-void *LIBC_Malloc(s32);
-void LIBC_Free(void *);
-void Card_Alloc(void);
-void Card_Free(void);
-void BIOS_Abs(s32);
-GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *, s32, s32, s32, s32);
-s32 ResetGraph(s32);
-s32 SetGraphDebug(s32);
-s32 SetDispMask(s32);
-s32 DrawSync(s32);
-void *PutDispEnv(GpuDisplayEnv *);
 
 __inline__ void Gpu_ClearVRAM(void) {
     Drawing drawing;

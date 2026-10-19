@@ -16,7 +16,6 @@ typedef struct LevelHeader {
 
 extern LevelHeader *g_ns_page_pool[];
 
-void Zone_ColorsScale(LightMat *src, LightMat *dst, s32 r, s32 g, s32 b);
 
 void Zone_ColorsScale(LightMat *arg0, LightMat *arg1, s32 arg2, s32 arg3, s32 arg4)
 {

@@ -2,14 +2,7 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 /* GCC_CPU: r4000 */
-s32 SpuVmVSetUp(s16, s16);                          /* extern */
-
-typedef struct {
-    u8 field_0;u8 field_1;u8 field_2;u8 field_3;u8 field_4;u8 field_5;u8 field_6;u8 field_7;u8 field_8;u8 field_9;u8 field_A;u8 field_B;u8 field_C;u8 field_D;
-    u8 gapE[2];
-    u16 field_10,field_12,field_14,field_16;
-    u8 tail[8];
-} ToneAttributes;
+                          /* extern */
 
 s32 SsUtSetVagAtr(s16 bank, s16 program, s32 tone, const ToneAttributes *result) {
     s32 temp_v1;
@@ -18,25 +11,25 @@ s32 SsUtSetVagAtr(s16 bank, s16 program, s32 tone, const ToneAttributes *result)
     if (g_midi_tracks[bank] == 1) {
         SpuVmVSetUp(bank, program);
         temp_v1 = (s32) (((u32)tone + (g_spu_vm_cur_prog_tones * 0x10)) << 0x10) >> 0xB;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_0 = result->field_0;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_1 = result->field_1;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_2 = result->field_2;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_3 = result->field_3;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_4 = result->field_4;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_5 = result->field_5;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_7 = result->field_7;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_6 = result->field_6;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_8 = result->field_8;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_9 = result->field_9;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_A = result->field_A;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_B = result->field_B;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_C = result->field_C;
-        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->field_D = result->field_D;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->prior = result->prior;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->mode = result->mode;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->vol = result->vol;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->pan = result->pan;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->center = result->center;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->shift = result->shift;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->max = result->max;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->min = result->min;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->vibW = result->vibW;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->vibT = result->vibT;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->porW = result->porW;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->porT = result->porT;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->pbmin = result->pbmin;
+        ((ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool))->pbmax = result->pbmax;
         temp_v1_2 = (ToneAttributes *)(temp_v1 + (u32)g_ns_vpage_pool);
-        temp_v1_2->field_10 = result->field_10;
-        temp_v1_2->field_12 = result->field_12;
-        temp_v1_2->field_14 = result->field_14;
-        temp_v1_2->field_16 = result->field_16;
+        temp_v1_2->adsr1 = result->adsr1;
+        temp_v1_2->adsr2 = result->adsr2;
+        temp_v1_2->prog = result->prog;
+        temp_v1_2->vag = result->vag;
         return 0;
     }
     return -1;

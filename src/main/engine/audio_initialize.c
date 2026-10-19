@@ -3,9 +3,6 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 #include "audio_channels.h"
-void SsSetTickMode(s32);
-void SsSepSetVol();
-u8 SsSetReservedVoice(s32);
 
 extern s32 gp_pbak_mode[];
 extern s32 g_cur_map_level[];

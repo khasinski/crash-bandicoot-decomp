@@ -8,7 +8,6 @@ static __inline__ s32 Gool_SignShift(s32 value, s32 bits)
     return (s32)((u32)value << shift) >> shift;
 }
 
-void printf(char *, ...);
 
 typedef struct GoolExecView {
     u8 pad00[0x10];
@@ -60,10 +59,8 @@ extern GoolTimeState *g_db_cur[];
 #define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
 
 extern GoolObjView *gp_crash_obj;
-s32 GOOL_InterpretObject(GoolObjView *, s32, void *);
-s32 GOOL_ChangeObjectState(GoolObjView *, s32, s32, s32 *);
 
-static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObjView *object, s32 arg_words, s32 flags)
+static __inline__ s32 GOOL_CreateObjectStackFrame_inline(GoolObjView *object, s32 arg_words, s32 flags)
 {
     u32 *sp;
     u32 *old_fp;
@@ -100,7 +97,7 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
         if (recipient->unkEC != NULL) {
             *recipient->sp++ = event;
             *recipient->sp++ = (s32)argv;
-            GOOL_CreateObjectStackFrame(recipient, 2, 0xFFFF);
+            GOOL_CreateObjectStackFrame_inline(recipient, 2, 0xFFFF);
             recipient->pc = recipient->unkEC;
             res = GOOL_InterpretObject(recipient, 8, sp10);
             if (res != -0x1A) {
@@ -128,7 +125,7 @@ s32 Gool_ExecStateCode(GoolObjView *sender, GoolObjView *recipient, s32 event, s
                 for (i = 0; i < argc; i++) {
                     *recipient->sp++ = argv[i];
                 }
-                GOOL_CreateObjectStackFrame(recipient, argc, 0xFFFF);
+                GOOL_CreateObjectStackFrame_inline(recipient, argc, 0xFFFF);
                 recipient->pc = (u32 *)recipient->exec->code + (state & 0x7FFF);
                 return GOOL_InterpretObject(recipient, 3, 0);
             }

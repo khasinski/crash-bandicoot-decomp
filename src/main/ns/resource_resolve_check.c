@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 /* GCC_CPU: 3000 */
 #include "common.h"
-s32 Ns_PagePhysical();
 s32 Ns_ProbeAndOpen(s32 *handle) {
     s32 initial=handle[0];
     s32 resolved;

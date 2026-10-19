@@ -200,59 +200,6 @@ extern GoolObj g_gool_obj_list_4;
 
 typedef s32 (*Visitor)(GoolObj *, void *);
 
-void Ns_CdSeek(u32);
-s32 Ns_Open(s32 *, s32, s32);
-s32 Ns_Close(s32 *, s32);
-s32 Ns_CountAvailablePages(s32 *);
-s32 Ns_CountAvailablePages2(s32 *, s32);
-GoolAnimEntry *Ns_Lookup(u32 *);
-void Gool_ObjectOrientOnPath(GoolObj *, s32, Vec3 *);
-s32 Gool_ObjectSearchTree(GoolObj *, Visitor, void *);
-s32 Gool_ObjectHandleTraverseTreePostorder(ObjectRoot *, Visitor, void *);
-s32 Gool_ObjectHasPidFlags(GoolObj *, void *);
-s32 Gool_FindNearestObject(GoolObj *, void *);
-GoolObj *GOOL_CreateObject(GoolObj *, u32, u32, s32, s32 *, s32);
-s32 Gool_ZoneObjectTerminate(GoolObj *, void *);
-void Gool_ObjectLocalBound(GoolObj *, s32 *);
-s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
-s32 *GOOL_TranslateGop(GoolObj *, u32);
-s32 *Gool_TranslateOutGop(GoolObj *, u32, s32);
-s32 Gool_TestControls(u32, s32);
-void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, s32 *);
-s32 Gool_ObjectRotate(s32, s32, s32, s32);
-s32 Gool_AngDiff(s32, s32);
-s32 Gool_Seek(s32, s32, s32);
-void Gool_Transform(Vec3 *, Vec3 *, Vec3 *, Vec3 *, Vec3 *);
-void Gool_Transform2(Vec3 *, Vec3 *, s32);
-void Gool_Project(Vec3 *, Vec3 *);
-void Gool_SendToColliders(GoolObj *, s32, u32, s32, s32 *);
-void Gool_SendToColliders2(GoolObj *, GoolObj *, s32, u32, s32, s32 *);
-void Level_ResetGlobals(s32);
-void Level_SaveState(GoolObj *, void *, s32);
-void Level_Restart(void *);
-s32 Level_TestPointInBound(s32 *, GoolBound *);
-ResourceEntry *Zone_FindNeighbor(ResourceEntry *, s32 *);
-s32 Zone_ReboundVector(Vec3 *, Vec3 *);
-s32 Zone_FindNearestObjectNode(GoolObj *, Vec3 *);
-void Zone_FindNearestObjectNode2(GoolObj *, Vec3 *);
-void Zone_FindNearestObjectNode3(GoolObj *, Vec3 *, s32, s32);
-void Zone_ColorsScaleSeekByEntityNode(GoolObj *);
-s32 Math_ApxDist(Vec3 *, Vec3 *);
-s32 Math_OutOfRange(GoolObj *, Vec3 *, Vec3 *, s32, s32, s32);
-s32 Math_EucDist(Vec3 *, Vec3 *);
-s32 Math_EucDistXZ(Vec3 *, s32 *);
-s32 Math_AngDistXZ(Vec3 *, Vec3 *);
-s32 Math_AngDistXY(Vec3 *, s32 *);
-s32 Math_Randa(s32);
-void Cd_Stub_22(s32);
-s32 Audio_VoiceCreate(GoolObj *, s32 *, s32);
-void Audio_Control(s32, u32, s32 *, GoolObj *);
-void Midi_ResetFadeStep(void);
-void Midi_TogglePlayback(s32);
-s32 sin(s32);
-s32 cos(s32);
-s32 Card_Control(s32, s32);
-s32 ratan2(s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 #define SCALE_DT(x) (((s32)((x) * (g_db_cur[0]->unk84 < 0x67U ? g_db_cur[0]->unk84 : 0x66))) / 1024)
@@ -306,7 +253,7 @@ static __inline__ s32 *TRANS_REG_OUT(GoolObj *obj, s32 reg)
     return (s32 *)((u32)obj + offset);
 }
 
-static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words, s32 flags)
+static __inline__ s32 GOOL_CreateObjectStackFrame_inline(GoolObj *object, s32 arg_words, s32 flags)
 {
     s32 *sp;
     s32 *old_fp;
@@ -411,7 +358,7 @@ static __inline__ s32 Gool_RemoveLevelSpawn(GoolObj *object, GoolObj *new_parent
     return -0xFF;
 }
 
-static __inline__ void Gool_ZoneObjectsTerminate(void *object)
+static __inline__ void Gool_ZoneObjectsTerminate_inline(void *object)
 {
     s32 index;
 
@@ -430,7 +377,7 @@ static __inline__ void Gool_ZoneObjectTerminateSingle(void)
         zone = g_pads[0]->data;
         for (i = 0; i < zone->neighbor_count; i++) {
             entry = Ns_Lookup(&zone->neighbors[i]);
-            Gool_ZoneObjectsTerminate(entry);
+            Gool_ZoneObjectsTerminate_inline(entry);
         }
     }
 }
@@ -1343,7 +1290,7 @@ next_ins:
             s32 *s_ptr; s32 *d_ptr; s32 s_val; s32 d_val;
             {
                 u32 offset;
-                GOOL_CreateObjectStackFrame(obj, (ins >> 20) & 0xF, flags);
+                GOOL_CreateObjectStackFrame_inline(obj, (ins >> 20) & 0xF, flags);
                 offset = ins & 0x3FFF;
                 if (offset != 0x3FFF) {
                     obj->pc = &obj->exec->code[offset];

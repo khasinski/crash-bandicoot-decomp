@@ -5,9 +5,6 @@
 
 
 
-s32 _SsReadDeltaValue(s16, s16);
-void _SsSndNextSep(s16, s16);
-void SpuVmSeqKeyOff(s16);
 
 static __inline__ u32 clock_divisor(u32 ticks) {
     return ticks << 2;

@@ -19,18 +19,6 @@ typedef struct {
     s32 x, y, z, pad;
 } LVector;
 
-void Gfx_Transform(LVector *, Matrix *, LVector *);
-s32 sin(s32);
-s32 cos(s32);
-void MulMatrix(Matrix *, Matrix *);
-void ScaleMatrix(Matrix *, Vec3 *);
-void SetRotMatrix(void *);
-void SetTransMatrix(void *);
-void ReadSZfifo3(s32 *, s32 *, s32 *);
-s32 RotTransPers(SVector *, s16 *, s32 *, s32 *);
-void RotTrans(SVector *, Vec3 *, s32 *);
-s32 Level_TestBoundIntersection(s32 *, s32 *);
-s32 Math_ApxDist(Vec3 *, Vec3 *);
 
 extern u8 g_m_wgeo_view[];
 extern s32 g_cam_trans_x;

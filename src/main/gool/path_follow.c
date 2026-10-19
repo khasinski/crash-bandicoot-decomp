@@ -139,8 +139,6 @@ typedef struct Unk4Bytes {
 
 extern GoolVec3 g_path_orient_zero_vec;
 extern Unk4Bytes gp_path_orient_step;
-s32 SquareRoot0(s32);
-s32 ratan2(s32, s32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 

@@ -74,16 +74,6 @@ typedef struct { s32 v, pad; } WordView;
 extern WordView g_level_restart_fade_cnt;
 extern WordView g_level_frame_accum;
 
-void Gool_SendToColliders(void *, s32, s32, s32, s32);
-ZoneEntry *Ns_Lookup(u32 *);
-void Gool_ZoneObjectsTerminate(ZoneEntry *);
-void Ns_ZoneUnload(ZoneLoadList *, s32);
-void SetGeomScreen(s32);
-ResourceEntry *Ns_Open(void *, s32, s32);
-void Level_Update(ResourceEntry *, ZonePath *, s32, u32);
-void Ns_Close(void *, s32);
-SaveObj *GOOL_CreateObject(void *, s32, s32, s32, s32, s32);
-void Level_InitMisc(s32);
 
 void Level_SaveState(SaveObj *obj, LevelSave *save, s32 flag)
 {

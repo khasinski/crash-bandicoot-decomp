@@ -3,7 +3,6 @@
 /* GCC_VERSION: 2.6.3 */
 
 typedef struct {u8 next[3]; u8 length; u32 word04, word08;} Packet;
-s32 get_ofs(s16, s16);
 
 void SetDrawOffset(Packet *packet, s16 *offset)
 {

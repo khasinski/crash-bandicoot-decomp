@@ -1,9 +1,6 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-s32 _SsReadDeltaValue(s16,s16);
-s32 SsUtReverbOff(void);
-void SpuVmDamperOff(void);
 void _SsContDataEntry(s16 sequence,s16 channel) {
     SequenceState *state=g_ss_score_table[sequence]+channel;
     SsUtReverbOff();

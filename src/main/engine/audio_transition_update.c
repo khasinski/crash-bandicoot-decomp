@@ -7,8 +7,6 @@ extern s16 g_midi_channel_states[];
  * references contain an ID; resolved references point to a handle whose
  * second word is the ID. The fourth fade argument is retained as observed
  * at this call site, although the current callee consumes three words. */
-void Midi_OpenAndPlay();
-void SsSepSetDecrescendo();
 
 
 void Midi_Update(s32 *reference) {

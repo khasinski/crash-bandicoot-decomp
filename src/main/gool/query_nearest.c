@@ -2,17 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-void SetRotMatrix(void *);
-void SetLightMatrix(void *);
-void RMemcpy(void *, u32, s32);
-s32 *Gpu_GetCurPrimsTail(void);
-void Gte_RTransformWorlds(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsFog(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsRipple(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsLightning(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsDark(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
-void Gte_RTransformWorldsDark2(u16 *, s32, s32, s32, s32 *, void *);
-void *Ns_Lookup(void *);
 
 extern struct {
     u8 pad[0x10];
@@ -24,10 +13,7 @@ extern struct {
     s32 type;
 } *g_ns_page_pool;
 
-void *LIBC_Malloc(u32);
 
-s32 Math_ApxDist(void *, void *);
-void Gool_ObjectInterrupt(void *, s32, s32, s32 *);
 
 typedef struct GoolCodeHeader {
     s32 unk00;

@@ -1,7 +1,6 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-void checkRECT(const char *,s32);
 extern u8 g_gpu_debug_level;
 
 void DrawOTag(s32 arg0) {

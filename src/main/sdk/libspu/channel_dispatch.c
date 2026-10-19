@@ -1,7 +1,5 @@
 #include "common.h"
 /* GCC_VERSION: 2.5.7 */
-void SpuVmSetSeqVol(s32, s16, s16, s32);
-s16 SpuVmGetSeqVol(s32, u16 *, u16 *);
 
 void _SsSndSetVol(s16 arg0, s32 arg1, s16 arg2, s16 arg3) {
     SpuVmSetSeqVol(((s32)(arg1 << 16) >> 8) | arg0, arg2, arg3, 1);

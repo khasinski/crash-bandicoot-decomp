@@ -34,13 +34,10 @@ extern volatile GpuReverseState g_gpu_reverse_flag;
 
 extern volatile GpuDisplayEnv g_gpu_cur_dispenv;
 
-s32 GetVideoMode(void);
-s32 get_dx(GpuRect *rect);
-void *BIOS_MemCpy(void *, void *, s32);
 
 #define CLAMP(val, min, max) ((val) < (min) ? (min) : ((val) > (max) ? (max) : (val)))
 
-GpuDisplayEnv *PutDispEnv(GpuDisplayEnv *env)
+void * PutDispEnv(GpuDisplayEnv *env)
 {
     u32 mode;
     s32 hx1, hx2, vy1, vy2;

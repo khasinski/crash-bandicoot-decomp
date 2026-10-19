@@ -28,7 +28,6 @@ typedef struct ZqZoneRect {
     s16 max_depth_z;
 } ZqZoneRect;
 
-ZoneEntry *Ns_Lookup(u32 *);
 
 /* Whether v lies inside the zone's 8-bit shifted bounding box. */
 static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
@@ -81,7 +80,7 @@ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
 
 /* ZoneFindNeighbor: find the neighbour of zone (or of the current level zone)
  * whose bounding box contains v, or return -0x17 if none does. */
-ZoneEntry *Zone_FindNeighbor(ZoneEntry *zone, ZqVec *v)
+void * Zone_FindNeighbor(ZoneEntry *zone, ZqVec *v)
 {
     ZoneHeader *header;
     ZoneEntry *neighbor;

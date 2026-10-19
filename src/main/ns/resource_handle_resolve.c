@@ -2,8 +2,7 @@
 /* GCC_CPU: 3000 */
 #include "common.h"
 #include "resource.h"
-s32 Ns_PagePhysical();
-s32 Ns_Lookup(u32 *reference) {
+NsItemList *Ns_Lookup(u32 *reference) {
     u32 id = *reference;
     ResourceHandle *resolved;
     u32 value;
@@ -36,5 +35,5 @@ s32 Ns_Lookup(u32 *reference) {
             result = value;
         }
     }
-    return result;
+    return (NsItemList *)result;
 }

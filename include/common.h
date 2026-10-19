@@ -23,5 +23,6 @@ typedef unsigned int u32;
 #define KEEP_REGISTER_VALUE(dst, val) asm("" : "=r"(dst) : "0"(val))
 
 #include "globals.h"
+#include "functions.h"
 
 #endif

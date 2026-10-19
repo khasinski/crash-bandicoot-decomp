@@ -32,14 +32,6 @@ typedef struct {
 
 extern Dispatch *g_intr_ctrl_ptr;
 
-void intr_memclr(void *, s32);
-s32 setjmp(void *);
-void trapIntr(void);
-void HookEntryInt(void *);
-s32 startIntrVSync(void);
-s32 startIntrDMA(void);
-void _96_remove(void *);
-void ExitCriticalSection(void);
 
 void *startIntr(void) {
     void *result;

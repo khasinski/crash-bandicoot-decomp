@@ -8,10 +8,6 @@ extern u8 g_gpu_reverse_flag;
 extern volatile s16 g_gpu_vram_max_w[];
 extern volatile s16 g_gpu_vram_max_h[];
 
-u32 get_mode(s32 dfe, s32 dtd, s32 tpage);
-u32 get_cs(s16 x, s16 y);
-u32 get_ce(s16 x, s16 y);
-u32 get_ofs(s16 x, s16 y);
 
 void SetDrawEnv(u32 *packet, GpuDrawing *drawing)
 {

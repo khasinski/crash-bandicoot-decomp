@@ -4,7 +4,6 @@
 #include "common.h"
 
 
-void SpuVmSeqKeyOff(s16);
 
 void _SsSndStop(s16 arg0, s16 arg1) {
     s32 var_t0;

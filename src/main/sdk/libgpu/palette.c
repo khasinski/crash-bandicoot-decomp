@@ -5,8 +5,6 @@
 
 /* Upload a 256- or 16-colour palette and return its CLUT ID. */
 
-u16 GetClut(s32,s32);
-void LoadImage(GpuRect *, void *);
 
 u16 LoadClut(void *image, s32 x, s32 y)
 {

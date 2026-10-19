@@ -1,9 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
-s32 CD_cw(s32, u8 *, u8 *, s32);
-s32 CD_flush(void);
-s32 CD_sync(s32, u8 *);
 
 typedef void (*CdCallback)(s32, u8 *);
 

@@ -1,9 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-s32 CdSync(s32, u8 *);
-s32 CdControlF(u8, u8 *);
-u8 *CdIntToPos(s32, u8 *);
 extern s32 gp_pause_B_pressed;
 
 extern u32 g_file_map[][3];

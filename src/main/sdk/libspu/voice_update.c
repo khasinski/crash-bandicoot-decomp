@@ -2,7 +2,6 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 
-s32 SpuVmVSetUp(s16,s16);
 typedef struct { s16 value; u8 pad[50]; } VoiceWord;
 extern VoiceWord g_spu_vm_voice_vol[];
 extern VoiceWord g_spu_vm_voice_seq_sep[];

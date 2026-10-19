@@ -2,9 +2,6 @@
 /* GCC_CPU: r3000 */
 #include "common.h"
 
-s32 _spu_t(s32, ...);
-s32 _SpuIsInAllocateArea_(u32);
-void _spu_crwa_cb(s32);
 
 
 

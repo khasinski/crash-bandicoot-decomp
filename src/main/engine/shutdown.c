@@ -2,31 +2,6 @@
 #include "common.h"
 #include "ns.h"
 /* GNU_AS_G: 8 */
-void Pad_Init(s32);
-void Gpu_Init(void);
-void Math_Sranda2(void);
-void Cd_ReadFileSys(void);
-void RIncTickCount(void);
-void Card_Init(void);
-s32 Card_Kill(void);
-s32 OpenEvent(u32, s32, s32, void (*)(void));
-void CloseEvent(s32);
-void EnableEvent(s32);
-void DisableEvent(s32);
-void EnterCriticalSection(void);
-void ExitCriticalSection(void);
-void SetRCnt(u32, s32, s32);
-void StartRCnt(u32);
-void StopRCnt(u32);
-void PadInit(s32);
-void PadStop(void);
-void ResetCallback(void);
-void StopCallback(void);
-void SetVideoMode(s32);
-s32 ResetGraph(s32);
-void InitGeom(void);
-void CdInit(void);
-s32 CdControl(u8, u8 *, u8 *);
 /* External word view: this unit uses an absolute reference to the flag. */
 extern s32 gp_pause_B_pressed[];
 
@@ -138,8 +113,6 @@ typedef struct {
     s32 playback_mode;
 } PlaybackState;
 
-void Gool_ExecStateCode(s32, s32, s32, s32, s32 *);
-u32 PadRead(s32);
 extern DemoInput *gp_cur_pbak_header;
 extern DemoRecording *gp_cur_pbak_frame;
 extern DemoBufferView *g_db_cur[];

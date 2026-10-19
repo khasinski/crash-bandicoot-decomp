@@ -2,8 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 Ns_Open(s32 *resource, s32 argument, s32 count);
-s32 Ns_Close(s32 *resource, s32 count);
 
 /* Invalid handles are ignored; nonpositive counts use the release path. */
 s32 Midi_PreloadEntries(s32 *resource, s32 argument, s32 count)

@@ -6,7 +6,6 @@
 extern s32 g_draw_stamp;
 
 extern s32 g_view_proj;
-void SetRotMatrix(void *);
 typedef struct PrimBuf9398 {
     u8 pad00[0x78];
     void *prim_ptr;
@@ -83,7 +82,6 @@ typedef struct PolyG3_9DCC {
 extern ZoneEntry9DCC *g_pads;
 extern SortList9DCC *gp_level_entry;
 
-void SetLightMatrix(void *);
 
 void Gfx_UpdateCamMatrices(u32 *arg0)
 {

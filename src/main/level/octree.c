@@ -102,17 +102,6 @@ typedef struct SubWorkspace {
 
 extern SubObj *gp_crash_obj[];
 
-ZoneEntry *Ns_Lookup(u32 *);
-s32 Gool_ExecStateCode(SubObj *, SubObj *, s32, s32, s32 *);
-ZoneEntry *Zone_FindNeighbor(ZoneEntry *, ZqVec *);
-void Zone_ColorsScaleSeek(void *, SubObj *, s32, s32);
-s32 Solid_RZoneQueryOctree(ZqZoneRect *, ZqBound *, void *, s32);
-void Solid_RPlotQueryWalls(SubWorkspace *, ZqBound *, s32, s32, s32, s32, s32, s32);
-void Solid_PlotObjWalls(ZqVec *, SubObj *, SubWorkspace *, s32);
-s32 Solid_StopAtCeil(SubObj *, ZqVec *, SubWorkspace *);
-s32 Solid_StopAtFloorZone(SubObj *, ZqVec *, ZqVec *, SubWorkspace *, s32 *);
-s32 Solid_ReplotWalls(s32, s32, ZqVec *, SubObj *);
-s32 Solid_StopAtWalls(ZqVec *, s32, s32, s32 *, s32 *, SubObj *, s32);
 
 typedef struct SubBox {
     ZqBound bound;
@@ -126,9 +115,6 @@ typedef struct SubBoxList {
 
 extern SubBoxList g_obj_bounds;
 
-void Gool_Collide(SubObj *, ZqBound *, SubObj *, ZqBound *);
-void Solid_RFindFloorY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32 *, s32, s32 (*)(SubObj *, u32));
-s32 Solid_RFindCeilY(SubObj *, SubWorkspace *, ZqBound *, ZqBound *, s32, s32, s32);
 
 static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
 {
@@ -140,7 +126,7 @@ static __inline__ s32 zone_rect_overlaps(ZqBound *b, ZqRect *r)
     return 0;
 }
 
-static __inline__ s32 Level_TestBoundIntersection(ZqBound *a, ZqBound *b)
+static __inline__ s32 Level_TestBoundIntersection_inline(ZqBound *a, ZqBound *b)
 {
     if (a->p1.y <= b->p2.y && a->p2.y > b->p1.y && a->p2.x > b->p1.x
         && a->p2.z > b->p1.z && a->p1.x <= b->p2.x && a->p1.z <= b->p2.z) {
@@ -158,8 +144,6 @@ static __inline__ s32 Level_TestBoundInBound(ZqBound *a, ZqBound *b)
     return 0;
 }
 
-void Solid_PlotWall(s32, s32);
-s32 SquareRoot0(s32);
 
 static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
 {
@@ -208,7 +192,6 @@ static __inline__ void Solid_PlotWallB(s32 x1, s32 y1, s32 x2, s32 y2, s32 set)
     }
 }
 
-void Zone_ColorsScaleByNode(s32, void *, SubLight *);
 
 static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
 {
@@ -222,8 +205,6 @@ static __inline__ void clamp_light(s16 *dst_f, s16 *src_f, s32 step)
     *dst_f = *src_f;
 }
 
-void Zone_ColorsScaleSeekByEntityNode(SubObj *obj);
-s32 Zone_QueryOctrees(ZqVec *v, SubObj *obj, SubWorkspace *ws);
 
 void Zone_ColorsScaleSeek(void *defaults, SubObj *obj, s32 idx, s32 flag)
 {
@@ -346,7 +327,7 @@ static __inline__ s32 zone_rect_contains(ZqZoneRect *rect, ZqVec *v)
     return 0;
 }
 
-SubObj *Zone_FindNearestObjectNode(SubObj *obj, ZqVec *va)
+void * Zone_FindNearestObjectNode(SubObj *obj, ZqVec *va)
 {
     ZqVec orig;
     ZqVec copy;

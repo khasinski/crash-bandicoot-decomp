@@ -5,8 +5,6 @@
 
 /* Initialise draw/display environments and pack the texture-page field for the active GPU mode. */
 
-s32 GetVideoMode(void);
-s32 GetGraphType(void);
 
 GpuDrawEnv *SetDefDrawEnv(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
 {
@@ -35,7 +33,7 @@ GpuDrawEnv *SetDefDrawEnv(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h)
     return env;
 }
 
-GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env,s16 x,s16 y,s16 w,s32 h)
+GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env, s32 x, s32 y, s32 w, s32 h)
 {
     env->display.x=x;
     env->display.y=y;
@@ -52,7 +50,7 @@ GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env,s16 x,s16 y,s16 w,s32 h)
     return env;
 }
 
-s32 GetTPage(s32 depth,s32 blend,s32 x,s32 y)
+u16 GetTPage(s32 depth,s32 blend,s32 x,s32 y)
 {
     s32 mode;
     s32 page;

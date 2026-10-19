@@ -7,8 +7,6 @@
 
 extern s32 gp_pause_B_pressed;
 
-char *Ns_GetFilename2(s32, u32, s32, s32);
-s32 sprintf(char *, const char *, ...);
 
 u8 Ns_AlphaNumChar(s32 index)
 {

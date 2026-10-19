@@ -32,9 +32,6 @@ typedef struct {
     u16 reserved3;
 } ProgAtr;
 
-s32 KeyOnCheck(void);
-void SsSetMono(s32);
-s32 SpuMalloc(s32);
 
 
 extern VabHdr *g_vab_master_vol_table[];

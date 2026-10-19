@@ -11,7 +11,7 @@ extern VoiceFlags g_spu_vm_voice_auto_flag[];
 typedef struct { s16 left; s16 right; u8 pad[12]; } VoiceVol;
 extern VoiceVol g_midi_seq_table[];
 
-void vmNoiseOn(s32 arg0) {
+void vmNoiseOn(s16 arg0) {
     s32 pad[2];
     s16 var_a1_2;
     s16 var_a2_2;

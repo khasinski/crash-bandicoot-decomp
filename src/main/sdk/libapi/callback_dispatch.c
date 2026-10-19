@@ -28,7 +28,7 @@ s32 ResetCallback(void)
     return g_intr_ctrl_ptr->slot0C();
 }
 
-IrqHandler InterruptCallback(s32 index, IrqHandler callback)
+void * InterruptCallback(s32 index, IrqHandler callback)
 {
     return g_intr_ctrl_ptr->slot08(index, callback);
 }

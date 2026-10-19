@@ -48,14 +48,6 @@ extern VoiceEntry g_audio_vol_scale;
 extern s32 gp_pbak_mode[];
 extern s32 g_cur_map_level[];
 
-void SsInit(void);
-void SsSetTableSize(void *, s16, s16);
-s32 SpuInitMalloc(s32, void *);
-void SpuSetCommonAttr(SpuCommonAttributes *);
-void SpuSetTransferMode(s32);
-s32 Audio_SetReverbAttr(s32, s16, s16, s32, s32);
-void Audio_SetVoiceMVol(s16);
-void SsSetMVol(s16, s16);
 
 void Audio_Init(void) {
     s32 i;

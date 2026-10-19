@@ -3,7 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-void _SsSndTempo(s16,s16);
 void _SsSeqPlay(s16 arg0, s16 arg1) {
     s16 temp_v0;
     s16 temp_v1_2;
@@ -52,7 +51,6 @@ block_10:
 }
 
 typedef void (*EventCallback)();
-s32 _SsReadDeltaValue();
 
 void _SsSndTempo(s16 arg0, s16 arg1) {
     s32 channel_index = arg1;

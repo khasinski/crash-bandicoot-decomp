@@ -4,9 +4,9 @@ extern s32 g_levels_unlocked;
 extern s32 g_cur_map_level;
 
 /* GCC_VERSION: 2.6.3 */
-void Level_ResetGlobals(s32);                                 /* extern */
-void BIOS_MemSet(void *, s32, s32);                      /* extern */
-void Card_InvalidateFilename(void);                                /* extern */
+                                 /* extern */
+                      /* extern */
+                                /* extern */
 extern s32 g_level_restart_fade_cnt;
 extern s32 g_island_cam_state;
 

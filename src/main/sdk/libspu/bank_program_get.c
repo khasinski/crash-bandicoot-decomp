@@ -2,13 +2,7 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 /* GCC_CPU: r4000 */
-s32 SpuVmVSetUp(s16, s16);
 
-typedef struct {
-    u8 tones, volume, priority, mode, pan, unused;
-    u16 attributes;
-    u8 tail[8];
-} ProgramAttributes;
 s32 SsUtGetProgAtr(s16 bank, s16 program, ProgramAttributes *result) {
     s32 offset;
     ProgramAttributes *last;

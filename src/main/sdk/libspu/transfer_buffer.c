@@ -4,7 +4,6 @@
 
 /* Clamp transfer size, forward buffer and size, and update completion state. */
 
-s32 _spu_write(s32,u32);
 
 
 u32 SpuWrite(s32 arg0,u32 arg1) {

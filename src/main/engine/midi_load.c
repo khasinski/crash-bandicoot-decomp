@@ -22,18 +22,8 @@ typedef struct {
 } MidiResourceEntry;
 
 
-MidiResourceEntry *Ns_Open(s32 *, s32, s32);
-s32 Ns_Close(s32 *, s32);
-void SsSepClose(s16);
-s16 SsVabFakeHead(void *, s32, s32);
 typedef void noreturn_fn(s32);
 volatile noreturn_fn BIOS_Abs;
-s16 SsVabFakeBody(s16);
-void SsStart(void);
-s16 SsSepOpen(void *, s16, s16);
-void Midi_SeqInit(AudioChannel *, s32, s32, s32);
-void SsSepSetCrescendo(s16, s16, s16, s32);
-s32 Midi_Control(AudioChannel *, s32, s32);
 
 s32 Midi_OpenAndPlay(s32 *arg0) {
     s32 sp10;

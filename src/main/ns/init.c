@@ -11,17 +11,6 @@ extern s32 gp_pbak_frame_idx;
 extern ResourceSlot g_spu_slots[8];
      /* "Inited and Allocated %d pages\n" */
 
-s32 Ns_GetFilename2(s32, s32, s32, s32);
-char *BIOS_StrCpy(char *, const char *);
-void *LIBC_Malloc(s32);
-void *LIBC_Realloc(void *, s32);
-u8 *CdIntToPos(s32, u8 *);
-s32 CdControl(u8, u8 *, u8 *);
-s32 CdRead(s32, void *, s32);
-s32 CdReadSync(s32, s32);
-void Title_Loading(s32, void *, void *);
-s32 BIOS_Printf(const char *, ...);
-s32 Ns_EIDType(ResourceBucket *);
 
 /* The entry search of Ns_ProbeSafe, expanded inline at both uses. */
 static __inline__ ResourceBucket *ns_lookup(u32 id)
@@ -240,8 +229,6 @@ s32 Ns_Init(NsState *ns, s32 level)
     return -0xFF;
 }
 
-void Ns_KillPage(NsState *, s32);
-void LIBC_Free(void *);
 
 /* Shut down subsystem tables, release all physical pages and free paging buffers. */
 s32 Ns_Kill(NsState *ns)

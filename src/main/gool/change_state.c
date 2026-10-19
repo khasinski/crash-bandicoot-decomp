@@ -4,17 +4,6 @@ extern s32 g_draw_stamp;
 /* GCC_VERSION: 2.6.3 */
 /* GNU_AS_G: 4 */
 
-void SetRotMatrix(void *);
-void SetLightMatrix(void *);
-void RMemcpy(void *, u32, s32);
-s32 *Gpu_GetCurPrimsTail(void);
-void Gte_RTransformWorlds(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsFog(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsRipple(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsLightning(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsDark(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
-void Gte_RTransformWorldsDark2(u16 *, s32, s32, s32, s32 *, void *);
-void *Ns_Lookup(void *);
 
 extern struct {
     u8 pad[0x10];
@@ -174,8 +163,6 @@ extern struct {
     u32 stamp;
 } *g_db_prev[2];
 
-void GOOL_UpdateObject(void *, s32);
-void Gool_ObjectHandleTraverseTreePreorder(void *, void *, s32);
 
 typedef struct GoolUpdateGlobals {
     s32 db8[16];
@@ -206,8 +193,6 @@ void Gool_UpdateObjects(s32 arg0)
     }
 }
 
-s32 GOOL_CreateObjectStackFrame(void *, s32, s32);
-s32 GOOL_InterpretObject(void *, s32, s32);
 
 s32 GOOL_ChangeObjectState(GoolObj *arg0, s32 arg1, s32 arg2, s32 *arg3)
 {

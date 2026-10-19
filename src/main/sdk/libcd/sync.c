@@ -3,8 +3,6 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Synchronise cached disc state while temporarily suppressing the callback. */
-s32 puts(const char *, ...);
-s32 CD_cw(s32, void *, s32, void *);
 
 void CD_flush(void) {
     s32 saved_callback;

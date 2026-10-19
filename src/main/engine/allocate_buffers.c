@@ -2,7 +2,6 @@
 /* GCC_CPU: 3000 */
 /* GNU_AS_G: 8 */
 #include "common.h"
-void *LIBC_Malloc(s32);
 extern void *gp_level_entry;
 
 extern s32 gp_pbak_mode;

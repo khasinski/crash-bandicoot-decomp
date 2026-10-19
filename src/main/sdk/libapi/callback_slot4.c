@@ -1,6 +1,5 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
-s32 DMACallback(s32,s32);
 /* Forward the caller word through API dispatch slot 04 with index 4. */
 s32 _SpuCallback(s32 word) {
     return DMACallback(4,word);

@@ -3,10 +3,6 @@
 /* GCC_VERSION: 2.6.3 */
 
 
-void ChangeClearPAD(s32);
-void v_wait(s32, s32);
-s32 puts(const char *);
-void ChangeClearRCnt(s32, s32);
 
 s32 VSync(s32 mode)
 {

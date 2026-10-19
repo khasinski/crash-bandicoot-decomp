@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.5.7 */
 /* GCC_CPU: r4000 */
 #include "common.h"
-void SsSetMono(s32);
 
 s32 SsVabFakeBody(s32 requested)
 {

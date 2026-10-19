@@ -6,7 +6,6 @@
 typedef struct {u8 debug;u8 pad01[13];u8 drawing[92];u8 display[20];} GpuState;
 extern GpuState g_gpu_debug_level;
 
-void memset(void *,s32,s32);
 void SetDispMask(s32 enabled) {
     GpuState *state = &g_gpu_debug_level;
     u32 command;

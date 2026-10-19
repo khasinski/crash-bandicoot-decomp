@@ -15,10 +15,6 @@ typedef struct {
     s16 values[32];
 } SpuReverbRegisters;
 
-s32 _SpuIsInAllocateArea_(u32);
-void _spu_setReverbAttr(SpuReverbRegisters *);
-s32 SpuClearReverbWorkArea(u32);
-void _spu_FsetRXX(s32, u32, s32);
 
 
 

@@ -10,7 +10,6 @@ typedef struct {
     u16 external_left,external_right;
     s32 external_mix,external_reverb;
 } SpuCommonAttributes;
-void SpuSetCommonAttr(SpuCommonAttributes *);
 void SsSetMVol(s16 left, s16 right) {
     SpuCommonAttributes attributes;
     attributes.mask = 3;

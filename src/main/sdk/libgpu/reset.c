@@ -2,11 +2,6 @@
 
 /* GCC_VERSION: 2.6.3 */
 
-s32 BIOS_Printf(const char *, ...);
-void ResetCallback(void);
-u8 _reset(s32);
-void *memset(void *, s32, u32);
-void GPU_cw(u32);
 
 extern u8 g_gpu_mode[];
 extern u8 g_gpu_debug_level_2;

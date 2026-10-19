@@ -4,14 +4,6 @@
 
 
 
-void EnterCriticalSection(void);
-void ExitCriticalSection(void);
-s32 SetRCnt();
-s32 ResetRCnt(u32);
-void *InterruptCallback(s32, void (*)(void));
-s32 VSyncCallback(void (*)(void));
-void _SsTrapIntrVSync(void);
-void _SsSeqCalledTbyT_1per2(void);
 
 void _SsStart(s32 arg0) {
     s32 i;

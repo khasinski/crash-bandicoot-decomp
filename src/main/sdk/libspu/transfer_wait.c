@@ -4,7 +4,6 @@
 
 /* Query transfer completion, or wait for the event in blocking mode. */
 
-s32 TestEvent(s32);
 
 s32 SpuIsTransferCompleted(s32 blocking) {
     s32 completed;

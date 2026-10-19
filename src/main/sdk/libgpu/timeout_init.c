@@ -3,9 +3,6 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Establish the GPU operation timeout and reset its polling counter. */
-s32 VSync(s32);
-s32 BIOS_Printf(const char *, ...);
-s32 SetIntrMask(s32);
 
 
 extern volatile s32 g_gpu_queue_enabled[];

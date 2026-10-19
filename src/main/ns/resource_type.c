@@ -2,7 +2,6 @@
 #include "resource.h"
 typedef ResourceHandle Request;
 typedef ResourceEntry Entry;
-s32 sprintf(char *,char *,...);
 
 s32 Ns_EIDType(Request *arg0) {
     s32 temp_v1;

@@ -1,8 +1,8 @@
 /* GCC_VERSION: 2.6.3 */
 #include "object_links.h"
-Node *GOOL_CreateObject(Node *, s32, s32, s32, s32, s32);      /* extern */
-void Solid_TransSmoothStopAtSolid(s32, s32, s32);                           /* extern */
-void Shader_ParamsUpdate(s32);                                 /* extern */
+      /* extern */
+                           /* extern */
+                                 /* extern */
 extern s32 *g_ns_page_pool;
 
 extern Node g_gool_obj_list_3;

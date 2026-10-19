@@ -3,7 +3,6 @@
 #include "common.h"
 
 extern s16 g_spu_vm_voice_seq_sep[][26];
-void SpuVmKeyOffNow(s32);
 void SpuVmSeqKeyOff(s16 selector) {
     u8 voice=0;
     if (gp_spawn_count!=0) {

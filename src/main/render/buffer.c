@@ -6,7 +6,6 @@
 
 #include "render.h"
 
-void Gpu_RResetOT(void *, s32);
 
 void Gpu_ResetPrims(RenderBuffer *buffer)
 {

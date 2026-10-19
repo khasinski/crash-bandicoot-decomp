@@ -3,11 +3,8 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Clear callback state and install the CD interrupt handler. */
-s32 ResetCallback(void);
-s32 InterruptCallback(s32, void (*)(void));
 
 extern s32 g_cd_read_state[10];
-void cd_callback(void);
 
 void CD_init(void) {
     s32 *var_v1;

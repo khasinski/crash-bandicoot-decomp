@@ -24,7 +24,7 @@ u8 SetGraphReverse(s32 requested) {
     return previous;
 }
 
-u8 SetGraphDebug(u8 arg0) {
+s32 SetGraphDebug(s32 arg0) {
     u8 temp_s0;
     GpuState *state = &g_gpu_debug_level;
 
@@ -38,7 +38,6 @@ u8 SetGraphDebug(u8 arg0) {
 
 typedef struct {u8 mode,debug;u8 pad02[12];u8 drawing[92];u8 display[20];} GpuModeState;
 extern GpuModeState g_gpu_debug_level_2;
-s32 DMACallback(s32,s32);
 
 u8 SetGraphQueue(s32 requested) {
     GpuModeState *state = &g_gpu_debug_level_2;

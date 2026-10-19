@@ -3,9 +3,9 @@
 /* GCC_VERSION: 2.6.3 */
 
 /* Shared CD read state; retain the observed load after writing mode. */
-s32 CD_sync(s32, s32);                              /* extern */
-s32 CD_cw(s32, s32, s32, s32);                        /* extern */
-s32 CD_read(void);                                /* extern */
+                              /* extern */
+                        /* extern */
+                                /* extern */
 
 #include "cd_read_state.h"
 

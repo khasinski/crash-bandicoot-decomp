@@ -6,10 +6,6 @@
 
 /* Initialise the runtime, run the game loop for initial level 0x19, then shut down. */
 
-void __main(void);
-void Core_Init(void);
-void CORE_Loop(s32);
-void Core_Kill(void);
 extern s32 gp_pause_B_pressed;
 
 s32 CORE_Main(void)
@@ -64,10 +60,6 @@ extern NsState g_ns;
 extern s32 gp_pbak_mode;
 extern s32 g_title_tile_load_cnt;
 
-void Pad_Update(void);
-void Ns_Open(void *, s32, s32);
-void Level_InitMisc(s32);
-s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, s32 flag);
 
 /* Spawn default HUD objects and load the level's initial resource entries. */
 void Core_ObjectsCreate(void)
@@ -127,30 +119,6 @@ asm(".globl gp_rcnt_event, gp_core_init_done");
 u32 gp_rcnt_event;
 u32 gp_core_init_done;
 
-void Level_InitGlobals(void);
-void Ns_Init(NsState *ns, s32 level);
-void Core_ObjectsCreate(void);
-s32 GOOL_CreateObject(void *parent, s32 exec, s32 subtype, s32 argc, s32 *argv, s32 flag);
-void Gool_ExecStateCode(s32 sender, s32 object, s32 event, s32 argc, s32 *argv);
-void Pbak_Play(u32 *eid);
-void Gool_SendToColliders(s32, s32, s32, s32, s32);
-void Ns_Kill(NsState *ns);
-void Level_SpawnObjects2(void);
-void Level_Restart(s32 *state);
-void Ns_Update(s32);
-void Shader_ParamsUpdate(s32);
-void Shader_ParamsUpdateRipple(s32);
-void Cam_Update(void);
-void Gfx_UpdateMatrices(void);
-void Gfx_TransformWorldsDark2(u32 *);
-void Gfx_TransformWorldsDark(u32 *);
-void Gfx_TransformWorldsFog(u32 *);
-void Gfx_TransformWorldsRipple(u32 *);
-void Gfx_TransformWorldsLightning(u32 *);
-void Gfx_TransformWorlds(u32 *);
-void Gool_UpdateObjects(s32);
-void Title_Update(u32 *);
-void Gpu_Update(void);
 
 /* Run levels until the exit flag is set: pause toggling, demo playback,
  * level transitions, per-frame update and zone-specific drawing. */

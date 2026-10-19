@@ -6,7 +6,6 @@
 
 #include "vector.h"
 
-s32 SquareRoot0(s32);
 
 s32 Math_EucDist(Vec3 *a, Vec3 *b)
 {

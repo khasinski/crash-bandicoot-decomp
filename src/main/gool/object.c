@@ -5,7 +5,6 @@
 
 /* Call the object cleanup routine with its recursive/event flag enabled. */
 
-s32 Gool_ObjectKill(Node *, s32);
 
 s32 Gool_ObjectTerminate(Node *obj, void *context)
 {
@@ -19,8 +18,6 @@ typedef struct ObjectRoot {
     Node *word04;
 } ObjectRoot;
 
-s32 Gool_ZoneObjectTerminate(Node *, void *);
-void *Ns_Lookup(u32 *);
 
 void Gool_ZoneObjectsTerminate(void *object)
 {

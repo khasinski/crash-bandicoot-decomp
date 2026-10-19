@@ -133,10 +133,6 @@ typedef struct GoolFont {
 
 extern RenderProjectionState g_view_proj;
 
-void *Ns_Lookup(u32 *);
-s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-void sprintf(u8 *, u8 *, u32, u32, u32, u32);
-s32 Gool_TextStringTransform(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 

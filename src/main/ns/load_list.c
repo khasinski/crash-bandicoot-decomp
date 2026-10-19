@@ -3,11 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void Ns_Update(s32 id);
-ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 
-ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {

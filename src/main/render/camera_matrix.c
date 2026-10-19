@@ -50,13 +50,6 @@ typedef struct CamBlock {
 
 extern CamBlock g_m_light;
 
-void Level_Noop(void);
-s32 sin(s32);
-s32 cos(s32);
-void MulMatrix(void *, void *);
-void SetBackColor(u32, u32, u32);
-void TransMatrix(void *, void *);
-void SetGeomOffset(s32, s32);
 
 typedef struct WgeoHeader {
     s32 x;
@@ -85,7 +78,6 @@ typedef struct ZoneHeader9A2C {
     ZoneWorld worlds[8];
 } ZoneHeader9A2C;
 
-void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0);
 
 void Gfx_UpdateMatrices(void)
 {

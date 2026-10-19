@@ -16,11 +16,6 @@ typedef struct {
 
 extern FadeTable g_tile_fade_alpha_table;
 
-void AddPrim(void *, void *);
-void SetPolyF4(void *);
-void SetSemiTrans(void *, s32);
-u16 GetTPage(s32, s32, s32, s32);
-void SetDrawMode(void *, s32, s32, s32, s32);
 
 void Gpu_DrawRect(s32 x, s32 y, s32 w, s32 h, u8 r, u8 g, u8 b) {
     GpuTile *tile = (GpuTile *)g_db_cur[2]->word78;

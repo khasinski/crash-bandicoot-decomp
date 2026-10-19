@@ -19,16 +19,6 @@ typedef struct {
 extern NsFileMapBits g_file_map[];
 
 
-void *LIBC_Malloc(s32);
-void LIBC_Free(void *);
-u8 *CdIntToPos(s32, u8 *);
-s32 CdControl(u8, u8 *, u8 *);
-s32 CdRead(s32, void *, s32);
-s32 CdReadSync(s32, void *);
-s32 BIOS_StrNCmp(const char *, const char *, s32);
-void *BIOS_MemCpy(void *, const void *, s32);
-s32 BIOS_StrLen(const char *);
-s32 BIOS_Printf(const char *, ...);
 
 static __inline__ s32 cd_read_sectors(s32 sector_count, s32 first_sector, void *destination, u8 *position) {
     CdIntToPos(first_sector, position);

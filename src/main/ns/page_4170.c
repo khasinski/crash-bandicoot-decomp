@@ -7,16 +7,6 @@
 extern s32 gp_pause_B_pressed;
 extern ResourceSlot g_spu_slots[8];
 
-s32 CdReadSync(s32, s32);
-s32 CdSync(s32, s32);
-u8 *CdIntToPos(s32, u8 *);
-s32 CdControlF(u8, u8 *);
-s32 CdRead(s32, void *, s32);
-void Ns_PageUpdateEntries(s32);
-void SpuSetTransferStartAddr(u32);
-void SpuWrite(void *, s32);
-s32 SpuIsTransferCompleted(s32);
-void Ns_PageFree(ResourceSlot *);
 
 typedef struct NsDirectoryExt {
     s32 bucket_offsets[0x100];

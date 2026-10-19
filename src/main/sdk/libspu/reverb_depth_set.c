@@ -3,7 +3,6 @@
 #include "common.h"
 /* GCC_CPU: r4000 */
 typedef struct {u32 mask;s32 mode;s16 depth_left,depth_right;s32 delay,feedback;} ReverbAttributes;
-s32 SpuSetReverbModeParam(ReverbAttributes *);
 extern ReverbAttributes g_spu_reverb_attr;
 void SsUtSetReverbDepth(s16 left, s16 right) {
     s32 depth;

@@ -3,9 +3,6 @@
 #include "ns.h"
 
 
-s32 Ns_PageUpdate(ResourceSlot *slot, s32 arg1);
-s32 Ns_PageAllocate(s32 *count_ptr, s32 arg1);
-void *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4);
 
 ResourceSlot *Ns_PageCreateVirtual(s32 id, s32 word18)
 {

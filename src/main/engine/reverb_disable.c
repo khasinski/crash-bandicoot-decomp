@@ -6,8 +6,6 @@ typedef struct {
     s16 depth_left,depth_right;
     s32 delay,feedback;
 } ReverbAttributes;
-s32 SpuSetReverbModeParam(ReverbAttributes *);
-s32 SpuSetReverb(s32);
 void Audio_Kill(void) {
     ReverbAttributes attributes;
     attributes.mask = 7;

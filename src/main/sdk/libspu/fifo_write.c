@@ -1,7 +1,6 @@
 /* GCC_VERSION: 2.6.3 */
 #include "common.h"
 
-s32 BIOS_Printf(const char *, ...);
 
 
 void _spu_writeByIO(u16 *arg0, u32 arg1)

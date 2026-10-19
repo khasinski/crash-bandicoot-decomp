@@ -2,7 +2,7 @@
 /* GCC_CPU: r4000 */
 #include "common.h"
 typedef void (*ControllerCallback)(s16,s16,u8);
-typedef void (*ResetCallback)(s16,s16);
+typedef void (*SeqResetCallback)(s16,s16);
 typedef void (*EventCallback)();
 extern ControllerCallback g_ss_cc_data_entry;
 extern ControllerCallback g_ss_cc_main_vol;
@@ -13,8 +13,7 @@ extern ControllerCallback g_ss_cc_nrpn_msb;
 extern ControllerCallback g_ss_cc_rpn_lsb;
 extern ControllerCallback g_ss_cc_rpn_msb;
 extern ControllerCallback g_ss_cc_reverb;
-extern ResetCallback g_ss_cc_reset_all;
-s32 _SsReadDeltaValue(s16,s16);
+extern SeqResetCallback g_ss_cc_reset_all;
 void _SsGetSeqData(sequence,channel,controller)
 s16 sequence,channel;
 u8 controller;

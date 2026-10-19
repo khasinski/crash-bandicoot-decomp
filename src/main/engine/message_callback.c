@@ -2,9 +2,9 @@
 #include "gool.h"
 typedef GoolActorView Actor;
 typedef GoolMessage Message;
-void Gool_ExecStateCode(Actor *, Actor *, s32, s32, s32);     /* extern */
-s32 Level_TestPointInBound(s32 *, s32 *);                   /* extern */
-s32 Level_TestBoundIntersection(s32 *, s32 *);                    /* extern */
+     /* extern */
+                   /* extern */
+                    /* extern */
 
 s32 Gool_SendIfColliding(Actor *arg0, Message *arg1) {
     s32 first[6],second[6];

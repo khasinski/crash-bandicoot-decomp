@@ -1,9 +1,6 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-s32 _exeque(void);
-void set_alarm(void);
-s32 get_alarm(void);
 
 s32 _sync(s32 poll) {
     s32 pending;

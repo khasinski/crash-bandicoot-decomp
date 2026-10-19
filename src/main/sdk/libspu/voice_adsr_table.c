@@ -22,7 +22,6 @@ extern u16 *g_snd_tempo;
 
 extern u16 g_midi_seq_table[];
 
-void _SpuVmSetNoiseVoice(s32, s32);
 
 void SpuVmFlush(void) {
     s32 i = 0;

@@ -4,10 +4,10 @@
 
 /* Consume a completed sector, advance read state and dispatch completion. */
 #include "cd_read_state.h"
-s32 VSync(s32);                                  /* extern */
-s32 CD_cw(s32,s32,s32,s32);                        /* extern */
-s32 CD_read(void);                                  /* extern */
-s32 CD_getsector(s32,s32);                          /* extern */
+                                  /* extern */
+                        /* extern */
+                                  /* extern */
+                          /* extern */
 
 void cb_read(s32 arg0, void *arg1) {
     s32 var_a0;

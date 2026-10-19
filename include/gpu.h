@@ -53,6 +53,7 @@ typedef struct GpuTile {
 } GpuTile;
 
 GpuDrawEnv *SetDefDrawEnv(GpuDrawEnv *env, s32 x, s32 y, s32 w, s32 h);
+GpuDisplayEnv *SetDefDispEnv(GpuDisplayEnv *env, s32 x, s32 y, s32 w, s32 h);
 void TermPrim(u32 *packet);
 void SetBlockFill(GpuPacketHeader *packet);
 void DrawPrim(GpuPacketHeader *packet);

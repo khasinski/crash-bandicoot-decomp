@@ -8,10 +8,6 @@
  * block free by setting that word's low bit.
  */
 
-void *LIBC_Malloc(int size);
-void *_expand(void *ptr, int size);
-void BIOS_BZero(void *dst, int len);
-void BIOS_BCopy(void *src, void *dst, int len);
 
 s32 _ExpAllocArea(u32 amount) {
     u32 maximum;

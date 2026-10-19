@@ -2,10 +2,6 @@
 #include "gpu.h"
 
 /* GCC_VERSION: 2.6.3 */
-void _cwc(s32 arg0);
-s32 _param(s32 arg0);
-void set_alarm(void);
-s32 get_alarm(void);
 extern volatile s16 g_gpu_vram_max_w[];
 extern volatile s16 g_gpu_vram_max_h[];
 

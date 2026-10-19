@@ -34,15 +34,6 @@ extern volatile u8 *g_cd_reg3_ptr;
 extern volatile CdStatus g_cd_status;
 
 
-s32 VSync(s32);
-s32 BIOS_Printf(const char *, ...);
-s32 puts(const char *, ...);
-s32 ResetCallback(void);
-s32 InterruptCallback(s32, void (*)(void));
-s32 CD_sync(s32, u8 *);
-s32 CD_cw(u8, u8 *, u8 *, s32);
-void cd_callback(void);
-void cb_read(s32, u8 *);
 
 static inline void cd_sync_disc(void)
 {

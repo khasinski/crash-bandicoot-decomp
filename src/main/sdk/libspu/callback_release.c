@@ -3,10 +3,6 @@
 #include "common.h"
 
 typedef void (*Callback)(void);
-void EnterCriticalSection(void);
-void ExitCriticalSection(void);
-Callback InterruptCallback(s32, Callback);
-s32 VSyncCallback(s32);
 
 
 

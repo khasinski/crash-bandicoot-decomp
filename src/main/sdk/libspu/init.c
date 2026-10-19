@@ -4,10 +4,6 @@
 
 /* Initialise SPU state and its 24 cached voice values. */
 
-s32 ResetCallback(void);
-void _spu_init(s32);
-void _spu_FsetRXX(s32, u32, s32);
-void SpuStart(u32);
 
 
 

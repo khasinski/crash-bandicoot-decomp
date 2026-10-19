@@ -5,16 +5,6 @@
 
 
 
-void SpuVmFlush(void);
-void _SsSndPlay(s32, s32);
-void _SsSndCrescendo(s16, s16);
-void _SsSndDecrescendo(s16, s16);
-void _SsSndSetRit(s32, s32);
-void _SsSndPause(s32, s32);
-void _SsSndReplay(s32, s32);
-void _SsSndStop(s32, s32);
-void SpuVmGetSeqVol(s32, u16 *, u16 *);
-void SpuVmSetSeqVol(s32, s32, s32, s32);
 
 void SsSeqCalledTbyT(void) {
     s32 var_s0;

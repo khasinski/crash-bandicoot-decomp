@@ -7,8 +7,6 @@
 #include "gool.h"
 #include "zone.h"
 
-ZoneEntry *Ns_Lookup(u32 *);
-void Gool_ZoneObjectsTerminate(void *);
 extern s32 g_doctor_cortex_obj;
 extern s32 g_mdat_title_str_ptr;
 

@@ -9,7 +9,6 @@ typedef struct {
     u8 length;
     u32 mode;
 } GpuModePacket;
-s32 GetGraphType(void);
 
 u32 SetDrawTPage(GpuModePacket *arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_a3;

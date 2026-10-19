@@ -2,10 +2,7 @@
 
 /* GCC_VERSION: 2.6.3 */
 typedef struct {u16 size,flags;u8 data[1];} Stream;
-void Slst_RDecodeForward(Stream *,Stream *,Stream *);
-void Slst_RDecodeBackward(Stream *,Stream *,Stream *);
-void RMemcpy(void *,void *,s32);
-Stream *Slst_Update(Stream *source,Stream *reference,Stream *destination,s32 mode) {
+void * Slst_Update(Stream *source,Stream *reference,Stream *destination,s32 mode) {
     if(!(source->flags&1)) {
         RMemcpy(source->data,destination->data,source->size);
         destination->size=source->size;

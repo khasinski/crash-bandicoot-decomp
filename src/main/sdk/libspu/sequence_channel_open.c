@@ -3,8 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 
 #include "common.h"
-s32 BIOS_Printf(const char *, ...);
-s32 _SsReadDeltaValue(s16, s16);
 
 
 /* A quarter of the shared 60-tick divisor is used for rounding below. */

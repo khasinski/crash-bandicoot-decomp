@@ -8,11 +8,6 @@ extern EngineState *gp_card;
 extern EngineByteRecord gp_str_card_invalid_tag[];
 extern EngineByteRecord g_card_filename[];
 
-void Card_ResetStateAndFlags(s32);
-s32 Card_StartWriteNamedPart(void);
-s32 Card_CheckNewDevice(void);
-s32 Card_ProbeTimeout(void);
-s32 Card_StartFormat(void);
 
 static __inline__ s32 Card_ClearFlag20_inline(void)
 {

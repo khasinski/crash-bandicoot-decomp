@@ -26,12 +26,6 @@ extern volatile u8 *g_cd_reg1_ptr;
 extern volatile u8 *g_cd_reg2_ptr;
 extern volatile CdStatus g_cd_status;
 
-s32 VSync(s32);
-s32 BIOS_Printf(const char *, ...);
-s32 puts(const char *, ...);
-s32 CheckCallback(void);
-s32 getintr(void);
-void CD_initvol(void);
 
 static inline void cd_set_timeout(const char *name)
 {

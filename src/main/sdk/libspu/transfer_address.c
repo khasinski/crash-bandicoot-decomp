@@ -4,7 +4,6 @@
 
 /* Cache the encoded SPU transfer address and return the supplied address. */
 
-s32 _spu_FsetRXXa(s32,s32);
 
 s32 SpuSetTransferStartAddr(s32 arg0) {
     g_spu_adsr_dummy_1 = _spu_FsetRXXa(-1, arg0);

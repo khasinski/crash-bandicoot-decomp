@@ -2,12 +2,6 @@
 /* GNU_AS_G: 4 */
 #include "common.h"
 
-void SetRotMatrix(void *);
-void SetLightMatrix(void *);
-void RMemcpy(void *, u32, s32);
-s32 *Gpu_GetCurPrimsTail(void);
-void Gte_RTransformWorldsDark2(u16 *, s32, s32, s32, s32 *, void *);
-void *Ns_Lookup(void *);
 
 extern u16 *gp_level_entry[];
 extern struct {
@@ -206,9 +200,6 @@ void Gfx_FormatCardString(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3)
     }
 }
 
-void LoadImage(s16 *, u8 *);
-void StoreImage(s16 *, u8 *);
-void DrawSync(s32);
 
 void Gfx_BlitCardIcon(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
 {
@@ -250,7 +241,6 @@ void Gfx_BlitCardIcon(s32 arg0, u8 *arg1, s32 arg2, u8 *arg3, u8 *arg4)
     }
 }
 
-void *LIBC_Malloc(u32);
 
 typedef struct GoolObj {
     s32 header;

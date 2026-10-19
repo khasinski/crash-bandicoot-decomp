@@ -4,7 +4,6 @@
 typedef void (*Callback)(void);
 
 
-s32 BIOS_Printf(const char *, ...);
 
 void trapIntrDMA(void) {
     s32 i;
@@ -33,7 +32,7 @@ void trapIntrDMA(void) {
     }
 }
 
-Callback setIntrDMA(s32 index, Callback callback) {
+void * setIntrDMA(s32 index, Callback callback) {
     Callback previous = g_dma_cb_slots[index];
 
     if (callback != previous) {

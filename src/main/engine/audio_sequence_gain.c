@@ -3,7 +3,6 @@
 #include "common.h"
 #include "audio_channels.h"
 /* GNU_AS_G: 8 */
-void SsSepSetVol();
 
 void Midi_ResetSeqVol(s16 gain) {
     s16 channel;

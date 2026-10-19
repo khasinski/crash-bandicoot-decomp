@@ -1,8 +1,6 @@
 #include "common.h"
 
 /* GCC_VERSION: 2.6.3 */
-s32 BIOS_AToI(u8 *);
-s32 Ns_GetFilename2(s32, s32, s32, s32);
 
 static __inline__ s32 Ns_AlphaNumIndex(u8 ch)
 {

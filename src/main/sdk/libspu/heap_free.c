@@ -2,7 +2,6 @@
 #include "common.h"
 
 
-void _spu_gcSPU(void);
 
 
 void SpuFree(u32 address)

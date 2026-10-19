@@ -3,11 +3,7 @@
 #include "ns.h"
 #include "zone.h"
 
-ResourceSlot *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 entry_id, s32 *out, s32 flag);
-void Ns_Update(s32 id);
-ResourceSlot *Ns_PagePhysical(s32 id, s32 entry_id);
 
-ResourceSlot *Ns_PageStruct(u32 *ref);
 
 static __inline__ void ns_slot_unref(ResourceSlot *slot)
 {
@@ -29,7 +25,7 @@ static __inline__ void ns_pool_active_inc(void)
     g_ns.pool.active_count++;
 }
 
-static __inline__ s32 Ns_PageClose(s32 id, s32 count)
+static __inline__ s32 Ns_PageClose_inline(s32 id, s32 count)
 {
     ResourceSlot *slot;
     s32 i;
@@ -93,12 +89,12 @@ s32 Ns_Close(u32 *ref, s32 count)
         if (slot == NULL) {
             goto ret_1;
         }
-        return Ns_PageClose(slot->id, count);
+        return Ns_PageClose_inline(slot->id, count);
     }
     if (count == 0) {
         return 0;
     }
-    return Ns_PageClose(entry, count);
+    return Ns_PageClose_inline(entry, count);
 }
 
 s32 Ns_CountAvailablePages(void)

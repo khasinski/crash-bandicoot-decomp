@@ -5,7 +5,6 @@
 /* Align a byte address, convert to SPU units, optionally write a register. */
 
 
-s32 _SpuIsInAllocateArea_(s32);
 
 u32 _spu_FsetRXXa(s32 reg,u32 address) {
     u32 units;

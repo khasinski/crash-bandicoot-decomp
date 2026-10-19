@@ -2,10 +2,6 @@
 #include "render.h"
 
 
-void SetColorMatrix(s16 *);
-void SetBackColor(s32,s32,s32);
-void SetGeomOffset(s32,s32);
-void SetGeomScreen(s32);
 /* Preserve unknown projection modes; reset the GTE matrix and camera words. */
 void Gfx_InitMatrices(void)
 {

@@ -2,8 +2,8 @@
 
 /* GCC_VERSION: 2.6.3 */
 typedef struct {u8 next[3];u8 length;u32 word04,word08;} Packet;
-s32 get_cs(s16, s16);                        /* extern */
-s32 get_ce(s16, s16);                        /* extern */
+                        /* extern */
+                        /* extern */
 
 void SetDrawArea(Packet *arg0, GpuRect *arg1) {
     arg0->length = 2;

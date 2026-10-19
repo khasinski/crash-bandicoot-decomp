@@ -4,7 +4,6 @@
 
 /* Allocate a 64 KiB resource buffer; retain the original signed pointer/error test. */
 
-void *LIBC_Malloc(s32);
 
 s32 Ns_MallocPage(void)
 {

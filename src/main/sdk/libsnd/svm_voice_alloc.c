@@ -40,9 +40,8 @@ extern VoiceU16 g_spu_vm_voice_age[];
 extern VoiceU16 g_spu_vm_voice_envx[];
 extern VoiceS16 g_spu_vm_voice_prior[];
 extern VoiceU8 g_spu_vm_voice_auto_flag[];
-void _SpuVmSetNoiseVoice(s32, s32);
 
-u8 SpuVmAlloc(void)
+s32 SpuVmAlloc(void)
 {
     u8 var_s0;
     u16 var_t3;

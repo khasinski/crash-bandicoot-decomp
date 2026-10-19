@@ -5,7 +5,7 @@
   "externs_in_c": 483,
   "fake_bit_tautologies": 5,
   "fake_control_flow": 5,
-  "func_prototypes_in_c": 1169,
+  "func_prototypes_in_c": 0,
   "handwritten_asm_blocks": 41,
   "header_asm_aliases": 0,
   "header_unk_fields": 103,
@@ -16,6 +16,6 @@
   "raw_symbol_references": 0,
   "register_pins": 0,
   "sdata_size_hacks": 0,
-  "unk_fields_in_c": 1683,
+  "unk_fields_in_c": 1575,
   "unnamed_function_symbols": 0
 }

@@ -36,18 +36,6 @@ u32 gp_prev_card_state = 0xFFFFFFFF;
 
 /* File cleanup requests and lifecycle entry points. */
 typedef EngineFileRequest FileRequest;
-s32 Card_TestRead(s32);
-s32 Card_ClearFlags(s32);
-s32 Card_SetState(s32);
-s32 Card_BeginLoadIfIdle(void);
-s32 Card_IncRetryCount(void);
-s32 Card_ResetParts(s32);
-s32 Card_SetFlags(s32);
-void Card_Close(s32 *);
-s32 VSync(s32);
-s32 erase(char *);
-s32 TestEvent(s32);
-s32 Math_Randb(s32);
 
 /* Traversal storage and lifecycle share the recovered engine globals. */
 #include "object_links.h"
@@ -96,9 +84,6 @@ s32 *gp_grid_rows;
 s32 gp_edesc_h_timeout;
 s32 gp_edesc_h_newdev;
 
-void Title_LoadEntries(s32, s32, s32);
-void *LIBC_Calloc(int, int);
-void BIOS_Abs(s32);
 extern s32 gp_pbak_mode;
 s32 Title_Init(void)
 {
@@ -112,7 +97,6 @@ s32 Title_Init(void)
 }
 
 extern volatile s32 g_island_cam_state;
-s32 Title_LoadState(void);
 
 
 /* Apply a pending mode request and initialise the recovered mode-state words. */
@@ -165,9 +149,6 @@ set_value:
     return 0;
 }
 
-s32 Ns_Open(s32 *, s32, s32);
-s32 Ns_Close(s32 *, s32);
-void Level_Update(ResourceItemListView *, u8 *, s32, s32);
 extern s32 gp_next_lid;
 extern s32 gp_use_cd;
 extern ResourceSlotStateView g_slst_buf1[];
@@ -209,13 +190,6 @@ void Title_LoadScreen(s32 *reference, s32 mode)
 #include "ns.h"
 #include "render.h"
 extern s32 g_key_count[];
-ResourceItemListView *Ns_Lookup(u32 *);
-void BIOS_Abs(s32);
-void Gfx_InitMatrices(void);
-void Level_ResetGlobals(s32);
-s32 Ns_AlphaNumChar(s32);
-s32 sprintf(char *, char *, ...);
-void Gool_ObjectSpawn(ResourceItemListView *, s32);
 s32 Title_LoadState(void) {
     extern s32 g_fade_counter[];
     char buf[32];
@@ -348,7 +322,6 @@ void Title_KillObjectsAndEntries(void)
         Title_LoadEntries(gp_title->word35D0, 0, -1);
 }
 
-void LIBC_Free(void *);
 extern s32 gp_pbak_mode;
 s32 Title_Kill(void)
 {
@@ -361,9 +334,6 @@ s32 Title_Kill(void)
 #include "ns.h"
 #include "render.h"
 
-void *LIBC_Malloc(u32);
-void DrawSync(s32);
-void Gpu_FillDisplay(void);
 extern RenderBuffer *g_db_prev;
 extern s32 g_ns_load_done_flag;
 
@@ -371,8 +341,6 @@ typedef struct EngineGpuRect {
     s16 x, y, w, h;
 } EngineGpuRect;
 
-ResourceItemListView *Ns_Lookup(u32 *);
-void LoadImage(EngineGpuRect *, void *);
 
 s32 Title_Loading(s32 level, u8 *image, NsDirectory *dir)
 {
@@ -447,7 +415,6 @@ void Title_LoadSingleTile(EngineTileCell *cell)
 
 extern s32 g_title_tile_load_cnt[];
 extern s32 g_cam_rot_xz;
-void Gool_ExecStateCode(s32, s32, s32, s32, s32 *);
 
 /* Finish the pending object request before selecting the next mode. */
 __inline__ void Title_RequestState(s32 mode)
@@ -473,11 +440,6 @@ typedef struct EngineSprt16 {
 } EngineSprt16;
 
 extern u32 g_cur_lid_ro;
-void SetSprt16(GpuPacketHeader *);
-void AddPrim(GpuPacketTag *, GpuPacketTag *);
-void Gpu_DrawOverlay(s32);
-void Title_CalcTiles(EngineMode25State *, s32, s32);
-void Title_LoadImages(EngineMode25State *, s32, s32);
 
 
 s32 Title_Update(GpuPacketTag *ot)
@@ -623,8 +585,6 @@ next_column:
     } while (row < 0x10);
 }
 
-s32 GetTPage(s32, s32, s32, s32);
-void SetDrawMode(EngineDrawModePacket *, s32, s32, s32, EngineGpuRect *);
 
 void Title_CalcTiles(EngineMode25State *state, s32 x, s32 y)
 {
@@ -749,9 +709,6 @@ static __inline__ void engine_update_slot_state(s32 slot, s32 active)
     }
 }
 
-s32 Ns_AlphaNumChar(s32);
-u16 LoadClut(void *, s32, s32);
-void Gfx_TgeoOnLoad(void *);
 
 void Title_LoadEntries(s32 mode, s32 arg1, s32 count)
 {

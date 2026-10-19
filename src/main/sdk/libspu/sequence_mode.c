@@ -1,6 +1,5 @@
 #include "common.h"
 
-void _SsStart(s32);
 
 void SsStart(void) {
     _SsStart(1);

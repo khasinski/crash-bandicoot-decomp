@@ -5,8 +5,6 @@
 /* Restore the saved interrupt context and hardware masks if callbacks are paused.
  * The partial state view begins at its flag and includes context bytes at 0x38.
  */
-s32 ExitCriticalSection(void);
-s32 HookEntryInt(void *);
 extern u16 g_event_handlers[];
 
 u16 *restartIntr(void)

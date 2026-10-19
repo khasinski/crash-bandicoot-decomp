@@ -3,7 +3,6 @@
 #include "common.h"
 typedef void (*SequenceCallback)(s16,s16,u8);
 extern SequenceCallback g_ss_mark_callbacks[][16];
-s32 _SsReadDeltaValue(s16,s16);
 void _SsContNrpn1(sequence,channel,value)
 s16 sequence,channel;
 u8 value;

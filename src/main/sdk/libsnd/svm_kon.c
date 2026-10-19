@@ -37,7 +37,6 @@ extern SvmCur g_midi_sep;
 extern VoiceU16 g_spu_vm_voice_envx[];
 
 
-void _SpuVmSetNoiseVoice(s32, s32);
 
 void SpuVmDoAllocate(void) {
     s32 var_t0;

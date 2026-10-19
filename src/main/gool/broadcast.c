@@ -6,9 +6,6 @@
 #include "zone.h"
 #include "ns.h"
 
-s32 GOOL_TraverseObjectTreePostorder(Node *, Visitor, void *);
-s32 Gool_ObjectKill(Node *, s32);
-s32 Gool_SendIfColliding(Node *, void *);
 
 s32 Gool_SendToColliders2(Node *arg0, Node *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
 {
@@ -63,7 +60,6 @@ typedef struct GoolStackObj {
     u32 *fp;
 } GoolStackObj;
 
-s32 GOOL_InterpretObject(GoolStackObj *, s32, s32);
 
 s32 Gool_ObjectInterrupt(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
 {
@@ -86,15 +82,6 @@ s32 Gool_ObjectInterrupt(GoolStackObj *obj, u32 arg1, s32 argc, u32 *argv)
     return GOOL_InterpretObject(obj, 3, 0);
 }
 
-void BIOS_MemSet(void *, s32, s32);
-void GOOL_InitLevelSpawns(s32);
-void Gfx_InitMatrices(void);
-ResourceEntry *Ns_Open(void *, s32, s32);
-void Ns_Close(void *, s32);
-void Pbak_Choose(u32 *);
-void Level_Update(ZoneEntry *, void *, s32, s32);
-void Shader_ParamsUpdate(s32);
-void Shader_ParamsUpdateRipple(s32);
 
 typedef struct LevelDesc {
     s32 unk0;

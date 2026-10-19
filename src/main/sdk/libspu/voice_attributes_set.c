@@ -3,8 +3,6 @@
 #include "common.h"
 #include "sdk/libspu/voice_attributes.h"
 
-u32 _spu_FsetRXXa(s32,u32);
-s32 _spu_note2pitch(s32,s32,s32,s32);
 static inline u16 encode_attack(s32 mode) {
     switch (mode) {
     case 1: return 0;

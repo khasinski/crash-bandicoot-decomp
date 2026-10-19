@@ -2,7 +2,6 @@
 /* ASPSX_VERSION: 2.21 */
 /* GNU_AS_G: 0 */
 #include "common.h"
-s32 getintr(void);
 typedef void (*CdCallback)(s32,void*);
 extern volatile u8 *g_cd_reg0[];
 extern volatile u8 g_cd_status[];

@@ -17,12 +17,6 @@ typedef struct {
 
 extern IntrState g_event_handlers;
 
-s32 BIOS_Printf(const char *, ...);
-void EnterCriticalSection(void);
-void ChangeClearPAD(s32);
-void ChangeClearRCnt(s32, s32);
-void ReturnFromException(void);
-void ResetEntryInt(void);
 
 void trapIntr(void)
 {

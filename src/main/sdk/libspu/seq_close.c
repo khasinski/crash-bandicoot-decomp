@@ -3,8 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-void SpuVmSetSeqVol(s16, s16, s16, s32);
-void SpuVmSeqKeyOff(s16);
 
 
 

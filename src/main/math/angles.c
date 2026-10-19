@@ -4,8 +4,6 @@
 
 /* Compute 12-bit angles between two points in the XZ and XY planes. */
 
-s32 abs(s32);
-s32 ratan2(s32, s32);
 
 s32 Math_AngDistXZ(s32 *origin, s32 *target)
 {

@@ -31,7 +31,6 @@ typedef struct ZoneHeader9A2C {
     ZoneWorld worlds[8];
 } ZoneHeader9A2C;
 
-void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0);
 
 typedef struct ResourceItem {
     u8 pad00[0x10];
@@ -50,8 +49,6 @@ extern struct {
 
 extern s32 g_island_cam_state;
 
-ResourceItem *Ns_Lookup(void *);
-void Gfx_FreezeMapTextures(s32, s32);
 
 void Gfx_LoadWorldsFog(ZoneHeader9A2C *arg0)
 {

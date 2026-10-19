@@ -3,8 +3,6 @@
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
 
-s32 note2pitch2(u16, u16);
-s32 SpuVmVSetUp(s16, s16);
 
 extern u8 g_spu_vm_voice_seq_sep[];
 extern u8 g_spu_vm_voice_tone_prog[];

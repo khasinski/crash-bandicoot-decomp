@@ -3,7 +3,6 @@
 #include "common.h"
 #include "sdk/libspu/voice_attributes.h"
 
-s32 _spu_pitch2note(s32,s32,s32);
 void SpuGetVoiceAttr(VoiceAttributes *arg0) {
     s32 temp_v0_3;
     u32 var_a0;

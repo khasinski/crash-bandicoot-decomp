@@ -53,13 +53,6 @@ extern GoolObj88CC *g_shader_obj_color_scale[];
 extern GoolObj88CC *gp_crash_obj[];
 extern ResourceEntry88CC *g_pads[];
 
-void SetRotMatrix(void *);
-void SetTransMatrix(void *);
-void RotTrans(void *, void *, void *);
-void Gte_RProjectBound(void *, void *, void *, void *);
-s32 SquareRoot0(s32);
-void Gte_RCalcObjectRotMatrix(void *, void *, void *, void *);
-void Gte_RCalcObjectMatrices(void *, void *, void *, void *);
 
 typedef struct Matrix88CC {
     s16 m[3][3];

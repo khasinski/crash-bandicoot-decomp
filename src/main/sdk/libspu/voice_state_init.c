@@ -2,11 +2,7 @@
 /* GCC_CPU: r4000 */
 /* ASPSX_VERSION: 2.34 */
 #include "common.h"
-void SsSetMono(s32);
-void SpuInitMalloc(s32,void *);
 /* Retail passes 1; this callee does not consume incoming arguments. */
-void SpuVmKeyOffNow();
-void SpuVmFlush(void);
 extern volatile u8 *g_snd_tempo;
 
 extern s32 g_spu_reverb_attr;

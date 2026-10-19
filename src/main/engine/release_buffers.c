@@ -2,7 +2,6 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-void LIBC_Free(void *);
 s32 Slst_Kill(void) {
  LIBC_Free(gp_slst_poly_list_a);
  LIBC_Free(gp_slst_poly_list_b);

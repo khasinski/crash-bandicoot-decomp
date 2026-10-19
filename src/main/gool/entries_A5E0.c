@@ -2,12 +2,6 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-void SetRotMatrix(void *);
-void SetLightMatrix(void *);
-void RMemcpy(void *, u32, s32);
-s32 *Gpu_GetCurPrimsTail(void);
-void Gte_RTransformWorldsRipple(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsLightning(u16 *, s32, s32, s32, s32 *, void *);
 
 extern u16 *gp_level_entry[];
 extern struct {

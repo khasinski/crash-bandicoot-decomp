@@ -4,7 +4,6 @@
 
 /* Set the wait flag and service pending resource operations until the counter reaches zero. */
 
-void Ns_Update(s32);
 
 void Ns_Update2(void)
 {

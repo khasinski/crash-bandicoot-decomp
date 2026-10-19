@@ -108,13 +108,9 @@ typedef struct NsdTable {
 } NsdTable;
 
 extern ResourceEntry *g_pads[];
-GoolExecutable *Ns_Open(s32 *, s32, s32);
-s32 GOOL_ChangeObjectState(GoolObj *, u32, s32 *, s32);
 
 extern GoolObj *gp_crash_obj;
 
-void Gool_ExecStateCode(GoolObj *, GoolObj *, s32, s32, void *);
-void Audio_VoiceFree(GoolObj *);
 
 #define NODE_CHILDREN(n) ((n)->kind == 2 ? (GoolObj *)(n)->unk04 : (n)->children)
 #define NODE_CHILDREN_PTR(n) ((n)->kind == 2 ? (GoolObj **)&(n)->unk04 : &(n)->children)
@@ -157,20 +153,11 @@ typedef struct ZoneEntryView {
     void *items[1];
 } ZoneEntryView;
 
-s32 Math_Absdiff(s32, s32);
-void Gool_ObjectOrientOnPath(GoolObj *, s32, s32 *);
-void Level_SaveState(GoolObj *, void *, s32);
 
 extern GoolObj *g_savestate[];
 extern u32 g_cur_lid_ro[];
-void Pad_Update(void);
-void Gool_ObjectControlDir(GoolObj *);
-s32 GOOL_InterpretObject(GoolObj *, s32, s32);
-void Gool_ObjectColors(GoolObj *, s32);
-void Gool_ObjectPhysics(GoolObj *, s32);
-void Gool_ObjectTransform(GoolObj *);
 
-static __inline__ s32 GOOL_CreateObjectStackFrame(GoolObj *object, s32 arg_words, s32 flags)
+static __inline__ s32 GOOL_CreateObjectStackFrame_inline(GoolObj *object, s32 arg_words, s32 flags)
 {
     u32 *sp;
     u32 *old_fp;
@@ -239,7 +226,7 @@ s32 GOOL_UpdateObject(GoolObj *obj, s32 flag) {
                 Gool_ObjectControlDir(obj);
             }
             if (obj->unkE8 != NULL) {
-                GOOL_CreateObjectStackFrame(obj, 0, 0xFFFF);
+                GOOL_CreateObjectStackFrame_inline(obj, 0, 0xFFFF);
                 obj->pc = obj->unkE8;
                 res = GOOL_InterpretObject(obj, 3, 0);
                 if (res >= -0xFE) {
@@ -350,14 +337,6 @@ typedef struct ZoneDrawHeader {
 extern RenderProjectionState g_view_proj;
 extern RenderBufferView *g_ot_cur[];
 
-ZoneEntryView *Ns_Lookup(u32 *);
-s32 *Gpu_GetCurPrimsTail(void);
-s32 Gte_RCalcSpriteRotMatrix(GoolVectors *, void *, u32, s32, void *, s32, s32, u32);
-void Gte_RTransformSprite(u32 *, void *, void *, s32, s32, s32 *, void *);
-void Gfx_TransformFragment(void *, s32, void *, GoolBound *, u32 *);
-void Gfx_TransformCvtx(void *, u32 *, GoolObj *);
-void Gfx_LoadWorlds(void *, u32 *, GoolObj *);
-void Gool_TextObjectTransform(GoolObj *, GoolAnimSeq *, u32, u32 *, u32);
 
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
@@ -462,9 +441,6 @@ typedef struct GoolFont {
     GoolGlyph backdrop;
 } GoolFont;
 
-s32 BIOS_AToI(u8 *);
-void Gfx_TransformFontChar(GoolObj *, GoolGlyph *, s32, void *, GoolBound *, u32 *, s32);
-void sprintf(u8 *, u8 *, u32, u32, u32, u32);
 
 s32 Gool_TextStringTransform(GoolObj *obj, u8 *str, s32 start_x, GoolFont *font, void *tex, s32 shift, u32 *ot) {
     GoolBound glyph_bound;

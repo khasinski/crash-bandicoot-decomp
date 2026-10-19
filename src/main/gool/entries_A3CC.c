@@ -2,12 +2,6 @@
 /* GNU_AS_G: 8 */
 #include "common.h"
 
-void SetRotMatrix(void *);
-void SetLightMatrix(void *);
-void RMemcpy(void *, u32, s32);
-s32 *Gpu_GetCurPrimsTail(void);
-void Gte_RTransformWorldsFog(u16 *, s32, s32, s32, s32 *, void *);
-void Gte_RTransformWorldsDark(u16 *, s32, s32, s32, s32 *, void *, u32, s32);
 
 typedef struct ZoneFogHeader {
     u8 pad00[0x2E8];

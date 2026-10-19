@@ -6,9 +6,6 @@
 extern ResourceHandler g_ns_page_free_sentinel[];
 extern s32 gp_pause_B_pressed;
 
-s32 Ns_PageUpdate(ResourceSlot *slot, s32 arg1);
-s32 Ns_PageAllocate(s32 *count_ptr, s32 arg1);
-void *Ns_PageCreatePhysical(ResourceSlot *slot, s32 id, s32 word18, s32 *count_ptr, s32 arg4);
 
 s32 Ns_PageFree(ResourceSlot *request)
 {

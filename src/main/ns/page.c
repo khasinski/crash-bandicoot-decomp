@@ -4,12 +4,6 @@
 #include "ns.h"
 
 extern s32 gp_pause_B_pressed;
-void *LIBC_Malloc(s32);
-void *LIBC_Realloc(void *, s32);
-u8 *CdIntToPos(s32, u8 *);
-s32 CdControl(u8, u8 *, u8 *);
-s32 CdRead(s32, void *, s32);
-s32 CdReadSync(s32, s32);
 
 /* Return an item span from adjacent offsets in a nonempty resource page. */
 

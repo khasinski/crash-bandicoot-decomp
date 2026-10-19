@@ -7,7 +7,6 @@
 
 
 
-void _spu_gcSPU(void);
 
 s32 SpuMalloc(s32 size) {
     s32 i = 0;

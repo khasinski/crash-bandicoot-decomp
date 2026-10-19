@@ -76,10 +76,6 @@ static s32 gp_shader_param_16;
 static s32 gp_shader_param_17;
 static s32 gp_shader_param_vec[2];
 
-void Gfx_TransformWorldsRipple(s32);
-s32 Math_Randb(s32);
-void Audio_Control(s32, s32, s32 *, s32);
-void Audio_VoiceCreate(s32, s32 *, s32);
 
 void Shader_ParamsUpdateRipple(s32 arg0)
 {
