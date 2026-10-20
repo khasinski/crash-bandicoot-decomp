@@ -131,9 +131,4 @@
         gte_swc2(((u32 *)(v1))[2], 27); \
     } while (0)
 
-#define gte_obj_align(id) \
-    void __maspsx_include_asm_hack_align_##id(void) { \
-        asm(".balign 16 # maspsx-keep\n"); \
-    }
-
 #endif
