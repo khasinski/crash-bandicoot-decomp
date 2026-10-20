@@ -45,7 +45,6 @@ typedef EngineMode25State State;
 /* Real zero-initialized storage at 0x80056678..0x800566C4.
  * Unidentified words retain address names; the two typed owners are shared
  * with object_defaults and update_request. */
-asm(".globl gp_title_not_seen, gp_title_unused_0, gp_title_unused_1, gp_title_unused_2, gp_title_unused_3, gp_save_id, gp_file_is_new, gp_bios_gte_patch_target, gp_gte_patch_handler, gp_title_unused_4, gp_title_unused_5, gp_title_unused_6, gp_cur_pbak_header, gp_solid_scratch_grid, gp_next_level_ldat_eid, gp_crash_obj, gp_level_entry, gp_slst_poly_list_b, gp_card_chan");
 s32 gp_title_not_seen;
 u32 gp_title_unused_0;
 u32 gp_title_unused_1;
@@ -67,7 +66,6 @@ s32 gp_card_chan;
 
 /* Real engine globals in retail address order, 0x800566C4..0x800566FC.
  * The state and grid pointers retain their recovered pointer types. */
-asm(".globl gp_edesc_s_end_io, gp_edesc_s_error, gp_edesc_s_timeout, gp_edesc_s_newdev, gp_dark_target_x, gp_dark_target_y, gp_dark_target_z, gp_title, gp_level_unused_0, gp_level_unused_1, gp_edesc_h_end_io, gp_edesc_h_error, gp_grid_rows, gp_edesc_h_timeout, gp_edesc_h_newdev");
 s32 gp_edesc_s_end_io;
 s32 gp_edesc_s_error;
 s32 gp_edesc_s_timeout;

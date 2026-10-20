@@ -70,19 +70,12 @@ s32 gp_cam_follow_dist_min = 0x3E800;
 s32 gp_cam_follow_vel_z = 0;
 
 /* .sbss owned by this unit: camera speed along the path and death-cam state. */
-asm(".globl gp_cam_follow_state");
 s32 gp_cam_follow_state;
-asm(".globl gp_cam_death_rot_x");
 s32 gp_cam_death_rot_x;
-asm(".globl gp_cam_death_rot_y");
 s32 gp_cam_death_rot_y;
-asm(".globl gp_cam_death_rot_z");
 s32 gp_cam_death_rot_z;
-asm(".globl gp_cam_death_pan_x");
 s32 gp_cam_death_pan_x;
-asm(".globl gp_cam_death_pan_y");
 s32 gp_cam_death_pan_y;
-asm(".globl gp_cam_death_pan_z");
 s32 gp_cam_death_pan_z;
 
 /* View of the global state object at g_pause_state (camera fields only). */

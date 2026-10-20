@@ -95,7 +95,6 @@ typedef struct {
 #include "engine_externs.h"
 #undef CRASH_EXT_ENGINE_AUDIO_VOICE_0
 s32 gp_midi_state = 0x1E;
-asm(".globl gp_sfx_vol, gp_mus_vol, gp_sfx_vol_scaled, gp_mus_vol_scaled");
 s32 gp_sfx_vol;
 s16 gp_mus_vol;
 s16 gp_sfx_vol_scaled;

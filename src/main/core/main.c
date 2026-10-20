@@ -107,7 +107,6 @@ s32 gp_ram_size_bytes = 0x200000;
 s32 gp_use_cd = 0;
 
 /* .sbss owned by this unit. */
-asm(".globl gp_rcnt_event, gp_core_init_done");
 u32 gp_rcnt_event;
 u32 gp_core_init_done;
 

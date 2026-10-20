@@ -108,6 +108,12 @@ file "$CPP" | grep -q Mach-O || [ "$(uname -s)" != Darwin ] || CPP="$TC/gcc-2.6.
     -I"$ROOT/include" -I"$ROOT/src/main" -MD "$OUT.d" "$IN" \
   | run_tool "$GCC_DIR/cc1" ${CRASH_CC1_FLAGS:--quiet -mcpu=$GCC_CPU -mgas -msoft-float -g -gcoff $OPT $EXTRA_CC1_FLAGS -G$G -funsigned-char -w} -o - \
   | awk -v g="$GNU_AS_G" -v nogp=" $GNU_AS_NO_GP " '{
+        # A .comm symbol is a global definition; maspsx turns small ones into
+        # .sbss labels, so keep them global (.lcomm, from static, stays local).
+        if ($1 == ".comm") {
+            split($2, c, ",");
+            print ".globl " c[1];
+        }
         print;
         if (g > 0 && $1 == ".extern") {
             split($2, a, ",");
