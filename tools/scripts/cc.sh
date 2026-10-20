@@ -126,5 +126,8 @@ file "$CPP" | grep -q Mach-O || [ "$(uname -s)" != Darwin ] || CPP="$TC/gcc-2.6.
   | "$PYTHON" "$TC/maspsx/maspsx.py" --expand-div --aspsx-version="$ASPSX_VERSION" \
         --force-stdin -G"$G" \
   | "${CROSS}as" -EL -march=r3000 -mtune=r3000 -no-pad-sections -G0 \
-        -I"$ROOT" -I"$ROOT/include" --MD "$OUT.asm.d" -o "$OUT" -
+        -I"$ROOT" -I"$ROOT/include" --MD "$OUT.asm.d" -o "$OUT" \
+        "$ROOT/include/gte_macros.inc" -
+# GNU as has no GTE (COP2) mnemonics; gte_macros.inc defines the ones the
+# include/gte.h intrinsics emit, read before the compiler output.
 sed -i.bak "1s|^[^:]*:|$OUT:|" "$OUT.d" && rm -f "$OUT.d.bak"

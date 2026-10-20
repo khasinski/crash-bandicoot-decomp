@@ -68,7 +68,7 @@ split:
 	rm -rf $(ASM_DIR) $(LD_SCRIPT) $(UNDEFINED_SYMS) $(UNDEFINED_FUNCS) $(BUILD)
 	$(PY) tools/scripts/splat_split.py $(SPLAT_CFG)
 	$(PY) tools/scripts/patch_header.py $(ASM_DIR)/header.s
-	$(PY) -c 'from pathlib import Path; from tools.scripts.gen_objdiff import retype_embedded_data_in_asm; retype_embedded_data_in_asm(Path("$(ASM_DIR)/nonmatchings/engine/gte_render/g_rcnt_ticks.s"), {"g_rcnt_ticks": [4224, 4]})'
+	$(PY) -c 'from pathlib import Path; from tools.scripts.gen_objdiff import retype_embedded_data_in_asm; retype_embedded_data_in_asm(Path("$(ASM_DIR)/engine/gte_transform.s"), {"g_rcnt_ticks": [0, 4]})'
 
 $(BUILD)/asm/%.s.o: asm/%.s
 	@mkdir -p $(dir $@)

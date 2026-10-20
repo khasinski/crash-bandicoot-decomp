@@ -24,7 +24,8 @@ and commit updated `docs/badges/` when progress changes.
 Use the stock GCC → maspsx → GNU assembler pipeline. Per-file compiler and
 assembler profiles must describe real stock options. Do not patch compiler
 output or objects to manufacture a match. Keep unsuccessful candidates in
-ignored `scratch/`; retained handwritten assembly uses `HANDWRITTEN_ASM`.
+ignored `scratch/`. Code the original wrote in assembly is a `hasm`
+subsegment split from retail, never assembly inside a C file.
 Register pins, dummy temporaries and single-iteration loop tricks require
 explicit review and must not be silently presented as finished semantic
 reconstruction.

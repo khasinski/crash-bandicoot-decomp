@@ -59,18 +59,20 @@ Requirements: Python 3.12, 7-Zip (`7z`), GNU binutils for mipsel
 
 ## Workflow
 
-1. Carve a translation unit: in `configs/USA/main.yaml`, split an `asm`
-   subsegment and give the new piece the type `c`, e.g.
-   `[0x1F7C, c, libc/malloc]`. Then run `make split`. splat writes
-   `src/main/libc/malloc.c` with one `INCLUDE_ASM` per function.
-2. `make m2c FUNC=name` gives a first pass. Replace the `INCLUDE_ASM` line with C.
-3. `make probe FILE=src/main/libc/malloc.c` checks each function
+Every function is C except the code the original was written in as
+assembly: Naughty Dog's hand-written GTE routines and Sony's crt0, LIBGTE core
+and BIOS veneers. Those are `hasm` subsegments in `configs/USA/main.yaml`,
+split from retail into `asm/` like data; no C file contains assembly apart
+from the GTE intrinsics in `include/gte.h` (docs/ASM_AND_GTE_POLICY.md).
+
+1. `make m2c FUNC=name` gives a first pass for reworking a function.
+2. `make probe FILE=src/main/libc/malloc.c` checks each function
    against retail using instruction Levenshtein distance. Require distance zero
    before promoting a candidate; `make objdiff-config` prepares progress inputs.
-4. `make permute FUNC=name` prepares a decomp-permuter run. Keep the attempt
-   under `#ifdef NON_MATCHING … #else INCLUDE_ASM(…) #endif`, then run
+3. `make permute FUNC=name` prepares a decomp-permuter run (it needs the
+   function's retail assembly in `asm/USA/main/nonmatchings/`), then run
    `tools/toolchain/decomp-permuter/permuter.py nonmatchings/name -j8`.
-5. `make build check` must report `OK` before a commit.
+4. `make build check` must report `OK` before a commit.
 
 The probe regenerates reference assembly from retail in `expected/`, including
 functions already written in C. A missing reference or an empty object fails the
@@ -101,7 +103,7 @@ Per-file compiler overrides go in a comment in the C file:
 
 - `configs/USA/` - splat config, symbols (`sym.main.txt`), relocs, manual linker symbols.
 - `src/main/` - decompiled translation units.
-- `include/` - project headers, `INCLUDE_ASM`, assembler macros.
+- `include/` - project headers, GTE intrinsics, assembler macros.
 - `tools/scripts/` - build wrapper (`cc.sh`), staging, probing, objdiff/report helpers.
 - `tools/toolchain/` - setup scripts; the fetched tools themselves are not committed.
 - `docs/` - compiler and layout findings.

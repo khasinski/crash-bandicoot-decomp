@@ -66,7 +66,7 @@ When renaming a `func_800XXXXX` or `D_800XXXXX` symbol (using `tools/scripts/ren
    - Note: `tools/splat_ext/gen_undefined_addr_aliases.py` automatically generates linker aliases (`func_800XXXXX = Name;` and `D_800XXXXX = Name;`) whenever an assembly `.s` file still references the raw `func_800XXXXX` / `D_800XXXXX` label.
 2. **`src/main/**/*.c` and `include/**/*.h`**: C function definitions, prototypes, `extern` declarations, and call sites.
    - Note: Some C files bind a human-readable variable name to a raw address symbol via GCC's `asm("D_800XXXXX")` label extension (e.g. `extern s32 g_LevelId asm("D_800563FC");`). If `D_800563FC` is renamed in `sym.main.txt`, either update or remove the `asm("...")` label.
-3. **`INCLUDE_ASM("asm/USA/nonmatchings/...", func_name)`**: For the remaining non-matching functions (`src/main/engine/state.c` and `src/main/sdk/libgte/patch_gte.c`), the macro argument must match the `.s` filename in `asm/USA/nonmatchings/`. Do **not** rename an `INCLUDE_ASM` target without also renaming its `.s` file (or keep it until decompiled to C).
+3. **Hand-written assembly** (`hasm` subsegments: `engine/gte_render`, `engine/gte_transform`, `sdk/kernel/crt0`, `sdk/libgte/gte_core`, `sdk/libgte/patch_gte`, `sdk/bios/*`) takes its labels from `configs/USA/sym.main.txt` at split time; renaming a symbol there renames it in the generated `.s`.
 
 ---
 
@@ -522,7 +522,7 @@ All 365 Naughty Dog game functions in `SCUS_949.00`, ordered by VRAM address and
 | `0x80034290` | 8w | `func_80034290` | **`Gpu_RResetOT_3`** | `RGpuResetOT_3` | `—` | `C` | `RGpuResetOT` tail jump target for 3 entries |
 | `0x800342B0` | 10w | `func_800342B0` | **`Gpu_RResetOT_4`** | `RGpuResetOT_4` | `—` | `C` | `RGpuResetOT` tail jump target for 4 entries |
 | `0x800342D8` | 139w | `func_800342D8` | **`Gpu_RResetOT`** | `RGpuResetOT` | `—` | `C` | Fast unrolled ordering-table initializer `(ot, len)` (`c1:psx/r3000a.c`) |
-| `0x80034504` | 7w | `func_80034504` | **`RIncTickCount`** | `RIncTickCount` | `engine/gte_render.c` | `C` | Root counter 2 (`RCntCNT2`) interrupt callback; increments `ticks_elapsed` (`D_800565B4`) (`c1:psx/init.c`) |
+| `0x80034504` | 7w | `func_80034504` | **`RIncTickCount`** | `RIncTickCount` | `engine/tick_count.c` | `C` | Root counter 2 (`RCntCNT2`) interrupt callback; increments `ticks_elapsed` (`D_800565B4`) (`c1:psx/init.c`) |
 | `0x80034524` | 22w | `func_80034524` | **`RSqrMagnitude2`** | `RSqrMagnitude2` | `—` | `C` | GTE `SQR` 2D vector squared-magnitude helper `(x, z, shift)` (`c1:audio.c`) |
 | `0x80034580` | 34w | `func_80034580` | **`RSqrMagnitude3`** | `RSqrMagnitude3` | `—` | `C` | GTE `SQR` 3D vector squared-magnitude helper `(x, z, y, shifts)` (`c1:audio.c`) |
 | `0x8003460C` | 319w | `func_8003460C` | **`Gte_RTransformSvtx`** | `RGteTransformSvtx` | `—` | `C` | Hand-coded GTE `RTPT`/`NCLIP`/`NCCT` renderer for `SVTX` animated character meshes (`c1:psx/r3000a.c`) |

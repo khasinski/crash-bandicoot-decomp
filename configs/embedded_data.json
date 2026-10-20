@@ -1,5 +1,8 @@
 {
-  "src/main/engine/gte_render.c": {
-    "g_rcnt_ticks": [4224, 4]
+  "asm/USA/main/engine/gte_transform.s": {
+    "g_rcnt_ticks": [
+      0,
+      4
+    ]
   }
 }

@@ -165,11 +165,11 @@ class ToolingTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
                     self.assertIn('DIFF' if kind == 'changed' else 'ERROR', result.stdout)
 
-    def test_asm_and_macro_changes_rebuild_c_object(self):
-        for dependency, source in (
-            ('asm/USA/main/nonmatchings/engine/gte_render/Gte_RCalcObjectRotMatrix.s',
-             'src/main/engine/gte_render.c'),
-            (str(ROOT / 'include/gte_macros.inc'), 'src/main/libc/malloc.c'),
+    def test_asm_and_macro_changes_rebuild_objects(self):
+        for dependency, command in (
+            ('asm/USA/main/engine/gte_render.s',
+             '-o build/USA/asm/USA/main/engine/gte_render.s.o asm/USA/main/engine/gte_render.s'),
+            (str(ROOT / 'include/gte_macros.inc'), 'tools/scripts/cc.sh src/main/libc/malloc.c'),
         ):
             with self.subTest(dependency=dependency):
                 result = subprocess.run(
@@ -177,7 +177,7 @@ class ToolingTests(unittest.TestCase):
                     cwd=ROOT, capture_output=True, text=True,
                 )
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn('tools/scripts/cc.sh ' + source, result.stdout)
+                self.assertIn(command, result.stdout)
 
 
 if __name__ == '__main__':

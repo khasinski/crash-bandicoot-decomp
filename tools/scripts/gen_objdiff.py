@@ -198,6 +198,29 @@ def main() -> int:
             }
         )
 
+    # Hand-written assembly (hasm): code the original was written in as
+    # assembly. Both sides are assembled from retail's split, so these units
+    # match by construction and are reported as source_assembly.
+    for unit in units_of(cfg, "hasm"):
+        source_rel = f"asm/{ver}/main/{unit}.s"
+        src = ROOT / "expected" / source_rel
+        if source_rel in embedded_manifest:
+            retype_embedded_data_in_asm(src, embedded_manifest[source_rel])
+        target = ROOT / "expected" / "build" / ver / f"{source_rel}.o"
+        assemble(src, target)
+        objdiff_units.append(
+            {
+                "name": unit,
+                "target_path": str(target.relative_to(ROOT)),
+                "base_path": f"build/{ver}/{source_rel}.o",
+                "metadata": {
+                    "complete": False,
+                    "source_path": source_rel,
+                    "progress_categories": [category_of(unit), "source_assembly"],
+                },
+            }
+        )
+
     # Code still only in split assembly: target-only units, so progress is
     # measured against the whole executable rather than just the C units.
     for unit in units_of(cfg, "asm"):

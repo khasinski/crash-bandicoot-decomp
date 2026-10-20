@@ -1,7 +1,6 @@
 #ifndef CRASH_COMMON_H
 #define CRASH_COMMON_H
 
-#include "include_asm.h"
 
 typedef signed char s8;
 typedef unsigned char u8;
